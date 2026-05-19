@@ -1,8 +1,8 @@
 import './globals.css';
 
 export const metadata = {
-  title: 'Collector Scanner — eBay marketplace, for collectors',
-  description: 'Find numbered, autographed, and rare trading cards on eBay with filters built for serious collectors.',
+  title: 'Fields & Floors Collectors — eBay marketplace, for collectors',
+  description: 'Collect the diamonds in the rough. A search instrument for trading card collectors — filter eBay by autograph, print run, and price simultaneously.',
 };
 
 export default function RootLayout({ children }) {

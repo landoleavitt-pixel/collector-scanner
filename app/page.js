@@ -24,14 +24,6 @@ const SCANNING_PHRASES = [
   'Surfacing finds',
 ];
 
-// Curated quote pool — rotates on page load
-const QUOTES = [
-  { text: 'The thing about a one-of-one is that it can only exist once.', attr: '— a collector' },
-  { text: 'Print runs are the new mintage.', attr: '— modern hobby axiom' },
-  { text: 'Buy the player. Hold the card. Tell the story.', attr: '— anon' },
-  { text: 'Numbered cards are clocks: every copy makes the rest more rare.', attr: '— a dealer' },
-];
-
 export default function Home() {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
@@ -39,21 +31,16 @@ export default function Home() {
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
   const [scanIdx, setScanIdx] = useState(0);
-  const [quote, setQuote] = useState(null);
 
   const [filters, setFilters] = useState({
     autoCards: false,
     numberedCards: false,
     numberedLimit: '/50',
+    listingType: 'any', // 'any' | 'buyItNow' | 'auction'
     priceMin: 0,
     priceMax: 1000,
     sortBy: 'price-low',
   });
-
-  // Select a random quote on client mount to avoid hydration mismatch
-  useEffect(() => {
-    setQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
-  }, []);
 
   // Loading phrase rotation
   const phraseTimer = useRef(null);
@@ -91,6 +78,7 @@ export default function Home() {
           autoCards: filters.autoCards,
           numberedCards: filters.numberedCards,
           numberedLimit: filters.numberedLimit,
+          listingType: filters.listingType,
           priceMin: filters.priceMin,
           priceMax: filters.priceMax === 5000 ? null : filters.priceMax,
           sortBy: filters.sortBy,
@@ -128,7 +116,6 @@ export default function Home() {
         onSearch={() => handleSearch()}
         error={error}
         loading={loading}
-        quote={quote}
         onSuggested={(s) => handleSearch(s)}
       />
 
@@ -159,15 +146,11 @@ function Header() {
   return (
     <header className="relative z-20 border-b border-[var(--line-soft)]">
       <div className="max-w-[1200px] mx-auto px-6 lg:px-10 py-5 flex items-center justify-between">
-        <div className="flex items-baseline gap-3">
-          {/* Seal mark */}
-          <svg width="22" height="22" viewBox="0 0 22 22" className="translate-y-[2px]">
-            <circle cx="11" cy="11" r="10" stroke="var(--gold)" strokeWidth="0.8" fill="none" />
-            <circle cx="11" cy="11" r="6.5" stroke="var(--gold)" strokeWidth="0.6" fill="none" opacity="0.6" />
-            <text x="11" y="14" textAnchor="middle" fill="var(--gold)" fontSize="8" fontFamily="Instrument Serif" fontStyle="italic">C</text>
-          </svg>
+        <div className="flex items-center gap-3">
+          <Seal />
           <span className="font-display text-xl tracking-tight leading-none">
-            Collector <em className="text-[var(--gold)] not-italic">Scanner</em>
+            Fields <em className="text-[var(--gold)] not-italic">&amp;</em> Floors{' '}
+            <em className="text-[var(--gold)] not-italic">Collectors</em>
           </span>
         </div>
         <div className="hidden md:flex items-center gap-8 text-[11px] uppercase tracking-[0.22em] text-[var(--ink-400)]">
@@ -180,10 +163,38 @@ function Header() {
   );
 }
 
+/* Brand seal — F&F monogram inside concentric circles.
+   Used in header + footer. */
+function Seal({ size = 22 }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 22 22"
+      aria-label="Fields & Floors Collectors"
+    >
+      <circle cx="11" cy="11" r="10" stroke="var(--gold)" strokeWidth="0.8" fill="none" />
+      <circle cx="11" cy="11" r="7" stroke="var(--gold)" strokeWidth="0.5" fill="none" opacity="0.55" />
+      <text
+        x="11"
+        y="14.2"
+        textAnchor="middle"
+        fill="var(--gold)"
+        fontSize="7.5"
+        fontFamily="Instrument Serif"
+        fontStyle="italic"
+        letterSpacing="-0.5"
+      >
+        F&amp;F
+      </text>
+    </svg>
+  );
+}
+
 /* ─────────────────────────────────────────────
    Hero — featured find, oversized type, refined search
    ───────────────────────────────────────────── */
-function Hero({ query, setQuery, onSearch, error, loading, quote, onSuggested }) {
+function Hero({ query, setQuery, onSearch, error, loading, onSuggested }) {
   return (
     <section className="relative border-b border-[var(--line-soft)] overflow-hidden">
       <div className="max-w-[1200px] mx-auto px-6 lg:px-10 pt-20 pb-16 lg:pt-28 lg:pb-20 relative">
@@ -192,15 +203,17 @@ function Hero({ query, setQuery, onSearch, error, loading, quote, onSuggested })
           <div>
             <p className="text-[10px] uppercase tracking-[0.3em] text-[var(--gold)] mb-8 rise" style={{ animationDelay: '0ms' }}>
               <span className="inline-block w-6 h-px bg-[var(--gold)] align-middle mr-3 -translate-y-[2px]" />
-              Marketplace, refined
+              Collect the diamonds in the rough
             </p>
             <h1
-              className="font-display text-[clamp(3rem,7vw,6.5rem)] leading-[0.92] tracking-[-0.02em] text-balance rise"
+              className="font-display text-[clamp(2.75rem,6.5vw,6rem)] leading-[0.95] tracking-[-0.02em] text-balance rise"
               style={{ animationDelay: '100ms' }}
             >
-              The rare,
+              Numbered.
               <br />
-              <em className="text-[var(--gold)]">found</em> faster.
+              Autographed.
+              <br />
+              <em className="text-[var(--gold)]">Parallels.</em>
             </h1>
             <p
               className="mt-8 text-[var(--ink-200)] leading-relaxed max-w-md text-pretty rise"
@@ -259,19 +272,6 @@ function Hero({ query, setQuery, onSearch, error, loading, quote, onSuggested })
             <FeaturedFind />
           </div>
         </div>
-
-        {/* Curated quote, bottom of hero */}
-        {quote && (
-          <div className="mt-20 pt-8 border-t border-[var(--line-soft)] rise" style={{ animationDelay: '600ms' }}>
-            <div className="flex items-baseline gap-4">
-              <span className="text-[10px] uppercase tracking-[0.3em] text-[var(--ink-400)]">Marginalia</span>
-              <p className="font-display italic text-lg md:text-xl text-[var(--ink-200)]">
-                {quote.text}
-                <span className="text-[var(--ink-600)] text-sm not-italic ml-3 font-sans">{quote.attr}</span>
-              </p>
-            </div>
-          </div>
-        )}
       </div>
     </section>
   );
@@ -404,6 +404,36 @@ function Filters({ filters, setFilter }) {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Listing type */}
+      <div>
+        <FilterLabel>Listing</FilterLabel>
+        <div className="space-y-2">
+          {[
+            ['any', 'Any listing'],
+            ['buyItNow', 'Buy It Now only'],
+            ['auction', 'Auctions only'],
+          ].map(([value, label]) => {
+            const active = filters.listingType === value;
+            return (
+              <button
+                key={value}
+                onClick={() => setFilter('listingType', value)}
+                className={`flex items-center gap-3 w-full text-left text-sm py-1 transition-colors ${
+                  active ? 'text-[var(--gold)]' : 'text-[var(--ink-400)] hover:text-[var(--ink-100)]'
+                }`}
+              >
+                <span
+                  className={`w-1 h-1 rounded-full transition-colors ${
+                    active ? 'bg-[var(--gold)]' : 'bg-[var(--line)]'
+                  }`}
+                />
+                {label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Price */}
@@ -763,12 +793,11 @@ function Footer() {
       <div className="max-w-[1200px] mx-auto px-6 lg:px-10 py-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
           <div className="col-span-2">
-            <div className="flex items-baseline gap-3 mb-4">
-              <svg width="18" height="18" viewBox="0 0 22 22">
-                <circle cx="11" cy="11" r="10" stroke="var(--gold)" strokeWidth="0.8" fill="none" />
-                <circle cx="11" cy="11" r="6.5" stroke="var(--gold)" strokeWidth="0.6" fill="none" opacity="0.6" />
-              </svg>
-              <span className="font-display text-lg">Collector Scanner</span>
+            <div className="flex items-center gap-3 mb-4">
+              <Seal size={20} />
+              <span className="font-display text-lg">
+                Fields <em className="text-[var(--gold)] not-italic">&amp;</em> Floors Collectors
+              </span>
             </div>
             <p className="text-sm text-[var(--ink-400)] max-w-xs leading-relaxed">
               A search instrument for serious collectors. Built for the hobby, not the algorithm.

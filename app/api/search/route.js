@@ -74,6 +74,14 @@ function buildSearchParams(criteria) {
     filters.push(`price:[${min}..${max}],priceCurrency:USD`);
   }
 
+  // Listing type filter — Buy It Now vs Auction.
+  // eBay's buyingOptions values: FIXED_PRICE, AUCTION.
+  if (criteria.listingType === 'buyItNow') {
+    filters.push('buyingOptions:{FIXED_PRICE}');
+  } else if (criteria.listingType === 'auction') {
+    filters.push('buyingOptions:{AUCTION}');
+  }
+
   // Trading cards category. 212 = Sports Mem, Cards & Fan Shop > Sports Trading Cards.
   // Leaving broad on purpose; users can narrow with keywords.
   const params = new URLSearchParams({
