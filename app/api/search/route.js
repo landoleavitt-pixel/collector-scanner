@@ -59,6 +59,11 @@ function buildSearchParams(criteria) {
   const parts = [criteria.keywords?.trim() || ''];
 
   if (criteria.autoCards) parts.push('auto');
+  if (criteria.rookieCards) {
+    // eBay's Browse API supports OR via parentheses with comma separators.
+    // Matches listings with "Rookie" OR "RC" OR "1st Bowman" in the title.
+    parts.push('(Rookie, RC, "1st Bowman")');
+  }
   if (criteria.numberedCards && criteria.numberedLimit) {
     // numberedLimit is like "/25". eBay search is keyword-based so we just
     // add it as a token — eBay's matching will pick it up in titles.
@@ -86,7 +91,7 @@ function buildSearchParams(criteria) {
   // Leaving broad on purpose; users can narrow with keywords.
   const params = new URLSearchParams({
     q,
-    limit: '24',
+    limit: '50', // Fetch more so we have headroom after print-run verification
     category_ids: '212',
   });
 
@@ -122,6 +127,99 @@ function normalizeItem(item) {
   };
 }
 
+/**
+ * Verify that a listing title actually indicates a rookie card.
+ *
+ * Matches:
+ *   - "Rookie" (case-insensitive word)
+ *   - "RC" as a standalone token (not inside other words like "arc" or "recreation")
+ *   - "1st Bowman" — Bowman's rookie designation (very common in baseball)
+ *
+ * We use word-boundary regex so "arc" doesn't match "RC" and "rookies" still does.
+ */
+function verifyRookie(title) {
+  if (!title) return false;
+  const t = title.toLowerCase();
+  // "rookie" / "rookies"
+  if (/\brookie/.test(t)) return true;
+  // "RC" as a standalone token — surrounded by word boundaries and not part of other words
+  if (/\brc\b/.test(t)) return true;
+  // "1st Bowman" — common shorthand for a rookie's first Bowman appearance
+  if (/\b1st\s+bowman\b/.test(t)) return true;
+  return false;
+}
+
+/**
+ * Verify that a listing title actually contains the given print run as a
+ * print run — not as a season year, date, or card number.
+ *
+ * numberedLimit comes in as "/25" (with the slash).
+ *
+ * Returns true if the title contains a verified print run matching that value.
+ *
+ * False-positive patterns we must reject:
+ *   - Season years: "2024-25", "2024/25", "2024 25"
+ *   - Dates: "5/25/2024", "/25/24"
+ *   - Card numbers: "Card #25", "Card 25 of 100"
+ *   - Quantities: "lot of 25", "25 ct", "25 cards"
+ *
+ * Real print run patterns we must accept:
+ *   - "/25" standalone (most common): "Mahomes Auto /25"
+ *   - "# 5/25", "#5/25": "Mahomes Auto #5/25"
+ *   - "5 of 25", "5/25": when preceded by no year context
+ *   - "numbered to 25", "serial #d /25", "limited to 25"
+ */
+function verifyPrintRun(title, numberedLimit) {
+  if (!title || !numberedLimit) return false;
+  const num = numberedLimit.replace('/', '').trim(); // "25"
+  if (!num) return false;
+
+  const t = title.toLowerCase();
+  const n = num;
+
+  // Strategy: find every occurrence of the number in the title, then check
+  // its context. If at least one occurrence is "print run" context, accept.
+
+  // 1) Reject quickly if the only matches are clearly seasons or dates.
+  // A "season year" is 4-digit year followed by "-NN" or "/NN" or " NN"
+  // where NN is the number we're looking for as a 2-digit suffix.
+  const seasonPattern = new RegExp(`(19|20)\\d{2}[-/\\s]${n}\\b`, 'g');
+  const datePattern = new RegExp(`\\b\\d{1,2}/${n}/\\d{2,4}\\b|\\b${n}/\\d{1,2}/\\d{2,4}\\b`, 'g');
+
+  // 2) Patterns that strongly indicate a real print run:
+  //    "/25" standalone (with optional space), "# 5/25", "to 25", "of 25"
+  //    "numbered 25", "limited 25", "ssp /25"
+  const printRunPatterns = [
+    new RegExp(`(?:^|[^0-9-/])/\\s*${n}(?![0-9])`),         // "/25" or "/ 25", not preceded by year
+    new RegExp(`#\\s*\\d+\\s*/\\s*${n}(?![0-9])`),          // "#5/25"
+    new RegExp(`\\b\\d+\\s+of\\s+${n}(?![0-9])`),           // "5 of 25" — require number before "of"
+    new RegExp(`\\b(?:numbered|limited|serial)\\s+to\\s+${n}(?![0-9])`),  // "numbered to 25"
+    new RegExp(`\\b(?:numbered|limited|serial|ssp|sp)\\s+${n}(?![0-9])`),
+    new RegExp(`\\bd/\\s*${n}(?![0-9])`),                   // "/d/25" (eBay seller shorthand for "numbered /25")
+  ];
+
+  // 3) Find all matches of patterns and confirm at least one is NOT inside a season/date context.
+  for (const re of printRunPatterns) {
+    const m = t.match(re);
+    if (!m) continue;
+    // Check that this match isn't sitting inside a season-year pattern.
+    // We re-scan around the match index.
+    const idx = t.search(re);
+    const window = t.slice(Math.max(0, idx - 5), idx + m[0].length + 3);
+    // If the window contains a year-NN pattern that includes our match, skip.
+    if (seasonPattern.test(window)) {
+      seasonPattern.lastIndex = 0; // reset
+      continue;
+    }
+    if (datePattern.test(window)) {
+      datePattern.lastIndex = 0;
+      continue;
+    }
+    return true;
+  }
+  return false;
+}
+
 export async function POST(req) {
   try {
     const criteria = await req.json();
@@ -154,7 +252,25 @@ export async function POST(req) {
     }
 
     const data = await res.json();
-    const items = (data.itemSummaries ?? []).map(normalizeItem);
+    let items = (data.itemSummaries ?? []).map(normalizeItem);
+
+    // If a print run filter is active, verify each title to remove false
+    // positives (years like "2024-25", card numbers, dates, quantities).
+    if (criteria.numberedCards && criteria.numberedLimit) {
+      const before = items.length;
+      items = items.filter((it) => verifyPrintRun(it.title, criteria.numberedLimit));
+      console.log(
+        `Print run verify: ${before} → ${items.length} (filter: ${criteria.numberedLimit})`,
+      );
+    }
+
+    // If rookie filter is active, verify each title contains rookie/RC/1st Bowman.
+    // This protects against eBay's broader keyword matching returning non-rookie cards.
+    if (criteria.rookieCards) {
+      const before = items.length;
+      items = items.filter((it) => verifyRookie(it.title));
+      console.log(`Rookie verify: ${before} → ${items.length}`);
+    }
 
     return NextResponse.json({
       items,

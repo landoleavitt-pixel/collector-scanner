@@ -3,7 +3,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 
-const NUMBERING_OPTIONS = ['/1', '/5', '/10', '/25', '/50', '/100'];
+// Print run tiers — grouped visually by rarity.
+// Collectors mentally bucket these by tier, so we present them that way.
+const PRINT_RUN_TIERS = [
+  { label: 'The Grail', runs: ['/1', '/5', '/10', '/15', '/25'] },
+  { label: 'Ultra Rare', runs: ['/49', '/50', '/75', '/99'] },
+  { label: 'Rare',       runs: ['/149', '/150', '/199', '/249'] },
+  { label: 'Scarce',     runs: ['/299', '/499', '/999'] },
+];
 
 const SUGGESTED_SEARCHES = [
   'Patrick Mahomes auto',
@@ -36,6 +43,7 @@ export default function Home() {
     autoCards: false,
     numberedCards: false,
     numberedLimit: '/50',
+    rookieCards: false,
     listingType: 'any', // 'any' | 'buyItNow' | 'auction'
     priceMin: 0,
     priceMax: 1000,
@@ -78,6 +86,7 @@ export default function Home() {
           autoCards: filters.autoCards,
           numberedCards: filters.numberedCards,
           numberedLimit: filters.numberedLimit,
+          rookieCards: filters.rookieCards,
           listingType: filters.listingType,
           priceMin: filters.priceMin,
           priceMax: filters.priceMax === 5000 ? null : filters.priceMax,
@@ -326,7 +335,7 @@ function FeaturedFind() {
           </div>
           <div className="flex items-end justify-between pt-2 border-t border-[var(--line-soft)]">
             <div className="flex gap-1.5">
-              <Badge>Au</Badge>
+              <Badge>AUTO</Badge>
               <Badge mono>/25</Badge>
               <Badge>PSA 10</Badge>
             </div>
@@ -364,9 +373,16 @@ function Filters({ filters, setFilter }) {
         <div className="space-y-3">
           <ToggleRow
             label="Autographed"
-            mark="Au"
+            mark="AUTO"
+            markWide
             checked={filters.autoCards}
             onChange={(v) => setFilter('autoCards', v)}
+          />
+          <ToggleRow
+            label="Rookie card"
+            mark="RC"
+            checked={filters.rookieCards}
+            onChange={(v) => setFilter('rookieCards', v)}
           />
           <ToggleRow
             label="Numbered"
@@ -381,26 +397,48 @@ function Filters({ filters, setFilter }) {
             <p className="text-[10px] uppercase tracking-[0.22em] text-[var(--ink-400)] mb-3">
               Print run ≤
             </p>
-            <div className="grid grid-cols-3 gap-1.5">
-              {NUMBERING_OPTIONS.map((n) => {
-                const active = filters.numberedLimit === n;
-                return (
-                  <button
-                    key={n}
-                    onClick={() => setFilter('numberedLimit', n)}
-                    className={`relative py-2 font-mono text-[11px] transition-all ${
-                      active
-                        ? 'text-[var(--gold)] bg-[var(--gold)]/[0.07]'
-                        : 'text-[var(--ink-400)] hover:text-[var(--ink-100)]'
-                    }`}
-                  >
-                    <span>{n}</span>
-                    {active && (
-                      <span className="absolute bottom-0 left-2 right-2 h-px bg-[var(--gold)]" />
-                    )}
-                  </button>
-                );
-              })}
+
+            {/* Tier-grouped print run buttons */}
+            <div className="space-y-3">
+              {PRINT_RUN_TIERS.map((tier) => (
+                <div key={tier.label}>
+                  <p className="text-[9px] uppercase tracking-[0.18em] text-[var(--ink-600)] mb-1.5">
+                    {tier.label}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {tier.runs.map((n) => {
+                      const active = filters.numberedLimit === n;
+                      return (
+                        <button
+                          key={n}
+                          onClick={() => setFilter('numberedLimit', n)}
+                          className={`relative px-2.5 py-1.5 font-mono text-[11px] transition-all min-w-[44px] ${
+                            active
+                              ? 'text-[var(--gold)] bg-[var(--gold)]/[0.07]'
+                              : 'text-[var(--ink-400)] hover:text-[var(--ink-100)]'
+                          }`}
+                        >
+                          <span>{n}</span>
+                          {active && (
+                            <span className="absolute bottom-0 left-2 right-2 h-px bg-[var(--gold)]" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Custom print run input */}
+            <div className="mt-5 pt-4 border-t border-[var(--line-soft)]">
+              <p className="text-[9px] uppercase tracking-[0.18em] text-[var(--ink-600)] mb-2">
+                Custom ≤
+              </p>
+              <CustomPrintRunInput
+                value={filters.numberedLimit}
+                onApply={(val) => setFilter('numberedLimit', val)}
+              />
             </div>
           </div>
         )}
@@ -508,15 +546,74 @@ function FilterLabel({ children }) {
   );
 }
 
-function ToggleRow({ label, mark, checked, onChange }) {
+/* Custom print run input — for oddballs like /73, /88, /42 that aren't in the preset tiers.
+   Validates a number, prefixes with "/" and applies as the active print run filter. */
+function CustomPrintRunInput({ value, onApply }) {
+  const [val, setVal] = useState('');
+  const [err, setErr] = useState('');
+
+  function handleApply() {
+    const trimmed = val.trim();
+    if (!trimmed) {
+      setErr('');
+      return;
+    }
+    const num = parseInt(trimmed, 10);
+    if (isNaN(num) || num < 1 || num > 9999) {
+      setErr('Enter a number between 1 and 9999');
+      return;
+    }
+    setErr('');
+    onApply('/' + num);
+  }
+
+  // Show the current filter value in the input if it doesn't match any preset.
+  const presetSet = new Set(PRINT_RUN_TIERS.flatMap((t) => t.runs));
+  const isCustomActive = value && !presetSet.has(value);
+
+  return (
+    <div>
+      <div className="flex items-center gap-2">
+        <span className="font-mono text-xs text-[var(--ink-400)]">/</span>
+        <input
+          type="text"
+          inputMode="numeric"
+          pattern="[0-9]*"
+          value={val}
+          onChange={(e) => setVal(e.target.value.replace(/[^0-9]/g, ''))}
+          onKeyDown={(e) => e.key === 'Enter' && handleApply()}
+          placeholder={isCustomActive ? value.replace('/', '') : 'e.g. 73'}
+          className="flex-1 min-w-0 bg-transparent border-b border-[var(--line)] focus:border-[var(--gold)] outline-none font-mono text-[11px] py-1 text-[var(--ink-100)] placeholder:text-[var(--ink-600)] transition-colors"
+        />
+        <button
+          onClick={handleApply}
+          disabled={!val.trim()}
+          className="text-[10px] uppercase tracking-[0.18em] text-[var(--gold)] disabled:text-[var(--ink-600)] disabled:cursor-not-allowed hover:text-[var(--gold-bright)] transition-colors"
+        >
+          Apply
+        </button>
+      </div>
+      {isCustomActive && (
+        <p className="text-[10px] text-[var(--gold)] mt-1.5 font-mono">
+          Active: {value}
+        </p>
+      )}
+      {err && <p className="text-[10px] text-[#d4684a] mt-1.5">{err}</p>}
+    </div>
+  );
+}
+
+function ToggleRow({ label, mark, markWide, checked, onChange }) {
   return (
     <button
       onClick={() => onChange(!checked)}
       className="group flex items-center justify-between w-full py-1 text-left"
     >
-      <span className="flex items-center gap-3">
+      <span className="flex items-center gap-5">
         <span
-          className={`font-mono text-[10px] w-6 h-6 flex items-center justify-center border transition-all ${
+          className={`font-mono text-[10px] h-6 flex items-center justify-center border transition-all tracking-wider ${
+            markWide ? 'w-12' : 'w-6'
+          } ${
             checked
               ? 'border-[var(--gold)] text-[var(--gold)] bg-[var(--gold)]/[0.06]'
               : 'border-[var(--line)] text-[var(--ink-600)] group-hover:border-[var(--ink-400)] group-hover:text-[var(--ink-400)]'
@@ -599,6 +696,7 @@ function ResultCard({ item, formatPrice, index }) {
   // Heuristic badge detection from title
   const title = (item.title || '').toLowerCase();
   const hasAuto = /\bauto\b|autograph|signed/.test(title);
+  const hasRookie = /\brookie/.test(title) || /\brc\b/.test(title) || /\b1st\s+bowman\b/.test(title);
   const numberMatch = title.match(/\b\/(\d{1,4})\b|\b#\d+\/(\d{1,4})\b/);
   const printRun = numberMatch ? numberMatch[1] || numberMatch[2] : null;
   const psaMatch = item.title?.match(/PSA\s*(\d{1,2})/i);
@@ -643,11 +741,12 @@ function ResultCard({ item, formatPrice, index }) {
 
           {/* Badges */}
           <div className="flex flex-wrap gap-1.5 mt-3">
-            {hasAuto && <Badge>Au</Badge>}
+            {hasAuto && <Badge>AUTO</Badge>}
+            {hasRookie && <Badge>RC</Badge>}
             {printRun && <Badge mono>/{printRun}</Badge>}
             {psaMatch && <Badge>PSA {psaMatch[1]}</Badge>}
             {bgsMatch && <Badge>BGS {bgsMatch[1]}</Badge>}
-            {!hasAuto && !printRun && !psaMatch && !bgsMatch && item.condition && (
+            {!hasAuto && !hasRookie && !printRun && !psaMatch && !bgsMatch && item.condition && (
               <Badge subtle>{item.condition}</Badge>
             )}
           </div>
