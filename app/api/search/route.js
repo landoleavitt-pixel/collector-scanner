@@ -169,18 +169,31 @@ function buildSearchParams(criteria) {
 }
 
 function normalizeItem(item) {
+  const isAuction = item.buyingOptions?.includes('AUCTION') ?? false;
+  const isBuyItNow = item.buyingOptions?.includes('FIXED_PRICE') ?? false;
+
+  // For auctions, prefer the current bid price over price.value.
+  // eBay's price.value can be stale or represent the starting bid for auctions.
+  // currentBidPrice reflects the live high bid.
+  let price;
+  if (isAuction && item.currentBidPrice?.value) {
+    price = parseFloat(item.currentBidPrice.value);
+  } else {
+    price = parseFloat(item.price?.value ?? 0);
+  }
+
   return {
     id: item.itemId,
     title: item.title,
-    price: parseFloat(item.price?.value ?? 0),
-    currency: item.price?.currency ?? 'USD',
+    price,
+    currency: item.currentBidPrice?.currency ?? item.price?.currency ?? 'USD',
     image: item.image?.imageUrl ?? item.thumbnailImages?.[0]?.imageUrl ?? null,
     url: item.itemWebUrl,
     condition: item.condition ?? 'Unknown',
     seller: item.seller?.username ?? null,
     sellerFeedback: item.seller?.feedbackPercentage ?? null,
-    isAuction: item.buyingOptions?.includes('AUCTION') ?? false,
-    isBuyItNow: item.buyingOptions?.includes('FIXED_PRICE') ?? false,
+    isAuction,
+    isBuyItNow,
     bidCount: item.bidCount ?? null,
     endTime: item.itemEndDate ?? null,
   };
@@ -375,8 +388,16 @@ export async function POST(req) {
     // search words. Runs first so we don't waste time on other verifiers.
     if (criteria.keywords && /\s/.test(criteria.keywords.trim())) {
       const before = items.length;
-      items = items.filter((it) => verifyPlayerName(it.title, criteria.keywords));
+      const droppedTitles = [];
+      items = items.filter((it) => {
+        const keep = verifyPlayerName(it.title, criteria.keywords);
+        if (!keep && droppedTitles.length < 5) droppedTitles.push(it.title);
+        return keep;
+      });
       console.log(`Name verify: ${before} → ${items.length} (input: "${criteria.keywords}")`);
+      if (droppedTitles.length > 0) {
+        console.log('Name verify DROPPED (first 5):', droppedTitles);
+      }
     }
 
     // If a print run filter is active with specific runs selected, verify each
@@ -385,10 +406,18 @@ export async function POST(req) {
     if (criteria.numberedCards && Array.isArray(criteria.selectedPrintRuns) && criteria.selectedPrintRuns.length > 0) {
       const before = items.length;
       const runs = criteria.selectedPrintRuns;
-      items = items.filter((it) => runs.some((run) => verifyPrintRun(it.title, run)));
+      const droppedTitles = [];
+      items = items.filter((it) => {
+        const keep = runs.some((run) => verifyPrintRun(it.title, run));
+        if (!keep && droppedTitles.length < 5) droppedTitles.push(it.title);
+        return keep;
+      });
       console.log(
         `Print run verify: ${before} → ${items.length} (${runs.length} runs selected)`,
       );
+      if (droppedTitles.length > 0) {
+        console.log('Print run verify DROPPED (first 5):', droppedTitles);
+      }
     } else if (criteria.numberedCards) {
       // "Numbered" toggle is on but no specific runs selected — accept any title
       // that contains a valid print run pattern at all.

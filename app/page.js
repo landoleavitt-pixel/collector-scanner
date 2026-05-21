@@ -814,6 +814,11 @@ function ResultCard({ item, formatPrice, index }) {
 
           {/* Badges */}
           <div className="flex flex-wrap gap-1.5 mt-3">
+            {item.isAuction && (
+              <Badge auction>
+                {item.bidCount != null ? `${item.bidCount} BIDS` : 'AUCTION'}
+              </Badge>
+            )}
             {hasAuto && <Badge>AUTO</Badge>}
             {hasRookie && <Badge>RC</Badge>}
             {printRun && <Badge mono>/{printRun}</Badge>}
@@ -826,13 +831,11 @@ function ResultCard({ item, formatPrice, index }) {
 
           {/* Subline */}
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-3 text-[11px] uppercase tracking-[0.15em] text-[var(--ink-400)]">
-            {item.isAuction && (
-              <span>{item.bidCount != null ? `${item.bidCount} bids` : 'Auction'}</span>
-            )}
             {item.isBuyItNow && !item.isAuction && <span>Buy now</span>}
+            {item.isAuction && item.isBuyItNow && <span>Or buy now</span>}
             {item.seller && (
               <>
-                <span className="text-[var(--ink-600)]">·</span>
+                {(item.isBuyItNow || item.isAuction) && <span className="text-[var(--ink-600)]">·</span>}
                 <span className="normal-case tracking-normal">{item.seller}</span>
               </>
             )}
@@ -860,14 +863,20 @@ function ResultCard({ item, formatPrice, index }) {
   );
 }
 
-function Badge({ children, mono, subtle }) {
+function Badge({ children, mono, subtle, auction }) {
+  let style;
+  if (auction) {
+    // Auction: distinct from gold so it visually pops as different.
+    // Warm red-amber feels like a "live" indicator.
+    style = 'border-[#c97a3a] text-[#e6a86b] bg-[#c97a3a]/[0.08]';
+  } else if (subtle) {
+    style = 'border-[var(--line)] text-[var(--ink-400)]';
+  } else {
+    style = 'border-[var(--gold-deep)] text-[var(--gold-bright)] bg-[var(--gold)]/[0.04]';
+  }
   return (
     <span
-      className={`inline-flex items-center px-2 py-0.5 text-[10px] tracking-[0.08em] border ${
-        subtle
-          ? 'border-[var(--line)] text-[var(--ink-400)]'
-          : 'border-[var(--gold-deep)] text-[var(--gold-bright)] bg-[var(--gold)]/[0.04]'
-      } ${mono ? 'font-mono uppercase' : 'uppercase'}`}
+      className={`inline-flex items-center px-2 py-0.5 text-[10px] tracking-[0.08em] border ${style} ${mono ? 'font-mono uppercase' : 'uppercase'}`}
     >
       {children}
     </span>
