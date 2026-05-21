@@ -326,6 +326,15 @@ export async function POST(req) {
     const params = buildSearchParams(criteria);
 
     const url = `${EBAY_SEARCH_URL}?${params.toString()}`;
+
+    // DIAGNOSTIC LOGGING — temporary, will be removed once search quality is verified.
+    console.log('Search request:', {
+      userInput: criteria.keywords,
+      expandedQ: params.get('q'),
+      filter: params.get('filter'),
+      fullURL: url,
+    });
+
     const res = await fetch(url, {
       headers: {
         Authorization: `Bearer ${token}`,
