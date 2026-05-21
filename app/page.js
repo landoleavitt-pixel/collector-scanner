@@ -96,6 +96,49 @@ function detectPrintRun(rawTitle) {
   return null;
 }
 
+/**
+ * Format an ISO end-time as a short, scannable countdown string.
+ * Examples: "Ends in 2h 14m", "Ends in 3d 6h", "Ends in 47m", "Ending now"
+ * Returns null if the time has passed or input is invalid.
+ */
+function formatTimeRemaining(isoString) {
+  if (!isoString) return null;
+  const end = new Date(isoString).getTime();
+  if (isNaN(end)) return null;
+  const now = Date.now();
+  const diffMs = end - now;
+  if (diffMs <= 0) return null;
+  const days = Math.floor(diffMs / 86400000);
+  const hours = Math.floor((diffMs % 86400000) / 3600000);
+  const mins = Math.floor((diffMs % 3600000) / 60000);
+  if (days >= 1) {
+    return `Ends in ${days}d ${hours}h`;
+  }
+  if (hours >= 1) {
+    return `Ends in ${hours}h ${mins}m`;
+  }
+  if (mins >= 1) {
+    return `Ends in ${mins}m`;
+  }
+  return 'Ending now';
+}
+
+/**
+ * Map a print run value to a visual rarity tier — controls color intensity
+ * so collectors can scan rarity at a glance. All within the gold family
+ * (no jarring color changes) but with enough contrast to distinguish.
+ *
+ * Returns one of: 'grail', 'ultra', 'rare', 'scarce'
+ */
+function printRunTier(runValue) {
+  const n = parseInt(String(runValue).replace('/', ''), 10);
+  if (isNaN(n)) return 'scarce';
+  if (n <= 25) return 'grail';
+  if (n <= 99) return 'ultra';
+  if (n <= 249) return 'rare';
+  return 'scarce';
+}
+
 export default function Home() {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
@@ -165,7 +208,22 @@ export default function Home() {
         setError(data.error || 'Search failed.');
         setResults([]);
       } else {
-        setResults(data.items || []);
+        let items = data.items || [];
+        // Client-side sort for print-run options (eBay's API doesn't support this)
+        if (filters.sortBy === 'printrun-rarest' || filters.sortBy === 'printrun-common') {
+          const ascending = filters.sortBy === 'printrun-rarest'; // /1 first
+          items = [...items].sort((a, b) => {
+            const aRun = parseInt(detectPrintRun(a.title) ?? '99999', 10);
+            const bRun = parseInt(detectPrintRun(b.title) ?? '99999', 10);
+            // Listings without a detectable print run go to the end either way
+            const aMissing = !detectPrintRun(a.title);
+            const bMissing = !detectPrintRun(b.title);
+            if (aMissing && !bMissing) return 1;
+            if (!aMissing && bMissing) return -1;
+            return ascending ? aRun - bRun : bRun - aRun;
+          });
+        }
+        setResults(items);
       }
     } catch (e) {
       setError('Network error. Please try again.');
@@ -403,7 +461,7 @@ function FeaturedFind() {
           <div className="flex items-end justify-between pt-2 border-t border-[var(--line-soft)]">
             <div className="flex gap-1.5">
               <Badge>AUTO</Badge>
-              <Badge mono>/25</Badge>
+              <Badge mono tier="grail">/25</Badge>
               <Badge>PSA 10</Badge>
             </div>
             <span className="font-display text-2xl text-[var(--gold)] leading-none">$4,250</span>
@@ -589,6 +647,8 @@ function Filters({ filters, setFilter }) {
           {[
             ['price-low', 'Price, low to high'],
             ['price-high', 'Price, high to low'],
+            ['printrun-rarest', 'Rarest print run first'],
+            ['printrun-common', 'Largest print run first'],
             ['newest', 'Newly listed'],
           ].map(([value, label]) => {
             const active = filters.sortBy === value;
@@ -833,7 +893,7 @@ function ResultCard({ item, formatPrice, index }) {
             )}
             {hasAuto && <Badge>AUTO</Badge>}
             {hasRookie && <Badge>RC</Badge>}
-            {printRun && <Badge mono>/{printRun}</Badge>}
+            {printRun && <Badge mono tier={printRunTier(printRun)}>/{printRun}</Badge>}
             {psaMatch && <Badge>PSA {psaMatch[1]}</Badge>}
             {bgsMatch && <Badge>BGS {bgsMatch[1]}</Badge>}
             {!hasAuto && !hasRookie && !printRun && !psaMatch && !bgsMatch && item.condition && (
@@ -843,8 +903,15 @@ function ResultCard({ item, formatPrice, index }) {
 
           {/* Subline */}
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-3 text-[11px] uppercase tracking-[0.15em] text-[var(--ink-400)]">
+            {item.isAuction && !item.isBuyItNow && <span>Auction</span>}
             {item.isBuyItNow && !item.isAuction && <span>Buy now</span>}
-            {item.isAuction && item.isBuyItNow && <span>Or buy now</span>}
+            {item.isAuction && item.isBuyItNow && <span>Auction · or buy now</span>}
+            {item.endTime && item.isAuction && (
+              <>
+                <span className="text-[var(--ink-600)]">·</span>
+                <span className="text-[var(--gold)]">{formatTimeRemaining(item.endTime)}</span>
+              </>
+            )}
             {item.seller && (
               <>
                 {(item.isBuyItNow || item.isAuction) && <span className="text-[var(--ink-600)]">·</span>}
@@ -875,20 +942,32 @@ function ResultCard({ item, formatPrice, index }) {
   );
 }
 
-function Badge({ children, mono, subtle, auction }) {
+function Badge({ children, mono, subtle, auction, tier }) {
   let style;
   if (auction) {
-    // Auction: distinct from gold so it visually pops as different.
-    // Warm red-amber feels like a "live" indicator.
-    style = 'border-[#c97a3a] text-[#e6a86b] bg-[#c97a3a]/[0.08]';
+    // Auction: warm red-amber to feel like a "live" indicator, distinct from gold
+    style = 'border-[#c97a3a] text-[#e6a86b] bg-[#c97a3a]/[0.10]';
+  } else if (tier === 'grail') {
+    // Grail tier (/1-/25) — brightest, warmest, most prominent
+    style = 'border-[var(--gold-bright)] text-[var(--gold-bright)] bg-[var(--gold)]/[0.14] font-semibold';
+  } else if (tier === 'ultra') {
+    // Ultra Rare tier (/49-/99) — standard bright gold
+    style = 'border-[var(--gold)] text-[var(--gold)] bg-[var(--gold)]/[0.08]';
+  } else if (tier === 'rare') {
+    // Rare tier (/149-/249) — muted gold
+    style = 'border-[var(--gold-deep)] text-[var(--gold)]/85 bg-[var(--gold)]/[0.04]';
+  } else if (tier === 'scarce') {
+    // Scarce tier (/299+) — quietest gold
+    style = 'border-[var(--gold-deep)]/60 text-[var(--ink-400)] bg-[var(--gold)]/[0.02]';
   } else if (subtle) {
     style = 'border-[var(--line)] text-[var(--ink-400)]';
   } else {
-    style = 'border-[var(--gold-deep)] text-[var(--gold-bright)] bg-[var(--gold)]/[0.04]';
+    // Default — for AUTO, RC, PSA, BGS
+    style = 'border-[var(--gold-deep)] text-[var(--gold-bright)] bg-[var(--gold)]/[0.06]';
   }
   return (
     <span
-      className={`inline-flex items-center px-2 py-0.5 text-[10px] tracking-[0.08em] border ${style} ${mono ? 'font-mono uppercase' : 'uppercase'}`}
+      className={`inline-flex items-center px-2.5 py-1 text-[11px] tracking-[0.1em] border ${style} ${mono ? 'font-mono uppercase' : 'uppercase'}`}
     >
       {children}
     </span>
