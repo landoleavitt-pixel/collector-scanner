@@ -150,7 +150,7 @@ function buildSearchParams(criteria) {
   // Leaving broad on purpose; users can narrow with keywords.
   const params = new URLSearchParams({
     q,
-    limit: '50', // Fetch more so we have headroom after print-run verification
+    limit: '100', // Fetch generously — verification + filtering can drop a lot, and mixed BIN+Auction results need headroom
     category_ids: '212',
   });
 
@@ -375,6 +375,38 @@ function verifyPrintRun(title, numberedLimit) {
   return false;
 }
 
+/**
+ * Single eBay fetch — given a criteria object, builds params and returns
+ * normalized items. Used once for BIN-only, Auction-only, or twice (in parallel)
+ * for "Any listing" mode.
+ */
+async function fetchEbayResults(criteria, token) {
+  const params = buildSearchParams(criteria);
+  const url = `${EBAY_SEARCH_URL}?${params.toString()}`;
+
+  console.log('eBay request:', {
+    listingType: criteria.listingType,
+    expandedQ: params.get('q'),
+    filter: params.get('filter'),
+  });
+
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US',
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`eBay search failed (${res.status}): ${text}`);
+  }
+
+  const data = await res.json();
+  return (data.itemSummaries ?? []).map(normalizeItem);
+}
+
 export async function POST(req) {
   try {
     const criteria = await req.json();
@@ -387,36 +419,30 @@ export async function POST(req) {
     }
 
     const token = await getAppToken();
-    const params = buildSearchParams(criteria);
 
-    const url = `${EBAY_SEARCH_URL}?${params.toString()}`;
-
-    // DIAGNOSTIC LOGGING — temporary, will be removed once search quality is verified.
-    console.log('Search request:', {
-      userInput: criteria.keywords,
-      expandedQ: params.get('q'),
-      filter: params.get('filter'),
-      fullURL: url,
-    });
-
-    const res = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US',
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!res.ok) {
-      const text = await res.text();
-      return NextResponse.json(
-        { error: `eBay search failed (${res.status}).`, details: text },
-        { status: res.status },
-      );
+    // For "Any listing", eBay's API doesn't return a true union — its
+    // mixed-mode results hide some auctions in favor of BIN listings. Fix by
+    // running TWO explicit queries (BIN + Auction) in parallel and merging.
+    let items;
+    if (criteria.listingType === 'any' || !criteria.listingType) {
+      const [binItems, auctionItems] = await Promise.all([
+        fetchEbayResults({ ...criteria, listingType: 'buyItNow' }, token),
+        fetchEbayResults({ ...criteria, listingType: 'auction' }, token),
+      ]);
+      // Merge with deduplication by item ID
+      const seen = new Set();
+      items = [];
+      for (const it of [...binItems, ...auctionItems]) {
+        if (!seen.has(it.id)) {
+          seen.add(it.id);
+          items.push(it);
+        }
+      }
+      console.log(`Any listing union: BIN=${binItems.length}, Auction=${auctionItems.length}, merged=${items.length}`);
+    } else {
+      // BIN-only or Auction-only — single query
+      items = await fetchEbayResults(criteria, token);
     }
-
-    const data = await res.json();
-    let items = (data.itemSummaries ?? []).map(normalizeItem);
 
     // Player name verification — eBay often returns loose matches that ignore
     // our quoted phrases. Filter to listings whose title contains all the user's
