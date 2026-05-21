@@ -12,6 +12,9 @@ const PRINT_RUN_TIERS = [
   { label: 'Scarce',     runs: ['/299', '/499', '/999'] },
 ];
 
+// Flat list of all preset print runs — used for "select all" default state.
+const ALL_PRESET_PRINT_RUNS = PRINT_RUN_TIERS.flatMap((t) => t.runs);
+
 const SUGGESTED_SEARCHES = [
   'Patrick Mahomes auto',
   'Luka Doncic prizm',
@@ -31,6 +34,56 @@ const SCANNING_PHRASES = [
   'Surfacing finds',
 ];
 
+/**
+ * Extract a print run number from a listing title, OR return null if no real
+ * print run is present. Mirrors the server-side verifyPrintRun logic but
+ * without a target — we're looking for ANY print run that appears.
+ *
+ * Rejects false-positive patterns:
+ *   - Season years: "2024-25", "2024/25"
+ *   - Dates: "5/25/2024"
+ *   - Inventory counts: "+New 12/12", "(+NEW 2/02)"
+ *   - Card numbers: "Card #25" (just a number, no /)
+ */
+function detectPrintRun(rawTitle) {
+  if (!rawTitle) return null;
+  const t = rawTitle.toLowerCase();
+
+  // Find all candidate /N or #X/N patterns
+  // Strict: a "/" preceded by a digit (e.g. "2024/25" or "12/12") is rejected
+  // unless the digit-run before the "/" starts with "#" (i.e. it's "#5/25")
+  const candidates = [];
+  const reSlash = /(?:^|[^0-9a-z])\/\s*(\d{1,4})\b/g; // "/N" not preceded by digit/letter
+  const reHash = /#\s*\d+\s*\/\s*(\d{1,4})\b/g;        // "#5/25"
+  const reOf = /\b\d+\s+of\s+(\d{1,4})\b/g;             // "5 of 25"
+  const reTo = /\b(?:numbered|limited|serial)\s+to\s+(\d{1,4})\b/g;
+  const reNumbered = /\b(?:numbered|limited|serial|ssp|sp)\s+(\d{1,4})\b/g;
+
+  let m;
+  for (const re of [reSlash, reHash, reOf, reTo, reNumbered]) {
+    re.lastIndex = 0;
+    while ((m = re.exec(t)) !== null) {
+      candidates.push({ value: m[1], index: m.index });
+    }
+  }
+
+  if (candidates.length === 0) return null;
+
+  // For each candidate, check it's not inside a year or inventory context
+  const seasonAround = /(19|20)\d{2}[-/\s]\d{1,4}/;
+  const dateAround = /\b\d{1,2}\/\d{1,4}\/\d{2,4}\b/;
+  const inventoryAround = /\bnew\s+\d{1,2}\/\d{1,2}\b/;
+
+  for (const c of candidates) {
+    const window = t.slice(Math.max(0, c.index - 14), c.index + 8);
+    if (seasonAround.test(window)) continue;
+    if (dateAround.test(window)) continue;
+    if (inventoryAround.test(window)) continue;
+    return c.value;
+  }
+  return null;
+}
+
 export default function Home() {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
@@ -42,7 +95,8 @@ export default function Home() {
   const [filters, setFilters] = useState({
     autoCards: false,
     numberedCards: false,
-    numberedLimit: '/50',
+    selectedPrintRuns: ALL_PRESET_PRINT_RUNS, // array — multi-select
+    customPrintRuns: [],                       // user-added runs like "/73"
     rookieCards: false,
     listingType: 'any', // 'any' | 'buyItNow' | 'auction'
     priceMin: 0,
@@ -85,7 +139,8 @@ export default function Home() {
           keywords: q,
           autoCards: filters.autoCards,
           numberedCards: filters.numberedCards,
-          numberedLimit: filters.numberedLimit,
+          // Combine presets + custom into one array sent to the server
+          selectedPrintRuns: [...filters.selectedPrintRuns, ...filters.customPrintRuns],
           rookieCards: filters.rookieCards,
           listingType: filters.listingType,
           priceMin: filters.priceMin,
@@ -373,20 +428,16 @@ function Filters({ filters, setFilter }) {
         <div className="space-y-3">
           <ToggleRow
             label="Autographed"
-            mark="AUTO"
-            markWide
             checked={filters.autoCards}
             onChange={(v) => setFilter('autoCards', v)}
           />
           <ToggleRow
             label="Rookie card"
-            mark="RC"
             checked={filters.rookieCards}
             onChange={(v) => setFilter('rookieCards', v)}
           />
           <ToggleRow
             label="Numbered"
-            mark="№"
             checked={filters.numberedCards}
             onChange={(v) => setFilter('numberedCards', v)}
           />
@@ -394,11 +445,22 @@ function Filters({ filters, setFilter }) {
 
         {filters.numberedCards && (
           <div className="mt-5 pl-1 rise" style={{ animationDuration: '0.4s' }}>
-            <p className="text-[10px] uppercase tracking-[0.22em] text-[var(--ink-400)] mb-3">
-              Print run ≤
-            </p>
+            <div className="flex items-baseline justify-between mb-3">
+              <p className="text-[10px] uppercase tracking-[0.22em] text-[var(--ink-400)]">
+                Print run
+              </p>
+              <button
+                onClick={() => {
+                  const allSelected = filters.selectedPrintRuns.length === ALL_PRESET_PRINT_RUNS.length;
+                  setFilter('selectedPrintRuns', allSelected ? [] : ALL_PRESET_PRINT_RUNS);
+                }}
+                className="text-[9px] uppercase tracking-[0.18em] text-[var(--ink-600)] hover:text-[var(--gold)] transition-colors"
+              >
+                {filters.selectedPrintRuns.length === ALL_PRESET_PRINT_RUNS.length ? 'Clear all' : 'Select all'}
+              </button>
+            </div>
 
-            {/* Tier-grouped print run buttons */}
+            {/* Tier-grouped multi-select buttons */}
             <div className="space-y-3">
               {PRINT_RUN_TIERS.map((tier) => (
                 <div key={tier.label}>
@@ -407,15 +469,20 @@ function Filters({ filters, setFilter }) {
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {tier.runs.map((n) => {
-                      const active = filters.numberedLimit === n;
+                      const active = filters.selectedPrintRuns.includes(n);
                       return (
                         <button
                           key={n}
-                          onClick={() => setFilter('numberedLimit', n)}
+                          onClick={() => {
+                            const next = active
+                              ? filters.selectedPrintRuns.filter((r) => r !== n)
+                              : [...filters.selectedPrintRuns, n];
+                            setFilter('selectedPrintRuns', next);
+                          }}
                           className={`relative px-2.5 py-1.5 font-mono text-[11px] transition-all min-w-[44px] ${
                             active
                               ? 'text-[var(--gold)] bg-[var(--gold)]/[0.07]'
-                              : 'text-[var(--ink-400)] hover:text-[var(--ink-100)]'
+                              : 'text-[var(--ink-600)] hover:text-[var(--ink-100)]'
                           }`}
                         >
                           <span>{n}</span>
@@ -430,14 +497,21 @@ function Filters({ filters, setFilter }) {
               ))}
             </div>
 
-            {/* Custom print run input */}
+            {/* Custom print run section */}
             <div className="mt-5 pt-4 border-t border-[var(--line-soft)]">
               <p className="text-[9px] uppercase tracking-[0.18em] text-[var(--ink-600)] mb-2">
-                Custom ≤
+                Custom
               </p>
               <CustomPrintRunInput
-                value={filters.numberedLimit}
-                onApply={(val) => setFilter('numberedLimit', val)}
+                customRuns={filters.customPrintRuns}
+                onAdd={(val) => {
+                  if (!filters.customPrintRuns.includes(val)) {
+                    setFilter('customPrintRuns', [...filters.customPrintRuns, val]);
+                  }
+                }}
+                onRemove={(val) => {
+                  setFilter('customPrintRuns', filters.customPrintRuns.filter((r) => r !== val));
+                }}
               />
             </div>
           </div>
@@ -546,13 +620,14 @@ function FilterLabel({ children }) {
   );
 }
 
-/* Custom print run input — for oddballs like /73, /88, /42 that aren't in the preset tiers.
-   Validates a number, prefixes with "/" and applies as the active print run filter. */
-function CustomPrintRunInput({ value, onApply }) {
+/* Custom print run input — supports multi-select.
+   User can add multiple oddball runs (/73, /88, /42) — each appears as a chip
+   that can be removed individually. */
+function CustomPrintRunInput({ customRuns, onAdd, onRemove }) {
   const [val, setVal] = useState('');
   const [err, setErr] = useState('');
 
-  function handleApply() {
+  function handleAdd() {
     const trimmed = val.trim();
     if (!trimmed) {
       setErr('');
@@ -564,12 +639,9 @@ function CustomPrintRunInput({ value, onApply }) {
       return;
     }
     setErr('');
-    onApply('/' + num);
+    onAdd('/' + num);
+    setVal('');
   }
-
-  // Show the current filter value in the input if it doesn't match any preset.
-  const presetSet = new Set(PRINT_RUN_TIERS.flatMap((t) => t.runs));
-  const isCustomActive = value && !presetSet.has(value);
 
   return (
     <div>
@@ -581,53 +653,53 @@ function CustomPrintRunInput({ value, onApply }) {
           pattern="[0-9]*"
           value={val}
           onChange={(e) => setVal(e.target.value.replace(/[^0-9]/g, ''))}
-          onKeyDown={(e) => e.key === 'Enter' && handleApply()}
-          placeholder={isCustomActive ? value.replace('/', '') : 'e.g. 73'}
+          onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+          placeholder="e.g. 73"
           className="flex-1 min-w-0 bg-transparent border-b border-[var(--line)] focus:border-[var(--gold)] outline-none font-mono text-[11px] py-1 text-[var(--ink-100)] placeholder:text-[var(--ink-600)] transition-colors"
         />
         <button
-          onClick={handleApply}
+          onClick={handleAdd}
           disabled={!val.trim()}
           className="text-[10px] uppercase tracking-[0.18em] text-[var(--gold)] disabled:text-[var(--ink-600)] disabled:cursor-not-allowed hover:text-[var(--gold-bright)] transition-colors"
         >
-          Apply
+          Add
         </button>
       </div>
-      {isCustomActive && (
-        <p className="text-[10px] text-[var(--gold)] mt-1.5 font-mono">
-          Active: {value}
-        </p>
+
+      {/* Render added custom runs as removable chips */}
+      {customRuns && customRuns.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mt-3">
+          {customRuns.map((run) => (
+            <button
+              key={run}
+              onClick={() => onRemove(run)}
+              className="inline-flex items-center gap-1 px-2 py-1 font-mono text-[10px] text-[var(--gold)] bg-[var(--gold)]/[0.08] border border-[var(--gold-deep)] hover:bg-[var(--gold)]/[0.14] transition-colors"
+              title="Click to remove"
+            >
+              {run}
+              <span className="text-[var(--ink-400)] text-xs leading-none">×</span>
+            </button>
+          ))}
+        </div>
       )}
+
       {err && <p className="text-[10px] text-[#d4684a] mt-1.5">{err}</p>}
     </div>
   );
 }
 
-function ToggleRow({ label, mark, markWide, checked, onChange }) {
+function ToggleRow({ label, checked, onChange }) {
   return (
     <button
       onClick={() => onChange(!checked)}
-      className="group flex items-center justify-between w-full py-1 text-left"
+      className="group flex items-center justify-between w-full py-1.5 text-left"
     >
-      <span className="flex items-center gap-5">
-        <span
-          className={`font-mono text-[10px] h-6 flex items-center justify-center border transition-all tracking-wider ${
-            markWide ? 'w-12' : 'w-6'
-          } ${
-            checked
-              ? 'border-[var(--gold)] text-[var(--gold)] bg-[var(--gold)]/[0.06]'
-              : 'border-[var(--line)] text-[var(--ink-600)] group-hover:border-[var(--ink-400)] group-hover:text-[var(--ink-400)]'
-          }`}
-        >
-          {mark}
-        </span>
-        <span
-          className={`text-sm transition-colors ${
-            checked ? 'text-[var(--ink-100)]' : 'text-[var(--ink-200)] group-hover:text-[var(--ink-100)]'
-          }`}
-        >
-          {label}
-        </span>
+      <span
+        className={`text-sm transition-colors ${
+          checked ? 'text-[var(--ink-100)]' : 'text-[var(--ink-200)] group-hover:text-[var(--ink-100)]'
+        }`}
+      >
+        {label}
       </span>
       <span
         className={`relative w-7 h-3.5 rounded-full transition-colors ${
@@ -697,8 +769,9 @@ function ResultCard({ item, formatPrice, index }) {
   const title = (item.title || '').toLowerCase();
   const hasAuto = /\bauto\b|autograph|signed/.test(title);
   const hasRookie = /\brookie/.test(title) || /\brc\b/.test(title) || /\b1st\s+bowman\b/.test(title);
-  const numberMatch = title.match(/\b\/(\d{1,4})\b|\b#\d+\/(\d{1,4})\b/);
-  const printRun = numberMatch ? numberMatch[1] || numberMatch[2] : null;
+  // Print run detection — strict, to match the server-side verifier.
+  // Looks for real print run patterns, rejects years/dates/inventory counts.
+  const printRun = detectPrintRun(item.title || '');
   const psaMatch = item.title?.match(/PSA\s*(\d{1,2})/i);
   const bgsMatch = item.title?.match(/BGS\s*(\d{1,2}(?:\.\d)?)/i);
 

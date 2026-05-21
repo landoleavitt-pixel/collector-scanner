@@ -54,9 +54,46 @@ async function getAppToken() {
   return cachedToken;
 }
 
+/**
+ * If the user's input looks like a multi-word name, expand to an OR query
+ * that catches both standard and comma-flipped formats.
+ *
+ *   "Chase Roberts"   → ("Chase Roberts", "Roberts, Chase")
+ *   "Mahomes"          → "Mahomes"  (single word, no expansion)
+ *   "rookie auto"      → "rookie auto"  (looks like keywords not a name)
+ *
+ * Heuristic: treat as a name if input is exactly 2 alphabetic words.
+ * This catches "Chase Roberts", "Patrick Mahomes", "AJ Dybantsa" while
+ * leaving keyword searches like "rookie auto" alone.
+ */
+function expandNameQuery(input) {
+  if (!input) return '';
+  const trimmed = input.trim();
+  // Match exactly two words containing only letters / apostrophes / hyphens
+  const nameMatch = trimmed.match(/^([A-Za-z][A-Za-z'\-]+)\s+([A-Za-z][A-Za-z'\-]+)$/);
+  if (!nameMatch) {
+    // Not a 2-word name — return as-is but quoted if multi-word to keep eBay strict.
+    if (/\s/.test(trimmed)) {
+      return `"${trimmed}"`;
+    }
+    return trimmed;
+  }
+  const first = nameMatch[1];
+  const last = nameMatch[2];
+  // Only expand as a name if at least one word starts with a capital letter
+  // (signaling a proper noun). This avoids treating generic terms like
+  // "rookie auto" or "prizm refractor" as names.
+  const looksLikeName = /^[A-Z]/.test(first) || /^[A-Z]/.test(last);
+  if (!looksLikeName) {
+    return `"${trimmed}"`;
+  }
+  return `("${first} ${last}", "${last}, ${first}")`;
+}
+
 // Build a keyword string and Browse-API filter string from our criteria.
 function buildSearchParams(criteria) {
-  const parts = [criteria.keywords?.trim() || ''];
+  const expandedKeywords = expandNameQuery(criteria.keywords);
+  const parts = [expandedKeywords];
 
   if (criteria.autoCards) parts.push('auto');
   if (criteria.rookieCards) {
@@ -64,10 +101,16 @@ function buildSearchParams(criteria) {
     // Matches listings with "Rookie" OR "RC" OR "1st Bowman" in the title.
     parts.push('(Rookie, RC, "1st Bowman")');
   }
-  if (criteria.numberedCards && criteria.numberedLimit) {
-    // numberedLimit is like "/25". eBay search is keyword-based so we just
-    // add it as a token — eBay's matching will pick it up in titles.
-    parts.push(criteria.numberedLimit);
+  if (criteria.numberedCards && Array.isArray(criteria.selectedPrintRuns) && criteria.selectedPrintRuns.length > 0) {
+    // Multi-select: send all selected print runs as an eBay OR query.
+    // e.g. ["/25", "/99"] → ("/25", "/99")
+    // If only one run, send it directly (no parens needed).
+    const runs = criteria.selectedPrintRuns;
+    if (runs.length === 1) {
+      parts.push(runs[0]);
+    } else {
+      parts.push('(' + runs.map((r) => `"${r}"`).join(', ') + ')');
+    }
   }
 
   const q = parts.filter(Boolean).join(' ');
@@ -169,6 +212,43 @@ function verifyRookie(title) {
  *   - "5 of 25", "5/25": when preceded by no year context
  *   - "numbered to 25", "serial #d /25", "limited to 25"
  */
+/**
+ * Check if a title contains ANY valid print run pattern.
+ * Used when "Numbered" toggle is on but no specific runs are selected.
+ * Returns true if the title has a real print run (not a year/date/inventory).
+ */
+function hasAnyPrintRun(title) {
+  if (!title) return false;
+  const t = title.toLowerCase();
+
+  // Same false-positive patterns as verifyPrintRun, but matched generically
+  const seasonAround = /(19|20)\d{2}[-/\s]\d{1,4}/;
+  const dateAround = /\b\d{1,2}\/\d{1,4}\/\d{2,4}\b/;
+  const inventoryAround = /\bnew\s+\d{1,2}\/\d{1,2}\b/;
+
+  const patterns = [
+    /(?:^|[^0-9a-z])\/\s*(\d{1,4})\b/g,        // /N
+    /#\s*\d+\s*\/\s*(\d{1,4})\b/g,             // #5/25
+    /\b\d+\s+of\s+(\d{1,4})\b/g,                // 5 of 25
+    /\b(?:numbered|limited|serial)\s+to\s+(\d{1,4})\b/g,
+    /\b(?:numbered|limited|serial|ssp|sp)\s+(\d{1,4})\b/g,
+  ];
+
+  for (const re of patterns) {
+    re.lastIndex = 0;
+    let m;
+    while ((m = re.exec(t)) !== null) {
+      const idx = m.index;
+      const window = t.slice(Math.max(0, idx - 14), idx + m[0].length + 4);
+      if (seasonAround.test(window)) continue;
+      if (dateAround.test(window)) continue;
+      if (inventoryAround.test(window)) continue;
+      return true;
+    }
+  }
+  return false;
+}
+
 function verifyPrintRun(title, numberedLimit) {
   if (!title || !numberedLimit) return false;
   const num = numberedLimit.replace('/', '').trim(); // "25"
@@ -180,41 +260,52 @@ function verifyPrintRun(title, numberedLimit) {
   // Strategy: find every occurrence of the number in the title, then check
   // its context. If at least one occurrence is "print run" context, accept.
 
-  // 1) Reject quickly if the only matches are clearly seasons or dates.
-  // A "season year" is 4-digit year followed by "-NN" or "/NN" or " NN"
-  // where NN is the number we're looking for as a 2-digit suffix.
+  // 1) False-positive contexts we want to reject.
+  // Season years: "2024-25", "2024/25", "2024 25"
   const seasonPattern = new RegExp(`(19|20)\\d{2}[-/\\s]${n}\\b`, 'g');
+  // Dates: "5/25/2024", "25/05/24"
   const datePattern = new RegExp(`\\b\\d{1,2}/${n}/\\d{2,4}\\b|\\b${n}/\\d{1,2}/\\d{2,4}\\b`, 'g');
+  // Inventory counts: "+New 12/12", "+NEW 2/02", "(+New 02/11)" — sellers
+  // signal "X of Y items remaining". Strong indicator: "new" precedes the slash pair.
+  // Also: 2-digit zero-padded numbers (02, 03, 09) are almost never print runs.
+  const inventoryPattern = new RegExp(`\\bnew\\s+\\d{1,2}/${n}\\b|\\bnew\\s+${n}/\\d{1,2}\\b`, 'g');
+  // Zero-padded reject: if the user filter is /25 but the title has /02 or /09,
+  // those leading zeros mean this is sequential numbering, not print run.
+  // Catch /0N (where N is 1 digit) explicitly.
+  const isZeroPadded = /^0\d$/.test(n); // user filter looks like "02" — unusual, won't try to match
 
-  // 2) Patterns that strongly indicate a real print run:
-  //    "/25" standalone (with optional space), "# 5/25", "to 25", "of 25"
-  //    "numbered 25", "limited 25", "ssp /25"
+  // 2) Patterns that strongly indicate a real print run.
+  // Note: we REJECT matches where the preceding char suggests "X/Y" inventory
+  // by requiring the slash isn't immediately preceded by a small number
+  // unless that number+slash form a "#5/25" hash-prefixed pattern.
   const printRunPatterns = [
-    new RegExp(`(?:^|[^0-9-/])/\\s*${n}(?![0-9])`),         // "/25" or "/ 25", not preceded by year
-    new RegExp(`#\\s*\\d+\\s*/\\s*${n}(?![0-9])`),          // "#5/25"
-    new RegExp(`\\b\\d+\\s+of\\s+${n}(?![0-9])`),           // "5 of 25" — require number before "of"
-    new RegExp(`\\b(?:numbered|limited|serial)\\s+to\\s+${n}(?![0-9])`),  // "numbered to 25"
+    // "/25" or "/ 25" — but NOT preceded by digits (which would be inventory like "12/25")
+    new RegExp(`(?:^|[^0-9a-z-])/\\s*${n}(?![0-9])`),
+    // "#5/25" — explicit hash-prefixed serial number
+    new RegExp(`#\\s*\\d+\\s*/\\s*${n}(?![0-9])`),
+    // "5 of 25" — number space "of" space number
+    new RegExp(`\\b\\d+\\s+of\\s+${n}(?![0-9])`),
+    // "numbered to 25" / "limited to 25" / "serial to 25"
+    new RegExp(`\\b(?:numbered|limited|serial)\\s+to\\s+${n}(?![0-9])`),
+    // "numbered 25", "ssp 25", "sp 25"
     new RegExp(`\\b(?:numbered|limited|serial|ssp|sp)\\s+${n}(?![0-9])`),
-    new RegExp(`\\bd/\\s*${n}(?![0-9])`),                   // "/d/25" (eBay seller shorthand for "numbered /25")
+    // "/d/25" — eBay seller shorthand for "numbered /25"
+    new RegExp(`\\bd/\\s*${n}(?![0-9])`),
   ];
 
-  // 3) Find all matches of patterns and confirm at least one is NOT inside a season/date context.
+  // 3) Find all matches of patterns and confirm at least one is NOT inside a
+  //    season/date/inventory context.
   for (const re of printRunPatterns) {
     const m = t.match(re);
     if (!m) continue;
-    // Check that this match isn't sitting inside a season-year pattern.
-    // We re-scan around the match index.
     const idx = t.search(re);
-    const window = t.slice(Math.max(0, idx - 5), idx + m[0].length + 3);
-    // If the window contains a year-NN pattern that includes our match, skip.
-    if (seasonPattern.test(window)) {
-      seasonPattern.lastIndex = 0; // reset
-      continue;
-    }
-    if (datePattern.test(window)) {
-      datePattern.lastIndex = 0;
-      continue;
-    }
+    const window = t.slice(Math.max(0, idx - 12), idx + m[0].length + 4);
+
+    // Reject if the match is inside any false-positive context window.
+    if (seasonPattern.test(window)) { seasonPattern.lastIndex = 0; continue; }
+    if (datePattern.test(window)) { datePattern.lastIndex = 0; continue; }
+    if (inventoryPattern.test(window)) { inventoryPattern.lastIndex = 0; continue; }
+
     return true;
   }
   return false;
@@ -254,14 +345,22 @@ export async function POST(req) {
     const data = await res.json();
     let items = (data.itemSummaries ?? []).map(normalizeItem);
 
-    // If a print run filter is active, verify each title to remove false
-    // positives (years like "2024-25", card numbers, dates, quantities).
-    if (criteria.numberedCards && criteria.numberedLimit) {
+    // If a print run filter is active with specific runs selected, verify each
+    // title contains at least one of them (false-positive protection against
+    // years like "2024-25", inventory counts, dates).
+    if (criteria.numberedCards && Array.isArray(criteria.selectedPrintRuns) && criteria.selectedPrintRuns.length > 0) {
       const before = items.length;
-      items = items.filter((it) => verifyPrintRun(it.title, criteria.numberedLimit));
+      const runs = criteria.selectedPrintRuns;
+      items = items.filter((it) => runs.some((run) => verifyPrintRun(it.title, run)));
       console.log(
-        `Print run verify: ${before} → ${items.length} (filter: ${criteria.numberedLimit})`,
+        `Print run verify: ${before} → ${items.length} (${runs.length} runs selected)`,
       );
+    } else if (criteria.numberedCards) {
+      // "Numbered" toggle is on but no specific runs selected — accept any title
+      // that contains a valid print run pattern at all.
+      const before = items.length;
+      items = items.filter((it) => hasAnyPrintRun(it.title));
+      console.log(`Any print run verify: ${before} → ${items.length}`);
     }
 
     // If rookie filter is active, verify each title contains rookie/RC/1st Bowman.
