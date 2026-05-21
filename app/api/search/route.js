@@ -55,39 +55,55 @@ async function getAppToken() {
 }
 
 /**
- * If the user's input looks like a multi-word name, expand to an OR query
- * that catches both standard and comma-flipped formats.
+ * Build the keyword fragment for the user's input. Multi-word inputs get
+ * quoted to force eBay toward strict phrase matching (single words don't).
  *
- *   "Chase Roberts"   → ("Chase Roberts", "Roberts, Chase")
- *   "Mahomes"          → "Mahomes"  (single word, no expansion)
- *   "rookie auto"      → "rookie auto"  (looks like keywords not a name)
+ *   "Chase Roberts"   → "Chase Roberts"
+ *   "Mahomes"          → Mahomes
+ *   "rookie auto"      → "rookie auto"
  *
- * Heuristic: treat as a name if input is exactly 2 alphabetic words.
- * This catches "Chase Roberts", "Patrick Mahomes", "AJ Dybantsa" while
- * leaving keyword searches like "rookie auto" alone.
+ * Note: we used to expand to an OR query like ("Chase Roberts", "Roberts, Chase")
+ * but eBay's Browse API ignores quoted phrases when combined with other OR groups
+ * in the same query. We now rely on the server-side verifyPlayerName step to
+ * filter out listings that don't actually match the user's input.
  */
 function expandNameQuery(input) {
   if (!input) return '';
   const trimmed = input.trim();
-  // Match exactly two words containing only letters / apostrophes / hyphens
-  const nameMatch = trimmed.match(/^([A-Za-z][A-Za-z'\-]+)\s+([A-Za-z][A-Za-z'\-]+)$/);
-  if (!nameMatch) {
-    // Not a 2-word name — return as-is but quoted if multi-word to keep eBay strict.
-    if (/\s/.test(trimmed)) {
-      return `"${trimmed}"`;
-    }
+  if (!trimmed) return '';
+  // Single word — send as-is (no quotes needed)
+  if (!/\s/.test(trimmed)) {
     return trimmed;
   }
-  const first = nameMatch[1];
-  const last = nameMatch[2];
-  // Only expand as a name if at least one word starts with a capital letter
-  // (signaling a proper noun). This avoids treating generic terms like
-  // "rookie auto" or "prizm refractor" as names.
-  const looksLikeName = /^[A-Z]/.test(first) || /^[A-Z]/.test(last);
-  if (!looksLikeName) {
-    return `"${trimmed}"`;
+  // Multi-word — quote to encourage strict matching
+  return `"${trimmed}"`;
+}
+
+/**
+ * Verify that a listing title actually contains all the words from the user's
+ * search input. eBay's API often returns loose matches even when we quote the
+ * phrase, so this is our safety net.
+ *
+ * Rules:
+ *   - For multi-word input ("Chase Roberts"), ALL words must appear in the title
+ *   - Words are matched as whole words (no substring matching)
+ *   - Case-insensitive
+ *
+ * Returns true if every word from input appears as a word in the title.
+ */
+function verifyPlayerName(title, userInput) {
+  if (!title || !userInput) return true;
+  const words = userInput.trim().split(/\s+/).filter(Boolean);
+  if (words.length === 0) return true;
+  const t = title.toLowerCase();
+  for (const word of words) {
+    const lower = word.toLowerCase();
+    // Escape regex special chars in the word, then check word-boundary match
+    const escaped = lower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const re = new RegExp(`\\b${escaped}\\b`, 'i');
+    if (!re.test(t)) return false;
   }
-  return `("${first} ${last}", "${last}, ${first}")`;
+  return true;
 }
 
 // Build a keyword string and Browse-API filter string from our criteria.
@@ -353,6 +369,15 @@ export async function POST(req) {
 
     const data = await res.json();
     let items = (data.itemSummaries ?? []).map(normalizeItem);
+
+    // Player name verification — eBay often returns loose matches that ignore
+    // our quoted phrases. Filter to listings whose title contains all the user's
+    // search words. Runs first so we don't waste time on other verifiers.
+    if (criteria.keywords && /\s/.test(criteria.keywords.trim())) {
+      const before = items.length;
+      items = items.filter((it) => verifyPlayerName(it.title, criteria.keywords));
+      console.log(`Name verify: ${before} → ${items.length} (input: "${criteria.keywords}")`);
+    }
 
     // If a print run filter is active with specific runs selected, verify each
     // title contains at least one of them (false-positive protection against
