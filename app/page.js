@@ -49,21 +49,33 @@ function detectPrintRun(rawTitle) {
   if (!rawTitle) return null;
   const t = rawTitle.toLowerCase();
 
-  // Find all candidate /N or #X/N patterns
-  // Strict: a "/" preceded by a digit (e.g. "2024/25" or "12/12") is rejected
-  // unless the digit-run before the "/" starts with "#" (i.e. it's "#5/25")
+  // Find all candidate print-run patterns
   const candidates = [];
-  const reSlash = /(?:^|[^0-9a-z])\/\s*(\d{1,4})\b/g; // "/N" not preceded by digit/letter
-  const reHash = /#\s*\d+\s*\/\s*(\d{1,4})\b/g;        // "#5/25"
-  const reOf = /\b\d+\s+of\s+(\d{1,4})\b/g;             // "5 of 25"
+  const reSlash = /(?:^|[^0-9a-z])\/\s*(\d{1,4})\b/g;       // "/N" not preceded by digit/letter
+  const reHash = /#\s*\d+\s*\/\s*(\d{1,4})\b/g;              // "#5/25"
+  // "N/M" — bare format like "2/10", "5/25". Captures BOTH numbers so we can
+  // verify N < M (real print run) and not return inventory like "12/12".
+  const reBare = /(?:^|[^0-9a-z])(?!0)(\d{1,4})\s*\/\s*(\d{1,4})\b/g;
+  const reOf = /\b\d+\s+of\s+(\d{1,4})\b/g;
   const reTo = /\b(?:numbered|limited|serial)\s+to\s+(\d{1,4})\b/g;
   const reNumbered = /\b(?:numbered|limited|serial|ssp|sp)\s+(\d{1,4})\b/g;
 
   let m;
+  // Patterns where the captured group IS the print run (the second number in /N).
   for (const re of [reSlash, reHash, reOf, reTo, reNumbered]) {
     re.lastIndex = 0;
     while ((m = re.exec(t)) !== null) {
-      candidates.push({ value: m[1], index: m.index });
+      candidates.push({ value: m[1], index: m.index, firstNum: null });
+    }
+  }
+  // Bare N/M pattern — needs special handling: only count if N < M.
+  reBare.lastIndex = 0;
+  while ((m = reBare.exec(t)) !== null) {
+    const firstNum = parseInt(m[1], 10);
+    const secondNum = parseInt(m[2], 10);
+    const isOneOfOne = firstNum === 1 && secondNum === 1;
+    if (firstNum < secondNum || isOneOfOne) {
+      candidates.push({ value: m[2], index: m.index, firstNum });
     }
   }
 

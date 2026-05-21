@@ -262,6 +262,8 @@ function hasAnyPrintRun(title) {
     /\b(?:numbered|limited|serial)\s+to\s+(\d{1,4})\b/g,
     /\b(?:numbered|limited|serial|ssp|sp)\s+(\d{1,4})\b/g,
   ];
+  // Separate pattern for bare N/M because we need to validate N < M.
+  const reBare = /(?:^|[^0-9a-z])(?!0)(\d{1,4})\s*\/\s*(\d{1,4})\b/g;
 
   for (const re of patterns) {
     re.lastIndex = 0;
@@ -274,6 +276,21 @@ function hasAnyPrintRun(title) {
       if (inventoryAround.test(window)) continue;
       return true;
     }
+  }
+  // Check bare N/M pattern with N < M validation
+  reBare.lastIndex = 0;
+  let m;
+  while ((m = reBare.exec(t)) !== null) {
+    const firstNum = parseInt(m[1], 10);
+    const secondNum = parseInt(m[2], 10);
+    const isOneOfOne = firstNum === 1 && secondNum === 1;
+    if (firstNum >= secondNum && !isOneOfOne) continue;
+    const idx = m.index;
+    const window = t.slice(Math.max(0, idx - 14), idx + m[0].length + 4);
+    if (seasonAround.test(window)) continue;
+    if (dateAround.test(window)) continue;
+    if (inventoryAround.test(window)) continue;
+    return true;
   }
   return false;
 }
@@ -312,6 +329,10 @@ function verifyPrintRun(title, numberedLimit) {
     new RegExp(`(?:^|[^0-9a-z-])/\\s*${n}(?![0-9])`),
     // "#5/25" — explicit hash-prefixed serial number
     new RegExp(`#\\s*\\d+\\s*/\\s*${n}(?![0-9])`),
+    // "N/25" where N is a smaller number — common print-run shorthand like "2/10", "5/25", "1/1"
+    // We require N ≤ the target number to distinguish from inventory counts like "12/12".
+    // Also reject zero-padded N like "02/10" (those are inventory).
+    new RegExp(`(?:^|[^0-9a-z])(?!0)([0-9]{1,4})\\s*/\\s*${n}(?![0-9])`),
     // "5 of 25" — number space "of" space number
     new RegExp(`\\b\\d+\\s+of\\s+${n}(?![0-9])`),
     // "numbered to 25" / "limited to 25" / "serial to 25"
@@ -324,7 +345,12 @@ function verifyPrintRun(title, numberedLimit) {
 
   // 3) Find all matches of patterns and confirm at least one is NOT inside a
   //    season/date/inventory context.
-  for (const re of printRunPatterns) {
+  // Patterns 0,1 = strict (just "/N" forms) — no extra validation needed.
+  // Pattern 2 = "N/M" — must check that N ≤ M (target) to filter inventory counts.
+  // Patterns 3+ = strict word patterns — no extra validation needed.
+  const targetNum = parseInt(n, 10);
+  for (let i = 0; i < printRunPatterns.length; i++) {
+    const re = printRunPatterns[i];
     const m = t.match(re);
     if (!m) continue;
     const idx = t.search(re);
@@ -334,6 +360,15 @@ function verifyPrintRun(title, numberedLimit) {
     if (seasonPattern.test(window)) { seasonPattern.lastIndex = 0; continue; }
     if (datePattern.test(window)) { datePattern.lastIndex = 0; continue; }
     if (inventoryPattern.test(window)) { inventoryPattern.lastIndex = 0; continue; }
+
+    // Pattern 2 (bare N/M) — verify N < target, OR N=target=1 (the 1/1 "grail" case).
+    // Rejects "12/12" type inventory counts (equal numbers other than 1/1) and
+    // "50/10" type patterns (first number bigger than target).
+    if (i === 2 && m[1]) {
+      const firstNum = parseInt(m[1], 10);
+      const isOneOfOne = firstNum === 1 && targetNum === 1;
+      if (firstNum >= targetNum && !isOneOfOne) continue;
+    }
 
     return true;
   }
