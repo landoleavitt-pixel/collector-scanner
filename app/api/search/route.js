@@ -497,7 +497,7 @@ export async function POST(req) {
 
     return NextResponse.json({
       items,
-      total: data.total ?? items.length,
+      total: items.length,
     });
   } catch (err) {
     console.error('Search route error:', err);
