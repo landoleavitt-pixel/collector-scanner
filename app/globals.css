@@ -127,6 +127,17 @@ input[type='range']::-moz-range-thumb {
 }
 .scroll-x { animation: scroll-x 50s linear infinite; }
 
+/* Rotating placeholder — slides up from below, holds, slides up and out */
+@keyframes rotate-placeholder {
+  0%   { opacity: 0; transform: translateY(100%); }
+  12%  { opacity: 1; transform: translateY(0); }
+  88%  { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-100%); }
+}
+.rotate-placeholder {
+  animation: rotate-placeholder 3.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
 /* Custom utilities */
 .text-balance { text-wrap: balance; }
 .text-pretty { text-wrap: pretty; }

@@ -1,29 +1,29 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 
 // Print run tiers — grouped visually by rarity.
 // Collectors mentally bucket these by tier, so we present them that way.
 const PRINT_RUN_TIERS = [
-  { label: 'The Grail', runs: ['/1', '/5', '/10', '/15', '/25'] },
-  { label: 'Ultra Rare', runs: ['/49', '/50', '/75', '/99'] },
-  { label: 'Rare',       runs: ['/149', '/150', '/199', '/249'] },
-  { label: 'Scarce',     runs: ['/299', '/499', '/999'] },
+  { label: 'The Grail',   range: '1–25',    runs: ['/1', '/5', '/10', '/15', '/25'] },
+  { label: 'Ultra Rare',  range: '26–99',   runs: ['/49', '/50', '/75', '/99'] },
+  { label: 'Rare',        range: '100–249', runs: ['/149', '/150', '/199', '/249'] },
+  { label: 'Scarce',      range: '250–999', runs: ['/299', '/499', '/999'] },
 ];
 
 // Flat list of all preset print runs — used for "select all" default state.
 const ALL_PRESET_PRINT_RUNS = PRINT_RUN_TIERS.flatMap((t) => t.runs);
 
 const SUGGESTED_SEARCHES = [
-  'Patrick Mahomes auto',
-  'Luka Doncic prizm',
+  'Patrick Mahomes',
+  'AJ Dybantsa',
+  'Caitlin Clark',
+  'Luka Doncic',
+  'Mike Trout',
+  'LeBron James',
   '1986 Fleer Jordan',
-  'Ja Morant /25',
-  'Trout rookie psa',
-  'Acuna refractor',
-  'Caitlin Clark numbered',
-  'Lebron rookie auto',
+  'Ronald Acuna',
 ];
 
 // Editorial taglines that rotate during loading
@@ -208,22 +208,9 @@ export default function Home() {
         setError(data.error || 'Search failed.');
         setResults([]);
       } else {
-        let items = data.items || [];
-        // Client-side sort for print-run options (eBay's API doesn't support this)
-        if (filters.sortBy === 'printrun-rarest' || filters.sortBy === 'printrun-common') {
-          const ascending = filters.sortBy === 'printrun-rarest'; // /1 first
-          items = [...items].sort((a, b) => {
-            const aRun = parseInt(detectPrintRun(a.title) ?? '99999', 10);
-            const bRun = parseInt(detectPrintRun(b.title) ?? '99999', 10);
-            // Listings without a detectable print run go to the end either way
-            const aMissing = !detectPrintRun(a.title);
-            const bMissing = !detectPrintRun(b.title);
-            if (aMissing && !bMissing) return 1;
-            if (!aMissing && bMissing) return -1;
-            return ascending ? aRun - bRun : bRun - aRun;
-          });
-        }
-        setResults(items);
+        // Store raw results; sorting happens via useMemo so changing the sort
+        // option instantly re-orders without re-fetching from eBay.
+        setResults(data.items || []);
       }
     } catch (e) {
       setError('Network error. Please try again.');
@@ -239,6 +226,43 @@ export default function Home() {
       currency: 'USD',
       maximumFractionDigits: 0,
     }).format(p);
+
+  // Derived sorted results — re-runs whenever results OR sortBy changes,
+  // so changing the sort option instantly re-orders the current results
+  // (no need to re-fetch from eBay).
+  const sortedResults = useMemo(() => {
+    if (!results || results.length === 0) return [];
+    const items = [...results];
+    switch (filters.sortBy) {
+      case 'price-low':
+        return items.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
+      case 'price-high':
+        return items.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
+      case 'newest': {
+        // We don't have a reliable listed-date field, so fall back to original order
+        // (eBay's "newlyListed" sort puts newest first, which is whatever order
+        // results arrived in if we requested that sort).
+        return items;
+      }
+      case 'printrun-rarest':
+      case 'printrun-common': {
+        const ascending = filters.sortBy === 'printrun-rarest';
+        return items.sort((a, b) => {
+          const aRun = detectPrintRun(a.title);
+          const bRun = detectPrintRun(b.title);
+          // Listings without a detectable print run go to the end either way
+          if (!aRun && bRun) return 1;
+          if (aRun && !bRun) return -1;
+          if (!aRun && !bRun) return 0;
+          const aNum = parseInt(aRun, 10);
+          const bNum = parseInt(bRun, 10);
+          return ascending ? aNum - bNum : bNum - aNum;
+        });
+      }
+      default:
+        return items;
+    }
+  }, [results, filters.sortBy]);
 
   return (
     <main className="relative min-h-screen z-10">
@@ -259,7 +283,7 @@ export default function Home() {
           <Results
             loading={loading}
             hasSearched={hasSearched}
-            results={results}
+            results={sortedResults}
             error={error}
             formatPrice={formatPrice}
             scanPhrase={SCANNING_PHRASES[scanIdx]}
@@ -360,7 +384,7 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested }) {
             {/* Refined search bar — thin underline style */}
             <div className="mt-12 rise" style={{ animationDelay: '300ms' }}>
               <div className="relative">
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 text-[10px] uppercase tracking-[0.22em] text-[var(--ink-400)]">
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 text-[10px] uppercase tracking-[0.22em] text-[var(--ink-400)] z-10">
                   Search
                 </div>
                 <input
@@ -368,14 +392,15 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested }) {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && !loading && onSearch()}
-                  placeholder="Mahomes auto · 1986 Jordan · Caitlin Clark prizm"
                   disabled={loading}
-                  className="w-full pl-20 pr-14 py-5 bg-transparent border-0 border-b border-[var(--line)] text-xl md:text-2xl font-display text-[var(--ink-100)] placeholder:text-[var(--ink-600)] placeholder:font-display placeholder:italic focus:outline-none focus:border-[var(--gold)] transition-colors"
+                  className="relative w-full pl-20 pr-14 py-5 bg-transparent border-0 border-b border-[var(--line)] text-xl md:text-2xl font-display text-[var(--ink-100)] focus:outline-none focus:border-[var(--gold)] transition-colors"
                 />
+                {/* Animated rotating placeholder — only visible when input is empty */}
+                {!query && !loading && <RotatingPlaceholder />}
                 <button
                   onClick={onSearch}
                   disabled={loading}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-[var(--ink-100)] hover:text-[var(--gold)] transition-colors disabled:opacity-30"
+                  className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-[var(--ink-100)] hover:text-[var(--gold)] transition-colors disabled:opacity-30 z-10"
                   aria-label="Search"
                 >
                   <ArrowRight className="w-5 h-5" strokeWidth={1.5} />
@@ -384,20 +409,6 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested }) {
               {error && (
                 <p className="mt-3 text-xs text-[var(--crit)]">{error}</p>
               )}
-            </div>
-
-            {/* Suggested searches */}
-            <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 rise" style={{ animationDelay: '400ms' }}>
-              <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--ink-400)]">Try</span>
-              {SUGGESTED_SEARCHES.slice(0, 4).map((s) => (
-                <button
-                  key={s}
-                  onClick={() => onSuggested(s)}
-                  className="text-sm text-[var(--ink-200)] hover:text-[var(--gold)] transition-colors border-b border-transparent hover:border-[var(--gold)] pb-0.5"
-                >
-                  {s}
-                </button>
-              ))}
             </div>
           </div>
 
@@ -408,6 +419,36 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested }) {
         </div>
       </div>
     </section>
+  );
+}
+
+/* Rotating animated placeholder for the search bar.
+   Cycles through SUGGESTED_SEARCHES with a slide-up fade transition.
+   Each entry sits for ~3 seconds before animating in the next one. */
+function RotatingPlaceholder() {
+  const [idx, setIdx] = useState(0);
+  const [animKey, setAnimKey] = useState(0);
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setIdx((i) => (i + 1) % SUGGESTED_SEARCHES.length);
+      setAnimKey((k) => k + 1);
+    }, 3200);
+    return () => clearInterval(t);
+  }, []);
+
+  return (
+    <span
+      className="absolute left-20 top-1/2 -translate-y-1/2 pointer-events-none overflow-hidden"
+      style={{ height: '1.5em' }}
+    >
+      <span
+        key={animKey}
+        className="block text-xl md:text-2xl font-display italic text-[var(--ink-600)] rotate-placeholder"
+      >
+        {SUGGESTED_SEARCHES[idx]}
+      </span>
+    </span>
   );
 }
 
@@ -530,41 +571,40 @@ function Filters({ filters, setFilter }) {
               </button>
             </div>
 
-            {/* Tier-grouped multi-select buttons */}
-            <div className="space-y-3">
-              {PRINT_RUN_TIERS.map((tier) => (
-                <div key={tier.label}>
-                  <p className="text-[9px] uppercase tracking-[0.18em] text-[var(--ink-600)] mb-1.5">
-                    {tier.label}
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {tier.runs.map((n) => {
-                      const active = filters.selectedPrintRuns.includes(n);
-                      return (
-                        <button
-                          key={n}
-                          onClick={() => {
-                            const next = active
-                              ? filters.selectedPrintRuns.filter((r) => r !== n)
-                              : [...filters.selectedPrintRuns, n];
-                            setFilter('selectedPrintRuns', next);
-                          }}
-                          className={`relative px-2.5 py-1.5 font-mono text-[11px] transition-all min-w-[44px] ${
-                            active
-                              ? 'text-[var(--gold)] bg-[var(--gold)]/[0.07]'
-                              : 'text-[var(--ink-600)] hover:text-[var(--ink-100)]'
-                          }`}
-                        >
-                          <span>{n}</span>
-                          {active && (
-                            <span className="absolute bottom-0 left-2 right-2 h-px bg-[var(--gold)]" />
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
+            {/* Tier-level toggle buttons — each selects/deselects an entire tier */}
+            <div className="space-y-1.5">
+              {PRINT_RUN_TIERS.map((tier) => {
+                // Tier is "active" if ALL its runs are selected
+                const allInTierSelected = tier.runs.every((r) => filters.selectedPrintRuns.includes(r));
+                // Tier is "partial" if some but not all are selected
+                const someInTierSelected = tier.runs.some((r) => filters.selectedPrintRuns.includes(r));
+                const partial = someInTierSelected && !allInTierSelected;
+
+                return (
+                  <button
+                    key={tier.label}
+                    onClick={() => {
+                      // Click toggles: if any/all selected, deselect; else select all in tier
+                      const next = someInTierSelected
+                        ? filters.selectedPrintRuns.filter((r) => !tier.runs.includes(r))
+                        : [...filters.selectedPrintRuns, ...tier.runs];
+                      setFilter('selectedPrintRuns', next);
+                    }}
+                    className={`flex items-center justify-between w-full px-3 py-2.5 text-left transition-all border ${
+                      allInTierSelected
+                        ? 'border-[var(--gold)] bg-[var(--gold)]/[0.06] text-[var(--gold)]'
+                        : partial
+                          ? 'border-[var(--gold-deep)] bg-[var(--gold)]/[0.02] text-[var(--gold)]/85'
+                          : 'border-[var(--line)] text-[var(--ink-400)] hover:text-[var(--ink-100)] hover:border-[var(--ink-400)]'
+                    }`}
+                  >
+                    <span className="text-sm">{tier.label}</span>
+                    <span className="font-mono text-[10px] tracking-wider opacity-80">
+                      {tier.range}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
 
             {/* Custom print run section */}

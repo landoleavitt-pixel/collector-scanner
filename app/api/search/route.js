@@ -106,9 +106,47 @@ function verifyPlayerName(title, userInput) {
   return true;
 }
 
+/**
+ * Silently remove filter-redundant words from the user's search input.
+ * When a filter toggle is already active, the corresponding keyword in the
+ * search box is redundant and just bloats the query.
+ *
+ * Examples:
+ *   input "Mahomes auto" + autoCards=true     → "Mahomes"
+ *   input "Trout rookie RC" + rookieCards=true → "Trout"
+ *   input "Mahomes /25" + numberedCards=true   → "Mahomes"
+ *
+ * Done silently — no UI notification, no logs visible to user.
+ */
+function dedupeKeywords(input, criteria) {
+  if (!input) return input;
+  let cleaned = input;
+
+  if (criteria.autoCards) {
+    // Strip "auto", "autograph", "autographed", "signed" as standalone words
+    cleaned = cleaned.replace(/\b(?:autographed|autograph|auto|signed)\b/gi, ' ');
+  }
+  if (criteria.rookieCards) {
+    // Strip "rookie", "rookies", "rc", "1st bowman"
+    cleaned = cleaned.replace(/\b(?:rookies?|rc)\b/gi, ' ');
+    cleaned = cleaned.replace(/\b1st\s+bowman\b/gi, ' ');
+  }
+  if (criteria.numberedCards) {
+    // Strip print run patterns: /25, #5/25, "numbered to 25", "of 25"
+    cleaned = cleaned.replace(/(?:^|\s)#?\s*\d*\s*\/\s*\d{1,4}(?:\s|$)/g, ' ');
+    cleaned = cleaned.replace(/\b(?:numbered|limited|serial|ssp)\s+(?:to\s+)?\d{1,4}\b/gi, ' ');
+  }
+
+  // Collapse extra whitespace
+  cleaned = cleaned.replace(/\s+/g, ' ').trim();
+  return cleaned;
+}
+
 // Build a keyword string and Browse-API filter string from our criteria.
 function buildSearchParams(criteria) {
-  const expandedKeywords = expandNameQuery(criteria.keywords);
+  // Strip redundant words that filters already cover (silent dedupe)
+  const cleanedInput = dedupeKeywords(criteria.keywords, criteria);
+  const expandedKeywords = expandNameQuery(cleanedInput);
   const parts = [expandedKeywords];
 
   if (criteria.autoCards) parts.push('auto');
@@ -156,14 +194,9 @@ function buildSearchParams(criteria) {
 
   if (filters.length) params.set('filter', filters.join(','));
 
-  const sortMap = {
-    'price-low': 'price',
-    'price-high': '-price',
-    'newest': 'newlyListed',
-  };
-  if (sortMap[criteria.sortBy]) {
-    params.set('sort', sortMap[criteria.sortBy]);
-  }
+  // Sorting is handled entirely client-side now (so users can re-sort without
+  // re-fetching). We don't pass `sort` to eBay — let eBay return its default
+  // "best match" results, then we order them however the user wants.
 
   return params;
 }
