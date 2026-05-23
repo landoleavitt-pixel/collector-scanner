@@ -124,18 +124,22 @@ git push -u origin main
 
 1. Go to [vercel.com/new](https://vercel.com/new)
 2. Find your `collector-scanner` repo in the list and click **Import**
-3. On the configuration screen, expand **Environment Variables** and add both:
+3. On the configuration screen, expand **Environment Variables** and add all four:
 
    | Name | Value |
    |------|-------|
    | `EBAY_APP_ID` | (paste your App ID) |
    | `EBAY_CERT_ID` | (paste your Cert ID) |
+   | `RESEND_API_KEY` | (paste your Resend API key — see below) |
+   | `RESEND_AUDIENCE_ID` | (paste your Resend Audience ID — see below) |
 
 4. Click **Deploy**
 
 Wait ~60 seconds. Vercel will give you a live URL like `collector-scanner-abc123.vercel.app`. Open it and run the same test search.
 
 **You're live.** 🚀
+
+> **Don't have Resend keys yet?** That's fine — leave those two env vars blank and the site still works. The Alerts waitlist form will return a friendly error in production until you add them. To set them up: create a free account at [resend.com](https://resend.com), create an Audience (Audiences → Create Audience → name it "Fields & Floors waitlist"), then grab the API key from API Keys and the Audience ID from the audience's settings page.
 
 ---
 
@@ -144,17 +148,26 @@ Wait ~60 seconds. Vercel will give you a live URL like `collector-scanner-abc123
 ```
 collector-scanner/
 ├── app/
-│   ├── api/search/route.js   ← eBay OAuth + Browse API call (the backend)
-│   ├── page.js               ← The main UI
-│   ├── layout.js             ← Wraps the whole app
-│   └── globals.css           ← Colors, fonts, texture
-├── package.json              ← Lists dependencies
-├── next.config.js            ← Allows eBay image domains
-├── tailwind.config.js        ← Tailwind setup
-├── postcss.config.js         ← CSS processor
-├── .env.local.example        ← Template for your keys
-├── .gitignore                ← What Git ignores
-└── README.md                 ← This file
+│   ├── api/
+│   │   ├── search/route.js     ← eBay OAuth + Browse API call (the backend)
+│   │   └── waitlist/route.js   ← Resend Audiences signup for /alerts
+│   ├── components/             ← Shared Header, Footer, Seal, PageShell
+│   ├── how-it-works/           ← Editorial subpages
+│   ├── filters/
+│   ├── alerts/                 ← Waitlist form + page
+│   ├── reading-list/
+│   ├── glossary/
+│   ├── contact/
+│   ├── page.js                 ← The main search UI
+│   ├── layout.js               ← Wraps every route with Header + Footer
+│   └── globals.css             ← Colors, fonts, texture, prose styling
+├── package.json                ← Lists dependencies
+├── next.config.js              ← Allows eBay image domains
+├── tailwind.config.js          ← Tailwind setup
+├── postcss.config.js           ← CSS processor
+├── .env.local.example          ← Template for your keys
+├── .gitignore                  ← What Git ignores
+└── README.md                   ← This file
 ```
 
 One Next.js app, one deploy. No separate backend server.

@@ -266,8 +266,6 @@ export default function Home() {
 
   return (
     <main className="relative min-h-screen z-10">
-      <Header />
-
       <Hero
         query={query}
         setQuery={setQuery}
@@ -291,61 +289,7 @@ export default function Home() {
           />
         </div>
       </section>
-
-      <Footer />
     </main>
-  );
-}
-
-/* ─────────────────────────────────────────────
-   Header — minimal, editorial wordmark
-   ───────────────────────────────────────────── */
-function Header() {
-  return (
-    <header className="relative z-20 border-b border-[var(--line-soft)]">
-      <div className="max-w-[1200px] mx-auto px-6 lg:px-10 py-5 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Seal />
-          <span className="font-display text-xl tracking-tight leading-none">
-            Fields <em className="text-[var(--gold)] not-italic">&amp;</em> Floors{' '}
-            <em className="text-[var(--gold)] not-italic">Collectors</em>
-          </span>
-        </div>
-        <div className="hidden md:flex items-center gap-8 text-[11px] uppercase tracking-[0.22em] text-[var(--ink-400)]">
-          <span>Issue №&nbsp;001</span>
-          <span className="text-[var(--ink-600)]">·</span>
-          <span>Est. 2026</span>
-        </div>
-      </div>
-    </header>
-  );
-}
-
-/* Brand seal — F&F monogram inside concentric circles.
-   Used in header + footer. */
-function Seal({ size = 22 }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 22 22"
-      aria-label="Fields & Floors Collectors"
-    >
-      <circle cx="11" cy="11" r="10" stroke="var(--gold)" strokeWidth="0.8" fill="none" />
-      <circle cx="11" cy="11" r="7" stroke="var(--gold)" strokeWidth="0.5" fill="none" opacity="0.55" />
-      <text
-        x="11"
-        y="14.2"
-        textAnchor="middle"
-        fill="var(--gold)"
-        fontSize="7.5"
-        fontFamily="Instrument Serif"
-        fontStyle="italic"
-        letterSpacing="-0.5"
-      >
-        F&amp;F
-      </text>
-    </svg>
   );
 }
 
@@ -1093,56 +1037,5 @@ function NoResultsState({ onSuggested }) {
         ))}
       </div>
     </div>
-  );
-}
-
-/* ─────────────────────────────────────────────
-   Footer — structured, editorial
-   ───────────────────────────────────────────── */
-function Footer() {
-  return (
-    <footer className="relative z-10 mt-24 border-t border-[var(--line)]">
-      <div className="max-w-[1200px] mx-auto px-6 lg:px-10 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-          <div className="col-span-2">
-            <div className="flex items-center gap-3 mb-4">
-              <Seal size={20} />
-              <span className="font-display text-lg">
-                Fields <em className="text-[var(--gold)] not-italic">&amp;</em> Floors Collectors
-              </span>
-            </div>
-            <p className="text-sm text-[var(--ink-400)] max-w-xs leading-relaxed">
-              A search instrument for serious collectors. Built for the hobby, not the algorithm.
-            </p>
-          </div>
-          <div>
-            <FilterLabel>Product</FilterLabel>
-            <ul className="space-y-2 text-sm text-[var(--ink-200)]">
-              <li><span className="hover:text-[var(--gold)] cursor-pointer transition-colors">How it works</span></li>
-              <li><span className="hover:text-[var(--gold)] cursor-pointer transition-colors">Filters</span></li>
-              <li><span className="hover:text-[var(--gold)] cursor-pointer transition-colors">Alerts <span className="text-[var(--ink-600)] text-[10px] uppercase tracking-wider ml-1">Soon</span></span></li>
-            </ul>
-          </div>
-          <div>
-            <FilterLabel>Hobby</FilterLabel>
-            <ul className="space-y-2 text-sm text-[var(--ink-200)]">
-              <li><span className="hover:text-[var(--gold)] cursor-pointer transition-colors">Reading list</span></li>
-              <li><span className="hover:text-[var(--gold)] cursor-pointer transition-colors">Glossary</span></li>
-              <li><span className="hover:text-[var(--gold)] cursor-pointer transition-colors">Contact</span></li>
-            </ul>
-          </div>
-        </div>
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pt-8 border-t border-[var(--line-soft)] text-[10px] uppercase tracking-[0.22em] text-[var(--ink-600)]">
-          <div className="flex gap-6">
-            <span>Est. 2026</span>
-            <span>Issue №&nbsp;001</span>
-          </div>
-          <div className="flex gap-6">
-            <span>Data via eBay</span>
-            <span>Made for collectors</span>
-          </div>
-        </div>
-      </div>
-    </footer>
   );
 }

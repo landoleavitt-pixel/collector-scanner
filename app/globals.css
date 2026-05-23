@@ -147,3 +147,57 @@ button:focus-visible, input:focus-visible, a:focus-visible {
   outline: 1px solid var(--gold);
   outline-offset: 2px;
 }
+
+/* Editorial prose — used on subpages. Tight, readable, generous. */
+.prose-editorial p {
+  font-size: 1.0625rem;
+  line-height: 1.7;
+}
+.prose-editorial strong {
+  color: var(--ink-100);
+  font-weight: 500;
+}
+.prose-editorial em {
+  color: var(--gold);
+  font-style: italic;
+}
+.prose-editorial a {
+  color: var(--ink-100);
+  text-decoration: none;
+  background-image: linear-gradient(var(--gold), var(--gold));
+  background-size: 100% 1px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  transition: color 0.2s ease;
+}
+.prose-editorial a:hover {
+  color: var(--gold-bright);
+}
+.prose-editorial ul {
+  list-style: none;
+  padding: 0;
+}
+.prose-editorial ul > li {
+  position: relative;
+  padding-left: 1.25rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.7;
+}
+.prose-editorial ul > li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.7em;
+  width: 6px;
+  height: 1px;
+  background: var(--gold);
+}
+.prose-editorial code {
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 0.875em;
+  background: var(--bg-elev);
+  border: 1px solid var(--line-soft);
+  padding: 0.1em 0.4em;
+  border-radius: 3px;
+  color: var(--ink-100);
+}
