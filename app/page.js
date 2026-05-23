@@ -153,7 +153,8 @@ export default function Home() {
     selectedPrintRuns: ALL_PRESET_PRINT_RUNS, // array — multi-select
     customPrintRuns: [],                       // user-added runs like "/73"
     rookieCards: false,
-    listingType: 'any', // 'any' | 'buyItNow' | 'auction'
+    listingType: 'any',   // 'any' | 'buyItNow' | 'auction'
+    condition: 'any',     // 'any' | 'raw' | 'graded' — title-parsed for PSA/BGS/SGC/CGC
     priceMin: 0,
     priceMax: 1000,
     sortBy: 'price-low',
@@ -198,6 +199,7 @@ export default function Home() {
           selectedPrintRuns: [...filters.selectedPrintRuns, ...filters.customPrintRuns],
           rookieCards: filters.rookieCards,
           listingType: filters.listingType,
+          condition: filters.condition,
           priceMin: filters.priceMin,
           priceMax: filters.priceMax === 5000 ? null : filters.priceMax,
           sortBy: filters.sortBy,
@@ -602,6 +604,38 @@ function Filters({ filters, setFilter }) {
         </div>
       </div>
 
+      {/* Condition — Raw vs Graded. Detected by title parsing on the server
+          for PSA / BGS / SGC / CGC. Title-only detection (eBay's Graded aspect
+          is too inconsistent to be useful). */}
+      <div>
+        <FilterLabel>Condition</FilterLabel>
+        <div className="space-y-2">
+          {[
+            ['any', 'Any condition'],
+            ['raw', 'Raw only'],
+            ['graded', 'Graded only'],
+          ].map(([value, label]) => {
+            const active = filters.condition === value;
+            return (
+              <button
+                key={value}
+                onClick={() => setFilter('condition', value)}
+                className={`flex items-center gap-3 w-full text-left text-sm py-1 transition-colors ${
+                  active ? 'text-[var(--gold)]' : 'text-[var(--ink-400)] hover:text-[var(--ink-100)]'
+                }`}
+              >
+                <span
+                  className={`w-1 h-1 rounded-full transition-colors ${
+                    active ? 'bg-[var(--gold)]' : 'bg-[var(--line)]'
+                  }`}
+                />
+                {label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Price */}
       <div>
         <FilterLabel>Price</FilterLabel>
@@ -805,11 +839,18 @@ function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase
 
   return (
     <div>
-      <div className="flex items-baseline justify-between pb-4 mb-2 border-b border-[var(--line)]">
-        <span className="font-display text-lg">Results</span>
-        <span className="font-mono text-[10px] text-[var(--ink-600)] tracking-wider">
-          {String(results.length).padStart(2, '0')}
-        </span>
+      <div className="flex items-end justify-between pb-6 mb-4 border-b border-[var(--line)]">
+        <div>
+          <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--ink-400)] mb-2">
+            Results
+          </p>
+          <p className="font-display text-4xl md:text-5xl leading-none tracking-tight">
+            <span className="text-[var(--gold)] italic">{results.length}</span>
+            <span className="text-[var(--ink-400)] text-2xl md:text-3xl ml-3">
+              {results.length === 1 ? 'listing' : 'listings'}
+            </span>
+          </p>
+        </div>
       </div>
       <div className="divide-y divide-[var(--line-soft)]">
         {results.map((item, i) => (
@@ -830,16 +871,18 @@ function ResultCard({ item, formatPrice, index }) {
   const printRun = detectPrintRun(item.title || '');
   const psaMatch = item.title?.match(/PSA\s*(\d{1,2})/i);
   const bgsMatch = item.title?.match(/BGS\s*(\d{1,2}(?:\.\d)?)/i);
+  const sgcMatch = item.title?.match(/SGC\s*(\d{1,2}(?:\.\d)?)/i);
+  const cgcMatch = item.title?.match(/CGC\s*(\d{1,2}(?:\.\d)?)/i);
 
   return (
     <a
       href={item.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group block py-7 first:pt-0 rise"
+      className="group block py-10 first:pt-0 rise"
       style={{ animationDelay: `${Math.min(index * 40, 400)}ms` }}
     >
-      <div className="grid grid-cols-[120px_1fr_auto] md:grid-cols-[160px_1fr_auto] gap-6 md:gap-8 items-start">
+      <div className="grid grid-cols-[160px_1fr_auto] md:grid-cols-[220px_1fr_auto] gap-7 md:gap-10 items-start">
         {/* Image */}
         <div className="relative aspect-[3/4] bg-[var(--bg-elev)] overflow-hidden">
           <CornerMarks />
@@ -851,7 +894,7 @@ function ResultCard({ item, formatPrice, index }) {
               className="w-full h-full object-cover transition-all duration-700 group-hover:scale-[1.04]"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-[var(--ink-600)] font-display text-3xl italic">
+            <div className="w-full h-full flex items-center justify-center text-[var(--ink-600)] font-display text-4xl italic">
               ◇
             </div>
           )}
@@ -864,12 +907,12 @@ function ResultCard({ item, formatPrice, index }) {
 
         {/* Title + metadata */}
         <div className="min-w-0 pt-1">
-          <h3 className="font-display text-xl md:text-2xl leading-[1.15] text-[var(--ink-100)] group-hover:text-[var(--gold-bright)] transition-colors line-clamp-2">
+          <h3 className="font-display text-2xl md:text-3xl leading-[1.15] text-[var(--ink-100)] group-hover:text-[var(--gold-bright)] transition-colors line-clamp-2">
             {item.title}
           </h3>
 
           {/* Badges */}
-          <div className="flex flex-wrap gap-1.5 mt-3">
+          <div className="flex flex-wrap gap-1.5 mt-4">
             {item.isAuction && (
               <Badge auction>
                 {item.bidCount != null ? `${item.bidCount} BIDS` : 'AUCTION'}
@@ -880,13 +923,15 @@ function ResultCard({ item, formatPrice, index }) {
             {printRun && <Badge mono tier={printRunTier(printRun)}>/{printRun}</Badge>}
             {psaMatch && <Badge>PSA {psaMatch[1]}</Badge>}
             {bgsMatch && <Badge>BGS {bgsMatch[1]}</Badge>}
-            {!hasAuto && !hasRookie && !printRun && !psaMatch && !bgsMatch && item.condition && (
+            {sgcMatch && <Badge>SGC {sgcMatch[1]}</Badge>}
+            {cgcMatch && <Badge>CGC {cgcMatch[1]}</Badge>}
+            {!hasAuto && !hasRookie && !printRun && !psaMatch && !bgsMatch && !sgcMatch && !cgcMatch && item.condition && (
               <Badge subtle>{item.condition}</Badge>
             )}
           </div>
 
           {/* Subline */}
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-3 text-[11px] uppercase tracking-[0.15em] text-[var(--ink-400)]">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-4 text-[11px] uppercase tracking-[0.15em] text-[var(--ink-400)]">
             {item.isAuction && !item.isBuyItNow && <span>Auction</span>}
             {item.isBuyItNow && !item.isAuction && <span>Buy now</span>}
             {item.isAuction && item.isBuyItNow && <span>Auction · or buy now</span>}
@@ -912,11 +957,11 @@ function ResultCard({ item, formatPrice, index }) {
         </div>
 
         {/* Price + CTA */}
-        <div className="text-right pt-1 min-w-[100px]">
-          <div className="font-display text-3xl md:text-4xl leading-none text-[var(--ink-100)] group-hover:text-[var(--gold-bright)] transition-colors">
+        <div className="text-right pt-1 min-w-[120px]">
+          <div className="font-display text-4xl md:text-5xl leading-none text-[var(--ink-100)] group-hover:text-[var(--gold-bright)] transition-colors">
             {formatPrice(item.price)}
           </div>
-          <div className="mt-3 inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.22em] text-[var(--ink-400)] group-hover:text-[var(--gold)] transition-colors">
+          <div className="mt-4 inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.22em] text-[var(--ink-400)] group-hover:text-[var(--gold)] transition-colors">
             View on eBay
             <ArrowUpRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" strokeWidth={1.6} />
           </div>

@@ -528,6 +528,23 @@ export async function POST(req) {
       console.log(`Rookie verify: ${before} → ${items.length}`);
     }
 
+    // Condition filter — Raw vs Graded. Parses title for the four major
+    // graders. Any mention of PSA/BGS/SGC/CGC followed by a digit (or by
+    // common grading-context words) flags it as graded. Everything else is raw.
+    // eBay's structured Graded aspect is too inconsistent to rely on.
+    if (criteria.condition === 'graded' || criteria.condition === 'raw') {
+      const before = items.length;
+      // Matches: "PSA 10", "PSA10", "BGS 9.5", "SGC 8", "CGC 9".
+      // Also catches "PSA Graded", "PSA Slab" without a number — uncommon
+      // but valid signals that the card is graded.
+      const GRADED_RE = /\b(PSA|BGS|SGC|CGC)\s*(\d{1,2}(?:\.\d)?|graded|slab|gem)\b/i;
+      items = items.filter((it) => {
+        const isGraded = GRADED_RE.test(it.title || '');
+        return criteria.condition === 'graded' ? isGraded : !isGraded;
+      });
+      console.log(`Condition verify (${criteria.condition}): ${before} → ${items.length}`);
+    }
+
     return NextResponse.json({
       items,
       total: items.length,

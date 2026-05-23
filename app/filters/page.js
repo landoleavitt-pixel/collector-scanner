@@ -71,7 +71,19 @@ export default function FiltersPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="03" label="Price">
+      <SectionHeading number="03" label="Condition">
+        Raw or graded.
+      </SectionHeading>
+      <Prose>
+        <p>
+          Three options: <strong>Any</strong>, <strong>Raw only</strong>, <strong>Graded only</strong>. We detect graded cards by parsing titles for the four major graders — <strong>PSA, BGS, SGC, CGC</strong> — followed by a numeric grade or grading-context words like "slab" or "gem."
+        </p>
+        <p>
+          eBay's structured Condition aspect is too inconsistently filled in by sellers to be useful here, so we use title parsing instead. The tradeoff: if a seller forgets to mention the grader in the title, the card may be misclassified as raw. In practice, almost every graded listing puts the grader in the title because buyers search for it.
+        </p>
+      </Prose>
+
+      <SectionHeading number="04" label="Price">
         Min and max.
       </SectionHeading>
       <Prose>
@@ -80,7 +92,7 @@ export default function FiltersPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="04" label="Sort">
+      <SectionHeading number="05" label="Sort">
         How results are ordered after they come back.
       </SectionHeading>
       <Prose>
@@ -96,7 +108,7 @@ export default function FiltersPage() {
         </ul>
       </Prose>
 
-      <SectionHeading number="05" label="Combining filters">
+      <SectionHeading number="06" label="Combining filters">
         AND, not OR.
       </SectionHeading>
       <Prose>
