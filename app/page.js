@@ -144,7 +144,11 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [results, setResults] = useState([]);
-  const [hasSearched, setHasSearched] = useState(false);
+  // App flow state: 'idle' (landing, hero showing) → 'configuring' (user
+  // submitted query, filter panel showing) → 'searched' (results showing
+  // with compact filter bar above).
+  const [appStage, setAppStage] = useState('idle');
+  const hasSearched = appStage === 'searched';
   const [scanIdx, setScanIdx] = useState(0);
 
   const [filters, setFilters] = useState({
@@ -157,8 +161,27 @@ export default function Home() {
     condition: 'any',     // 'any' | 'raw' | 'graded' — title-parsed for PSA/BGS/SGC/CGC
     priceMin: 0,
     priceMax: 1000,
-    sortBy: 'price-low',
+    sortBy: 'printrun-rarest',
   });
+
+  // Snapshot of which filter values are currently APPLIED (i.e., reflected
+  // in the result set). Differs from `filters` when the user has changed a
+  // toggle since the last Search press. We use this diff to highlight the
+  // Search button when changes are pending.
+  // sortBy is intentionally excluded — it's client-side and updates instantly.
+  const [appliedFilters, setAppliedFilters] = useState(null);
+
+  function filtersDifferFromApplied() {
+    if (!appliedFilters) return false;
+    const compareKeys = [
+      'autoCards', 'numberedCards', 'selectedPrintRuns', 'customPrintRuns',
+      'rookieCards', 'listingType', 'condition', 'priceMin', 'priceMax',
+    ];
+    for (const k of compareKeys) {
+      if (JSON.stringify(filters[k]) !== JSON.stringify(appliedFilters[k])) return true;
+    }
+    return false;
+  }
 
   // Loading phrase rotation
   const phraseTimer = useRef(null);
@@ -176,6 +199,20 @@ export default function Home() {
 
   const setFilter = (key, value) => setFilters((f) => ({ ...f, [key]: value }));
 
+  // Called when user submits the query from the landing hero search bar.
+  // Advances to the 'configuring' stage where filters are chosen. Does NOT
+  // execute the search yet — that happens when the user submits the filter panel.
+  function handleQuerySubmit(overrideQuery) {
+    const q = (overrideQuery ?? query).trim();
+    if (!q) {
+      setError('Enter a card name to begin.');
+      return;
+    }
+    if (overrideQuery) setQuery(overrideQuery);
+    setError(null);
+    setAppStage('configuring');
+  }
+
   async function handleSearch(overrideQuery) {
     const q = (overrideQuery ?? query).trim();
     if (!q) {
@@ -185,7 +222,7 @@ export default function Home() {
     if (overrideQuery) setQuery(overrideQuery);
     setError(null);
     setLoading(true);
-    setHasSearched(true);
+    setAppStage('searched');
 
     try {
       const res = await fetch('/api/search', {
@@ -213,6 +250,10 @@ export default function Home() {
         // Store raw results; sorting happens via useMemo so changing the sort
         // option instantly re-orders without re-fetching from eBay.
         setResults(data.items || []);
+        // Snapshot the filter values that produced this result set, so we
+        // can detect when subsequent edits create "pending changes" relative
+        // to what's actually shown.
+        setAppliedFilters({ ...filters });
       }
     } catch (e) {
       setError('Network error. Please try again.');
@@ -268,29 +309,88 @@ export default function Home() {
 
   return (
     <main className="relative min-h-screen z-10">
-      <Hero
-        query={query}
-        setQuery={setQuery}
-        onSearch={() => handleSearch()}
-        error={error}
-        loading={loading}
-        onSuggested={(s) => handleSearch(s)}
-      />
+      {/* Stage 1: idle landing — hero with search bar, nothing else */}
+      {appStage === 'idle' && (
+        <Hero
+          query={query}
+          setQuery={setQuery}
+          onSearch={() => handleQuerySubmit()}
+          error={error}
+          loading={false}
+          onSuggested={(s) => handleQuerySubmit(s)}
+        />
+      )}
 
-      <section className="max-w-[1200px] mx-auto px-6 lg:px-10 py-16 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-x-16 gap-y-10">
-          <Filters filters={filters} setFilter={setFilter} />
-          <Results
-            loading={loading}
-            hasSearched={hasSearched}
-            results={sortedResults}
-            error={error}
-            formatPrice={formatPrice}
-            scanPhrase={SCANNING_PHRASES[scanIdx]}
-            onSuggested={(s) => handleSearch(s)}
-          />
-        </div>
-      </section>
+      {/* Stage 2: configuring — filter panel replaces the hero. User picks
+          Type / Listing / Condition / Price, then submits to search. */}
+      {appStage === 'configuring' && (
+        <FilterPanel
+          query={query}
+          setQuery={setQuery}
+          filters={filters}
+          setFilter={setFilter}
+          onSubmit={() => handleSearch()}
+          onCancel={() => setAppStage('idle')}
+        />
+      )}
+
+      {/* Stage 3: searched — results page with sidebar filters */}
+      {appStage === 'searched' && (
+        <section className="max-w-[1200px] mx-auto px-6 lg:px-10 pt-10 pb-16 relative z-10 rise">
+          {/* Header bar — full width above both columns. Query + count on
+              left; sort + new search on right. */}
+          <div className="flex flex-wrap items-end justify-between gap-6 pb-6 mb-8 border-b border-[var(--line)]">
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--ink-400)] mb-2">
+                Searching · <span className="italic normal-case tracking-normal text-[var(--gold)] ml-1">{query}</span>
+              </p>
+              <p className="font-display text-4xl md:text-5xl leading-none tracking-tight">
+                <span className="text-[var(--gold)] italic">{sortedResults.length}</span>
+                <span className="text-[var(--ink-400)] text-2xl md:text-3xl ml-3">
+                  {sortedResults.length === 1 ? 'listing' : 'listings'}
+                </span>
+              </p>
+            </div>
+            <div className="flex items-center gap-6">
+              <SortDropdown
+                value={filters.sortBy}
+                onChange={(v) => setFilter('sortBy', v)}
+              />
+              <button
+                onClick={() => {
+                  setAppStage('idle');
+                  setQuery('');
+                  setResults([]);
+                  setError(null);
+                  setAppliedFilters(null);
+                }}
+                className="text-[11px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
+              >
+                New search
+              </button>
+            </div>
+          </div>
+
+          {/* Two-column layout: 280px sidebar + flexible results */}
+          <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-x-12 gap-y-8 items-start">
+            <ResultsSidebar
+              filters={filters}
+              setFilter={setFilter}
+              onSearch={() => handleSearch()}
+              hasPending={filtersDifferFromApplied()}
+            />
+            <Results
+              loading={loading}
+              hasSearched={hasSearched}
+              results={sortedResults}
+              error={error}
+              formatPrice={formatPrice}
+              scanPhrase={SCANNING_PHRASES[scanIdx]}
+              onSuggested={(s) => handleSearch(s)}
+            />
+          </div>
+        </section>
+      )}
     </main>
   );
 }
@@ -301,65 +401,65 @@ export default function Home() {
 function Hero({ query, setQuery, onSearch, error, loading, onSuggested }) {
   return (
     <section className="relative border-b border-[var(--line-soft)] overflow-hidden">
-      <div className="max-w-[1200px] mx-auto px-6 lg:px-10 pt-20 pb-16 lg:pt-28 lg:pb-20 relative">
-        <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-12 items-end">
-          {/* Left: editorial copy + search */}
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.3em] text-[var(--gold)] mb-8 rise" style={{ animationDelay: '0ms' }}>
-              <span className="inline-block w-6 h-px bg-[var(--gold)] align-middle mr-3 -translate-y-[2px]" />
-              Collect the diamonds in the rough
-            </p>
-            <h1
-              className="font-display text-[clamp(2.75rem,6.5vw,6rem)] leading-[0.95] tracking-[-0.02em] text-balance rise"
-              style={{ animationDelay: '100ms' }}
+      <div className="max-w-[1200px] mx-auto px-6 lg:px-10 pt-14 pb-16 lg:pt-20 lg:pb-20 relative">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-12 items-center">
+          {/* Left: centered headline + search */}
+          <div className="text-center">
+            {/* Headline — moved up and centered now that the masthead is gone */}
+            <h2
+              className="font-display text-[clamp(2.5rem,6vw,5.5rem)] leading-[0.95] tracking-[-0.02em] text-balance rise"
+              style={{ animationDelay: '0ms' }}
             >
+              Autos.
+              <br />
+              Rookies.
+              <br />
               Numbered.
               <br />
-              Autographed.
-              <br />
-              <em className="text-[var(--gold)]">Parallels.</em>
-            </h1>
+              <em className="text-[var(--gold)]">Yours.</em>
+            </h2>
+
+            {/* Short subtitle */}
             <p
-              className="mt-8 text-[var(--ink-200)] leading-relaxed max-w-md text-pretty rise"
-              style={{ animationDelay: '200ms' }}
+              className="mt-7 text-[var(--ink-200)] leading-relaxed max-w-md mx-auto text-pretty rise"
+              style={{ animationDelay: '120ms' }}
             >
-              A search instrument for serious collectors. Filter eBay by autograph,
-              print run, and price simultaneously — the way the hobby actually thinks.
+              A search instrument for collectors.
             </p>
 
-            {/* Refined search bar — thin underline style */}
-            <div className="mt-12 rise" style={{ animationDelay: '300ms' }}>
-              <div className="relative">
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 text-[10px] uppercase tracking-[0.22em] text-[var(--ink-400)] z-10">
+            {/* Search bar — bigger label, vertically centered, larger overall */}
+            <div className="mt-12 rise" style={{ animationDelay: '220ms' }}>
+              <div className="relative flex items-center">
+                <span className="absolute left-0 text-sm md:text-base uppercase tracking-[0.22em] text-[var(--ink-400)] z-10 font-medium">
                   Search
-                </div>
+                </span>
                 <input
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && !loading && onSearch()}
                   disabled={loading}
-                  className="relative w-full pl-20 pr-14 py-5 bg-transparent border-0 border-b border-[var(--line)] text-xl md:text-2xl font-display text-[var(--ink-100)] focus:outline-none focus:border-[var(--gold)] transition-colors"
+                  className="relative w-full pl-28 pr-14 py-6 bg-transparent border-0 border-b border-[var(--line)] text-2xl md:text-3xl font-display text-[var(--ink-100)] focus:outline-none focus:border-[var(--gold)] transition-colors text-left"
                 />
                 {/* Animated rotating placeholder — only visible when input is empty */}
                 {!query && !loading && <RotatingPlaceholder />}
                 <button
                   onClick={onSearch}
                   disabled={loading}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-[var(--ink-100)] hover:text-[var(--gold)] transition-colors disabled:opacity-30 z-10"
+                  className="absolute right-0 w-11 h-11 flex items-center justify-center text-[var(--ink-100)] hover:text-[var(--gold)] transition-colors disabled:opacity-30 z-10"
                   aria-label="Search"
                 >
-                  <ArrowRight className="w-5 h-5" strokeWidth={1.5} />
+                  <ArrowRight className="w-6 h-6" strokeWidth={1.5} />
                 </button>
               </div>
               {error && (
-                <p className="mt-3 text-xs text-[var(--crit)]">{error}</p>
+                <p className="mt-3 text-xs text-[var(--crit)] text-left">{error}</p>
               )}
             </div>
           </div>
 
-          {/* Right: featured find mock */}
-          <div className="hidden lg:block rise" style={{ animationDelay: '500ms' }}>
+          {/* Right: featured find — auto-loads a real Grail card from eBay */}
+          <div className="hidden lg:block rise" style={{ animationDelay: '400ms' }}>
             <FeaturedFind />
           </div>
         </div>
@@ -385,12 +485,12 @@ function RotatingPlaceholder() {
 
   return (
     <span
-      className="absolute left-20 top-1/2 -translate-y-1/2 pointer-events-none overflow-hidden"
+      className="absolute left-28 top-1/2 -translate-y-1/2 pointer-events-none overflow-hidden"
       style={{ height: '1.5em' }}
     >
       <span
         key={animKey}
-        className="block text-xl md:text-2xl font-display italic text-[var(--ink-600)] rotate-placeholder"
+        className="block text-2xl md:text-3xl font-display italic text-[var(--ink-600)] rotate-placeholder"
       >
         {SUGGESTED_SEARCHES[idx]}
       </span>
@@ -398,63 +498,105 @@ function RotatingPlaceholder() {
   );
 }
 
-/* The featured-find card in the hero — gives visitors immediate visual proof */
+/* FeaturedFind — auto-loads a real Grail-tier card from eBay via /api/featured.
+   The endpoint is server-side cached (1-hour TTL) and rotates athletes hourly,
+   so visitors see a real, current high-rarity card without burning eBay quota
+   on every page load.
+
+   States:
+     - Loading: shimmer placeholder card.
+     - Success: real card with image, badges, price, link to the eBay listing.
+     - Failure: gracefully hides (since this is decorative, not critical). */
 function FeaturedFind() {
+  const [item, setItem] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      try {
+        const res = await fetch('/api/featured');
+        if (!res.ok) throw new Error('featured fetch failed');
+        const data = await res.json();
+        if (!cancelled) {
+          if (data.featured) setItem(data.featured);
+          else setFailed(true);
+          setLoading(false);
+        }
+      } catch {
+        if (!cancelled) {
+          setFailed(true);
+          setLoading(false);
+        }
+      }
+    }
+    load();
+    return () => { cancelled = true; };
+  }, []);
+
+  if (failed) return null; // decorative — gracefully hide on error
+
   return (
     <figure className="relative">
-      {/* "On the block" caption */}
       <figcaption className="absolute -top-6 left-0 text-[10px] uppercase tracking-[0.3em] text-[var(--ink-400)] flex items-center gap-3">
         <span className="w-4 h-px bg-[var(--ink-400)]" />
-        Featured find
+        Featured Find · Live from eBay
       </figcaption>
 
-      {/* Card frame */}
-      <div className="border border-[var(--line)] bg-[var(--bg-elev)] p-5 relative">
-        {/* Decorative corner marks */}
+      <a
+        href={item?.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`block border border-[var(--line)] bg-[var(--bg-elev)] p-5 relative group transition-colors ${item ? 'hover:border-[var(--gold-deep)]' : ''}`}
+        style={!item ? { pointerEvents: 'none' } : undefined}
+      >
         <CornerMarks />
 
         {/* Image area */}
-        <div className="aspect-[3/4] bg-gradient-to-br from-[var(--bg-elev-2)] via-[#1d180e] to-[#0e0b07] relative overflow-hidden flex items-center justify-center">
-          {/* Stylized card silhouette */}
-          <svg viewBox="0 0 200 280" className="w-3/4 h-3/4 opacity-90">
-            <defs>
-              <linearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#c9954a" stopOpacity="0.35" />
-                <stop offset="50%" stopColor="#e6b96b" stopOpacity="0.15" />
-                <stop offset="100%" stopColor="#8f6a32" stopOpacity="0.3" />
-              </linearGradient>
-            </defs>
-            <rect x="10" y="10" width="180" height="260" fill="url(#cardGrad)" stroke="var(--gold)" strokeWidth="0.5" />
-            <rect x="22" y="22" width="156" height="180" fill="none" stroke="var(--gold-deep)" strokeWidth="0.4" />
-            <text x="100" y="240" textAnchor="middle" fill="var(--gold)" fontSize="11" fontFamily="Instrument Serif" fontStyle="italic">refractor</text>
-            <text x="100" y="256" textAnchor="middle" fill="var(--gold-deep)" fontSize="8" fontFamily="Geist Mono" letterSpacing="0.2em">/&#8202;25</text>
-          </svg>
-          {/* Auction tag */}
-          <span className="absolute top-3 left-3 text-[9px] uppercase tracking-[0.2em] text-[var(--gold)] bg-[var(--bg-base)]/80 backdrop-blur-sm px-2 py-1 border border-[var(--gold-deep)]/40">
-            Live · 4 bids
-          </span>
+        <div className="aspect-[3/4] bg-gradient-to-br from-[var(--bg-elev-2)] via-[#1d180e] to-[#0e0b07] relative overflow-hidden">
+          {loading && (
+            <div className="absolute inset-0 shimmer" />
+          )}
+          {item && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={item.image}
+              alt={item.title}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+            />
+          )}
         </div>
 
         {/* Metadata */}
         <div className="mt-5 space-y-3">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1 min-w-0">
-              <h3 className="font-display text-base leading-snug text-[var(--ink-100)]">
-                2023 Prizm Patrick Mahomes Gold Refractor Auto
+          {loading ? (
+            <>
+              <div className="h-5 w-3/4 bg-[var(--bg-elev-2)] shimmer" />
+              <div className="h-3 w-1/2 bg-[var(--bg-elev-2)] shimmer" />
+            </>
+          ) : item && (
+            <>
+              <h3 className="font-display text-base leading-snug text-[var(--ink-100)] line-clamp-2 group-hover:text-[var(--gold-bright)] transition-colors">
+                {item.title}
               </h3>
-              <p className="text-[11px] uppercase tracking-[0.15em] text-[var(--ink-400)] mt-1">PSA 10 · Numbered /25</p>
-            </div>
-          </div>
-          <div className="flex items-end justify-between pt-2 border-t border-[var(--line-soft)]">
-            <div className="flex gap-1.5">
-              <Badge>AUTO</Badge>
-              <Badge mono tier="grail">/25</Badge>
-              <Badge>PSA 10</Badge>
-            </div>
-            <span className="font-display text-2xl text-[var(--gold)] leading-none">$4,250</span>
-          </div>
+              <div className="flex items-end justify-between pt-2 border-t border-[var(--line-soft)]">
+                <div className="flex gap-1.5 flex-wrap">
+                  {item.hasAuto && <Badge>AUTO</Badge>}
+                  <Badge mono tier="grail">/{item.printRun}</Badge>
+                  {item.psaGrade && <Badge>PSA {item.psaGrade}</Badge>}
+                  {item.bgsGrade && <Badge>BGS {item.bgsGrade}</Badge>}
+                  {item.sgcGrade && <Badge>SGC {item.sgcGrade}</Badge>}
+                  {item.cgcGrade && <Badge>CGC {item.cgcGrade}</Badge>}
+                </div>
+                <span className="font-display text-2xl text-[var(--gold)] leading-none">
+                  ${Math.round(item.price).toLocaleString()}
+                </span>
+              </div>
+            </>
+          )}
         </div>
-      </div>
+      </a>
     </figure>
   );
 }
@@ -472,13 +614,470 @@ function CornerMarks() {
 }
 
 /* ─────────────────────────────────────────────
-   Filter rail — elevated, instrument-like
-   ───────────────────────────────────────────── */
-function Filters({ filters, setFilter }) {
-  return (
-    <aside className="space-y-10">
-      <FilterSectionHeader label="Filters" number="01" />
+   FilterControls — the actual filter UI, used inside both stages.
+   Renders Type toggles, conditional Print Run tier picker, Listing,
+   Condition, and Price slider sections separated by hairline dividers.
+   Sort is intentionally excluded — it lives elsewhere (top-right of results)
+   since it updates instantly rather than via Search-press.
 
+   `compact` prop adapts the layout for a narrow sidebar context:
+     - Type toggles stack vertically instead of 3-across
+     - Print run tiers stack vertically (1 column instead of 4 across)
+     - Listing/Condition sections stack vertically and use vertical button
+       lists instead of horizontal segmented controls
+   ───────────────────────────────────────────── */
+function FilterControls({ filters, setFilter, compact = false }) {
+  return (
+    <div className={compact ? 'space-y-7' : 'space-y-10'}>
+      {/* SECTION 1 — Card Type */}
+      <div>
+        <SectionLabel>Card Type</SectionLabel>
+        <div className={compact ? 'grid grid-cols-1 gap-2' : 'grid grid-cols-1 sm:grid-cols-3 gap-3'}>
+          <TypeToggleCard
+            label="Autographed"
+            checked={filters.autoCards}
+            onChange={(v) => setFilter('autoCards', v)}
+          />
+          <TypeToggleCard
+            label="Rookie Card"
+            checked={filters.rookieCards}
+            onChange={(v) => setFilter('rookieCards', v)}
+          />
+          <TypeToggleCard
+            label="Numbered"
+            checked={filters.numberedCards}
+            onChange={(v) => setFilter('numberedCards', v)}
+          />
+        </div>
+
+        {/* Print Run tier picker — appears only when Numbered is on */}
+        {filters.numberedCards && (
+          <div
+            className="mt-4 p-5 lg:p-6 rise"
+            style={{
+              animationDuration: '0.4s',
+              background: 'rgba(20,17,13,0.3)',
+              borderLeft: '2px solid rgba(201,164,71,0.4)',
+            }}
+          >
+            <div className="flex items-baseline justify-between mb-4">
+              <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--gold)]">Print Run</span>
+              <button
+                onClick={() => {
+                  const allSelected = filters.selectedPrintRuns.length === ALL_PRESET_PRINT_RUNS.length;
+                  setFilter('selectedPrintRuns', allSelected ? [] : ALL_PRESET_PRINT_RUNS);
+                }}
+                className="text-[10px] uppercase tracking-[0.18em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
+              >
+                {filters.selectedPrintRuns.length === ALL_PRESET_PRINT_RUNS.length ? 'Clear all' : 'Select all'}
+              </button>
+            </div>
+            <div className={compact ? 'grid grid-cols-1 gap-2' : 'grid grid-cols-2 sm:grid-cols-4 gap-2'}>
+              {PRINT_RUN_TIERS.map((tier) => {
+                const allInTierSelected = tier.runs.every((r) => filters.selectedPrintRuns.includes(r));
+                const someInTierSelected = tier.runs.some((r) => filters.selectedPrintRuns.includes(r));
+                const partial = someInTierSelected && !allInTierSelected;
+                // Tier color accents on the active border
+                const tierKey = tier.label === 'The Grail' ? 'grail'
+                  : tier.label === 'Ultra Rare' ? 'ultra'
+                  : tier.label === 'Rare' ? 'rare'
+                  : 'scarce';
+                const tierColors = {
+                  grail: '#ffc14d', ultra: '#c8d4e0', rare: '#d6722d', scarce: '#7a8694',
+                };
+
+                return (
+                  <button
+                    key={tier.label}
+                    onClick={() => {
+                      const next = someInTierSelected
+                        ? filters.selectedPrintRuns.filter((r) => !tier.runs.includes(r))
+                        : [...filters.selectedPrintRuns, ...tier.runs];
+                      setFilter('selectedPrintRuns', next);
+                    }}
+                    className={`text-left transition-all border ${compact ? 'px-3 py-2.5 flex items-center justify-between gap-3' : 'px-4 py-3'}`}
+                    style={{
+                      borderColor: allInTierSelected ? tierColors[tierKey] : 'rgba(255,255,255,0.08)',
+                      background: someInTierSelected ? 'linear-gradient(135deg, rgba(201,164,71,0.10), rgba(201,164,71,0.02))' : 'rgba(20,17,13,0.5)',
+                    }}
+                  >
+                    <div className={`font-display ${compact ? 'text-sm' : 'text-base'} text-[var(--ink-100)] leading-tight`}>
+                      {tier.label}
+                      {partial && <span className="ml-1 text-[var(--gold)] text-xs">·</span>}
+                    </div>
+                    <div className={`font-mono text-[10px] text-[var(--ink-600)] tracking-[0.1em] ${compact ? '' : 'mt-1'}`}>
+                      {tier.range.replace('–', ' – ')}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Custom print runs */}
+            <div className="mt-4 pt-4 border-t border-[var(--line-soft)]">
+              <CustomPrintRunInput
+                customRuns={filters.customPrintRuns}
+                onAdd={(run) => setFilter('customPrintRuns', [...filters.customPrintRuns, run])}
+                onRemove={(run) => setFilter('customPrintRuns', filters.customPrintRuns.filter((r) => r !== run))}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+      <SectionDivider />
+
+      {/* SECTION 2 — Listing + Condition. Side-by-side in panel, stacked in sidebar. */}
+      <div className={compact ? 'space-y-7' : 'grid grid-cols-1 md:grid-cols-2 gap-8'}>
+        <div>
+          <SectionLabel>Listing Type</SectionLabel>
+          <SegmentedGroup
+            value={filters.listingType}
+            onChange={(v) => setFilter('listingType', v)}
+            vertical={compact}
+            options={[
+              ['any', 'Any'],
+              ['buyItNow', 'Buy It Now'],
+              ['auction', 'Auction'],
+            ]}
+          />
+        </div>
+        <div>
+          <SectionLabel>Condition</SectionLabel>
+          <SegmentedGroup
+            value={filters.condition}
+            onChange={(v) => setFilter('condition', v)}
+            vertical={compact}
+            options={[
+              ['any', 'Any'],
+              ['raw', 'Raw'],
+              ['graded', 'Graded'],
+            ]}
+          />
+        </div>
+      </div>
+
+      <SectionDivider />
+
+      {/* SECTION 3 — Price */}
+      <div>
+        <div className="flex items-baseline justify-between mb-3">
+          <SectionLabel className="!mb-0">Price Range</SectionLabel>
+          <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--ink-600)]">USD</span>
+        </div>
+        <PriceRangeSlider
+          min={filters.priceMin}
+          max={filters.priceMax}
+          onChange={(min, max) => {
+            setFilter('priceMin', min);
+            setFilter('priceMax', max);
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+/* Section label — small uppercase eyebrow above each filter section */
+function SectionLabel({ children, className = '' }) {
+  return (
+    <h3 className={`text-[10px] uppercase tracking-[0.28em] text-[var(--ink-400)] mb-4 font-medium ${className}`}>
+      {children}
+    </h3>
+  );
+}
+
+function SectionDivider() {
+  return <div className="h-px bg-[var(--line-soft)]" />;
+}
+
+/* PriceRangeSlider — two-row min/max slider with prominent USD readout.
+   Reuses the existing RangeRow component for the actual slider mechanics. */
+function PriceRangeSlider({ min, max, onChange }) {
+  return (
+    <div>
+      {/* Readout — large serif numbers */}
+      <div className="flex items-baseline justify-between mb-5 font-display">
+        <div>
+          <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--ink-600)] mr-2">Min</span>
+          <span className="text-2xl text-[var(--ink-100)]">
+            <span className="text-sm text-[var(--ink-600)] mr-1">$</span>{min}
+          </span>
+        </div>
+        <span className="text-[var(--ink-600)] mx-2">—</span>
+        <div className="text-right">
+          <span className="text-2xl text-[var(--ink-100)]">
+            <span className="text-sm text-[var(--ink-600)] mr-1">$</span>{max === 5000 ? '5000+' : max}
+          </span>
+          <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--ink-600)] ml-2">Max</span>
+        </div>
+      </div>
+      {/* Two sliders, one each for min and max */}
+      <div className="space-y-4">
+        <RangeRow
+          label="Min"
+          value={min}
+          max={2000}
+          step={10}
+          onChange={(v) => onChange(v, max)}
+        />
+        <RangeRow
+          label="Max"
+          value={max}
+          max={5000}
+          step={50}
+          onChange={(v) => onChange(min, v)}
+          showPlus
+        />
+      </div>
+    </div>
+  );
+}
+
+/* Big toggle card — used for Card Type filters */
+function TypeToggleCard({ label, checked, onChange }) {
+  return (
+    <button
+      onClick={() => onChange(!checked)}
+      className="flex items-center justify-between px-4 py-3.5 transition-all border text-left"
+      style={{
+        borderColor: checked ? '#c9a447' : 'rgba(255,255,255,0.08)',
+        background: checked ? 'linear-gradient(135deg, rgba(201,164,71,0.10), rgba(201,164,71,0.02))' : 'rgba(20,17,13,0.5)',
+      }}
+    >
+      <span className={`text-sm ${checked ? 'text-[var(--ink-100)]' : 'text-[var(--ink-200)]'}`}>
+        {label}
+      </span>
+      <span
+        className="relative w-8 h-4 rounded-full transition-colors"
+        style={{
+          background: checked ? 'linear-gradient(180deg, #ffd97a 0%, #d99c14 100%)' : 'rgba(255,255,255,0.10)',
+        }}
+      >
+        <span
+          className="absolute top-0.5 left-0.5 w-3 h-3 rounded-full transition-transform"
+          style={{
+            background: checked ? '#0e0c0a' : '#6a6356',
+            transform: checked ? 'translateX(16px)' : 'translateX(0)',
+          }}
+        />
+      </span>
+    </button>
+  );
+}
+
+/* Segmented group — used for Listing Type and Condition rows */
+function SegmentedGroup({ value, onChange, options, vertical = false }) {
+  if (vertical) {
+    // Vertical mode — used in the sidebar where horizontal segmented controls
+    // would cramp the column. Each option is its own bordered card stacked
+    // top-to-bottom.
+    return (
+      <div className="flex flex-col gap-1.5">
+        {options.map(([v, l]) => {
+          const active = value === v;
+          return (
+            <button
+              key={v}
+              onClick={() => onChange(v)}
+              className="px-3.5 py-2.5 text-[12px] tracking-[0.04em] text-left transition-all border"
+              style={
+                active
+                  ? {
+                      borderColor: '#c9a447',
+                      background: 'linear-gradient(135deg, rgba(201,164,71,0.10), rgba(201,164,71,0.02))',
+                      color: '#f5efe0',
+                      fontWeight: 500,
+                    }
+                  : {
+                      borderColor: 'rgba(255,255,255,0.06)',
+                      background: 'rgba(20,17,13,0.6)',
+                      color: 'var(--ink-400)',
+                    }
+              }
+            >
+              {l}
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
+  // Horizontal mode — original segmented control for Stage 2 panel.
+  return (
+    <div className="flex border border-[var(--line-soft)] bg-[var(--bg-elev)]/50">
+      {options.map(([v, l], idx) => {
+        const active = value === v;
+        return (
+          <button
+            key={v}
+            onClick={() => onChange(v)}
+            className={`flex-1 px-3 py-3 text-[12px] tracking-[0.06em] transition-colors text-center ${
+              idx !== options.length - 1 ? 'border-r border-[var(--line-soft)]' : ''
+            }`}
+            style={
+              active
+                ? {
+                    background: 'linear-gradient(180deg, #ffd97a 0%, #d99c14 100%)',
+                    color: '#1a1612',
+                    fontWeight: 600,
+                    borderRightColor: 'transparent',
+                  }
+                : { color: 'var(--ink-400)' }
+            }
+          >
+            {l}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   FilterPanel — Stage 2: configuring (full takeover).
+   ───────────────────────────────────────────── */
+function FilterPanel({ query, setQuery, filters, setFilter, onSubmit, onCancel }) {
+  return (
+    <section className="relative max-w-[1100px] mx-auto px-6 lg:px-10 pt-12 lg:pt-16 pb-16">
+      {/* Eyebrow + back link */}
+      <div className="flex items-center justify-between mb-9">
+        <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--gold)]">
+          <span className="inline-block w-6 h-px bg-[var(--gold)] align-middle mr-3 -translate-y-[2px]" />
+          Step 02 · Refine
+        </p>
+        <button
+          onClick={onCancel}
+          className="text-[11px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
+        >
+          ← Back
+        </button>
+      </div>
+
+      {/* The query — editable inline */}
+      <div className="mb-12 rise">
+        <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--ink-400)] mb-3">
+          Searching for
+        </p>
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') onSubmit();
+          }}
+          className="w-full font-display text-4xl md:text-5xl bg-transparent border-b border-[var(--line)] focus:border-[var(--gold)] outline-none text-[var(--ink-100)] italic pb-2 transition-colors"
+        />
+      </div>
+
+      {/* Filter controls */}
+      <div className="mb-12 rise" style={{ animationDelay: '120ms' }}>
+        <FilterControls filters={filters} setFilter={setFilter} />
+      </div>
+
+      {/* Search CTA */}
+      <div className="flex justify-between items-center rise" style={{ animationDelay: '220ms' }}>
+        <span className="text-[11px] text-[var(--ink-600)]">All filters apply with AND logic</span>
+        <button
+          onClick={onSubmit}
+          className="group inline-flex items-center gap-3 px-9 py-4 transition-all text-sm font-semibold tracking-[0.12em] uppercase"
+          style={{
+            background: 'linear-gradient(180deg, #ffd97a 0%, #d99c14 100%)',
+            color: '#0e0c0a',
+          }}
+        >
+          Search
+          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" strokeWidth={1.8} />
+        </button>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   ResultsSidebar — Stage 3 left sidebar containing all filters + Search.
+   Uses FilterControls in compact mode (toggles + tier picker + listing/
+   condition stacked vertically, price slider full-width within column).
+   The Search button sits at the bottom of the sidebar with the pending
+   pulse animation when filters have unapplied changes.
+   ───────────────────────────────────────────── */
+function ResultsSidebar({ filters, setFilter, onSearch, hasPending }) {
+  return (
+    <aside className="border border-[var(--line-soft)] bg-[var(--bg-elev)]/30 px-5 py-6">
+      <h2 className="text-[10px] uppercase tracking-[0.28em] text-[var(--gold)] mb-5 pb-4 border-b border-[var(--line-soft)]">
+        Filters
+      </h2>
+
+      <FilterControls filters={filters} setFilter={setFilter} compact />
+
+      {/* Search button — bottom of sidebar */}
+      <div className="mt-7 pt-5 border-t border-[var(--line-soft)]">
+        <button
+          onClick={onSearch}
+          className={`group block w-full px-5 py-3 transition-all text-[12px] font-semibold tracking-[0.14em] uppercase text-center ${
+            hasPending ? 'pending-pulse' : ''
+          }`}
+          style={{
+            background: 'linear-gradient(180deg, #ffd97a 0%, #d99c14 100%)',
+            color: '#0e0c0a',
+          }}
+        >
+          Search →
+        </button>
+        {hasPending && (
+          <p className="text-[10.5px] text-[var(--gold)] italic text-center mt-3 leading-tight">
+            Filters changed — press Search
+          </p>
+        )}
+      </div>
+    </aside>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   SortDropdown — placed top-right of results header.
+   Sort updates instantly via client-side resort (no API call).
+   ───────────────────────────────────────────── */
+function SortDropdown({ value, onChange }) {
+  const options = [
+    ['printrun-rarest', 'Rarest first'],
+    ['printrun-common', 'Most common first'],
+    ['price-low', 'Price: Low → High'],
+    ['price-high', 'Price: High → Low'],
+    ['ending-soon', 'Ending soonest'],
+    ['newest', 'Newest first'],
+  ];
+  return (
+    <label className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-[var(--ink-400)]">
+      <span>Sort</span>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="bg-transparent border-b border-[var(--line)] focus:border-[var(--gold)] outline-none pb-1 pr-6 text-[var(--ink-100)] tracking-[0.04em] cursor-pointer appearance-none"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='none' stroke='%23a89870' stroke-width='1.4' d='M1 1l4 4 4-4'/%3E%3C/svg%3E\")",
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'right 0 center',
+        }}
+      >
+        {options.map(([v, l]) => (
+          <option key={v} value={v} className="bg-[var(--bg-base)] text-[var(--ink-100)]">
+            {l}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+function Filters({ filters, setFilter }) {
+  // NOTE: This component is now embedded inside FilterPanel's grid layout,
+  // so it renders as a fragment of grid children — no outer wrapper with
+  // its own spacing. The parent controls layout (1, 2, or 3 columns) via
+  // the surrounding grid.
+  return (
+    <>
       {/* Card type */}
       <div>
         <FilterLabel>Type</FilterLabel>
@@ -689,7 +1288,7 @@ function Filters({ filters, setFilter }) {
           })}
         </div>
       </div>
-    </aside>
+    </>
   );
 }
 
@@ -839,19 +1438,6 @@ function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase
 
   return (
     <div>
-      <div className="flex items-end justify-between pb-6 mb-4 border-b border-[var(--line)]">
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--ink-400)] mb-2">
-            Results
-          </p>
-          <p className="font-display text-4xl md:text-5xl leading-none tracking-tight">
-            <span className="text-[var(--gold)] italic">{results.length}</span>
-            <span className="text-[var(--ink-400)] text-2xl md:text-3xl ml-3">
-              {results.length === 1 ? 'listing' : 'listings'}
-            </span>
-          </p>
-        </div>
-      </div>
       <div className="divide-y divide-[var(--line-soft)]">
         {results.map((item, i) => (
           <ResultCard key={item.id} item={item} formatPrice={formatPrice} index={i} />
@@ -869,50 +1455,50 @@ function ResultCard({ item, formatPrice, index }) {
   // Print run detection — strict, to match the server-side verifier.
   // Looks for real print run patterns, rejects years/dates/inventory counts.
   const printRun = detectPrintRun(item.title || '');
+  const tier = printRun ? printRunTier(printRun) : null;
   const psaMatch = item.title?.match(/PSA\s*(\d{1,2})/i);
   const bgsMatch = item.title?.match(/BGS\s*(\d{1,2}(?:\.\d)?)/i);
   const sgcMatch = item.title?.match(/SGC\s*(\d{1,2}(?:\.\d)?)/i);
   const cgcMatch = item.title?.match(/CGC\s*(\d{1,2}(?:\.\d)?)/i);
+
+  // Tier-based row treatment — distinct hues per tier so each is unmistakable
+  // at a glance (not just lighter/darker variants of the same color).
+  //   Grail   — warm rich gold
+  //   Ultra   — cool platinum-blue
+  //   Rare    — deep bronze-orange
+  //   Scarce  — steel-gray
+  // Applied as background gradient + left border on the link element.
+  const TIER_ROW_STYLES = {
+    grail:  { bg: 'linear-gradient(90deg, rgba(255,180,30,0.42) 0%, rgba(245,200,80,0.15) 22%, transparent 55%)', border: '#ffc14d' },
+    ultra:  { bg: 'linear-gradient(90deg, rgba(180,200,220,0.28) 0%, rgba(210,220,230,0.08) 18%, transparent 40%)', border: '#c8d4e0' },
+    rare:   { bg: 'linear-gradient(90deg, rgba(200,90,30,0.24) 0%, rgba(220,110,50,0.06) 16%, transparent 32%)', border: '#d6722d' },
+    scarce: { bg: 'linear-gradient(90deg, rgba(80,90,100,0.18) 0%, transparent 24%)', border: '#5a6470' },
+  };
+  const tierStyle = tier ? TIER_ROW_STYLES[tier] : null;
 
   return (
     <a
       href={item.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group block py-10 first:pt-0 rise"
-      style={{ animationDelay: `${Math.min(index * 40, 400)}ms` }}
+      className="group block py-10 rise pl-4 md:pl-5"
+      style={tierStyle ? {
+        animationDelay: `${Math.min(index * 40, 400)}ms`,
+        backgroundImage: tierStyle.bg,
+        borderLeft: `2px solid ${tierStyle.border}`,
+      } : { animationDelay: `${Math.min(index * 40, 400)}ms` }}
     >
-      <div className="grid grid-cols-[160px_1fr_auto] md:grid-cols-[220px_1fr_auto] gap-7 md:gap-10 items-start">
-        {/* Image */}
-        <div className="relative aspect-[3/4] bg-[var(--bg-elev)] overflow-hidden">
-          <CornerMarks />
-          {item.image ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={item.image}
-              alt={item.title}
-              className="w-full h-full object-cover transition-all duration-700 group-hover:scale-[1.04]"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-[var(--ink-600)] font-display text-4xl italic">
-              ◇
-            </div>
-          )}
-          {item.isAuction && (
-            <span className="absolute top-2 left-2 text-[9px] uppercase tracking-[0.18em] text-[var(--gold)] bg-[var(--bg-base)]/85 backdrop-blur-sm px-1.5 py-0.5 border border-[var(--gold-deep)]/30">
-              Live
-            </span>
-          )}
-        </div>
-
-        {/* Title + metadata */}
-        <div className="min-w-0 pt-1">
-          <h3 className="font-display text-2xl md:text-3xl leading-[1.15] text-[var(--ink-100)] group-hover:text-[var(--gold-bright)] transition-colors line-clamp-2">
+      {/* 3-column layout — title+badges+meta on left, image center as visual
+          focal point, price + CTA on right. items-center vertically aligns
+          all three columns so the row stays visually balanced even when the
+          title block grows tall. */}
+      <div className="grid grid-cols-1 md:grid-cols-[1.3fr_200px_1fr] gap-6 md:gap-7 items-center">
+        {/* Left column: title, badges, meta */}
+        <div className="min-w-0 order-2 md:order-1">
+          <h3 className="font-display text-xl md:text-2xl leading-[1.15] text-[var(--ink-100)] group-hover:text-[var(--gold-bright)] transition-colors mb-4">
             {item.title}
           </h3>
-
-          {/* Badges */}
-          <div className="flex flex-wrap gap-1.5 mt-4">
+          <div className="flex flex-wrap gap-1.5 mb-4">
             {item.isAuction && (
               <Badge auction>
                 {item.bidCount != null ? `${item.bidCount} BIDS` : 'AUCTION'}
@@ -929,35 +1515,60 @@ function ResultCard({ item, formatPrice, index }) {
               <Badge subtle>{item.condition}</Badge>
             )}
           </div>
-
-          {/* Subline */}
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-4 text-[11px] uppercase tracking-[0.15em] text-[var(--ink-400)]">
-            {item.isAuction && !item.isBuyItNow && <span>Auction</span>}
-            {item.isBuyItNow && !item.isAuction && <span>Buy now</span>}
-            {item.isAuction && item.isBuyItNow && <span>Auction · or buy now</span>}
-            {item.endTime && item.isAuction && (
-              <>
-                <span className="text-[var(--ink-600)]">·</span>
-                <span className="text-[var(--gold)]">{formatTimeRemaining(item.endTime)}</span>
-              </>
-            )}
+          {/* Single prose meta line — seller, feedback, listing type. */}
+          <div className="text-[11px] leading-relaxed text-[var(--ink-400)]">
             {item.seller && (
-              <>
-                {(item.isBuyItNow || item.isAuction) && <span className="text-[var(--ink-600)]">·</span>}
-                <span className="normal-case tracking-normal">{item.seller}</span>
-              </>
+              <span className="normal-case">{item.seller}</span>
             )}
             {item.sellerFeedback != null && (
               <>
-                <span className="text-[var(--ink-600)]">·</span>
+                <span className="text-[var(--ink-600)] mx-2">·</span>
                 <span>{Number(item.sellerFeedback).toFixed(1)}% feedback</span>
+              </>
+            )}
+            {(item.isBuyItNow || item.isAuction) && (
+              <>
+                <span className="text-[var(--ink-600)] mx-2">·</span>
+                {item.isAuction && !item.isBuyItNow && <span>Auction</span>}
+                {item.isBuyItNow && !item.isAuction && <span>Buy It Now</span>}
+                {item.isAuction && item.isBuyItNow && <span>Auction · or BIN</span>}
+              </>
+            )}
+            {item.endTime && item.isAuction && (
+              <>
+                <span className="text-[var(--ink-600)] mx-2">·</span>
+                <span className="text-[var(--gold)] uppercase tracking-[0.1em]">{formatTimeRemaining(item.endTime)}</span>
               </>
             )}
           </div>
         </div>
 
-        {/* Price + CTA */}
-        <div className="text-right pt-1 min-w-[120px]">
+        {/* Center column: image, the visual focal point */}
+        <div className="order-1 md:order-2 mx-auto md:mx-0">
+          <div className="relative aspect-[3/4] w-[160px] md:w-[200px] bg-[var(--bg-elev)] overflow-hidden">
+            <CornerMarks />
+            {item.image ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={item.image}
+                alt={item.title}
+                className="w-full h-full object-cover transition-all duration-700 group-hover:scale-[1.04]"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-[var(--ink-600)] font-display text-4xl italic">
+                ◇
+              </div>
+            )}
+            {item.isAuction && (
+              <span className="absolute top-2 left-2 text-[9px] uppercase tracking-[0.18em] text-[var(--gold)] bg-[var(--bg-base)]/85 backdrop-blur-sm px-1.5 py-0.5 border border-[var(--gold-deep)]/30">
+                Live
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Right column: price + CTA, vertically centered to image */}
+        <div className="text-left md:text-right order-3">
           <div className="font-display text-4xl md:text-5xl leading-none text-[var(--ink-100)] group-hover:text-[var(--gold-bright)] transition-colors">
             {formatPrice(item.price)}
           </div>
@@ -972,31 +1583,49 @@ function ResultCard({ item, formatPrice, index }) {
 }
 
 function Badge({ children, mono, subtle, auction, tier }) {
-  let style;
+  let className;
+  let inlineStyle;
   if (auction) {
     // Auction: warm red-amber to feel like a "live" indicator, distinct from gold
-    style = 'border-[#c97a3a] text-[#e6a86b] bg-[#c97a3a]/[0.10]';
+    className = 'border-[#c97a3a] text-[#e6a86b] bg-[#c97a3a]/[0.10]';
   } else if (tier === 'grail') {
-    // Grail tier (/1-/25) — brightest, warmest, most prominent
-    style = 'border-[var(--gold-bright)] text-[var(--gold-bright)] bg-[var(--gold)]/[0.14] font-semibold';
+    // Grail tier (/1–/25) — rich warm gold
+    className = 'text-[#1a1612] font-bold';
+    inlineStyle = {
+      borderColor: '#ffc14d',
+      backgroundImage: 'linear-gradient(180deg, #ffd97a 0%, #d99c14 100%)',
+    };
   } else if (tier === 'ultra') {
-    // Ultra Rare tier (/49-/99) — standard bright gold
-    style = 'border-[var(--gold)] text-[var(--gold)] bg-[var(--gold)]/[0.08]';
+    // Ultra Rare tier (/26–/99) — cool platinum-blue
+    className = 'text-[#1a1612] font-bold';
+    inlineStyle = {
+      borderColor: '#c8d4e0',
+      backgroundImage: 'linear-gradient(180deg, #e0e8f0 0%, #98a5b3 100%)',
+    };
   } else if (tier === 'rare') {
-    // Rare tier (/149-/249) — muted gold
-    style = 'border-[var(--gold-deep)] text-[var(--gold)]/85 bg-[var(--gold)]/[0.04]';
+    // Rare tier (/100–/249) — deep bronze-orange
+    className = 'text-[#1a1612] font-bold';
+    inlineStyle = {
+      borderColor: '#d6722d',
+      backgroundImage: 'linear-gradient(180deg, #d6884a 0%, #8e4f1f 100%)',
+    };
   } else if (tier === 'scarce') {
-    // Scarce tier (/299+) — quietest gold
-    style = 'border-[var(--gold-deep)]/60 text-[var(--ink-400)] bg-[var(--gold)]/[0.02]';
+    // Scarce tier (/250–/999) — steel-gray
+    className = 'text-[#1a1612] font-semibold';
+    inlineStyle = {
+      borderColor: '#5a6470',
+      backgroundImage: 'linear-gradient(180deg, #8a96a4 0%, #4a5360 100%)',
+    };
   } else if (subtle) {
-    style = 'border-[var(--line)] text-[var(--ink-400)]';
+    className = 'border-[var(--line)] text-[var(--ink-400)]';
   } else {
-    // Default — for AUTO, RC, PSA, BGS
-    style = 'border-[var(--gold-deep)] text-[var(--gold-bright)] bg-[var(--gold)]/[0.06]';
+    // Default — for AUTO, RC, PSA, BGS, SGC, CGC
+    className = 'border-[var(--gold-deep)] text-[var(--gold-bright)] bg-[var(--gold)]/[0.06]';
   }
   return (
     <span
-      className={`inline-flex items-center px-2.5 py-1 text-[11px] tracking-[0.1em] border ${style} ${mono ? 'font-mono uppercase' : 'uppercase'}`}
+      className={`inline-flex items-center px-2.5 py-1 text-[11px] tracking-[0.1em] border ${className} ${mono ? 'font-mono uppercase' : 'uppercase'}`}
+      style={inlineStyle}
     >
       {children}
     </span>
