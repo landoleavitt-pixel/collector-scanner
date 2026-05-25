@@ -403,41 +403,42 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested }) {
     <section className="relative border-b border-[var(--line-soft)] overflow-hidden">
       <div className="max-w-[1200px] mx-auto px-6 lg:px-10 pt-14 pb-16 lg:pt-20 lg:pb-20 relative">
         <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-12 items-center">
-          {/* Left: centered headline + search */}
-          <div className="text-center">
-            {/* Headline — moved up and centered now that the masthead is gone */}
-            <h2
-              className="font-display text-[clamp(2.5rem,6vw,5.5rem)] leading-[0.95] tracking-[-0.02em] text-balance rise"
-              style={{ animationDelay: '0ms' }}
-            >
-              Autos.
-              <br />
-              Rookies.
-              <br />
-              Numbered.
-              <br />
-              <em className="text-[var(--gold)]">Yours.</em>
-            </h2>
+          {/* Left: centered block, but words inside are left-aligned */}
+          <div className="flex justify-center">
+            <div className="text-left inline-block">
+              {/* Headline — block centered on the row, text flush left */}
+              <h2
+                className="font-display text-[clamp(2.5rem,6vw,5.5rem)] leading-[0.95] tracking-[-0.02em] text-balance rise"
+                style={{ animationDelay: '0ms' }}
+              >
+                Autos.
+                <br />
+                Rookies.
+                <br />
+                Numbered.
+                <br />
+                <em className="text-[var(--gold)]">Yours.</em>
+              </h2>
 
-            {/* Short subtitle */}
-            <p
-              className="mt-7 text-[var(--ink-200)] leading-relaxed max-w-md mx-auto text-pretty rise"
-              style={{ animationDelay: '120ms' }}
-            >
-              A search instrument for collectors.
-            </p>
+              {/* Short subtitle — also left-aligned within the centered block */}
+              <p
+                className="mt-7 text-[var(--ink-200)] leading-relaxed text-pretty rise"
+                style={{ animationDelay: '120ms' }}
+              >
+                A search instrument for collectors.
+              </p>
 
-            {/* Search bar — bigger label, vertically centered, larger overall */}
-            <div className="mt-12 rise" style={{ animationDelay: '220ms' }}>
-              <div className="relative flex items-center">
-                <span className="absolute left-0 text-sm md:text-base uppercase tracking-[0.22em] text-[var(--ink-400)] z-10 font-medium">
-                  Search
-                </span>
-                <input
-                  type="text"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && !loading && onSearch()}
+              {/* Search bar — bigger label, vertically centered, larger overall */}
+              <div className="mt-12 rise" style={{ animationDelay: '220ms' }}>
+                <div className="relative flex items-center">
+                  <span className="absolute left-0 text-sm md:text-base uppercase tracking-[0.22em] text-[var(--ink-400)] z-10 font-medium">
+                    Search
+                  </span>
+                  <input
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && !loading && onSearch()}
                   disabled={loading}
                   className="relative w-full pl-28 pr-14 py-6 bg-transparent border-0 border-b border-[var(--line)] text-2xl md:text-3xl font-display text-[var(--ink-100)] focus:outline-none focus:border-[var(--gold)] transition-colors text-left"
                 />
@@ -456,10 +457,13 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested }) {
                 <p className="mt-3 text-xs text-[var(--crit)] text-left">{error}</p>
               )}
             </div>
+            </div>
           </div>
 
-          {/* Right: featured find — auto-loads a real Grail card from eBay */}
-          <div className="hidden lg:block rise" style={{ animationDelay: '400ms' }}>
+          {/* Right: featured find — auto-loads a real Grail card from eBay.
+              On mobile, this stacks below the headline at a capped width.
+              On desktop, it sits to the right via the parent's grid. */}
+          <div className="rise mx-auto max-w-[340px] lg:max-w-none w-full" style={{ animationDelay: '400ms' }}>
             <FeaturedFind />
           </div>
         </div>
