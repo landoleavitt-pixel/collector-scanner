@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
+import SaveSearchModal from './components/SaveSearchModal';
+import { useUser } from '../lib/useUser';
+import { useRouter } from 'next/navigation';
 
 // Print run tiers — grouped visually by rarity.
 // Collectors mentally bucket these by tier, so we present them that way.
@@ -140,6 +143,9 @@ function printRunTier(runValue) {
 }
 
 export default function Home() {
+  const router = useRouter();
+  const { user } = useUser();
+  const [saveModalOpen, setSaveModalOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -198,6 +204,52 @@ export default function Home() {
   }, [loading]);
 
   const setFilter = (key, value) => setFilters((f) => ({ ...f, [key]: value }));
+
+  // Build the tier/filter chips for the save modal.
+  // Maps the in-app filter shape into the simplified tier system used in the
+  // modal + watchlist. Print-run tiers are derived from which preset runs are selected.
+  function buildSaveChips() {
+    const chips = [];
+    const selected = new Set(filters.selectedPrintRuns || []);
+    const hasGrail = ['/1', '/5', '/10', '/15', '/25'].some((r) => selected.has(r));
+    const hasUltra = ['/49', '/50', '/75', '/99'].some((r) => selected.has(r));
+    const hasRare = ['/100', '/125', '/150', '/175', '/199', '/249'].some((r) => selected.has(r));
+    const hasScarce = ['/250', '/299', '/399', '/499', '/599', '/699', '/799', '/899', '/999'].some((r) => selected.has(r));
+
+    if (filters.numberedCards) {
+      if (hasGrail) chips.push({ label: 'Grail · /1—25', tier: 'grail' });
+      if (hasUltra) chips.push({ label: 'Ultra · /26—99', tier: 'ultra' });
+      if (hasRare) chips.push({ label: 'Rare · /100—249', tier: 'rare' });
+      if (hasScarce) chips.push({ label: 'Scarce · /250—999', tier: 'scarce' });
+      if (filters.customPrintRuns?.length) {
+        chips.push({ label: `+${filters.customPrintRuns.length} custom`, tier: 'neutral' });
+      }
+    }
+
+    if (filters.autoCards) chips.push({ label: 'Auto', tier: 'neutral' });
+    if (filters.rookieCards) chips.push({ label: 'Rookie', tier: 'neutral' });
+    if (filters.condition === 'graded') chips.push({ label: 'Graded', tier: 'neutral' });
+    if (filters.condition === 'raw') chips.push({ label: 'Raw', tier: 'neutral' });
+    if (filters.listingType === 'buyItNow') chips.push({ label: 'Buy It Now', tier: 'neutral' });
+    if (filters.listingType === 'auction') chips.push({ label: 'Auction', tier: 'neutral' });
+
+    const min = filters.priceMin || 0;
+    const max = filters.priceMax ?? 1000;
+    if (min > 0 || max < 1000) {
+      chips.push({ label: `$${min}—$${max}`, tier: 'neutral' });
+    }
+
+    return chips;
+  }
+
+  // Open the save modal — or redirect to login if signed out.
+  function handleOpenSave() {
+    if (!user) {
+      router.push(`/login?next=${encodeURIComponent('/')}`);
+      return;
+    }
+    setSaveModalOpen(true);
+  }
 
   // Called when user submits the query from the landing hero search bar.
   // Advances to the 'configuring' stage where filters are chosen. Does NOT
@@ -357,6 +409,20 @@ export default function Home() {
                 onChange={(v) => setFilter('sortBy', v)}
               />
               <button
+                onClick={handleOpenSave}
+                className="flex items-center gap-2 px-4 py-2 rounded-full text-[11px] uppercase tracking-[0.18em] transition-colors"
+                style={{
+                  border: '0.5px solid var(--gold)',
+                  color: 'var(--gold)',
+                  background: 'transparent',
+                }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                </svg>
+                Save this search
+              </button>
+              <button
                 onClick={() => {
                   setAppStage('idle');
                   setQuery('');
@@ -391,6 +457,14 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      <SaveSearchModal
+        open={saveModalOpen}
+        onClose={() => setSaveModalOpen(false)}
+        query={query}
+        filters={filters}
+        chips={buildSaveChips()}
+      />
     </main>
   );
 }
