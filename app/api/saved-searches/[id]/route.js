@@ -1,6 +1,27 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabase } from '../../../../lib/supabaseServer';
 
+// Fetch a single saved search by id
+export async function GET(request, { params }) {
+  const supabase = createServerSupabase();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+  }
+
+  const { data, error } = await supabase
+    .from('saved_searches')
+    .select('*')
+    .eq('id', params.id)
+    .single();
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 404 });
+  }
+  return NextResponse.json({ search: data });
+}
+
 // Update a saved search (rename, toggle notifications)
 export async function PATCH(request, { params }) {
   const supabase = createServerSupabase();

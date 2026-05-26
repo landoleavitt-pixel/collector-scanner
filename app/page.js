@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, Suspense } from 'react';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import SaveSearchModal from './components/SaveSearchModal';
 import { useUser } from '../lib/useUser';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 // Print run tiers — grouped visually by rarity.
 // Collectors mentally bucket these by tier, so we present them that way.
@@ -142,9 +142,18 @@ function printRunTier(runValue) {
   return 'scarce';
 }
 
-export default function Home() {
+export default function HomePage() {
+  return (
+    <Suspense fallback={null}>
+      <Home />
+    </Suspense>
+  );
+}
+
+function Home() {
   const router = useRouter();
-  const { user } = useUser();
+  const searchParams = useSearchParams();
+  const { user, loading: userLoading } = useUser();
   const [saveModalOpen, setSaveModalOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
@@ -202,6 +211,46 @@ export default function Home() {
     }
     return () => clearInterval(phraseTimer.current);
   }, [loading]);
+
+  // Saved search URL loader.
+  // When the user clicks "View" on a row in /watchlist, we navigate here with
+  // ?savedSearch=<id>. Fetch that search and apply its filters + query, then
+  // run the search automatically.
+  const savedSearchLoaded = useRef(false);
+  useEffect(() => {
+    if (savedSearchLoaded.current) return;
+    if (userLoading) return;
+
+    const savedSearchId = searchParams.get('savedSearch');
+    if (!savedSearchId) return;
+
+    // Mark loaded before the async work so we don't double-fire on re-render
+    savedSearchLoaded.current = true;
+
+    (async () => {
+      try {
+        const res = await fetch(`/api/saved-searches/${savedSearchId}`);
+        if (!res.ok) return;
+        const { search } = await res.json();
+        if (!search) return;
+
+        // Merge saved filters over defaults so any missing keys keep sane values
+        const restored = { ...filters, ...(search.filters || {}) };
+        setFilters(restored);
+        setQuery(search.query);
+
+        // Strip the param from URL so refresh doesn't loop
+        router.replace('/', { scroll: false });
+
+        // Run the search with the restored filters (state hasn't flushed yet,
+        // so we pass them explicitly).
+        handleSearch(search.query, restored);
+      } catch {
+        // Silently fail — user lands on home page if anything went wrong
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userLoading, searchParams]);
 
   const setFilter = (key, value) => setFilters((f) => ({ ...f, [key]: value }));
 
@@ -265,13 +314,14 @@ export default function Home() {
     setAppStage('configuring');
   }
 
-  async function handleSearch(overrideQuery) {
+  async function handleSearch(overrideQuery, overrideFilters) {
     const q = (overrideQuery ?? query).trim();
     if (!q) {
       setError('Enter a card name to begin.');
       return;
     }
     if (overrideQuery) setQuery(overrideQuery);
+    const f = overrideFilters || filters;
     setError(null);
     setLoading(true);
     setAppStage('searched');
@@ -282,16 +332,16 @@ export default function Home() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           keywords: q,
-          autoCards: filters.autoCards,
-          numberedCards: filters.numberedCards,
+          autoCards: f.autoCards,
+          numberedCards: f.numberedCards,
           // Combine presets + custom into one array sent to the server
-          selectedPrintRuns: [...filters.selectedPrintRuns, ...filters.customPrintRuns],
-          rookieCards: filters.rookieCards,
-          listingType: filters.listingType,
-          condition: filters.condition,
-          priceMin: filters.priceMin,
-          priceMax: filters.priceMax === 5000 ? null : filters.priceMax,
-          sortBy: filters.sortBy,
+          selectedPrintRuns: [...f.selectedPrintRuns, ...f.customPrintRuns],
+          rookieCards: f.rookieCards,
+          listingType: f.listingType,
+          condition: f.condition,
+          priceMin: f.priceMin,
+          priceMax: f.priceMax === 5000 ? null : f.priceMax,
+          sortBy: f.sortBy,
         }),
       });
       const data = await res.json();
@@ -305,7 +355,7 @@ export default function Home() {
         // Snapshot the filter values that produced this result set, so we
         // can detect when subsequent edits create "pending changes" relative
         // to what's actually shown.
-        setAppliedFilters({ ...filters });
+        setAppliedFilters({ ...f });
       }
     } catch (e) {
       setError('Network error. Please try again.');

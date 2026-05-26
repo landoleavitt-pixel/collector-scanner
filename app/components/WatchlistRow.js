@@ -81,9 +81,7 @@ export default function WatchlistRow({ search }) {
   }
 
   function handleView() {
-    const params = new URLSearchParams();
-    params.set('q', search.query);
-    router.push(`/?${params.toString()}`);
+    router.push(`/?savedSearch=${search.id}`);
   }
 
   return (
