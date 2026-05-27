@@ -17,6 +17,9 @@ export default function ForgotPasswordPage() {
     e.preventDefault();
     setError('');
     setLoading(true);
+    // Reset link must point straight to /reset-password so the page can
+    // exchange the code and show the new-password form. Routing through
+    // /auth/callback would log the user in and bounce them home.
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
     });
