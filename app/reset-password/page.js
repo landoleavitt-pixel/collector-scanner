@@ -1,58 +1,33 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { createClient } from '../../lib/supabaseClient';
 import Seal from '../components/Seal';
 
 export default function ResetPasswordPage() {
-  return (
-    <Suspense fallback={null}>
-      <ResetPasswordInner />
-    </Suspense>
-  );
-}
-
-function ResetPasswordInner() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const supabase = createClient();
 
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [exchanging, setExchanging] = useState(true);
-  const [exchangeFailed, setExchangeFailed] = useState(false);
+  const [checking, setChecking] = useState(true);
+  const [authed, setAuthed] = useState(false);
 
-  // On mount: if there's a ?code= in the URL, exchange it for a session.
-  // This is what the reset link in the email contains. After exchange the
-  // user has a temporary authenticated session and can set a new password.
+  // The /auth/callback route verifies the token_hash before redirecting here,
+  // so by the time this page loads the user should already have a session.
+  // We just confirm that and show either the form or an "expired" fallback.
   useEffect(() => {
-    const code = searchParams.get('code');
-
-    if (!code) {
-      // No code in URL — they might already have a session (e.g., refreshed
-      // the page). Verify by checking the user.
-      supabase.auth.getUser().then(({ data, error }) => {
-        if (error || !data.user) {
-          setExchangeFailed(true);
-        }
-        setExchanging(false);
-      });
-      return;
-    }
-
-    (async () => {
-      const { error } = await supabase.auth.exchangeCodeForSession(code);
-      if (error) {
-        setExchangeFailed(true);
+    supabase.auth.getUser().then(({ data, error }) => {
+      if (error || !data.user) {
+        setAuthed(false);
       } else {
-        // Strip the code from the URL so refreshes don't try to reuse it
-        router.replace('/reset-password', { scroll: false });
+        setAuthed(true);
       }
-      setExchanging(false);
-    })();
+      setChecking(false);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -98,11 +73,11 @@ function ResetPasswordInner() {
             color: '#e8e2d5',
           }}
         >
-          {exchanging ? (
+          {checking ? (
             <p className="text-center text-[13px]" style={{ color: '#8a8275' }}>
               Verifying your reset link…
             </p>
-          ) : exchangeFailed ? (
+          ) : !authed ? (
             <>
               <h1
                 className="font-serif italic text-[26px] leading-tight text-center mb-1"
