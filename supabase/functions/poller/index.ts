@@ -1,0 +1,453 @@
+// Fields & Floors notification poller
+//
+// Runs on Supabase Edge Functions, triggered by pg_cron (hourly).
+// Workflow:
+//   1. Fetch all active saved searches (notify_enabled = true)
+//   2. Group by deduplicated query+filter signature
+//   3. Call the existing /api/search endpoint for each unique combo
+//      (so the verification pipeline lives in one place — the Next.js app)
+//   4. For each user, diff results against sent_notifications to find new matches
+//   5. Send one email per user with all their new matches
+//   6. Write sent_notifications rows so we never re-notify
+
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { Resend } from "https://esm.sh/resend@4";
+
+// --- Environment ---
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY")!;
+const APP_BASE_URL = Deno.env.get("APP_BASE_URL") ?? "https://fieldsandfloors.com";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+const resend = new Resend(RESEND_API_KEY);
+
+// One-time startup log to verify env vars are loaded. Shows only the
+// prefix and length of the key — never the full secret.
+console.log(`Boot: RESEND_API_KEY prefix=${RESEND_API_KEY?.slice(0, 6)}, length=${RESEND_API_KEY?.length}, APP_BASE_URL=${APP_BASE_URL}`);
+
+// --- Types ---
+interface SavedSearch {
+  id: string;
+  user_id: string;
+  name: string;
+  query: string;
+  filters: Record<string, unknown>;
+  notify_enabled: boolean;
+}
+
+interface Listing {
+  id: string;
+  title: string;
+  price: string | number | null;
+  currency: string;
+  image: string | null;
+  url: string;
+  condition?: string;
+  isAuction?: boolean;
+  isBuyItNow?: boolean;
+}
+
+interface UserDigest {
+  userId: string;
+  email: string;
+  bySearch: Map<SavedSearch, Listing[]>;
+}
+
+// --- Main handler ---
+Deno.serve(async (_req) => {
+  const startedAt = new Date().toISOString();
+  let searchesChecked = 0;
+  let notificationsSent = 0;
+  const errors: string[] = [];
+
+  try {
+    // 1. Fetch all active saved searches
+    const { data: searches, error: fetchError } = await supabase
+      .from("saved_searches")
+      .select("*")
+      .eq("notify_enabled", true);
+
+    if (fetchError) throw fetchError;
+    if (!searches || searches.length === 0) {
+      return jsonResponse({ ok: true, message: "No active searches", searchesChecked: 0 });
+    }
+
+    // 2. Group by query+filter signature so identical searches share one eBay call
+    const groups = groupBySignature(searches as SavedSearch[]);
+
+    // Build a per-user digest as we process each group
+    const userDigests = new Map<string, UserDigest>();
+
+    for (const [_signature, group] of groups) {
+      try {
+        const { query, filters, searches: searchesInGroup } = group;
+
+        // 3. Hit our own /api/search endpoint so verification pipeline stays in one place
+        const results = await callAppSearch(query, filters);
+        searchesChecked += searchesInGroup.length;
+
+        if (!results || results.length === 0) continue;
+
+        // 4. For each user, find listings they haven't been notified about
+        const userIds = [...new Set(searchesInGroup.map((s) => s.user_id))];
+        const listingIds = results.map((r) => r.id);
+
+        const { data: alreadySent } = await supabase
+          .from("sent_notifications")
+          .select("user_id, listing_id")
+          .in("user_id", userIds)
+          .in("listing_id", listingIds);
+
+        const sentSet = new Set(
+          (alreadySent ?? []).map((row) => `${row.user_id}::${row.listing_id}`)
+        );
+
+        for (const search of searchesInGroup) {
+          const newMatches = results.filter(
+            (r) => !sentSet.has(`${search.user_id}::${r.id}`)
+          );
+          if (newMatches.length === 0) continue;
+
+          const email = await getUserEmail(search.user_id);
+          if (!email) continue;
+
+          if (!userDigests.has(search.user_id)) {
+            userDigests.set(search.user_id, {
+              userId: search.user_id,
+              email,
+              bySearch: new Map(),
+            });
+          }
+          userDigests.get(search.user_id)!.bySearch.set(search, newMatches);
+        }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        errors.push(`Group ${group.query}: ${msg}`);
+      }
+    }
+
+    // 5. Send one email per user with all their new matches
+    for (const digest of userDigests.values()) {
+      try {
+        await sendDigestEmail(digest);
+
+        // 6. Log everything we just notified about so we don't re-spam
+        const rows: Array<{ user_id: string; saved_search_id: string; listing_id: string }> = [];
+        for (const [search, listings] of digest.bySearch) {
+          for (const listing of listings) {
+            rows.push({
+              user_id: digest.userId,
+              saved_search_id: search.id,
+              listing_id: listing.id,
+            });
+          }
+        }
+        if (rows.length > 0) {
+          await supabase.from("sent_notifications").insert(rows);
+        }
+        notificationsSent++;
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        errors.push(`Send to ${digest.email}: ${msg}`);
+      }
+    }
+
+    return jsonResponse({
+      ok: true,
+      startedAt,
+      searchesChecked,
+      notificationsSent,
+      errorCount: errors.length,
+      errors: errors.slice(0, 5),
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return jsonResponse({ ok: false, error: msg }, 500);
+  }
+});
+
+// --- Helpers ---
+
+function jsonResponse(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body, null, 2), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+// Group identical query+filter combos so we make one eBay call per unique signature.
+function groupBySignature(searches: SavedSearch[]) {
+  const groups = new Map<
+    string,
+    { query: string; filters: Record<string, unknown>; searches: SavedSearch[] }
+  >();
+  for (const s of searches) {
+    const sig = JSON.stringify({ q: s.query.trim().toLowerCase(), f: s.filters });
+    if (!groups.has(sig)) {
+      groups.set(sig, { query: s.query, filters: s.filters, searches: [] });
+    }
+    groups.get(sig)!.searches.push(s);
+  }
+  return groups;
+}
+
+// Call the existing Next.js search endpoint so we don't duplicate eBay logic.
+async function callAppSearch(query: string, filters: Record<string, unknown>): Promise<Listing[]> {
+  const url = `${APP_BASE_URL}/api/search`;
+  const body = {
+    keywords: query,
+    autoCards: filters.autoCards ?? false,
+    numberedCards: filters.numberedCards ?? false,
+    selectedPrintRuns: [
+      ...((filters.selectedPrintRuns as string[]) ?? []),
+      ...((filters.customPrintRuns as string[]) ?? []),
+    ],
+    rookieCards: filters.rookieCards ?? false,
+    listingType: filters.listingType ?? "any",
+    condition: filters.condition ?? "any",
+    priceMin: filters.priceMin ?? 0,
+    priceMax: filters.priceMax === 5000 ? null : (filters.priceMax ?? 1000),
+    sortBy: filters.sortBy ?? "printrun-rarest",
+  };
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Search API returned ${res.status}`);
+  }
+  const data = await res.json();
+  return data.items ?? [];
+}
+
+// Fetch a user's email from Supabase auth.
+async function getUserEmail(userId: string): Promise<string | null> {
+  const { data, error } = await supabase.auth.admin.getUserById(userId);
+  if (error || !data?.user?.email) return null;
+  return data.user.email;
+}
+
+// Send a single digest email for one user, listing all their new matches.
+async function sendDigestEmail(digest: UserDigest) {
+  const totalMatches = [...digest.bySearch.values()].reduce((sum, arr) => sum + arr.length, 0);
+  const subject = buildSubject(digest);
+  const html = buildEmailHtml(digest);
+
+  const result = await resend.emails.send({
+    from: "Fields & Floors <alerts@fieldsandfloors.com>",
+    to: digest.email,
+    subject,
+    html,
+  });
+
+  // Resend's SDK returns { data, error } instead of throwing. Surface either.
+  if (result.error) {
+    console.error(`Resend error for ${digest.email}:`, JSON.stringify(result.error));
+    throw new Error(`Resend rejected: ${JSON.stringify(result.error)}`);
+  }
+
+  console.log(`Sent digest to ${digest.email}: ${totalMatches} matches, id=${result.data?.id}`);
+}
+
+function buildSubject(digest: UserDigest): string {
+  const searches = [...digest.bySearch.entries()];
+  const totalMatches = searches.reduce((sum, [, listings]) => sum + listings.length, 0);
+
+  if (searches.length === 1) {
+    const [search, listings] = searches[0];
+    if (listings.length === 1) {
+      const l = listings[0];
+      const price = l.price != null
+        ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(Number(l.price))
+        : "";
+      return `A new match for ${search.name}${price ? ` — ${price}` : ""}`;
+    }
+    return `${listings.length} new matches for ${search.name}`;
+  }
+
+  return `${totalMatches} new matches across your watchlist`;
+}
+
+function buildEmailHtml(digest: UserDigest): string {
+  const sections = [...digest.bySearch.entries()]
+    .map(([search, listings]) => renderSearchSection(search, listings))
+    .join("");
+
+  return `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#0f0c0a;font-family:system-ui,-apple-system,Segoe UI,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f0c0a;padding:40px 20px;">
+    <tr><td align="center">
+
+      <!-- Brand header -->
+      <table width="100%" style="max-width:560px;margin-bottom:24px;">
+        <tr><td>
+          <div style="font-family:Georgia,serif;font-size:20px;color:#d4af5c;font-style:italic;letter-spacing:0.02em;text-align:center;">
+            Fields &amp; Floors
+          </div>
+          <div style="font-size:10px;color:#6e675b;letter-spacing:0.22em;text-transform:uppercase;text-align:center;margin-top:6px;">
+            New on the hunt
+          </div>
+        </td></tr>
+      </table>
+
+      ${sections}
+
+      <!-- Footer -->
+      <table width="100%" style="max-width:560px;margin-top:32px;">
+        <tr><td style="text-align:center;font-size:11px;color:#6e675b;line-height:1.6;">
+          You're receiving this because you saved a search on Fields &amp; Floors.<br>
+          <a href="${APP_BASE_URL}/watchlist" style="color:#8a8275;text-decoration:underline;">Manage your watchlist</a>
+        </td></tr>
+      </table>
+
+    </td></tr>
+  </table>
+</body>
+</html>
+  `.trim();
+}
+
+function renderSearchSection(search: SavedSearch, listings: Listing[]): string {
+  return `
+    <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin-bottom:28px;">
+      <tr><td style="padding-bottom:14px;border-bottom:0.5px solid rgba(232,226,213,0.1);">
+        <div style="font-family:Georgia,serif;font-style:italic;font-size:20px;color:#e8e2d5;">${escapeHtml(search.name)}</div>
+        <div style="font-size:11px;color:#8a8275;letter-spacing:0.08em;text-transform:uppercase;margin-top:4px;">
+          ${listings.length} new ${listings.length === 1 ? "match" : "matches"}
+        </div>
+      </td></tr>
+      ${listings.map(renderListingCard).join("")}
+    </table>
+  `;
+}
+
+function renderListingCard(l: Listing): string {
+  const price = l?.price != null
+    ? new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 0,
+      }).format(Number(l.price))
+    : "—";
+  const img = (l?.image && typeof l.image === "string") ? l.image : "";
+  // Upscale eBay's thumbnail using their s-l URL trick (only if we have an image)
+  const upscaledImg = img ? img.replace(/\/s-l\d+\.(\w+)/, "/s-l500.$1") : "";
+  const title = l?.title ?? "";
+  const webUrl = l?.url ?? "#";
+
+  // Derive chips from the listing — print run + tier, auto, rookie, grading, listing type
+  const lowerTitle = title.toLowerCase();
+  const hasAuto = /\bauto\b|autograph|signed/.test(lowerTitle);
+  const hasRookie = /\brookie/.test(lowerTitle) || /\brc\b/.test(lowerTitle) || /\b1st\s+bowman\b/.test(lowerTitle);
+  const printRun = detectPrintRun(title);
+  const tier = printRun ? printRunTier(printRun) : null;
+  const psaMatch = title.match(/PSA\s*(\d{1,2})/i);
+  const bgsMatch = title.match(/BGS\s*(\d{1,2}(?:\.\d)?)/i);
+  const sgcMatch = title.match(/SGC\s*(\d{1,2}(?:\.\d)?)/i);
+  const cgcMatch = title.match(/CGC\s*(\d{1,2}(?:\.\d)?)/i);
+
+  // Row tier styling — left border + faint gradient wash, mirrors the search results page
+  const TIER_ROW_STYLES: Record<string, { bg: string; border: string }> = {
+    grail:  { bg: "linear-gradient(90deg, rgba(255,180,30,0.18) 0%, rgba(245,200,80,0.05) 30%, transparent 60%)", border: "#ffc14d" },
+    ultra:  { bg: "linear-gradient(90deg, rgba(180,200,220,0.14) 0%, rgba(210,220,230,0.03) 25%, transparent 50%)", border: "#c8d4e0" },
+    rare:   { bg: "linear-gradient(90deg, rgba(200,90,30,0.12) 0%, rgba(220,110,50,0.03) 22%, transparent 45%)", border: "#d6722d" },
+    scarce: { bg: "linear-gradient(90deg, rgba(80,90,100,0.09) 0%, transparent 24%)", border: "#5a6470" },
+  };
+  const rowStyle = tier ? TIER_ROW_STYLES[tier] : null;
+  const rowBg = rowStyle ? `background:#1a1614;background-image:${rowStyle.bg};border-left:2px solid ${rowStyle.border};` : `background:#1a1614;border-left:2px solid rgba(232,226,213,0.08);`;
+
+  // Tier-gradient chips for print runs (matches the Badge component on the live site)
+  const TIER_CHIP_STYLES: Record<string, string> = {
+    grail:  "color:#1a1612;background-image:linear-gradient(180deg,#ffd97a 0%,#d99c14 100%);border:0.5px solid #ffc14d;font-weight:700;",
+    ultra:  "color:#1a1612;background-image:linear-gradient(180deg,#e0e8f0 0%,#98a5b3 100%);border:0.5px solid #c8d4e0;font-weight:700;",
+    rare:   "color:#1a1612;background-image:linear-gradient(180deg,#d6884a 0%,#8e4f1f 100%);border:0.5px solid #d6722d;font-weight:700;",
+    scarce: "color:#1a1612;background-image:linear-gradient(180deg,#8a96a4 0%,#4a5360 100%);border:0.5px solid #5a6470;font-weight:600;",
+  };
+  const defaultChipStyle = "color:#ffd97a;background:rgba(212,175,92,0.06);border:0.5px solid #8a7548;";
+  const auctionChipStyle = "color:#e6a86b;background:rgba(201,122,58,0.10);border:0.5px solid #c97a3a;";
+
+  const chips: string[] = [];
+  if (printRun && tier) {
+    chips.push(`<span style="display:inline-block;padding:3px 8px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;${TIER_CHIP_STYLES[tier]}margin-right:4px;">/${printRun}</span>`);
+  }
+  if (hasAuto) chips.push(`<span style="display:inline-block;padding:3px 8px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;${defaultChipStyle}margin-right:4px;">Auto</span>`);
+  if (hasRookie) chips.push(`<span style="display:inline-block;padding:3px 8px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;${defaultChipStyle}margin-right:4px;">RC</span>`);
+  if (psaMatch) chips.push(`<span style="display:inline-block;padding:3px 8px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;${defaultChipStyle}margin-right:4px;">PSA ${psaMatch[1]}</span>`);
+  if (bgsMatch) chips.push(`<span style="display:inline-block;padding:3px 8px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;${defaultChipStyle}margin-right:4px;">BGS ${bgsMatch[1]}</span>`);
+  if (sgcMatch) chips.push(`<span style="display:inline-block;padding:3px 8px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;${defaultChipStyle}margin-right:4px;">SGC ${sgcMatch[1]}</span>`);
+  if (cgcMatch) chips.push(`<span style="display:inline-block;padding:3px 8px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;${defaultChipStyle}margin-right:4px;">CGC ${cgcMatch[1]}</span>`);
+  if (l?.isAuction) {
+    chips.push(`<span style="display:inline-block;padding:3px 8px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;${auctionChipStyle}margin-right:4px;">Auction</span>`);
+  } else if (l?.isBuyItNow) {
+    chips.push(`<span style="display:inline-block;padding:3px 8px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;${defaultChipStyle}margin-right:4px;">Buy It Now</span>`);
+  }
+
+  return `
+    <tr><td style="padding-top:12px;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="${rowBg}border-radius:0;">
+        <tr>
+          <td width="108" style="padding:16px 0 16px 18px;vertical-align:top;">
+            ${upscaledImg
+              ? `<img src="${escapeHtml(upscaledImg)}" width="96" height="128" style="border-radius:6px;display:block;background:#221d1a;object-fit:cover;" alt="">`
+              : `<div style="width:96px;height:128px;border-radius:6px;background:#221d1a;"></div>`}
+          </td>
+          <td style="padding:16px 8px 16px 14px;vertical-align:top;">
+            <div style="font-size:13px;color:#e8e2d5;line-height:1.4;margin-bottom:10px;">${escapeHtml(title)}</div>
+            <div>${chips.join("")}</div>
+          </td>
+          <td width="110" style="padding:16px 18px 16px 8px;vertical-align:middle;text-align:right;">
+            <div style="font-family:Georgia,serif;font-style:italic;font-size:30px;color:#d4af5c;line-height:1;margin-bottom:12px;">${escapeHtml(price)}</div>
+            <a href="${escapeHtml(webUrl)}" style="display:inline-block;padding:7px 14px;background:transparent;border:0.5px solid rgba(212,175,92,0.5);color:#d4af5c;text-decoration:none;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;border-radius:999px;">View</a>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  `;
+}
+
+// Detect print run from a listing title — looks for explicit /N patterns,
+// rejects years, dates, and inventory counts. Mirrors the logic on the home page.
+function detectPrintRun(title: string): string | null {
+  if (!title) return null;
+  // Match patterns like #/25, /25, 13/25, "to 25", "of 25"
+  const patterns = [
+    /#\/(\d{1,4})\b/,                          // #/25
+    /\b\d{1,4}\s*\/\s*(\d{1,4})\b/,            // 13/25
+    /\/(\d{1,4})\b(?![,\d])/,                  // /25 not followed by more digits
+  ];
+  for (const re of patterns) {
+    const m = title.match(re);
+    if (m) {
+      const n = parseInt(m[1], 10);
+      // Reasonable print run range: reject years (1900+), reject 0
+      if (n >= 1 && n <= 999) return String(n);
+    }
+  }
+  return null;
+}
+
+function printRunTier(runValue: string): string {
+  const n = parseInt(String(runValue).replace("/", ""), 10);
+  if (isNaN(n)) return "scarce";
+  if (n <= 25) return "grail";
+  if (n <= 99) return "ultra";
+  if (n <= 249) return "rare";
+  return "scarce";
+}
+
+function escapeHtml(s: string | undefined | null): string {
+  if (!s) return "";
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}

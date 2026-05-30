@@ -503,6 +503,7 @@ function Home() {
               formatPrice={formatPrice}
               scanPhrase={SCANNING_PHRASES[scanIdx]}
               onSuggested={(s) => handleSearch(s)}
+              appliedFilters={appliedFilters}
             />
           </div>
         </section>
@@ -1558,11 +1559,11 @@ function RangeRow({ label, value, max, step, onChange, showPlus }) {
 /* ─────────────────────────────────────────────
    Results — refined cards with badge system
    ───────────────────────────────────────────── */
-function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase, onSuggested }) {
+function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase, onSuggested, appliedFilters }) {
   if (loading) return <LoadingState phrase={scanPhrase} />;
   if (!hasSearched) return <ResolveState onSuggested={onSuggested} />;
   if (!loading && hasSearched && results.length === 0 && !error)
-    return <NoResultsState onSuggested={onSuggested} />;
+    return <NoResultsState onSuggested={onSuggested} appliedFilters={appliedFilters} />;
 
   return (
     <div>
@@ -1817,7 +1818,7 @@ function LoadingState({ phrase }) {
   );
 }
 
-function NoResultsState({ onSuggested }) {
+function NoResultsState({ onSuggested, appliedFilters }) {
   return (
     <div className="pt-2">
       <div className="flex items-baseline justify-between pb-4 mb-8 border-b border-[var(--line)]">
@@ -1825,19 +1826,8 @@ function NoResultsState({ onSuggested }) {
         <span className="font-mono text-[10px] text-[var(--ink-600)] tracking-wider">00</span>
       </div>
       <p className="font-display italic text-2xl text-[var(--ink-200)] leading-snug text-balance max-w-md">
-        Nothing surfaced. Loosen the filters, or try one of these:
+        No results found with your current filters. Adjust them and try again.
       </p>
-      <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 max-w-md">
-        {SUGGESTED_SEARCHES.slice(0, 4).map((s) => (
-          <button
-            key={s}
-            onClick={() => onSuggested(s)}
-            className="text-sm text-[var(--ink-200)] hover:text-[var(--gold)] transition-colors border-b border-transparent hover:border-[var(--gold)] pb-0.5"
-          >
-            {s}
-          </button>
-        ))}
-      </div>
     </div>
   );
 }
