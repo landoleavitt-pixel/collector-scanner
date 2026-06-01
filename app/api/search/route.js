@@ -188,7 +188,8 @@ function buildSearchParams(criteria) {
   // Leaving broad on purpose; users can narrow with keywords.
   const params = new URLSearchParams({
     q,
-    limit: '100', // Fetch generously — verification + filtering can drop a lot, and mixed BIN+Auction results need headroom
+    limit: '200', // eBay's max per page. We paginate with offset for completeness.
+    offset: String(criteria.offset ?? 0),
     category_ids: '212',
   });
 
@@ -409,35 +410,59 @@ function verifyPrintRun(title, numberedLimit) {
 }
 
 /**
- * Single eBay fetch — given a criteria object, builds params and returns
- * normalized items. Used once for BIN-only, Auction-only, or twice (in parallel)
- * for "Any listing" mode.
+ * Paginated eBay fetch — loops through up to MAX_PAGES pages of 200, with
+ * early-exit when eBay reports no more results. Returns { items, total }
+ * where total is eBay's reported match count for the query (so callers can
+ * tell the user "showing X of N" when results exceed what we fetched).
+ *
+ * Most filtered searches return everything in 1 page and exit immediately;
+ * the page ceiling only matters for broad searches with many matches.
  */
+const MAX_PAGES = 3;       // ceiling — 3 × 200 = up to 600 raw listings
+const PAGE_SIZE = 200;     // eBay's max per call
+
 async function fetchEbayResults(criteria, token) {
-  const params = buildSearchParams(criteria);
-  const url = `${EBAY_SEARCH_URL}?${params.toString()}`;
+  let all = [];
+  let total = 0;
 
-  console.log('eBay request:', {
-    listingType: criteria.listingType,
-    expandedQ: params.get('q'),
-    filter: params.get('filter'),
-  });
+  for (let page = 0; page < MAX_PAGES; page++) {
+    const offset = page * PAGE_SIZE;
+    const params = buildSearchParams({ ...criteria, offset });
+    const url = `${EBAY_SEARCH_URL}?${params.toString()}`;
 
-  const res = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US',
-      'Content-Type': 'application/json',
-    },
-  });
+    if (page === 0) {
+      console.log('eBay request:', {
+        listingType: criteria.listingType,
+        expandedQ: params.get('q'),
+        filter: params.get('filter'),
+      });
+    }
 
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`eBay search failed (${res.status}): ${text}`);
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US',
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`eBay search failed (${res.status}): ${text}`);
+    }
+
+    const data = await res.json();
+    total = data.total ?? total;
+    const batch = (data.itemSummaries ?? []).map(normalizeItem);
+    all = all.concat(batch);
+
+    // Early-exit: stop when eBay returns a short page (no more results) or
+    // when we've already fetched everything eBay says exists.
+    if (batch.length < PAGE_SIZE) break;
+    if (all.length >= total) break;
   }
 
-  const data = await res.json();
-  return (data.itemSummaries ?? []).map(normalizeItem);
+  return { items: all, total };
 }
 
 export async function POST(req) {
@@ -457,24 +482,29 @@ export async function POST(req) {
     // mixed-mode results hide some auctions in favor of BIN listings. Fix by
     // running TWO explicit queries (BIN + Auction) in parallel and merging.
     let items;
+    let ebayTotal = 0;
     if (criteria.listingType === 'any' || !criteria.listingType) {
-      const [binItems, auctionItems] = await Promise.all([
+      const [binResult, auctionResult] = await Promise.all([
         fetchEbayResults({ ...criteria, listingType: 'buyItNow' }, token),
         fetchEbayResults({ ...criteria, listingType: 'auction' }, token),
       ]);
+      // Combined total across both listing types (best estimate of the full pool)
+      ebayTotal = binResult.total + auctionResult.total;
       // Merge with deduplication by item ID
       const seen = new Set();
       items = [];
-      for (const it of [...binItems, ...auctionItems]) {
+      for (const it of [...binResult.items, ...auctionResult.items]) {
         if (!seen.has(it.id)) {
           seen.add(it.id);
           items.push(it);
         }
       }
-      console.log(`Any listing union: BIN=${binItems.length}, Auction=${auctionItems.length}, merged=${items.length}`);
+      console.log(`Any listing union: BIN=${binResult.items.length}, Auction=${auctionResult.items.length}, merged=${items.length}, ebayTotal=${ebayTotal}`);
     } else {
       // BIN-only or Auction-only — single query
-      items = await fetchEbayResults(criteria, token);
+      const result = await fetchEbayResults(criteria, token);
+      items = result.items;
+      ebayTotal = result.total;
     }
 
     // Player name verification — eBay often returns loose matches that ignore
@@ -545,9 +575,18 @@ export async function POST(req) {
       console.log(`Condition verify (${criteria.condition}): ${before} → ${items.length}`);
     }
 
+    // `total` = how many matched after our filters (what the user sees).
+    // `ebayTotal` = how many eBay reported for the raw query before filtering.
+    // `capped` = true when eBay had more raw listings than our page ceiling
+    // could fetch, so the user knows results may be incomplete for broad searches.
+    const MAX_FETCHED = MAX_PAGES * PAGE_SIZE * (
+      criteria.listingType === 'any' || !criteria.listingType ? 2 : 1
+    );
     return NextResponse.json({
       items,
       total: items.length,
+      ebayTotal,
+      capped: ebayTotal > MAX_FETCHED,
     });
   } catch (err) {
     console.error('Search route error:', err);

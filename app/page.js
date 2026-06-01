@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useMemo, useRef, Suspense } from 'react';
-import { ArrowRight, ArrowUpRight } from 'lucide-react';
+import { useState, useEffect, useMemo, useRef, Suspense, createContext, useContext } from 'react';
+import { ArrowRight, ArrowUpRight, ArrowUp } from 'lucide-react';
 import SaveSearchModal from './components/SaveSearchModal';
 import { useUser } from '../lib/useUser';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -145,7 +145,9 @@ function printRunTier(runValue) {
 export default function HomePage() {
   return (
     <Suspense fallback={null}>
-      <Home />
+      <WatchlistProvider>
+        <Home />
+      </WatchlistProvider>
     </Suspense>
   );
 }
@@ -159,6 +161,10 @@ function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [results, setResults] = useState([]);
+  // Metadata about the last result set — eBay's reported total and whether
+  // results were capped by our page ceiling (broad searches). Used to show an
+  // honest "showing X of N" note.
+  const [resultMeta, setResultMeta] = useState({ ebayTotal: 0, capped: false });
   // App flow state: 'idle' (landing, hero showing) → 'configuring' (user
   // submitted query, filter panel showing) → 'searched' (results showing
   // with compact filter bar above).
@@ -352,6 +358,7 @@ function Home() {
         // Store raw results; sorting happens via useMemo so changing the sort
         // option instantly re-orders without re-fetching from eBay.
         setResults(data.items || []);
+        setResultMeta({ ebayTotal: data.ebayTotal || 0, capped: !!data.capped });
         // Snapshot the filter values that produced this result set, so we
         // can detect when subsequent edits create "pending changes" relative
         // to what's actually shown.
@@ -504,6 +511,7 @@ function Home() {
               scanPhrase={SCANNING_PHRASES[scanIdx]}
               onSuggested={(s) => handleSearch(s)}
               appliedFilters={appliedFilters}
+              resultMeta={resultMeta}
             />
           </div>
         </section>
@@ -516,6 +524,7 @@ function Home() {
         filters={filters}
         chips={buildSaveChips()}
       />
+      <BackToTop />
     </main>
   );
 }
@@ -550,7 +559,13 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested }) {
                 className="mt-7 text-[var(--ink-200)] leading-relaxed text-pretty rise"
                 style={{ animationDelay: '120ms' }}
               >
-                A search instrument for collectors.
+                A search instrument for sports card collectors.
+              </p>
+              <p
+                className="mt-2.5 text-sm text-[var(--ink-400)] leading-relaxed text-pretty rise max-w-[440px]"
+                style={{ animationDelay: '160ms' }}
+              >
+                Filter by print run, autograph, and grade — and get alerts when new cards surface.
               </p>
 
               {/* Search bar — bigger label, vertically centered, larger overall */}
@@ -1559,20 +1574,228 @@ function RangeRow({ label, value, max, step, onChange, showPlus }) {
 /* ─────────────────────────────────────────────
    Results — refined cards with badge system
    ───────────────────────────────────────────── */
-function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase, onSuggested, appliedFilters }) {
+// Floating button that appears after scrolling down, returns to top on click.
+function BackToTop() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 600);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <button
+      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+      aria-label="Back to top"
+      className="fixed bottom-6 right-6 z-50 w-11 h-11 rounded-full flex items-center justify-center transition-opacity hover:opacity-90"
+      style={{
+        background: 'var(--bg-elev)',
+        border: '0.5px solid var(--gold-deep)',
+        color: 'var(--gold)',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+      }}
+    >
+      <ArrowUp className="w-4 h-4" strokeWidth={1.6} />
+    </button>
+  );
+}
+
+const PAGE_DISPLAY_SIZE = 200; // how many cards to render at once
+
+function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase, onSuggested, appliedFilters, resultMeta }) {
+  // How many cards are currently shown. Resets to the first page whenever a new
+  // result set arrives (keyed on result count + first id below).
+  const [shown, setShown] = useState(PAGE_DISPLAY_SIZE);
+
+  // Reset the visible count when the result set changes.
+  const firstId = results[0]?.id;
+  useEffect(() => {
+    setShown(PAGE_DISPLAY_SIZE);
+  }, [results.length, firstId]);
+
   if (loading) return <LoadingState phrase={scanPhrase} />;
   if (!hasSearched) return <ResolveState onSuggested={onSuggested} />;
   if (!loading && hasSearched && results.length === 0 && !error)
     return <NoResultsState onSuggested={onSuggested} appliedFilters={appliedFilters} />;
 
+  const capped = resultMeta?.capped;
+  const visible = results.slice(0, shown);
+  const remaining = results.length - visible.length;
+
   return (
     <div>
+      {capped && (
+        <p className="text-[11px] text-[var(--ink-500)] mb-4 leading-relaxed">
+          Showing the first {results.length} matches. This is a broad search —
+          narrow with filters like print run, auto, or condition to surface the
+          rarest cards.
+        </p>
+      )}
       <div className="divide-y divide-[var(--line-soft)]">
-        {results.map((item, i) => (
+        {visible.map((item, i) => (
           <ResultCard key={item.id} item={item} formatPrice={formatPrice} index={i} />
         ))}
       </div>
+
+      {remaining > 0 && (
+        <div className="pt-8 flex flex-col items-center gap-3">
+          <span className="text-[11px] tracking-[0.14em] uppercase" style={{ color: 'var(--ink-600)' }}>
+            Showing {visible.length} of {results.length}
+          </span>
+          <button
+            onClick={() => setShown((n) => n + PAGE_DISPLAY_SIZE)}
+            className="text-[11px] uppercase tracking-[0.2em] px-6 py-3 rounded-full transition-opacity hover:opacity-90"
+            style={{ border: '0.5px solid rgba(201,149,74,0.5)', color: 'var(--gold)' }}
+          >
+            Load {Math.min(PAGE_DISPLAY_SIZE, remaining)} more
+          </button>
+        </div>
+      )}
     </div>
+  );
+}
+
+// Compute the badge/snapshot metadata for a listing, so the watchlist tile
+// can render the same badges the result card shows without re-deriving.
+function buildBadgePayload(item) {
+  const title = item.title || '';
+  const lower = title.toLowerCase();
+  const printRun = detectPrintRun(title);
+  return {
+    printRun: printRun || null,
+    tier: printRun ? printRunTier(printRun) : null,
+    auto: /\bauto\b|autograph|signed/.test(lower),
+    rookie: /\brookie/.test(lower) || /\brc\b/.test(lower) || /\b1st\s+bowman\b/.test(lower),
+    psa: title.match(/PSA\s*(\d{1,2})/i)?.[1] || null,
+    bgs: title.match(/BGS\s*(\d{1,2}(?:\.\d)?)/i)?.[1] || null,
+    sgc: title.match(/SGC\s*(\d{1,2}(?:\.\d)?)/i)?.[1] || null,
+    cgc: title.match(/CGC\s*(\d{1,2}(?:\.\d)?)/i)?.[1] || null,
+    isAuction: !!item.isAuction,
+    isBuyItNow: !!item.isBuyItNow,
+  };
+}
+
+// Shared watchlist state — fetched ONCE and shared with every star, instead of
+// each star fetching the whole list on mount (which caused dozens of identical
+// requests on a results page). Provides the set of saved listing IDs + toggle.
+const WatchlistContext = createContext(null);
+
+function WatchlistProvider({ children }) {
+  const { user } = useUser();
+  const [savedIds, setSavedIds] = useState(() => new Set());
+
+  // Fetch the user's watchlist once when they're known.
+  useEffect(() => {
+    let cancelled = false;
+    if (!user) {
+      setSavedIds(new Set());
+      return;
+    }
+    fetch('/api/watchlist?status=all')
+      .then((r) => (r.ok ? r.json() : { listings: [] }))
+      .then((d) => {
+        if (cancelled) return;
+        setSavedIds(new Set((d.listings || []).map((l) => String(l.listing_id))));
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [user]);
+
+  const isSaved = (id) => savedIds.has(String(id));
+
+  const markSaved = (id) =>
+    setSavedIds((prev) => {
+      const next = new Set(prev);
+      next.add(String(id));
+      return next;
+    });
+
+  const markUnsaved = (id) =>
+    setSavedIds((prev) => {
+      const next = new Set(prev);
+      next.delete(String(id));
+      return next;
+    });
+
+  return (
+    <WatchlistContext.Provider value={{ isSaved, markSaved, markUnsaved }}>
+      {children}
+    </WatchlistContext.Provider>
+  );
+}
+
+// Star toggle that saves/removes a listing from the user's watchlist.
+// Lives inside the result card's <a>, so clicks must not trigger the link.
+function WatchStar({ item }) {
+  const { user } = useUser();
+  const router = useRouter();
+  const ctx = useContext(WatchlistContext);
+  const [busy, setBusy] = useState(false);
+
+  const saved = ctx ? ctx.isSaved(item.id) : false;
+
+  async function toggle(e) {
+    // Critical: stop the parent <a> from navigating to eBay.
+    e.preventDefault();
+    e.stopPropagation();
+    if (busy) return;
+
+    // Logged-out users get sent to login.
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+
+    setBusy(true);
+    // Optimistic update so the UI feels instant
+    if (saved) ctx?.markUnsaved(item.id);
+    else ctx?.markSaved(item.id);
+
+    try {
+      if (saved) {
+        await fetch(`/api/watchlist/${encodeURIComponent(item.id)}`, { method: 'DELETE' });
+      } else {
+        await fetch('/api/watchlist', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            listing_id: item.id,
+            title: item.title,
+            price: item.price,
+            currency: item.currency || 'USD',
+            image_url: item.image,
+            listing_url: item.url,
+            badges: buildBadgePayload(item),
+          }),
+        });
+      }
+    } catch {
+      // Revert optimistic update on failure
+      if (saved) ctx?.markSaved(item.id);
+      else ctx?.markUnsaved(item.id);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <button
+      onClick={toggle}
+      aria-label={saved ? 'Remove from watchlist' : 'Save to watchlist'}
+      className="absolute top-2 right-2 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all"
+      style={{
+        background: 'rgba(10,9,7,0.55)',
+        backdropFilter: 'blur(4px)',
+        border: `0.5px solid ${saved ? 'var(--gold)' : 'rgba(201,149,74,0.3)'}`,
+        color: saved ? 'var(--gold-bright)' : 'var(--ink-400)',
+      }}
+    >
+      <span style={{ fontSize: '15px', lineHeight: 1 }}>{saved ? '★' : '☆'}</span>
+    </button>
   );
 }
 
@@ -1676,6 +1899,7 @@ function ResultCard({ item, formatPrice, index }) {
         <div className="order-1 md:order-2 mx-auto md:mx-0">
           <div className="relative aspect-[3/4] w-[160px] md:w-[200px] bg-[var(--bg-elev)] overflow-hidden">
             <CornerMarks />
+            <WatchStar item={item} />
             {item.image ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img

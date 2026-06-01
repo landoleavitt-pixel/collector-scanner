@@ -105,6 +105,13 @@ export default function Header() {
                       </div>
 
                       <Link
+                        href="/watchlist-cards"
+                        onClick={() => setMenuOpen(false)}
+                        className="block px-4 py-2 text-[13px] text-[var(--ink-300)] hover:text-[var(--gold)] hover:bg-[rgba(212,175,92,0.05)] transition-colors"
+                      >
+                        Watchlist
+                      </Link>
+                      <Link
                         href="/watchlist"
                         onClick={() => setMenuOpen(false)}
                         className="block px-4 py-2 text-[13px] text-[var(--ink-300)] hover:text-[var(--gold)] hover:bg-[rgba(212,175,92,0.05)] transition-colors"
