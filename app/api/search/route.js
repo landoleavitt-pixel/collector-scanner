@@ -55,28 +55,29 @@ async function getAppToken() {
 }
 
 /**
- * Build the keyword fragment for the user's input. Multi-word inputs get
- * quoted to force eBay toward strict phrase matching (single words don't).
+ * Build the keyword fragment for the user's input.
  *
- *   "Chase Roberts"   → "Chase Roberts"
- *   "Mahomes"          → Mahomes
- *   "rookie auto"      → "rookie auto"
+ * We send words UNQUOTED so eBay matches them as a set (all present, any order,
+ * any position in the title) rather than as a rigid contiguous phrase. This is
+ * how product searches actually work — "Collin Chandler Chrome" should match
+ * "2024 Bowman Chrome ... Collin Chandler Auto" even though the words aren't
+ * adjacent or in order.
  *
- * Note: we used to expand to an OR query like ("Chase Roberts", "Roberts, Chase")
- * but eBay's Browse API ignores quoted phrases when combined with other OR groups
- * in the same query. We now rely on the server-side verifyPlayerName step to
- * filter out listings that don't actually match the user's input.
+ *   "Collin Chandler Chrome" → Collin Chandler Chrome
+ *   "Mahomes"                 → Mahomes
+ *
+ * The server-side verifyPlayerName step is our safety net: it requires every
+ * word from the input to appear as a whole word in the title, so loosening the
+ * query here doesn't let through listings that are missing the user's terms.
+ *
+ * Note: we previously quoted multi-word input as "exact phrase", but eBay then
+ * required the words to be contiguous and in order, which dropped the vast
+ * majority of legitimate matches (most card titles interleave the player name
+ * with set/parallel words).
  */
 function expandNameQuery(input) {
   if (!input) return '';
-  const trimmed = input.trim();
-  if (!trimmed) return '';
-  // Single word — send as-is (no quotes needed)
-  if (!/\s/.test(trimmed)) {
-    return trimmed;
-  }
-  // Multi-word — quote to encourage strict matching
-  return `"${trimmed}"`;
+  return input.trim();
 }
 
 /**
@@ -510,15 +511,22 @@ export async function POST(req) {
     // Player name verification — eBay often returns loose matches that ignore
     // our quoted phrases. Filter to listings whose title contains all the user's
     // search words. Runs first so we don't waste time on other verifiers.
-    if (criteria.keywords && /\s/.test(criteria.keywords.trim())) {
+    //
+    // Verify against the DEDUPED keywords (the same words we actually sent to
+    // eBay) — not the raw input. Otherwise, words stripped by dedupeKeywords
+    // (e.g. "auto" when the Auto filter is on) would be wrongly required in the
+    // title and over-filter valid cards. The auto/rookie/print-run verifiers
+    // below handle those attributes separately.
+    const verifyKeywords = dedupeKeywords(criteria.keywords, criteria);
+    if (verifyKeywords && /\s/.test(verifyKeywords.trim())) {
       const before = items.length;
       const droppedTitles = [];
       items = items.filter((it) => {
-        const keep = verifyPlayerName(it.title, criteria.keywords);
+        const keep = verifyPlayerName(it.title, verifyKeywords);
         if (!keep && droppedTitles.length < 5) droppedTitles.push(it.title);
         return keep;
       });
-      console.log(`Name verify: ${before} → ${items.length} (input: "${criteria.keywords}")`);
+      console.log(`Name verify: ${before} → ${items.length} (input: "${verifyKeywords}")`);
       if (droppedTitles.length > 0) {
         console.log('Name verify DROPPED (first 5):', droppedTitles);
       }
