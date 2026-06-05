@@ -27,10 +27,11 @@ export default function PrivacyPage() {
       <Prose>
         <p>When you create an account or use Fields &amp; Floors, we may handle:</p>
         <ul>
-          <li><strong>Account information</strong> — your email address, and (if you sign in with Google) your name and profile photo as provided by Google.</li>
-          <li><strong>Saved searches</strong> — the search terms and filters you save so we can notify you of new matching cards.</li>
-          <li><strong>Watchlist</strong> — the individual listings you star to track.</li>
-          <li><strong>Usage data</strong> — basic, aggregate analytics about page visits, collected through privacy-friendly analytics. This does not identify you personally.</li>
+          <li><strong>Account information</strong> &mdash; your email address, and (if you sign in with Google) your name and profile photo as provided by Google.</li>
+          <li><strong>Saved searches</strong> &mdash; the search terms and filters you save so we can notify you of new matching cards.</li>
+          <li><strong>Watchlist</strong> &mdash; the individual listings you star to track.</li>
+          <li><strong>Technical &amp; log data</strong> &mdash; information automatically recorded by our hosting and infrastructure providers, such as your IP address, browser and device type, access times, and error and security logs. This is used to operate, secure, and debug the service.</li>
+          <li><strong>Usage analytics</strong> &mdash; aggregate, non-personal information about how pages are used (such as page views), collected through privacy-friendly analytics. It is usage-based only and does not identify you personally.</li>
         </ul>
         <p>
           We do not collect payment card details directly. We do not sell your
@@ -47,7 +48,8 @@ export default function PrivacyPage() {
           <li>Create and secure your account.</li>
           <li>Run your saved searches and send you notification emails when new matching cards appear.</li>
           <li>Show and manage your watchlist.</li>
-          <li>Understand, in aggregate, how the site is used so we can improve it.</li>
+          <li>Operate, debug, secure, and improve the service.</li>
+          <li>Understand, in aggregate, how the site is used.</li>
         </ul>
         <p>
           We send notification and account emails related to the features you use.
@@ -62,14 +64,16 @@ export default function PrivacyPage() {
       <Prose>
         <p>
           We rely on trusted third parties to run Fields &amp; Floors. Each receives
-          only the information needed to do its job:
+          only the information needed to do its job, and may process it on servers
+          located outside Canada (see cross-border transfers below):
         </p>
         <ul>
-          <li><strong>Supabase</strong> — database and authentication (stores your account, saved searches, and watchlist).</li>
-          <li><strong>Vercel</strong> — website hosting and aggregate analytics.</li>
-          <li><strong>Resend</strong> — delivery of account and notification emails.</li>
-          <li><strong>Google</strong> — if you choose "Sign in with Google," Google handles that authentication.</li>
-          <li><strong>eBay</strong> — we query eBay's public listing data to power search results. Your personal information is not sent to eBay.</li>
+          <li><strong>Supabase</strong> &mdash; database and authentication (stores your account, saved searches, and watchlist).</li>
+          <li><strong>Vercel</strong> &mdash; website hosting, technical/security logs, and aggregate analytics.</li>
+          <li><strong>Resend</strong> &mdash; delivery of account and notification emails.</li>
+          <li><strong>Google</strong> &mdash; if you choose "Sign in with Google," Google handles that authentication.</li>
+          <li><strong>eBay</strong> &mdash; we query eBay's public listing data to power search results. Your personal information is not sent to eBay.</li>
+          <li><strong>Payment processor</strong> &mdash; if we introduce paid plans, a third-party processor (such as Stripe) will handle billing and your payment card details. We do not store full card numbers ourselves.</li>
         </ul>
         <p>
           We may also disclose information if required by law, or to protect the
@@ -77,7 +81,21 @@ export default function PrivacyPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="04" label="Your choices">
+      <SectionHeading number="04" label="Cross-border data transfers">
+        Your data may be processed outside Canada.
+      </SectionHeading>
+      <Prose>
+        <p>
+          We're based in Canada, but our service providers may store and process data
+          in the United States or other countries where they operate. By using the
+          service, you understand that your information may be transferred to, stored,
+          and processed outside your province or country, where data-protection laws
+          may differ. We work with providers that maintain industry-standard
+          safeguards.
+        </p>
+      </Prose>
+
+      <SectionHeading number="05" label="Your choices">
         Access, correction, and deletion.
       </SectionHeading>
       <Prose>
@@ -90,32 +108,46 @@ export default function PrivacyPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="05" label="Data retention &amp; security">
+      <SectionHeading number="06" label="Data retention &amp; security">
         We keep what we need, for as long as you use the service.
       </SectionHeading>
       <Prose>
         <p>
           We retain your account information and saved data while your account is
-          active. If you delete your account, we delete the associated personal data,
-          except where we're required to retain it for legal reasons. We use
-          industry-standard measures to protect your data, but no method of
-          transmission or storage is completely secure, and we can't guarantee
-          absolute security.
+          active. If you delete your account, we delete the associated personal data
+          within a reasonable period, except where we're required to retain it for
+          legal reasons. Residual copies may persist in routine backups for a limited
+          time before being overwritten. We use industry-standard measures to protect
+          your data, but no method of transmission or storage is completely secure,
+          and we can't guarantee absolute security.
         </p>
       </Prose>
 
-      <SectionHeading number="06" label="Children">
-        Not intended for children under 13.
+      <SectionHeading number="07" label="Business transfers">
+        If the project changes hands.
       </SectionHeading>
       <Prose>
         <p>
-          Fields &amp; Floors is not directed to children under 13, and we do not
-          knowingly collect personal information from them. If you believe a child
-          has provided us information, contact us and we'll remove it.
+          If Fields &amp; Floors is involved in a merger, acquisition, financing, sale
+          of assets, or other business transition, your information may be transferred
+          as part of that transaction. We'll take reasonable steps to ensure it
+          remains subject to protections consistent with this policy.
         </p>
       </Prose>
 
-      <SectionHeading number="07" label="Changes &amp; contact">
+      <SectionHeading number="08" label="Children">
+        Not intended for children.
+      </SectionHeading>
+      <Prose>
+        <p>
+          Fields &amp; Floors is not directed to children under the age required by
+          applicable law in your jurisdiction, and we do not knowingly collect their
+          personal information. If you believe a child has provided us information,
+          contact us and we'll remove it.
+        </p>
+      </Prose>
+
+      <SectionHeading number="09" label="Changes &amp; contact">
         We'll post updates here.
       </SectionHeading>
       <Prose>

@@ -42,25 +42,60 @@ export default function TermsPage() {
           operated by eBay Inc. "eBay" is a trademark of its respective owner, used
           here only to describe the source of listing data. All listings, prices, and
           availability originate with eBay and its sellers, and all purchases happen
-          on eBay under eBay's own terms — not ours.
+          on eBay under eBay's own terms — not ours. Listing content and data belong
+          to eBay and its sellers; we only index and search publicly available
+          listing information to help you find cards.
         </p>
       </Prose>
 
-      <SectionHeading number="03" label="Accuracy &amp; availability">
-        Listing data is provided as-is.
+      <SectionHeading number="03" label="Accuracy of listing data">
+        We do our best, but we can't guarantee it.
       </SectionHeading>
       <Prose>
         <p>
           We pull listing information from third-party sources and present it as
           accurately as we can, but we don't guarantee that any listing, price,
           print run, grade, or availability shown is current, complete, or correct.
-          Listings sell, prices change, and titles can be miswritten by sellers.
-          Always confirm the details on the eBay listing itself before buying. You
+          In particular, you acknowledge that:
+        </p>
+        <ul>
+          <li>Our print-run detection can make mistakes &mdash; it may miss a card's serial number, or misread other numbers (for example, a season like "22/23") as a print run.</li>
+          <li>Listing titles are written by sellers and can be inaccurate, misleading, or mislabeled, and our parsing of them can be wrong.</li>
+          <li>Grades, autographs, parallels, and other attributes we surface are derived from listing text and may not reflect the actual item.</li>
+        </ul>
+        <p>
+          Always confirm every detail on the eBay listing itself before buying. You
           are solely responsible for your own purchasing decisions.
         </p>
       </Prose>
 
-      <SectionHeading number="04" label="Your account">
+      <SectionHeading number="04" label="Listing availability">
+        Listings change constantly.
+      </SectionHeading>
+      <Prose>
+        <p>
+          Listings can sell, change, be relisted, or be removed at any time, often
+          faster than we can refresh. We are not responsible for stale, expired, or
+          sold listings shown in search results, your watchlist, or notifications.
+        </p>
+      </Prose>
+
+      <SectionHeading number="05" label="Alerts &amp; notifications">
+        Useful, but not guaranteed.
+      </SectionHeading>
+      <Prose>
+        <p>
+          Our notification and alert features are provided on a best-effort basis. We
+          do not guarantee that any notification will be sent, delivered, accurate, or
+          timely, and delivery depends on systems outside our control (email
+          providers, third-party APIs, and your own inbox and filters). We are not
+          liable for any missed listing, missed deal, lost opportunity, or any other
+          loss arising from a notification that was delayed, inaccurate, or not
+          delivered. Do not rely on our alerts as your only means of tracking a card.
+        </p>
+      </Prose>
+
+      <SectionHeading number="06" label="Your account">
         Keep it secure, use it honestly.
       </SectionHeading>
       <Prose>
@@ -73,7 +108,22 @@ export default function TermsPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="05" label="Subscriptions &amp; fees">
+      <SectionHeading number="07" label="Our intellectual property">
+        The site and its design are ours.
+      </SectionHeading>
+      <Prose>
+        <p>
+          The Fields &amp; Floors website, software, code, design, visual identity,
+          branding, and the logic of our search, filtering, and notification tools are
+          owned by Fields &amp; Floors and protected by intellectual property laws.
+          You may not copy, reproduce, modify, reverse-engineer, scrape, or reuse any
+          part of the service for your own product or commercial purpose without our
+          prior written permission. This does not apply to third-party listing data,
+          which belongs to eBay and its sellers as described above.
+        </p>
+      </Prose>
+
+      <SectionHeading number="08" label="Subscriptions, fees &amp; refunds">
         If and when paid features exist.
       </SectionHeading>
       <Prose>
@@ -81,26 +131,49 @@ export default function TermsPage() {
           Some features may be offered free and others as part of a paid
           subscription. Any fees, billing terms, and cancellation details will be
           disclosed clearly at the point of purchase. Paid features are for access to
-          our tools and functionality — not for access to third-party listing data
-          itself.
+          our tools and functionality &mdash; not for access to third-party listing data
+          itself. Except where required by law, subscription fees are non-refundable,
+          including for partially used periods. If we add paid plans, payments will be
+          handled by a third-party payment processor; we don't store your full payment
+          card details ourselves.
         </p>
       </Prose>
 
-      <SectionHeading number="06" label="Disclaimers &amp; liability">
+      <SectionHeading number="09" label="Changes to the service">
+        We may evolve or discontinue features.
+      </SectionHeading>
+      <Prose>
+        <p>
+          We may add, change, suspend, or discontinue any part of the service &mdash;
+          including features, filters, or notifications &mdash; at any time, with or without
+          notice. We are not liable to you for any modification, suspension, or
+          discontinuation of the service or any feature.
+        </p>
+      </Prose>
+
+      <SectionHeading number="10" label="Disclaimers &amp; liability">
         The honest fine print.
       </SectionHeading>
       <Prose>
         <p>
           The service is provided "as is" and "as available," without warranties of
-          any kind, whether express or implied. To the fullest extent permitted by
-          law, Fields &amp; Floors is not liable for any indirect, incidental, or
-          consequential damages, or for any loss arising from your use of the service
-          or from any purchase you make on a third-party marketplace. Nothing in these
-          Terms limits liability that cannot be limited under applicable law.
+          any kind, whether express or implied, including any implied warranties of
+          merchantability, fitness for a particular purpose, and non-infringement.
+        </p>
+        <p>
+          To the fullest extent permitted by law, Fields &amp; Floors will not be
+          liable for any indirect, incidental, special, consequential, or punitive
+          damages, or for any loss of profits, opportunities, or data, arising from
+          your use of the service or from any purchase you make on a third-party
+          marketplace. To the fullest extent permitted by law, our total aggregate
+          liability for any claim relating to the service is limited to the greater of
+          (a) the total fees you paid us in the twelve (12) months before the claim,
+          or (b) CAD $100. Nothing in these Terms limits liability that cannot be
+          limited under applicable law.
         </p>
       </Prose>
 
-      <SectionHeading number="07" label="Termination">
+      <SectionHeading number="11" label="Termination">
         Either of us can end it.
       </SectionHeading>
       <Prose>
@@ -108,11 +181,26 @@ export default function TermsPage() {
           You may stop using the service and delete your account at any time. We may
           suspend or terminate access if you violate these Terms or use the service in
           a way that risks harm to it or to others. Provisions that by their nature
-          should survive termination will survive.
+          should survive termination &mdash; including intellectual property, disclaimers,
+          and liability limits &mdash; will survive.
         </p>
       </Prose>
 
-      <SectionHeading number="08" label="Changes &amp; contact">
+      <SectionHeading number="12" label="Governing law &amp; disputes">
+        Alberta, Canada &mdash; and let's talk first.
+      </SectionHeading>
+      <Prose>
+        <p>
+          These Terms are governed by the laws of the Province of Alberta and the
+          federal laws of Canada applicable there, without regard to conflict-of-laws
+          rules. If a dispute arises, you agree to first contact us and attempt to
+          resolve it informally and in good faith. If we can't resolve it within a
+          reasonable time, the courts located in Alberta will have jurisdiction,
+          except where applicable law gives you the right to bring a claim elsewhere.
+        </p>
+      </Prose>
+
+      <SectionHeading number="13" label="Changes &amp; contact">
         We'll post updates here.
       </SectionHeading>
       <Prose>
