@@ -80,7 +80,22 @@ export default function TermsPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="05" label="Alerts &amp; notifications">
+      <SectionHeading number="05" label="Third-party services">
+        We depend on others to run.
+      </SectionHeading>
+      <Prose>
+        <p>
+          Fields &amp; Floors relies on third-party services to operate &mdash; including
+          eBay for listing data, and providers such as Supabase, Vercel, Resend, and
+          Google for hosting, database, email, and authentication. We don't control
+          these services and aren't responsible for their accuracy, availability, or
+          performance. We are not liable for any downtime, delay, data loss, error, or
+          interruption caused by eBay or any other external service, or for changes
+          they make to their own systems, data, or terms.
+        </p>
+      </Prose>
+
+      <SectionHeading number="06" label="Alerts &amp; notifications">
         Useful, but not guaranteed.
       </SectionHeading>
       <Prose>
@@ -95,7 +110,7 @@ export default function TermsPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="06" label="Your account">
+      <SectionHeading number="07" label="Your account">
         Keep it secure, use it honestly.
       </SectionHeading>
       <Prose>
@@ -108,7 +123,7 @@ export default function TermsPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="07" label="Our intellectual property">
+      <SectionHeading number="08" label="Our intellectual property">
         The site and its design are ours.
       </SectionHeading>
       <Prose>
@@ -123,7 +138,7 @@ export default function TermsPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="08" label="Subscriptions, fees &amp; refunds">
+      <SectionHeading number="09" label="Subscriptions, fees &amp; refunds">
         If and when paid features exist.
       </SectionHeading>
       <Prose>
@@ -139,7 +154,7 @@ export default function TermsPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="09" label="Changes to the service">
+      <SectionHeading number="10" label="Changes to the service">
         We may evolve or discontinue features.
       </SectionHeading>
       <Prose>
@@ -151,7 +166,7 @@ export default function TermsPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="10" label="Disclaimers &amp; liability">
+      <SectionHeading number="11" label="Disclaimers &amp; liability">
         The honest fine print.
       </SectionHeading>
       <Prose>
@@ -173,7 +188,7 @@ export default function TermsPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="11" label="Termination">
+      <SectionHeading number="12" label="Termination">
         Either of us can end it.
       </SectionHeading>
       <Prose>
@@ -186,7 +201,7 @@ export default function TermsPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="12" label="Governing law &amp; disputes">
+      <SectionHeading number="13" label="Governing law &amp; disputes">
         Alberta, Canada &mdash; and let's talk first.
       </SectionHeading>
       <Prose>
@@ -200,7 +215,7 @@ export default function TermsPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="13" label="Changes &amp; contact">
+      <SectionHeading number="14" label="Changes &amp; contact">
         We'll post updates here.
       </SectionHeading>
       <Prose>

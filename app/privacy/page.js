@@ -56,9 +56,29 @@ export default function PrivacyPage() {
           You can turn off saved-search notifications at any time from your account,
           and every notification email is tied to a saved search you can pause or delete.
         </p>
+        <p>
+          In short, we process your information to provide the service, operate your
+          account and alerts, improve and secure the platform, and comply with our
+          legal obligations &mdash; not for any unrelated purpose.
+        </p>
       </Prose>
 
-      <SectionHeading number="03" label="Who we share it with">
+      <SectionHeading number="03" label="Cookies &amp; similar technologies">
+        Mostly to keep you logged in.
+      </SectionHeading>
+      <Prose>
+        <p>
+          We and our providers use cookies and similar technologies (such as session
+          tokens stored in your browser) to keep you signed in, secure your account,
+          and support privacy-friendly analytics. These are essential to how the
+          service works &mdash; without them, login and authentication wouldn't function.
+          We don't use cookies to build advertising profiles or track you across other
+          websites. You can control or clear cookies in your browser settings, but
+          disabling essential ones may prevent you from signing in.
+        </p>
+      </Prose>
+
+      <SectionHeading number="04" label="Who we share it with">
         A small set of service providers who help us operate.
       </SectionHeading>
       <Prose>
@@ -81,7 +101,7 @@ export default function PrivacyPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="04" label="Cross-border data transfers">
+      <SectionHeading number="05" label="Cross-border data transfers">
         Your data may be processed outside Canada.
       </SectionHeading>
       <Prose>
@@ -95,7 +115,7 @@ export default function PrivacyPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="05" label="Your choices">
+      <SectionHeading number="06" label="Your choices">
         Access, correction, and deletion.
       </SectionHeading>
       <Prose>
@@ -108,7 +128,7 @@ export default function PrivacyPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="06" label="Data retention &amp; security">
+      <SectionHeading number="07" label="Data retention &amp; security">
         We keep what we need, for as long as you use the service.
       </SectionHeading>
       <Prose>
@@ -123,7 +143,7 @@ export default function PrivacyPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="07" label="Business transfers">
+      <SectionHeading number="08" label="Business transfers">
         If the project changes hands.
       </SectionHeading>
       <Prose>
@@ -135,7 +155,7 @@ export default function PrivacyPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="08" label="Children">
+      <SectionHeading number="09" label="Children">
         Not intended for children.
       </SectionHeading>
       <Prose>
@@ -147,7 +167,7 @@ export default function PrivacyPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="09" label="Changes &amp; contact">
+      <SectionHeading number="10" label="Changes &amp; contact">
         We'll post updates here.
       </SectionHeading>
       <Prose>
