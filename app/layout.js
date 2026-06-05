@@ -1,6 +1,7 @@
 import './globals.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import { Analytics } from '@vercel/analytics/react';
 
 export const metadata = {
   title: 'Fields & Floors Collectors — eBay marketplace, for collectors',
@@ -14,6 +15,7 @@ export default function RootLayout({ children }) {
         <Header />
         {children}
         <Footer />
+        <Analytics />
       </body>
     </html>
   );
