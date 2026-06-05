@@ -412,23 +412,55 @@ function renderListingCard(l: Listing): string {
   `;
 }
 
-// Detect print run from a listing title — looks for explicit /N patterns,
-// rejects years, dates, and inventory counts. Mirrors the logic on the home page.
+// Detect print run from a listing title — looks for /N patterns, rejects
+// years, dates, inventory counts, and two-digit seasons. Mirrors the logic on
+// the home page (kept in sync manually — see backlog: consolidate the three
+// copies of this logic once a shared module spanning Next.js + Deno exists).
 function detectPrintRun(title: string): string | null {
   if (!title) return null;
-  // Match patterns like #/25, /25, 13/25, "to 25", "of 25"
-  const patterns = [
-    /#\/(\d{1,4})\b/,                          // #/25
-    /\b\d{1,4}\s*\/\s*(\d{1,4})\b/,            // 13/25
-    /\/(\d{1,4})\b(?![,\d])/,                  // /25 not followed by more digits
+  const t = title.toLowerCase();
+  const titleLen = t.length || 1;
+
+  const seasonAround = /(19|20)\d{2}[-/\s]\d{1,4}/;   // 4-digit season: 2023-24
+  const dateAround = /\b\d{1,2}\/\d{1,4}\/\d{2,4}\b/;
+  const inventoryAround = /\bnew\s+\d{1,2}\/\d{1,2}\b/;
+
+  // Explicit forms where the captured group is the run.
+  const explicit = [
+    /#\s*\d*\s*\/\s*(\d{1,4})\b/g,                      // #/25, #5/25
+    /(?:^|[^0-9a-z])\/\s*(\d{1,4})\b/g,                 // /25
+    /\b\d+\s+of\s+(\d{1,4})\b/g,                        // 5 of 25
+    /\b(?:numbered|limited|serial)\s+to\s+(\d{1,4})\b/g,
   ];
-  for (const re of patterns) {
-    const m = title.match(re);
-    if (m) {
+  for (const re of explicit) {
+    re.lastIndex = 0;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(t)) !== null) {
+      const idx = m.index;
+      const window = t.slice(Math.max(0, idx - 14), idx + m[0].length + 4);
+      if (seasonAround.test(window) || dateAround.test(window) || inventoryAround.test(window)) continue;
       const n = parseInt(m[1], 10);
-      // Reasonable print run range: reject years (1900+), reject 0
       if (n >= 1 && n <= 999) return String(n);
     }
+  }
+
+  // Bare N/M — only count when N < M (real run), and reject two-digit seasons
+  // (consecutive, 15–31, in the first 30% of the title).
+  const reBare = /(?:^|[^0-9a-z])(?!0)(\d{1,4})\s*\/\s*(\d{1,4})\b/g;
+  reBare.lastIndex = 0;
+  let m: RegExpExecArray | null;
+  while ((m = reBare.exec(t)) !== null) {
+    const firstNum = parseInt(m[1], 10);
+    const secondNum = parseInt(m[2], 10);
+    const isOneOfOne = firstNum === 1 && secondNum === 1;
+    if (firstNum >= secondNum && !isOneOfOne) continue;
+    const idx = m.index;
+    const window = t.slice(Math.max(0, idx - 14), idx + m[0].length + 4);
+    if (seasonAround.test(window) || dateAround.test(window) || inventoryAround.test(window)) continue;
+    const consecutive = secondNum === firstNum + 1;
+    const inSeasonRange = firstNum >= 15 && firstNum <= 30 && secondNum >= 15 && secondNum <= 31;
+    if (consecutive && inSeasonRange && idx / titleLen < 0.30) continue;
+    if (secondNum >= 1 && secondNum <= 999) return String(secondNum);
   }
   return null;
 }

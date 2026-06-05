@@ -84,16 +84,35 @@ function detectPrintRun(rawTitle) {
 
   if (candidates.length === 0) return null;
 
-  // For each candidate, check it's not inside a year or inventory context
-  const seasonAround = /(19|20)\d{2}[-/\s]\d{1,4}/;
-  const dateAround = /\b\d{1,2}\/\d{1,4}\/\d{2,4}\b/;
+  // Guards against misreading non-print-run numbers.
+  const seasonAround = /(19|20)\d{2}[-/\s]\d{1,4}/;   // 4-digit season: 2023-24, 2022/23
+  const dateAround = /\b\d{1,2}\/\d{1,4}\/\d{2,4}\b/;  // dates
   const inventoryAround = /\bnew\s+\d{1,2}\/\d{1,2}\b/;
+
+  // Two-digit season detection (e.g. "22/23", "24/25"). These look exactly
+  // like real serial numbers (24/25 is also a valid /25 print run), so the
+  // distinguishing signal is POSITION: sellers put the season at the START of
+  // the title ("22/23 Bowman Chrome ...") and the serial number LATER, near
+  // the parallel/grade ("... Gold 24/25 PSA 10"). So we only treat a
+  // consecutive 2-digit N/M as a season when it appears in the first ~30% of
+  // the title. Later in the title, the same pattern is a real print run.
+  const titleLen = t.length || 1;
+  function looksLikeEarlySeason(c) {
+    if (c.firstNum == null) return false;           // only applies to bare N/M
+    const n = c.firstNum;
+    const m = parseInt(c.value, 10);
+    const consecutive = m === n + 1;
+    const inSeasonRange = n >= 15 && n <= 30 && m >= 15 && m <= 31;
+    const positionFrac = c.index / titleLen;
+    return consecutive && inSeasonRange && positionFrac < 0.30;
+  }
 
   for (const c of candidates) {
     const window = t.slice(Math.max(0, c.index - 14), c.index + 8);
     if (seasonAround.test(window)) continue;
     if (dateAround.test(window)) continue;
     if (inventoryAround.test(window)) continue;
+    if (looksLikeEarlySeason(c)) continue;          // 2-digit season at title start
     return c.value;
   }
   return null;

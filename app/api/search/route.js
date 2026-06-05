@@ -315,6 +315,7 @@ function hasAnyPrintRun(title) {
   // Check bare N/M pattern with N < M validation
   reBare.lastIndex = 0;
   let m;
+  const titleLen = t.length || 1;
   while ((m = reBare.exec(t)) !== null) {
     const firstNum = parseInt(m[1], 10);
     const secondNum = parseInt(m[2], 10);
@@ -325,6 +326,11 @@ function hasAnyPrintRun(title) {
     if (seasonAround.test(window)) continue;
     if (dateAround.test(window)) continue;
     if (inventoryAround.test(window)) continue;
+    // Two-digit season at the start of the title ("22/23 Bowman Chrome ...").
+    // Seasons sit at the front; real serial numbers sit later near the parallel.
+    const consecutive = secondNum === firstNum + 1;
+    const inSeasonRange = firstNum >= 15 && firstNum <= 30 && secondNum >= 15 && secondNum <= 31;
+    if (consecutive && inSeasonRange && idx / titleLen < 0.30) continue;
     return true;
   }
   return false;
