@@ -120,6 +120,9 @@ export default function LoginPage() {
                 <GoogleIcon />
                 Continue with Google
               </button>
+              {/* Apple sign-in temporarily hidden until the Apple Developer
+                  account + Services ID are configured. Re-enable by uncommenting. */}
+              {false && (
               <button
                 type="button"
                 onClick={() => handleOAuth('apple')}
@@ -134,6 +137,7 @@ export default function LoginPage() {
                 <AppleIcon />
                 Continue with Apple
               </button>
+              )}
 
               {/* Divider */}
               <div className="flex items-center gap-3 mb-4">

@@ -106,6 +106,8 @@ export default function SignupPage() {
                 <GoogleIcon />
                 Sign up with Google
               </button>
+              {/* Apple sign-in temporarily hidden until configured. Re-enable by uncommenting. */}
+              {false && (
               <button
                 type="button"
                 onClick={() => handleOAuth('apple')}
@@ -120,6 +122,7 @@ export default function SignupPage() {
                 <AppleIcon />
                 Sign up with Apple
               </button>
+              )}
 
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex-1 h-px" style={{ background: 'rgba(232,226,213,0.12)' }} />
