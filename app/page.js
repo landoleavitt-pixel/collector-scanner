@@ -437,16 +437,22 @@ function Home() {
 
   return (
     <main className="relative min-h-screen z-10">
-      {/* Stage 1: idle landing — hero with search bar, nothing else */}
+      {/* Stage 1: idle landing — hero with search bar, then the why-section */}
       {appStage === 'idle' && (
-        <Hero
-          query={query}
-          setQuery={setQuery}
-          onSearch={() => handleQuerySubmit()}
-          error={error}
-          loading={false}
-          onSuggested={(s) => handleQuerySubmit(s)}
-        />
+        <>
+          <Hero
+            query={query}
+            setQuery={setQuery}
+            onSearch={() => handleQuerySubmit()}
+            error={error}
+            loading={false}
+            onSuggested={(s) => handleQuerySubmit(s)}
+            onChipSearch={(chipQuery, partialFilters) =>
+              handleSearch(chipQuery, { ...filters, ...partialFilters })
+            }
+          />
+          <WhyFields />
+        </>
       )}
 
       {/* Stage 2: configuring — filter panel replaces the hero. User picks
@@ -551,7 +557,7 @@ function Home() {
 /* ─────────────────────────────────────────────
    Hero — featured find, oversized type, refined search
    ───────────────────────────────────────────── */
-function Hero({ query, setQuery, onSearch, error, loading, onSuggested }) {
+function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSearch }) {
   return (
     <section className="relative border-b border-[var(--line-soft)] overflow-hidden">
       <div className="max-w-[1200px] mx-auto px-6 lg:px-10 pt-14 pb-16 lg:pt-20 lg:pb-20 relative">
@@ -615,6 +621,39 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested }) {
               {error && (
                 <p className="mt-3 text-xs text-[var(--crit)] text-left">{error}</p>
               )}
+
+              {/* Clickable example searches — these demonstrate the INTENDED
+                  flow: the player name goes in the search bar, and the rarity /
+                  attribute is applied as a structured filter (not typed as text).
+                  Each runs a filtered search immediately. */}
+              <div className="mt-6 flex flex-wrap items-center gap-2 rise" style={{ animationDelay: '300ms' }}>
+                <span className="text-[10px] uppercase tracking-[0.16em] mr-1 font-mono" style={{ color: 'var(--ink-600)' }}>
+                  Try
+                </span>
+                {[
+                  { label: 'Caitlin Clark · /25', q: 'Caitlin Clark', f: { numberedCards: true, selectedPrintRuns: ['/25'], customPrintRuns: [] } },
+                  { label: 'Wembanyama · Auto', q: 'Victor Wembanyama', f: { autoCards: true } },
+                  { label: 'Luka · Rookie', q: 'Luka Doncic', f: { rookieCards: true } },
+                  { label: '1986 Fleer Jordan', q: '1986 Fleer Jordan', f: {} },
+                ].map((ex) => (
+                  <button
+                    key={ex.label}
+                    type="button"
+                    onClick={() => onChipSearch(ex.q, ex.f)}
+                    disabled={loading}
+                    className="font-mono text-[12px] tracking-[0.02em] px-3.5 py-1.5 rounded-full transition-colors disabled:opacity-40"
+                    style={{
+                      border: '0.5px solid var(--line)',
+                      color: 'var(--ink-200)',
+                      background: 'var(--bg-elev)',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--gold-deep)'; e.currentTarget.style.color = 'var(--gold-bright)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--line)'; e.currentTarget.style.color = 'var(--ink-200)'; }}
+                  >
+                    {ex.label}
+                  </button>
+                ))}
+              </div>
             </div>
             </div>
           </div>
@@ -658,6 +697,71 @@ function RotatingPlaceholder() {
         {SUGGESTED_SEARCHES[idx]}
       </span>
     </span>
+  );
+}
+
+/* WhyFields — the "why use this" section on the idle landing. Leads with the
+   alert/first-to-market hook, three supporting steps, and a sample alert card. */
+function WhyFields() {
+  const chip =
+    'font-mono text-[10px] tracking-[0.04em] px-2 py-[3px] rounded';
+  return (
+    <section className="relative max-w-[1040px] mx-auto px-6 lg:px-10 py-16 lg:py-24">
+      <div className="text-[10px] tracking-[0.22em] uppercase mb-3.5" style={{ color: 'var(--gold)', fontFamily: 'ui-monospace, monospace' }}>
+        Why Fields &amp; Floors
+      </div>
+      <h2 className="font-display italic text-[clamp(2rem,5vw,3.4rem)] leading-[1.05] tracking-[-0.02em] mb-5">
+        Find it first.
+      </h2>
+      <p className="text-lg leading-relaxed max-w-[600px]" style={{ color: 'var(--ink-200)' }}>
+        Tell Fields &amp; Floors the rarity you're hunting — a print-run range, autos,
+        rookies — and we'll alert you{' '}
+        <em className="not-italic font-display" style={{ color: 'var(--ink-100)', fontStyle: 'italic' }}>
+          the moment a match hits the market.
+        </em>{' '}
+        First to know, first to buy.
+      </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-[1.25fr_1fr] gap-10 items-start mt-12">
+        {/* Three steps */}
+        <div className="grid grid-cols-1 gap-px" style={{ background: 'var(--line-soft)', border: '0.5px solid var(--line-soft)' }}>
+          {[
+            ['01', 'Set your tier', 'Pick a print-run range — say /1 to /99 — and stack on autos, rookies, or grade.'],
+            ['02', 'We watch the market', 'Fields & Floors scans new listings around the clock so you don\u2019t have to refresh.'],
+            ['03', 'You hear first', 'The moment a card in your tier lists, it lands in your inbox — before the crowd finds it.'],
+          ].map(([n, title, body]) => (
+            <div key={n} className="px-6 py-5" style={{ background: 'var(--bg-base)' }}>
+              <div className="font-mono text-[11px] tracking-[0.2em]" style={{ color: 'var(--gold)', fontFamily: 'ui-monospace, monospace' }}>{n}</div>
+              <h4 className="font-display italic text-[19px] mt-2 mb-1.5">{title}</h4>
+              <p className="text-[13.5px] leading-relaxed" style={{ color: 'var(--ink-400)' }}>{body}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Sample alert card */}
+        <div className="rounded-[14px] overflow-hidden max-w-[380px]" style={{ background: 'var(--bg-elev)', border: '0.5px solid var(--line)' }}>
+          <div className="flex items-center gap-2.5 px-[18px] py-3.5" style={{ borderBottom: '0.5px solid var(--line-soft)' }}>
+            <span className="w-[7px] h-[7px] rounded-full" style={{ background: 'var(--gold)', boxShadow: '0 0 8px var(--gold)' }} />
+            <span className="font-mono text-[10px] tracking-[0.16em] uppercase" style={{ color: 'var(--ink-400)', fontFamily: 'ui-monospace, monospace' }}>
+              New match · F&amp;F alert
+            </span>
+          </div>
+          <div className="px-[18px] py-4">
+            <div className="flex flex-wrap gap-1.5 mb-2.5">
+              <span className={chip} style={{ color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#ffd97a,#d99c14)', fontWeight: 700, fontFamily: 'ui-monospace, monospace' }}>/25</span>
+              <span className={chip} style={{ color: 'var(--gold-bright)', background: 'rgba(201,149,74,0.06)', border: '0.5px solid var(--gold-deep)', fontFamily: 'ui-monospace, monospace' }}>Auto</span>
+              <span className={chip} style={{ color: 'var(--gold-bright)', background: 'rgba(201,149,74,0.06)', border: '0.5px solid var(--gold-deep)', fontFamily: 'ui-monospace, monospace' }}>RC</span>
+            </div>
+            <div className="text-[13.5px] leading-snug" style={{ color: 'var(--ink-100)' }}>
+              2025 Bowman Chrome Prospect Auto Gold Refractor /25
+            </div>
+            <div className="text-[12px] italic mt-2" style={{ color: 'var(--ink-400)' }}>
+              Just listed — you're the first to know.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
