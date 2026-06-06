@@ -158,6 +158,7 @@ Deno.serve(async (_req) => {
       startedAt,
       searchesChecked,
       notificationsSent,
+      bidRemindersSent: await processBidReminders(errors),
       errorCount: errors.length,
       errors: errors.slice(0, 5),
     });
@@ -168,6 +169,122 @@ Deno.serve(async (_req) => {
 });
 
 // --- Helpers ---
+
+// Bid reminders: email users when a watched auction enters its final hours.
+// "Approximate" timing — runs each hourly poll, fires once per auction when it's
+// within the reminder window. Optionally gated on a max current-bid price.
+const REMINDER_WINDOW_HOURS = 3;
+
+async function processBidReminders(errors: string[]): Promise<number> {
+  let sent = 0;
+  try {
+    const nowMs = Date.now();
+    const windowMs = REMINDER_WINDOW_HOURS * 60 * 60 * 1000;
+
+    // Armed reminders on active auctions that haven't been reminded yet.
+    const { data: rows, error } = await supabase
+      .from("watched_listings")
+      .select("*")
+      .eq("bid_reminder", true)
+      .eq("reminder_sent", false)
+      .eq("status", "active")
+      .eq("is_auction", true);
+
+    if (error) throw error;
+    if (!rows || rows.length === 0) return 0;
+
+    for (const row of rows) {
+      try {
+        if (!row.end_time) continue;
+        const endMs = new Date(row.end_time).getTime();
+        if (isNaN(endMs)) continue;
+
+        const msLeft = endMs - nowMs;
+        // Skip if already ended, or not yet within the final window.
+        if (msLeft <= 0 || msLeft > windowMs) continue;
+
+        // Optional price gate: only remind if the current bid is at/below max.
+        let currentPrice = row.price;
+        if (row.reminder_max_price != null) {
+          const live = await fetchLiveItemPrice(row.listing_id);
+          if (live != null) currentPrice = live;
+          if (currentPrice != null && Number(currentPrice) > Number(row.reminder_max_price)) {
+            continue; // bid has exceeded their max — don't remind
+          }
+        }
+
+        const email = await getUserEmail(row.user_id);
+        if (!email) continue;
+
+        await sendBidReminderEmail(email, row, currentPrice, msLeft);
+
+        await supabase
+          .from("watched_listings")
+          .update({ reminder_sent: true })
+          .eq("id", row.id);
+
+        sent++;
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        errors.push(`Bid reminder ${row.listing_id}: ${msg}`);
+      }
+    }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    errors.push(`Bid reminders: ${msg}`);
+  }
+  return sent;
+}
+
+// Fetch a single item's current price from eBay via the Browse API getItem.
+// Returns null on any error (we then fall back to the stored price).
+async function fetchLiveItemPrice(listingId: string): Promise<number | null> {
+  try {
+    const token = await getEbayToken();
+    if (!token) return null;
+    const url = `https://api.ebay.com/buy/browse/v1/item?item_id=${encodeURIComponent(listingId)}`;
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "X-EBAY-C-MARKETPLACE-ID": "EBAY_US",
+      },
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const v = data?.currentBidPrice?.value ?? data?.price?.value;
+    return v != null ? Number(v) : null;
+  } catch {
+    return null;
+  }
+}
+
+let _ebayToken: string | null = null;
+let _ebayTokenExp = 0;
+async function getEbayToken(): Promise<string | null> {
+  try {
+    const now = Date.now();
+    if (_ebayToken && now < _ebayTokenExp - 60_000) return _ebayToken;
+    const appId = Deno.env.get("EBAY_APP_ID");
+    const certId = Deno.env.get("EBAY_CERT_ID");
+    if (!appId || !certId) return null;
+    const basic = btoa(`${appId}:${certId}`);
+    const res = await fetch("https://api.ebay.com/identity/v1/oauth2/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Basic ${basic}`,
+      },
+      body: "grant_type=client_credentials&scope=https://api.ebay.com/oauth/api_scope",
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    _ebayToken = data.access_token;
+    _ebayTokenExp = now + data.expires_in * 1000;
+    return _ebayToken;
+  } catch {
+    return null;
+  }
+}
 
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body, null, 2), {
@@ -251,6 +368,62 @@ async function sendDigestEmail(digest: UserDigest) {
   }
 
   console.log(`Sent digest to ${digest.email}: ${totalMatches} matches, id=${result.data?.id}`);
+}
+
+// Send a single "auction ending soon" reminder email.
+async function sendBidReminderEmail(
+  email: string,
+  row: Record<string, any>,
+  currentPrice: number | null,
+  msLeft: number,
+) {
+  const priceStr = currentPrice != null
+    ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(Number(currentPrice))
+    : "—";
+  const hoursLeft = Math.max(1, Math.round(msLeft / (60 * 60 * 1000)));
+  const title = row.title || "Your watched auction";
+  const url = row.listing_url || "https://fieldsandfloors.com/watchlist-cards";
+
+  const subject = `Ending soon — ${title.slice(0, 60)}${title.length > 60 ? "…" : ""}`;
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#0a0907;font-family:Georgia,serif;color:#f7f1e1;">
+  <div style="max-width:520px;margin:0 auto;padding:32px 24px;">
+    <div style="font-family:ui-monospace,monospace;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:#c9954a;margin-bottom:14px;">
+      Fields &amp; Floors · Auction ending soon
+    </div>
+    <div style="font-style:italic;font-size:26px;line-height:1.2;color:#f7f1e1;margin-bottom:18px;">
+      An auction you're watching ends in about ${hoursLeft} hour${hoursLeft === 1 ? "" : "s"}.
+    </div>
+    <div style="border:0.5px solid #2a251c;border-radius:12px;background:#14110c;padding:18px;margin-bottom:22px;">
+      <div style="font-size:14px;line-height:1.4;color:#f7f1e1;margin-bottom:10px;">${title}</div>
+      <div style="font-style:italic;font-size:24px;color:#c9954a;">${priceStr}<span style="font-size:12px;color:#a99e85;font-style:normal;"> current bid</span></div>
+    </div>
+    <a href="${url}" style="display:inline-block;background:#c9954a;color:#1a1612;text-decoration:none;font-family:ui-monospace,monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;padding:13px 26px;border-radius:999px;">
+      View &amp; bid on eBay
+    </a>
+    <p style="font-size:12px;color:#6b6354;margin-top:24px;line-height:1.6;">
+      Bidding happens on eBay — we just remind you before time runs out. Prices and
+      availability can change; confirm on the listing.
+    </p>
+  </div>
+</body>
+</html>`;
+
+  const result = await resend.emails.send({
+    from: "Fields & Floors <alerts@fieldsandfloors.com>",
+    to: email,
+    subject,
+    html,
+  });
+
+  if (result.error) {
+    throw new Error(`Resend rejected: ${JSON.stringify(result.error)}`);
+  }
+  console.log(`Sent bid reminder to ${email} for ${row.listing_id}, id=${result.data?.id}`);
 }
 
 function buildSubject(digest: UserDigest): string {

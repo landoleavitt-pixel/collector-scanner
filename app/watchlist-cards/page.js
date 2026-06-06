@@ -14,6 +14,7 @@ export default function WatchlistCardsPage() {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [checking, setChecking] = useState(false);
+  const [toast, setToast] = useState(null); // string | null
 
   // Redirect logged-out users
   useEffect(() => {
@@ -120,12 +121,39 @@ export default function WatchlistCardsPage() {
         ) : (
           <div className="grid grid-cols-2 gap-4">
             {listings.map((l) => (
-              <WatchlistTile key={l.id} listing={l} onRemove={() => handleRemove(l.listing_id)} />
+              <WatchlistTile key={l.id} listing={l} onRemove={() => handleRemove(l.listing_id)} onToast={setToast} />
             ))}
           </div>
         )}
       </div>
+
+      {toast && <Toast message={toast} onClose={() => setToast(null)} />}
     </main>
+  );
+}
+
+// Dismissible confirmation toast — stays until the user closes it.
+function Toast({ message, onClose }) {
+  return (
+    <div
+      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] max-w-[440px] w-[calc(100%-32px)] rounded-xl px-4 py-3.5 flex items-start gap-3"
+      style={{
+        background: 'var(--bg-elev)',
+        border: '0.5px solid var(--gold-deep)',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+      }}
+    >
+      <span className="mt-0.5 text-[13px]" style={{ color: 'var(--gold-bright)' }}>✓</span>
+      <p className="flex-1 text-[13px] leading-relaxed" style={{ color: 'var(--ink-200)' }}>{message}</p>
+      <button
+        onClick={onClose}
+        aria-label="Dismiss"
+        className="text-[16px] leading-none mt-0.5 transition-colors"
+        style={{ color: 'var(--ink-600)' }}
+      >
+        ×
+      </button>
+    </div>
   );
 }
 
@@ -153,7 +181,7 @@ function EmptyState({ tab, onBrowse }) {
   );
 }
 
-function WatchlistTile({ listing, onRemove }) {
+function WatchlistTile({ listing, onRemove, onToast }) {
   const b = listing.badges || {};
   const isSold = listing.status === 'sold' || listing.status === 'ended';
 
@@ -239,22 +267,22 @@ function WatchlistTile({ listing, onRemove }) {
         </div>
 
         {/* Bid reminder — only for active auctions */}
-        {listing.is_auction && !isSold && <BidReminderControl listing={listing} />}
+        {listing.is_auction && !isSold && <BidReminderControl listing={listing} onToast={onToast} />}
       </div>
     </div>
   );
 }
 
-// Toggle + optional max-price for a "remind me before this auction ends" alert.
-function BidReminderControl({ listing }) {
+// "Set a reminder" button that opens a modal. Once set, the button shows the
+// armed state ("Reminder set · $X") and reopens the modal to edit or remove.
+function BidReminderControl({ listing, onToast }) {
   const [on, setOn] = useState(!!listing.bid_reminder);
   const [maxPrice, setMaxPrice] = useState(
-    listing.reminder_max_price != null ? String(listing.reminder_max_price) : ''
+    listing.reminder_max_price != null ? Number(listing.reminder_max_price) : null
   );
-  const [saving, setSaving] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   async function patch(next) {
-    setSaving(true);
     try {
       await fetch(`/api/watchlist/${encodeURIComponent(listing.listing_id)}`, {
         method: 'PATCH',
@@ -262,66 +290,143 @@ function BidReminderControl({ listing }) {
         body: JSON.stringify(next),
       });
     } catch {
-      // ignore — UI stays optimistic
-    } finally {
-      setSaving(false);
+      // optimistic — ignore failures
     }
   }
 
-  function toggle() {
-    const next = !on;
-    setOn(next);
-    patch({ bid_reminder: next, reminder_max_price: maxPrice === '' ? null : Number(maxPrice) });
+  function handleSubmit(priceValue) {
+    const price = priceValue === '' || priceValue == null ? null : Number(priceValue);
+    setOn(true);
+    setMaxPrice(price);
+    setModalOpen(false);
+    patch({ bid_reminder: true, reminder_max_price: price });
+    onToast?.(
+      price != null
+        ? `Reminder set — we'll only email you about this card if the bid is under $${price}.`
+        : `Reminder set — we'll email you in this auction's final hours.`
+    );
   }
 
-  function commitMaxPrice() {
-    if (on) patch({ reminder_max_price: maxPrice === '' ? null : Number(maxPrice) });
+  function handleRemove() {
+    setOn(false);
+    setMaxPrice(null);
+    setModalOpen(false);
+    patch({ bid_reminder: false, reminder_max_price: null });
+    onToast?.('Reminder removed.');
   }
+
+  const buttonLabel = on
+    ? `Reminder set${maxPrice != null ? ` · $${maxPrice}` : ''}`
+    : 'Set a reminder';
 
   return (
     <div className="mt-3 pt-3" style={{ borderTop: '0.5px solid var(--line-soft)' }}>
       <button
-        onClick={toggle}
-        disabled={saving}
-        className="flex items-center gap-2 text-[11px] uppercase tracking-[0.14em] transition-colors disabled:opacity-50"
+        onClick={() => setModalOpen(true)}
+        className="flex items-center gap-2 text-[11px] uppercase tracking-[0.14em] transition-colors"
         style={{ color: on ? 'var(--gold-bright)' : 'var(--ink-400)' }}
       >
-        <span
-          className="inline-flex items-center justify-center w-4 h-4 rounded-sm text-[10px]"
-          style={{
-            border: `1px solid ${on ? 'var(--gold)' : 'var(--ink-600)'}`,
-            background: on ? 'var(--gold)' : 'transparent',
-            color: '#1a1612',
-          }}
-        >
-          {on ? '✓' : ''}
-        </span>
-        Remind me before it ends
+        <span style={{ fontSize: '12px' }}>{on ? '🔔' : '+'}</span>
+        {buttonLabel}
       </button>
 
-      {on && (
-        <div className="mt-2.5 flex items-center gap-2">
-          <span className="text-[10px] uppercase tracking-[0.12em]" style={{ color: 'var(--ink-600)' }}>
-            Only if ≤
-          </span>
-          <div className="flex items-center" style={{ border: '0.5px solid var(--line)', borderRadius: 6, overflow: 'hidden' }}>
-            <span className="text-[12px] px-1.5" style={{ color: 'var(--ink-400)' }}>$</span>
+      {modalOpen && (
+        <BidReminderModal
+          listing={listing}
+          initialPrice={maxPrice}
+          isSet={on}
+          onSubmit={handleSubmit}
+          onRemove={handleRemove}
+          onClose={() => setModalOpen(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+// Modal: pick an optional max price, submit to arm the reminder.
+function BidReminderModal({ listing, initialPrice, isSet, onSubmit, onRemove, onClose }) {
+  const [price, setPrice] = useState(initialPrice != null ? String(initialPrice) : '');
+
+  return (
+    <div
+      className="fixed inset-0 z-[55] flex items-center justify-center p-4"
+      style={{ background: 'rgba(5,4,3,0.7)', backdropFilter: 'blur(2px)' }}
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-[420px] rounded-2xl overflow-hidden"
+        style={{ background: 'var(--bg-elev)', border: '0.5px solid var(--line)' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="px-6 pt-6 pb-5">
+          <div className="text-[10px] uppercase tracking-[0.22em] mb-3" style={{ color: 'var(--gold)' }}>
+            Bid reminder
+          </div>
+          <h3 className="font-display italic text-[24px] leading-[1.15] mb-2" style={{ color: 'var(--ink-100)' }}>
+            What's the most you'd pay?
+          </h3>
+          <p className="text-[13px] leading-relaxed mb-5" style={{ color: 'var(--ink-400)' }}>
+            We'll email you in this auction's final hours — and if you set a price,
+            only when the current bid is at or below it. Leave it blank to be
+            reminded regardless of price.
+          </p>
+
+          <div className="text-[10px] line-clamp-2 mb-4 italic" style={{ color: 'var(--ink-600)' }}>
+            {listing.title}
+          </div>
+
+          <label className="block text-[10px] uppercase tracking-[0.14em] mb-2" style={{ color: 'var(--ink-400)' }}>
+            Notify me only if the bid is at or below
+          </label>
+          <div className="flex items-center mb-2" style={{ border: '0.5px solid var(--line)', borderRadius: 8, overflow: 'hidden' }}>
+            <span className="text-[16px] px-3" style={{ color: 'var(--ink-400)' }}>$</span>
             <input
               type="number"
               inputMode="numeric"
-              value={maxPrice}
-              onChange={(e) => setMaxPrice(e.target.value)}
-              onBlur={commitMaxPrice}
-              placeholder="any"
-              className="w-16 bg-transparent text-[12px] py-1 pr-2 outline-none"
+              autoFocus
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              placeholder="Any amount"
+              className="flex-1 bg-transparent text-[16px] py-3 pr-3 outline-none"
               style={{ color: 'var(--ink-100)' }}
+              onKeyDown={(e) => { if (e.key === 'Enter') onSubmit(price); }}
             />
           </div>
         </div>
-      )}
-      <p className="mt-2 text-[10px] leading-relaxed" style={{ color: 'var(--ink-600)' }}>
-        We'll email you in the auction's final hours{maxPrice && on ? `, only if the bid is at or below $${maxPrice}` : ''}.
-      </p>
+
+        <div className="px-6 py-4 flex items-center gap-3" style={{ borderTop: '0.5px solid var(--line-soft)' }}>
+          <button
+            onClick={() => onSubmit(price)}
+            className="flex-1 text-[11px] uppercase tracking-[0.18em] py-3 rounded-full transition-opacity hover:opacity-90"
+            style={{ background: 'var(--gold)', color: '#1a1612' }}
+          >
+            {isSet ? 'Update reminder' : 'Set reminder'}
+          </button>
+          {isSet ? (
+            <button
+              onClick={onRemove}
+              className="text-[11px] uppercase tracking-[0.14em] px-4 py-3 transition-colors"
+              style={{ color: 'var(--ink-500)' }}
+            >
+              Remove
+            </button>
+          ) : (
+            <button
+              onClick={onClose}
+              className="text-[11px] uppercase tracking-[0.14em] px-4 py-3 transition-colors"
+              style={{ color: 'var(--ink-500)' }}
+            >
+              Cancel
+            </button>
+          )}
+        </div>
+
+        <p className="px-6 pb-5 text-[10px] leading-relaxed" style={{ color: 'var(--ink-600)' }}>
+          This doesn't buy or bid on the card — Fields &amp; Floors only emails you so
+          you can decide and bid yourself on eBay. Prices and availability can change.
+        </p>
+      </div>
     </div>
   );
 }

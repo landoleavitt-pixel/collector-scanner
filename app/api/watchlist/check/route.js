@@ -40,10 +40,12 @@ async function getAppToken() {
 
 // Check a single eBay item's current status using the modern Browse API
 // getItem endpoint (accepts the v1|...|0 item ID format that item_summary
-// search returns). We are deliberately CONSERVATIVE: a card is only marked
-// ended on an explicit out-of-stock/unavailable signal. Any error, 404, or
-// ambiguous response leaves the card active — we never mark a card sold just
-// because a status check failed.
+// search returns).
+//
+// Sold/ended detection: eBay's getItem returns HTTP 404 when a listing is no
+// longer available (ended or sold). We treat 404 as "ended". We still leave the
+// card active on genuine transport failures (network error, 5xx, rate-limit) so
+// a temporary eBay hiccup never marks a live card as sold.
 async function checkItemStatus(listingId, token) {
   const url = `${EBAY_ITEM_URL}?item_id=${encodeURIComponent(listingId)}`;
 
@@ -60,7 +62,11 @@ async function checkItemStatus(listingId, token) {
     return { status: 'active', price: null }; // network error → leave as-is
   }
 
-  // Non-OK (including 404) → do NOT assume ended; leave active.
+  // 404 = listing gone (ended or sold). This is eBay's normal signal for it.
+  if (res.status === 404) {
+    return { status: 'ended', price: null };
+  }
+  // Other non-OK (5xx, 429, auth) → transient; don't assume ended.
   if (!res.ok) {
     return { status: 'active', price: null };
   }
@@ -73,9 +79,11 @@ async function checkItemStatus(listingId, token) {
   }
 
   const avail = data?.estimatedAvailabilities?.[0]?.estimatedAvailabilityStatus;
-  const price = data?.price?.value ? Number(data.price.value) : null;
+  // Auctions carry the live high bid in currentBidPrice; fixed-price in price.
+  const rawPrice = data?.currentBidPrice?.value ?? data?.price?.value;
+  const price = rawPrice != null ? Number(rawPrice) : null;
 
-  // Only OUT_OF_STOCK is an explicit "no longer available" signal.
+  // Explicit out-of-stock is also an "ended" signal.
   if (avail === 'OUT_OF_STOCK') {
     return { status: 'ended', price };
   }
