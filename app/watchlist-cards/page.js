@@ -237,7 +237,91 @@ function WatchlistTile({ listing, onRemove }) {
             </a>
           )}
         </div>
+
+        {/* Bid reminder — only for active auctions */}
+        {listing.is_auction && !isSold && <BidReminderControl listing={listing} />}
       </div>
+    </div>
+  );
+}
+
+// Toggle + optional max-price for a "remind me before this auction ends" alert.
+function BidReminderControl({ listing }) {
+  const [on, setOn] = useState(!!listing.bid_reminder);
+  const [maxPrice, setMaxPrice] = useState(
+    listing.reminder_max_price != null ? String(listing.reminder_max_price) : ''
+  );
+  const [saving, setSaving] = useState(false);
+
+  async function patch(next) {
+    setSaving(true);
+    try {
+      await fetch(`/api/watchlist/${encodeURIComponent(listing.listing_id)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(next),
+      });
+    } catch {
+      // ignore — UI stays optimistic
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  function toggle() {
+    const next = !on;
+    setOn(next);
+    patch({ bid_reminder: next, reminder_max_price: maxPrice === '' ? null : Number(maxPrice) });
+  }
+
+  function commitMaxPrice() {
+    if (on) patch({ reminder_max_price: maxPrice === '' ? null : Number(maxPrice) });
+  }
+
+  return (
+    <div className="mt-3 pt-3" style={{ borderTop: '0.5px solid var(--line-soft)' }}>
+      <button
+        onClick={toggle}
+        disabled={saving}
+        className="flex items-center gap-2 text-[11px] uppercase tracking-[0.14em] transition-colors disabled:opacity-50"
+        style={{ color: on ? 'var(--gold-bright)' : 'var(--ink-400)' }}
+      >
+        <span
+          className="inline-flex items-center justify-center w-4 h-4 rounded-sm text-[10px]"
+          style={{
+            border: `1px solid ${on ? 'var(--gold)' : 'var(--ink-600)'}`,
+            background: on ? 'var(--gold)' : 'transparent',
+            color: '#1a1612',
+          }}
+        >
+          {on ? '✓' : ''}
+        </span>
+        Remind me before it ends
+      </button>
+
+      {on && (
+        <div className="mt-2.5 flex items-center gap-2">
+          <span className="text-[10px] uppercase tracking-[0.12em]" style={{ color: 'var(--ink-600)' }}>
+            Only if ≤
+          </span>
+          <div className="flex items-center" style={{ border: '0.5px solid var(--line)', borderRadius: 6, overflow: 'hidden' }}>
+            <span className="text-[12px] px-1.5" style={{ color: 'var(--ink-400)' }}>$</span>
+            <input
+              type="number"
+              inputMode="numeric"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(e.target.value)}
+              onBlur={commitMaxPrice}
+              placeholder="any"
+              className="w-16 bg-transparent text-[12px] py-1 pr-2 outline-none"
+              style={{ color: 'var(--ink-100)' }}
+            />
+          </div>
+        </div>
+      )}
+      <p className="mt-2 text-[10px] leading-relaxed" style={{ color: 'var(--ink-600)' }}>
+        We'll email you in the auction's final hours{maxPrice && on ? `, only if the bid is at or below $${maxPrice}` : ''}.
+      </p>
     </div>
   );
 }

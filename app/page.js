@@ -1899,6 +1899,8 @@ function WatchStar({ item }) {
             image_url: item.image,
             listing_url: item.url,
             badges: buildBadgePayload(item),
+            is_auction: !!item.isAuction,
+            end_time: item.endTime || null,
           }),
         });
       }

@@ -44,7 +44,7 @@ export async function POST(request) {
   }
 
   const body = await request.json();
-  const { listing_id, title, price, currency, image_url, listing_url, badges } = body;
+  const { listing_id, title, price, currency, image_url, listing_url, badges, is_auction, end_time } = body;
 
   if (!listing_id) {
     return NextResponse.json({ error: 'listing_id is required' }, { status: 400 });
@@ -62,6 +62,8 @@ export async function POST(request) {
       listing_url: listing_url ?? null,
       badges: badges ?? {},
       status: 'active',
+      is_auction: !!is_auction,
+      end_time: end_time ?? null,
     })
     .select()
     .single();
