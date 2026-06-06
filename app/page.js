@@ -447,9 +447,15 @@ function Home() {
             error={error}
             loading={false}
             onSuggested={(s) => handleQuerySubmit(s)}
-            onChipSearch={(chipQuery, partialFilters) =>
-              handleSearch(chipQuery, { ...filters, ...partialFilters })
-            }
+            onChipSearch={(chipQuery, partialFilters) => {
+              // Apply the matching filters and run the search immediately. The
+              // selected filters remain visible in the Stage 3 results sidebar,
+              // so the visitor sees BOTH which toggles produced the example and
+              // the resulting cards — no extra click needed.
+              const merged = { ...filters, ...partialFilters };
+              setFilters(merged);
+              handleSearch(chipQuery, merged);
+            }}
           />
           <WhyFields />
         </>
