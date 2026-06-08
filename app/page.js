@@ -191,6 +191,10 @@ function Home() {
   const hasSearched = appStage === 'searched';
   const [scanIdx, setScanIdx] = useState(0);
 
+  // Mobile filter drawer + sort sheet (lg:hidden). Desktop keeps the sidebar.
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [mobileSortOpen, setMobileSortOpen] = useState(false);
+
   const [filters, setFilters] = useState({
     autoCards: false,
     numberedCards: false,
@@ -492,10 +496,12 @@ function Home() {
               </p>
             </div>
             <div className="flex items-center gap-6">
-              <SortDropdown
-                value={filters.sortBy}
-                onChange={(v) => setFilter('sortBy', v)}
-              />
+              <div className="hidden lg:block">
+                <SortDropdown
+                  value={filters.sortBy}
+                  onChange={(v) => setFilter('sortBy', v)}
+                />
+              </div>
               <button
                 onClick={handleOpenSave}
                 className="flex items-center gap-2 px-4 py-2 rounded-full text-[11px] uppercase tracking-[0.18em] transition-colors"
@@ -525,14 +531,23 @@ function Home() {
             </div>
           </div>
 
+          {/* Mobile-only filter + sort bar (sticky). Desktop uses the sidebar. */}
+          <MobileFilterBar
+            activeCount={countActiveFilters(filters)}
+            onOpenFilters={() => setMobileFiltersOpen(true)}
+            onOpenSort={() => setMobileSortOpen(true)}
+          />
+
           {/* Two-column layout: 280px sidebar + flexible results */}
           <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-x-12 gap-y-8 items-start">
-            <ResultsSidebar
-              filters={filters}
-              setFilter={setFilter}
-              onSearch={() => handleSearch()}
-              hasPending={filtersDifferFromApplied()}
-            />
+            <div className="hidden lg:block">
+              <ResultsSidebar
+                filters={filters}
+                setFilter={setFilter}
+                onSearch={() => handleSearch()}
+                hasPending={filtersDifferFromApplied()}
+              />
+            </div>
             <Results
               loading={loading}
               hasSearched={hasSearched}
@@ -545,6 +560,21 @@ function Home() {
               resultMeta={resultMeta}
             />
           </div>
+
+          {/* Mobile filter drawer + sort sheet (lg:hidden, rendered last so they overlay) */}
+          <MobileFilterDrawer
+            open={mobileFiltersOpen}
+            onClose={() => setMobileFiltersOpen(false)}
+            filters={filters}
+            setFilter={setFilter}
+            onSearch={() => { handleSearch(); setMobileFiltersOpen(false); }}
+          />
+          <MobileSortSheet
+            open={mobileSortOpen}
+            onClose={() => setMobileSortOpen(false)}
+            value={filters.sortBy}
+            onChange={(v) => { setFilter('sortBy', v); setMobileSortOpen(false); }}
+          />
         </section>
       )}
 
@@ -945,43 +975,88 @@ function FilterControls({ filters, setFilter, compact = false }) {
                 {filters.selectedPrintRuns.length === ALL_PRESET_PRINT_RUNS.length ? 'Clear all' : 'Select all'}
               </button>
             </div>
-            <div className={compact ? 'grid grid-cols-1 gap-2' : 'grid grid-cols-2 sm:grid-cols-4 gap-2'}>
+            <div className="space-y-5">
               {PRINT_RUN_TIERS.map((tier) => {
                 const allInTierSelected = tier.runs.every((r) => filters.selectedPrintRuns.includes(r));
                 const someInTierSelected = tier.runs.some((r) => filters.selectedPrintRuns.includes(r));
-                const partial = someInTierSelected && !allInTierSelected;
-                // Tier color accents on the active border
                 const tierKey = tier.label === 'The Grail' ? 'grail'
                   : tier.label === 'Ultra Rare' ? 'ultra'
                   : tier.label === 'Rare' ? 'rare'
                   : 'scarce';
-                const tierColors = {
-                  grail: '#ffc14d', ultra: '#c8d4e0', rare: '#d6722d', scarce: '#7a8694',
+                const tierColor = { grail: '#ffc14d', ultra: '#c8d4e0', rare: '#d6722d', scarce: '#7a8694' }[tierKey];
+                // Master switch flips the whole tier on/off; chips toggle individual runs.
+                const toggleTier = () => {
+                  const next = allInTierSelected
+                    ? filters.selectedPrintRuns.filter((r) => !tier.runs.includes(r))
+                    : [...new Set([...filters.selectedPrintRuns, ...tier.runs])];
+                  setFilter('selectedPrintRuns', next);
                 };
-
+                const toggleRun = (r) => {
+                  const next = filters.selectedPrintRuns.includes(r)
+                    ? filters.selectedPrintRuns.filter((x) => x !== r)
+                    : [...filters.selectedPrintRuns, r];
+                  setFilter('selectedPrintRuns', next);
+                };
                 return (
-                  <button
-                    key={tier.label}
-                    onClick={() => {
-                      const next = someInTierSelected
-                        ? filters.selectedPrintRuns.filter((r) => !tier.runs.includes(r))
-                        : [...filters.selectedPrintRuns, ...tier.runs];
-                      setFilter('selectedPrintRuns', next);
-                    }}
-                    className={`text-left transition-all border ${compact ? 'px-3 py-2.5 flex items-center justify-between gap-3' : 'px-4 py-3'}`}
-                    style={{
-                      borderColor: allInTierSelected ? tierColors[tierKey] : 'rgba(255,255,255,0.08)',
-                      background: someInTierSelected ? 'linear-gradient(135deg, rgba(201,164,71,0.10), rgba(201,164,71,0.02))' : 'rgba(20,17,13,0.5)',
-                    }}
-                  >
-                    <div className={`font-display ${compact ? 'text-sm' : 'text-base'} text-[var(--ink-100)] leading-tight`}>
-                      {tier.label}
-                      {partial && <span className="ml-1 text-[var(--gold)] text-xs">·</span>}
+                  <div key={tier.label}>
+                    {/* Tier header: name, range, and a master switch for the whole group */}
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-baseline gap-2.5">
+                        <span className="font-display text-base leading-tight" style={{ color: tierColor }}>{tier.label}</span>
+                        <span className="font-mono text-[10px] tracking-[0.1em] text-[var(--ink-600)]">{tier.range.replace('–', ' – ')}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={toggleTier}
+                        aria-label={`Toggle all ${tier.label} runs`}
+                        className="relative flex-none rounded-full transition-colors"
+                        style={{
+                          width: 46,
+                          height: 28,
+                          background: allInTierSelected ? 'rgba(201,149,74,0.22)' : someInTierSelected ? 'rgba(201,149,74,0.12)' : 'var(--bg-elev-2)',
+                          border: `1px solid ${allInTierSelected ? 'var(--gold-deep)' : 'var(--line)'}`,
+                        }}
+                      >
+                        <span
+                          className="block rounded-full"
+                          style={{
+                            position: 'absolute',
+                            top: 2,
+                            left: 2,
+                            width: 22,
+                            height: 22,
+                            background: allInTierSelected ? tierColor : someInTierSelected ? 'var(--gold)' : 'var(--ink-400)',
+                            transform: allInTierSelected ? 'translateX(18px)' : someInTierSelected ? 'translateX(9px)' : 'translateX(0)',
+                            transition: 'transform 0.22s, background 0.22s',
+                          }}
+                        />
+                      </button>
                     </div>
-                    <div className={`font-mono text-[10px] text-[var(--ink-600)] tracking-[0.1em] ${compact ? '' : 'mt-1'}`}>
-                      {tier.range.replace('–', ' – ')}
+                    {/* Individual run chips */}
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {tier.runs.map((r) => {
+                        const sel = filters.selectedPrintRuns.includes(r);
+                        return (
+                          <button
+                            type="button"
+                            key={r}
+                            onClick={() => toggleRun(r)}
+                            className="font-mono text-[13px] inline-flex items-center rounded-full transition-all"
+                            style={{
+                              minHeight: 36,
+                              padding: '0 14px',
+                              border: `1px solid ${sel ? tierColor : 'var(--line)'}`,
+                              background: sel ? tierColor : 'var(--bg-elev-2)',
+                              color: sel ? '#0e0c0a' : 'var(--ink-200)',
+                              fontWeight: sel ? 600 : 500,
+                            }}
+                          >
+                            {r}
+                          </button>
+                        );
+                      })}
                     </div>
-                  </button>
+                  </div>
                 );
               })}
             </div>
@@ -1304,6 +1379,184 @@ function ResultsSidebar({ filters, setFilter, onSearch, hasPending }) {
         )}
       </div>
     </aside>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   Mobile filter + sort (lg:hidden). Desktop keeps ResultsSidebar.
+   - MobileFilterBar: sticky Sort + Filters pills above the results grid.
+   - MobileSheet: shared bottom-sheet shell (scrim, grabber, body lock).
+   - MobileFilterDrawer: reuses FilterControls + a Search button.
+   - MobileSortSheet: instant client-side resort (no search).
+   ───────────────────────────────────────────── */
+
+// Count of "narrowing" filters, for the Filters pill badge. Print-run subset
+// is intentionally excluded to keep the number predictable.
+function countActiveFilters(f) {
+  let n = 0;
+  if (f.autoCards) n++;
+  if (f.rookieCards) n++;
+  if (f.numberedCards) n++;
+  if (f.condition && f.condition !== 'any') n++;
+  if (f.listingType && f.listingType !== 'any') n++;
+  if ((f.priceMin ?? 0) > 0 || (f.priceMax ?? 1000) < 1000) n++;
+  return n;
+}
+
+function MobileFilterBar({ activeCount, onOpenFilters, onOpenSort }) {
+  const pill =
+    'flex-1 inline-flex items-center justify-center gap-2 h-11 rounded-full text-[12px] uppercase tracking-[0.12em] font-medium text-[var(--ink-100)]';
+  const pillStyle = { border: '1px solid var(--line)', background: 'var(--bg-elev)' };
+  return (
+    <div
+      className="lg:hidden sticky top-0 z-30 flex items-center gap-3 py-3 mb-6"
+      style={{ background: 'var(--bg-base)', borderBottom: '1px solid var(--line-soft)' }}
+    >
+      <button onClick={onOpenSort} className={pill} style={pillStyle}>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="var(--ink-400)" strokeWidth="1.4">
+          <path d="M3 4h8M4 7h6M5 10h4" />
+        </svg>
+        Sort
+      </button>
+      <button onClick={onOpenFilters} className={pill} style={pillStyle}>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="var(--ink-400)" strokeWidth="1.4">
+          <path d="M1 3h12M3 7h8M5 11h4" />
+        </svg>
+        Filters
+        {activeCount > 0 && (
+          <span
+            className="inline-flex items-center justify-center text-[11px] font-bold rounded-full"
+            style={{ minWidth: 18, height: 18, padding: '0 5px', background: 'var(--gold)', color: '#0e0c0a', letterSpacing: 0 }}
+          >
+            {activeCount}
+          </span>
+        )}
+      </button>
+    </div>
+  );
+}
+
+function MobileSheet({ open, onClose, title, children, footer, full = false }) {
+  // Lock background scroll while the sheet is open.
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, [open]);
+
+  return (
+    <div className="lg:hidden" aria-hidden={!open}>
+      {/* Scrim */}
+      <div
+        onClick={onClose}
+        className="fixed inset-0 z-40"
+        style={{
+          background: 'rgba(5,4,3,0.62)',
+          opacity: open ? 1 : 0,
+          pointerEvents: open ? 'auto' : 'none',
+          transition: 'opacity 0.32s ease',
+        }}
+      />
+      {/* Sheet */}
+      <div
+        className="fixed inset-x-0 bottom-0 z-50 flex flex-col"
+        style={{
+          maxHeight: '90vh',
+          height: full ? '90vh' : 'auto',
+          background: 'var(--bg-elev)',
+          borderTop: '1px solid var(--line)',
+          borderRadius: '20px 20px 0 0',
+          boxShadow: '0 -24px 60px rgba(0,0,0,0.5)',
+          transform: open ? 'translateY(0)' : 'translateY(100%)',
+          transition: 'transform 0.42s cubic-bezier(0.16,1,0.3,1)',
+        }}
+      >
+        <button onClick={onClose} aria-label="Close" className="w-full flex justify-center pt-2.5 pb-1">
+          <span style={{ width: 38, height: 4, borderRadius: 999, background: 'var(--line)', display: 'block' }} />
+        </button>
+        <div className="flex items-center justify-between px-6 pb-4 pt-1" style={{ borderBottom: '1px solid var(--line-soft)' }}>
+          <span className="font-display italic text-2xl text-[var(--ink-100)]">{title}</span>
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            className="w-9 h-9 flex items-center justify-center rounded-full text-[var(--ink-400)]"
+            style={{ border: '1px solid var(--line-soft)' }}
+          >
+            ✕
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto px-6 py-5" style={{ WebkitOverflowScrolling: 'touch' }}>
+          {children}
+        </div>
+        {footer && (
+          <div className="px-6 pt-4" style={{ borderTop: '1px solid var(--line)', paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
+            {footer}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function MobileFilterDrawer({ open, onClose, filters, setFilter, onSearch }) {
+  return (
+    <MobileSheet
+      open={open}
+      onClose={onClose}
+      title="Filters"
+      full
+      footer={
+        <button
+          onClick={onSearch}
+          className="w-full text-[13px] font-bold uppercase tracking-[0.14em]"
+          style={{
+            minHeight: 52,
+            borderRadius: 10,
+            background: 'linear-gradient(180deg, #ffd97a 0%, #d99c14 100%)',
+            color: '#0e0c0a',
+          }}
+        >
+          Search →
+        </button>
+      }
+    >
+      <FilterControls filters={filters} setFilter={setFilter} compact />
+    </MobileSheet>
+  );
+}
+
+function MobileSortSheet({ open, onClose, value, onChange }) {
+  const options = [
+    ['printrun-rarest', 'Rarest first'],
+    ['printrun-common', 'Most common first'],
+    ['price-low', 'Price: Low → High'],
+    ['price-high', 'Price: High → Low'],
+    ['ending-soon', 'Ending soonest'],
+    ['newest', 'Newest first'],
+  ];
+  return (
+    <MobileSheet open={open} onClose={onClose} title="Sort">
+      <div>
+        {options.map(([v, l]) => {
+          const sel = value === v;
+          return (
+            <button
+              key={v}
+              onClick={() => onChange(v)}
+              className="w-full flex items-center justify-between text-left text-[15px]"
+              style={{ minHeight: 50, borderBottom: '1px solid var(--line-soft)', color: sel ? 'var(--gold-bright)' : 'var(--ink-200)' }}
+            >
+              <span>{l}</span>
+              {sel && <span style={{ color: 'var(--gold-bright)' }}>✓</span>}
+            </button>
+          );
+        })}
+      </div>
+      <p className="text-[11.5px] italic mt-3 leading-relaxed" style={{ color: 'var(--ink-600)' }}>
+        Sort is instant — it reorders the cards you already have, no new search.
+      </p>
+    </MobileSheet>
   );
 }
 
@@ -1964,18 +2217,75 @@ function ResultCard({ item, formatPrice, index }) {
       href={item.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group block py-10 rise pl-4 md:pl-5"
+      className="group block rise"
       style={tierStyle ? {
         animationDelay: `${Math.min(index * 40, 400)}ms`,
         backgroundImage: tierStyle.bg,
         borderLeft: `2px solid ${tierStyle.border}`,
       } : { animationDelay: `${Math.min(index * 40, 400)}ms` }}
     >
+      {/* MOBILE (<lg) — compact list row: thumbnail left, badges pinned at bottom. */}
+      <div className="lg:hidden flex gap-4 py-5 pl-4 pr-3">
+        <div className="relative w-[92px] flex-none aspect-[3/4] bg-[var(--bg-elev)] overflow-hidden">
+          <WatchStar item={item} />
+          {item.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-[var(--ink-600)] font-display text-3xl italic">◇</div>
+          )}
+          {item.isAuction && (
+            <span className="absolute top-1.5 left-1.5 text-[8px] uppercase tracking-[0.16em] text-[var(--gold)] bg-[var(--bg-base)]/85 px-1 py-0.5 border border-[var(--gold-deep)]/30">
+              Live
+            </span>
+          )}
+        </div>
+        <div className="min-w-0 flex-1 flex flex-col">
+          <h3
+            className="font-display text-lg leading-[1.15] text-[var(--ink-100)] group-hover:text-[var(--gold-bright)] transition-colors"
+            style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+          >
+            {item.title}
+          </h3>
+          <div className="text-[11px] leading-relaxed text-[var(--ink-400)] mt-1.5">
+            {item.seller && <span className="normal-case">{item.seller}</span>}
+            {item.sellerFeedback != null && (
+              <>
+                <span className="text-[var(--ink-600)] mx-1.5">·</span>
+                <span>{Number(item.sellerFeedback).toFixed(1)}%</span>
+              </>
+            )}
+            {item.endTime && item.isAuction && (
+              <>
+                <span className="text-[var(--ink-600)] mx-1.5">·</span>
+                <span className="text-[var(--gold)] uppercase tracking-[0.08em]">{formatTimeRemaining(item.endTime)}</span>
+              </>
+            )}
+          </div>
+          <div className="font-display text-[26px] leading-none text-[var(--ink-100)] group-hover:text-[var(--gold-bright)] transition-colors mt-2">
+            {formatPrice(item.price)}
+          </div>
+          {/* Badge row pinned to the bottom of the card */}
+          <div className="flex flex-wrap gap-1.5 mt-2.5">
+            {item.isAuction && (
+              <Badge auction>{item.bidCount != null ? `${item.bidCount} BIDS` : 'AUCTION'}</Badge>
+            )}
+            {hasAuto && <Badge>AUTO</Badge>}
+            {hasRookie && <Badge>RC</Badge>}
+            {printRun && <Badge mono tier={printRunTier(printRun)}>/{printRun}</Badge>}
+            {psaMatch && <Badge>PSA {psaMatch[1]}</Badge>}
+            {bgsMatch && <Badge>BGS {bgsMatch[1]}</Badge>}
+            {sgcMatch && <Badge>SGC {sgcMatch[1]}</Badge>}
+            {cgcMatch && <Badge>CGC {cgcMatch[1]}</Badge>}
+          </div>
+        </div>
+      </div>
+
       {/* 3-column layout — title+badges+meta on left, image center as visual
           focal point, price + CTA on right. items-center vertically aligns
           all three columns so the row stays visually balanced even when the
           title block grows tall. */}
-      <div className="grid grid-cols-1 md:grid-cols-[1.3fr_200px_1fr] gap-6 md:gap-7 items-center">
+      <div className="hidden lg:grid grid-cols-1 md:grid-cols-[1.3fr_200px_1fr] gap-6 md:gap-7 items-center py-10 pl-4 md:pl-5">
         {/* Left column: title, badges, meta */}
         <div className="min-w-0 order-2 md:order-1">
           <h3 className="font-display text-xl md:text-2xl leading-[1.15] text-[var(--ink-100)] group-hover:text-[var(--gold-bright)] transition-colors mb-4">
