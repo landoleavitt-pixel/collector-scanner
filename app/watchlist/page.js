@@ -9,15 +9,26 @@ export default async function WatchlistPage() {
   const supabase = createServerSupabase();
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Middleware should catch this, but defense in depth
   if (!user) {
     redirect('/login?next=/watchlist');
   }
 
-  const { data: searches, error } = await supabase
-    .from('saved_searches')
-    .select('*')
-    .order('created_at', { ascending: false });
+  const [{ data: searches, error }, { data: profile }] = await Promise.all([
+    supabase
+      .from('saved_searches')
+      .select('*')
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('profiles')
+      .select('tier, is_founding_member')
+      .eq('id', user.id)
+      .single(),
+  ]);
+
+  // User can use alerts if they're on base tier OR a founding member
+  const canUseAlerts =
+    profile?.tier === 'base' ||
+    profile?.is_founding_member === true;
 
   return (
     <main className="min-h-[calc(100vh-200px)] py-12 md:py-16">
@@ -62,7 +73,11 @@ export default async function WatchlistPage() {
         ) : (
           <div className="flex flex-col gap-3">
             {searches.map((search) => (
-              <WatchlistRow key={search.id} search={search} />
+              <WatchlistRow
+                key={search.id}
+                search={search}
+                canUseAlerts={canUseAlerts}
+              />
             ))}
           </div>
         )}
