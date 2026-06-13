@@ -631,6 +631,7 @@ function Home() {
               on BOTH mobile and desktop (PendingSearchModal portals to body). */}
           <PendingSearchModal
             open={pendingSearchOpen}
+            floating={isDesktopViewport}
             onSearch={() => { setPendingSearchOpen(false); handleSearch(); }}
             onCancel={() => { setPendingSearchOpen(false); revertFiltersToApplied(); }}
             onDismiss={() => { setPendingSearchOpen(false); }}
@@ -2175,33 +2176,48 @@ function RangeRow({ label, value, max, step, onChange, showPlus }) {
    active search and the user closes the filter drawer or tries to interact
    with stale results. Strongly nudges the user to either rerun the search
    or revert their filter changes. */
-function PendingSearchModal({ open, onSearch, onCancel, onDismiss }) {
+// `floating` = desktop variant: the prompt floats centered with NO blocking
+// backdrop and NO scroll lock, so the filter sidebar behind it stays fully
+// editable. The user can adjust as many filters as they like, then press
+// Search. The mobile variant (floating=false) keeps the dimmed, click-to-cancel
+// scrim since its filter drawer is already closed.
+function PendingSearchModal({ open, onSearch, onCancel, onDismiss, floating = false }) {
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    if (!floating) document.body.style.overflow = 'hidden';
     const onKey = (e) => { if (e.key === 'Escape') onCancel(); };
     document.addEventListener('keydown', onKey);
     return () => {
-      document.body.style.overflow = prev;
+      if (!floating) document.body.style.overflow = prev;
       document.removeEventListener('keydown', onKey);
     };
-  }, [open, onCancel]);
+  }, [open, onCancel, floating]);
   if (!open) return null;
   if (typeof document === 'undefined') return null;
   return createPortal(
-    <div className="fixed inset-0 z-[60] flex items-center justify-center px-6" aria-modal="true" role="dialog">
+    <div
+      className={`fixed inset-0 z-[60] flex items-center justify-center px-6 ${floating ? 'pointer-events-none' : ''}`}
+      aria-modal={floating ? undefined : 'true'}
+      role="dialog"
+    >
+      {/* Blocking scrim — mobile only. The floating desktop variant omits it
+          entirely so clicks pass through to the filters underneath. */}
+      {!floating && (
+        <div
+          onClick={onCancel}
+          className="absolute inset-0"
+          style={{ background: 'rgba(5,4,3,0.7)', backdropFilter: 'blur(3px)' }}
+        />
+      )}
       <div
-        onClick={onCancel}
-        className="absolute inset-0"
-        style={{ background: 'rgba(5,4,3,0.7)', backdropFilter: 'blur(3px)' }}
-      />
-      <div
-        className="relative w-full max-w-[400px] rounded-[6px] p-7 text-center"
+        className={`relative w-full max-w-[400px] rounded-[6px] p-7 text-center ${floating ? 'pointer-events-auto' : ''}`}
         style={{
           background: 'var(--bg-elev)',
           border: '1px solid var(--gold-deep)',
-          boxShadow: '0 30px 80px -20px rgba(0,0,0,0.6), 0 0 32px -10px rgba(230,185,107,0.3)',
+          boxShadow: floating
+            ? '0 40px 100px -20px rgba(0,0,0,0.85), 0 0 40px -8px rgba(230,185,107,0.4)'
+            : '0 30px 80px -20px rgba(0,0,0,0.6), 0 0 32px -10px rgba(230,185,107,0.3)',
         }}
       >
         {/* Dismiss × — closes the modal but keeps the user’s filter edits
