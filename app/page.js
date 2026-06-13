@@ -2,6 +2,14 @@
 
 import { useState, useEffect, useMemo, useRef, Suspense, createContext, useContext } from 'react';
 import Link from 'next/link';
+
+/* Upscale eBay thumbnail URLs from the small default (~225px) to a sharper 640px
+   version. eBay encodes the size as `s-l\d+` in the filename; we just swap it.
+   Safe no-op for non-eBay URLs or missing/empty inputs. */
+function upscaleEbayImage(url) {
+  if (!url) return url;
+  return url.replace(/\/s-l\d+\.(\w+)/, '/s-l640.$1');
+}
 import { ArrowRight, ArrowUpRight, ArrowUp } from 'lucide-react';
 import SaveSearchModal from './components/SaveSearchModal';
 import { useUser } from '../lib/useUser';
@@ -725,7 +733,7 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && !loading && onSearch()}
               disabled={loading}
-              className="relative w-full pr-14 py-5 bg-transparent border-0 border-b border-[var(--line)] text-2xl md:text-3xl font-display text-[var(--ink-100)] focus:outline-none focus:border-[var(--gold)] transition-colors text-left"
+              className="relative w-full pl-14 pr-14 py-5 bg-transparent border-0 border-b border-[var(--line)] text-2xl md:text-3xl font-display text-[var(--ink-100)] focus:outline-none focus:border-[var(--gold)] transition-colors text-center"
             />
             {!query && !loading && <RotatingPlaceholder />}
             <button
@@ -795,14 +803,10 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
         </a>
       </div>
 
-      {/* Below the fold — the live featured Grail pull from eBay, kept */}
-      <div className="max-w-[1040px] mx-auto px-6 lg:px-10 pb-16">
-        <div
-          className="text-[10px] tracking-[0.22em] uppercase mb-4 text-center"
-          style={{ color: 'var(--gold)', fontFamily: 'ui-monospace, monospace' }}
-        >
-          Today on the floor
-        </div>
+      {/* Below the fold — the live featured Grail pull from eBay.
+          (FeaturedFind has its own "Featured Find · Live from eBay" caption,
+          so we don't add a duplicate header here.) */}
+      <div className="max-w-[1040px] mx-auto px-6 lg:px-10 pb-16 pt-8">
         <div className="mx-auto max-w-[360px] rise" style={{ animationDelay: '820ms' }}>
           <FeaturedFind />
         </div>
@@ -828,12 +832,13 @@ function RotatingPlaceholder() {
 
   return (
     <span
-      className="absolute left-0 top-1/2 -translate-y-1/2 pointer-events-none overflow-hidden"
-      style={{ height: '1.5em' }}
+      className="absolute left-0 right-0 top-1/2 -translate-y-1/2 pointer-events-none overflow-hidden flex items-center justify-center text-center"
+      style={{ height: '2.4em' }}
     >
       <span
         key={animKey}
-        className="block text-2xl md:text-3xl font-display italic text-[var(--ink-600)] rotate-placeholder"
+        className="block text-2xl md:text-3xl font-display italic text-[var(--ink-600)] rotate-placeholder text-center"
+        style={{ lineHeight: 1.4, paddingBottom: '0.15em' }}
       >
         {SUGGESTED_SEARCHES[idx]}
       </span>
@@ -972,7 +977,7 @@ function FeaturedFind() {
           {item && (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={item.image}
+              src={upscaleEbayImage(item.image)}
               alt={item.title}
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
             />
@@ -2360,7 +2365,7 @@ function ResultCard({ item, formatPrice, index }) {
           <WatchStar item={item} />
           {item.image ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+            <img src={upscaleEbayImage(item.image)} alt={item.title} className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-[var(--ink-600)] font-display text-3xl italic">◇</div>
           )}
@@ -2477,7 +2482,7 @@ function ResultCard({ item, formatPrice, index }) {
             {item.image ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={item.image}
+                src={upscaleEbayImage(item.image)}
                 alt={item.title}
                 className="w-full h-full object-cover transition-all duration-700 group-hover:scale-[1.04]"
               />

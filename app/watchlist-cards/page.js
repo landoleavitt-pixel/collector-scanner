@@ -191,7 +191,7 @@ function WatchlistTile({ listing, onRemove, onToast }) {
 
   // Upscale eBay thumbnail
   const img = listing.image_url
-    ? listing.image_url.replace(/\/s-l\d+\.(\w+)/, '/s-l500.$1')
+    ? listing.image_url.replace(/\/s-l\d+\.(\w+)/, '/s-l640.$1')
     : '';
 
   const TIER_CHIP = {
