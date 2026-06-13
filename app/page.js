@@ -590,9 +590,6 @@ function Home() {
                 setFilter={setFilter}
                 onSearch={() => handleSearch()}
                 hasPending={filtersDifferFromApplied()}
-                pendingSearchOpen={pendingSearchOpen}
-                onSearchPending={() => { setPendingSearchOpen(false); handleSearch(); }}
-                onCancelPending={() => { setPendingSearchOpen(false); revertFiltersToApplied(); }}
               />
             </div>
             <Results
@@ -630,15 +627,14 @@ function Home() {
             onChange={(v) => { setFilter('sortBy', v); setMobileSortOpen(false); }}
           />
 
-          {/* "Search with new filters?" modal — see PendingSearchModal */}
-          {!isDesktopViewport && (
-            <PendingSearchModal
-              open={pendingSearchOpen}
-              onSearch={() => { setPendingSearchOpen(false); handleSearch(); }}
-              onCancel={() => { setPendingSearchOpen(false); revertFiltersToApplied(); }}
-              onDismiss={() => { setPendingSearchOpen(false); }}
-            />
-          )}
+          {/* "Search with new filters?" modal — centered, dimmed overlay
+              on BOTH mobile and desktop (PendingSearchModal portals to body). */}
+          <PendingSearchModal
+            open={pendingSearchOpen}
+            onSearch={() => { setPendingSearchOpen(false); handleSearch(); }}
+            onCancel={() => { setPendingSearchOpen(false); revertFiltersToApplied(); }}
+            onDismiss={() => { setPendingSearchOpen(false); }}
+          />
         </section>
       )}
 
@@ -1514,7 +1510,7 @@ function FilterPanel({ query, setQuery, filters, setFilter, onSubmit, onCancel }
    The Search button sits at the bottom of the sidebar with the pending
    pulse animation when filters have unapplied changes.
    ───────────────────────────────────────────── */
-function ResultsSidebar({ filters, setFilter, onSearch, hasPending, pendingSearchOpen, onSearchPending, onCancelPending }) {
+function ResultsSidebar({ filters, setFilter, onSearch, hasPending }) {
   return (
     <aside className="border border-[var(--line-soft)] bg-[var(--bg-elev)]/30 px-5 py-6">
       <h2 className="text-[10px] uppercase tracking-[0.28em] text-[var(--gold)] mb-5 pb-4 border-b border-[var(--line-soft)]">
@@ -1541,39 +1537,6 @@ function ResultsSidebar({ filters, setFilter, onSearch, hasPending, pendingSearc
           <p className="text-[10.5px] text-[var(--gold)] italic text-center mt-3 leading-tight">
             Filters changed — press Search
           </p>
-        )}
-
-        {pendingSearchOpen && (
-          <div
-            className="mt-5 rounded-[10px] p-4 text-center"
-            style={{ background: 'rgba(20,17,13,0.8)', border: '1px solid var(--gold-deep)' }}
-          >
-            <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'var(--gold)' }}>
-              Filters changed
-            </p>
-            <h3 className="font-display italic text-[21px] leading-tight mb-2" style={{ color: 'var(--ink-100)' }}>
-              Search with new filters?
-            </h3>
-            <p className="text-[12px] leading-relaxed mb-4" style={{ color: 'var(--ink-400)' }}>
-              You can keep changing filters before you search again.
-            </p>
-            <div className="flex flex-col gap-2">
-              <button
-                onClick={onSearchPending}
-                className="w-full min-h-[44px] rounded-[8px] text-[11px] font-bold uppercase tracking-[0.14em]"
-                style={{ background: 'linear-gradient(180deg, #ffd97a 0%, #d99c14 100%)', color: '#1a1612' }}
-              >
-                Search →
-              </button>
-              <button
-                onClick={onCancelPending}
-                className="w-full min-h-[40px] text-[11px] tracking-[0.14em] uppercase"
-                style={{ background: 'transparent', color: 'var(--ink-400)', border: 'none' }}
-              >
-                Cancel · keep previous filters
-              </button>
-            </div>
-          </div>
         )}
       </div>
     </aside>
