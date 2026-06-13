@@ -1279,14 +1279,14 @@ function PriceRangeSlider({ min, max, onChange }) {
           label="Min"
           value={min}
           max={2000}
-          step={10}
+          step={25}
           onChange={(v) => onChange(v, max)}
         />
         <RangeRow
           label="Max"
           value={max}
           max={5000}
-          step={50}
+          step={25}
           onChange={(v) => onChange(min, v)}
           showPlus
         />
@@ -2045,13 +2045,43 @@ function ToggleRow({ label, checked, onChange }) {
 }
 
 function RangeRow({ label, value, max, step, onChange, showPlus }) {
+  // Local string state lets the user type freely (including a temporary empty
+  // input). We commit the snapped value to the parent only on blur/Enter.
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(String(value));
+  useEffect(() => { if (!editing) setDraft(String(value)); }, [value, editing]);
+
+  function commit() {
+    let n = parseInt(draft.replace(/[^0-9]/g, ''), 10);
+    if (!Number.isFinite(n)) n = 0;
+    if (n < 0) n = 0;
+    if (n > max) n = max;
+    n = Math.round(n / step) * step; // snap to step
+    onChange(n);
+    setDraft(String(n));
+    setEditing(false);
+  }
+
   return (
     <div>
       <div className="flex justify-between items-baseline mb-2">
         <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--ink-400)]">{label}</span>
-        <span className="font-mono text-xs text-[var(--ink-100)]">
-          ${value}{showPlus && value === max ? '+' : ''}
-        </span>
+        <div className="flex items-baseline gap-1">
+          <span className="font-mono text-xs text-[var(--ink-600)]">$</span>
+          <input
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            value={editing ? draft : (value + (showPlus && value === max ? '+' : ''))}
+            onFocus={(e) => { setEditing(true); setDraft(String(value)); requestAnimationFrame(() => e.target.select()); }}
+            onChange={(e) => setDraft(e.target.value)}
+            onBlur={commit}
+            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur(); } }}
+            className="font-mono text-xs text-[var(--ink-100)] bg-transparent border-0 outline-none w-16 text-right focus:text-[var(--gold-bright)]"
+            style={{ borderBottom: '0.5px dashed var(--line)' }}
+            aria-label={`${label} price`}
+          />
+        </div>
       </div>
       <input
         type="range"
@@ -2060,7 +2090,8 @@ function RangeRow({ label, value, max, step, onChange, showPlus }) {
         step={step}
         value={value}
         onChange={(e) => onChange(parseFloat(e.target.value))}
-        className="w-full"
+        className="ff-price-range w-full"
+        aria-label={`${label} price slider`}
       />
     </div>
   );

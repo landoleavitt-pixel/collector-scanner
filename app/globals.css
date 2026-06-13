@@ -310,3 +310,51 @@ select option {
   .ff-spark,
   .ff-pop { animation: none; }
 }
+
+
+/* ── Price range slider: larger, easier-to-grab thumb (~26px) + visible track.
+   Targets only sliders marked with .ff-price-range so other ranges keep their
+   default look. */
+.ff-price-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 26px;          /* generous hit area for a fat finger */
+  background: transparent;
+  cursor: pointer;
+}
+.ff-price-range::-webkit-slider-runnable-track {
+  height: 4px;
+  background: var(--line);
+  border-radius: 2px;
+}
+.ff-price-range::-moz-range-track {
+  height: 4px;
+  background: var(--line);
+  border-radius: 2px;
+}
+.ff-price-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 26px;
+  width: 26px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #ffd97a, #d99c14);
+  border: 2px solid var(--bg-base);
+  box-shadow: 0 0 0 1px var(--gold-deep), 0 4px 12px rgba(0,0,0,0.4);
+  margin-top: -11px;
+  cursor: grab;
+  transition: transform 0.15s ease;
+}
+.ff-price-range::-webkit-slider-thumb:active { cursor: grabbing; transform: scale(1.08); }
+.ff-price-range::-moz-range-thumb {
+  height: 26px;
+  width: 26px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #ffd97a, #d99c14);
+  border: 2px solid var(--bg-base);
+  box-shadow: 0 0 0 1px var(--gold-deep), 0 4px 12px rgba(0,0,0,0.4);
+  cursor: grab;
+}
+.ff-price-range:focus { outline: none; }
+.ff-price-range:focus::-webkit-slider-thumb { box-shadow: 0 0 0 2px var(--gold), 0 4px 12px rgba(0,0,0,0.4); }
