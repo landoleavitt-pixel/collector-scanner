@@ -580,6 +580,8 @@ function Home() {
               onSuggested={(s) => handleSearch(s)}
               appliedFilters={appliedFilters}
               resultMeta={resultMeta}
+              hasPendingFilters={filtersDifferFromApplied()}
+              onPendingClick={() => setPendingSearchOpen(true)}
             />
           </div>
 
@@ -1593,12 +1595,14 @@ function MobileSheet({ open, onClose, title, children, footer, full = false }) {
           transition: 'opacity 0.32s ease',
         }}
       />
-      {/* Sheet */}
+      {/* Sheet — nearly full-screen for 'full' (Filters), tall for everything
+          else. Uses dvh on capable browsers so mobile chrome doesn't eat the top. */}
       <div
         className="fixed inset-x-0 bottom-0 z-50 flex flex-col"
         style={{
-          maxHeight: '90vh',
-          height: full ? '90vh' : 'auto',
+          top: full ? 'max(8px, env(safe-area-inset-top, 0))' : 'auto',
+          maxHeight: full ? 'none' : '85vh',
+          height: full ? 'auto' : 'auto',
           background: 'var(--bg-elev)',
           borderTop: '1px solid var(--line)',
           borderRadius: '20px 20px 0 0',
@@ -2237,7 +2241,7 @@ function BackToTop() {
 
 const PAGE_DISPLAY_SIZE = 200; // how many cards to render at once
 
-function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase, onSuggested, appliedFilters, resultMeta }) {
+function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase, onSuggested, appliedFilters, resultMeta, hasPendingFilters, onPendingClick }) {
   // How many cards are currently shown. Resets to the first page whenever a new
   // result set arrives (keyed on result count + first id below).
   const [shown, setShown] = useState(PAGE_DISPLAY_SIZE);
@@ -2268,7 +2272,7 @@ function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase
       )}
       <div className="divide-y divide-[var(--line-soft)]">
         {visible.map((item, i) => (
-          <ResultCard key={item.id} item={item} formatPrice={formatPrice} index={i} />
+          <ResultCard key={item.id} item={item} formatPrice={formatPrice} index={i} hasPendingFilters={hasPendingFilters} onPendingClick={onPendingClick} />
         ))}
       </div>
 
@@ -2451,7 +2455,7 @@ function WatchStar({ item }) {
   );
 }
 
-function ResultCard({ item, formatPrice, index }) {
+function ResultCard({ item, formatPrice, index, hasPendingFilters, onPendingClick }) {
   // Heuristic badge detection from title
   const title = (item.title || '').toLowerCase();
   const hasAuto = /\bauto\b|autograph|signed/.test(title);
@@ -2485,6 +2489,15 @@ function ResultCard({ item, formatPrice, index }) {
       href={item.url}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={(e) => {
+        // Desktop equivalent of the mobile pending-search modal: if filters
+        // differ from the active search, intercept the click and prompt the
+        // user to rerun the search first.
+        if (hasPendingFilters && onPendingClick) {
+          e.preventDefault();
+          onPendingClick();
+        }
+      }}
       className="group block rise"
       style={tierStyle ? {
         animationDelay: `${Math.min(index * 40, 400)}ms`,
