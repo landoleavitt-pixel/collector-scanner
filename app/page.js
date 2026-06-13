@@ -586,13 +586,11 @@ function Home() {
           {/* Mobile filter drawer + sort sheet (lg:hidden, rendered last so they overlay) */}
           <MobileFilterDrawer
             open={mobileFiltersOpen}
-            onClose={() => {
-              // Mobile: closing the drawer with unapplied changes triggers
-              // the modal. With no pending changes, just close.
+            onClose={() => setMobileFiltersOpen(false)}
+            onCloseWithChanges={() => {
+              // Drawer detected filter changes — close it and show the modal.
               setMobileFiltersOpen(false);
-              if (appliedFilters && filtersDifferFromApplied()) {
-                setPendingSearchOpen(true);
-              }
+              setPendingSearchOpen(true);
             }}
             filters={filters}
             setFilter={setFilter}
@@ -1636,11 +1634,27 @@ function MobileSheet({ open, onClose, title, children, footer, full = false }) {
   );
 }
 
-function MobileFilterDrawer({ open, onClose, filters, setFilter, onSearch }) {
+function MobileFilterDrawer({ open, onClose, filters, setFilter, onSearch, onCloseWithChanges }) {
+  // Snapshot filters the moment the drawer opens so we can detect changes
+  // at the point of any close gesture (scrim / grabber / ✕).
+  const snapshotRef = useRef(null);
+  useEffect(() => {
+    if (open) snapshotRef.current = JSON.stringify(filters);
+  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function handleCloseRequest() {
+    const changed = snapshotRef.current && snapshotRef.current !== JSON.stringify(filters);
+    if (changed && onCloseWithChanges) {
+      onCloseWithChanges();   // caller shows the modal; drawer stays mounted
+    } else {
+      onClose();              // no changes — close immediately
+    }
+  }
+
   return (
     <MobileSheet
       open={open}
-      onClose={onClose}
+      onClose={handleCloseRequest}
       title="Filters"
       full
       footer={
