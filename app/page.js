@@ -961,8 +961,11 @@ function FeaturedFind() {
       >
         <CornerMarks />
 
-        {/* Image area */}
-        <div className="aspect-[3/4] bg-gradient-to-br from-[var(--bg-elev-2)] via-[#1d180e] to-[#0e0b07] relative overflow-hidden">
+        {/* Image area — foil sheen on tap (and on hover via CSS). */}
+        <div
+          className="ff-sheen-wrap aspect-[3/4] bg-gradient-to-br from-[var(--bg-elev-2)] via-[#1d180e] to-[#0e0b07] relative overflow-hidden"
+          onTouchStart={(e) => { e.currentTarget.classList.remove('ff-play'); void e.currentTarget.offsetWidth; e.currentTarget.classList.add('ff-play'); }}
+        >
           {loading && (
             <div className="absolute inset-0 shimmer" />
           )}
@@ -2239,8 +2242,27 @@ function WatchStar({ item }) {
 
     setBusy(true);
     // Optimistic update so the UI feels instant
+    const wasSaved = saved;
     if (saved) ctx?.markUnsaved(item.id);
     else ctx?.markSaved(item.id);
+
+    // Star burst — only on save (not unsave). Pop the button and fire 8 sparks.
+    if (!wasSaved) {
+      const btn = e.currentTarget;
+      btn.classList.remove('ff-pop');
+      void btn.offsetWidth;
+      btn.classList.add('ff-pop');
+      for (let i = 0; i < 8; i++) {
+        const sp = document.createElement('span');
+        sp.className = 'ff-spark';
+        const a = (Math.PI * 2 * i) / 8;
+        const d = 22 + Math.random() * 10;
+        sp.style.setProperty('--dx', Math.cos(a) * d + 'px');
+        sp.style.setProperty('--dy', Math.sin(a) * d + 'px');
+        btn.appendChild(sp);
+        setTimeout(() => sp.remove(), 650);
+      }
+    }
 
     try {
       if (saved) {
@@ -2331,7 +2353,10 @@ function ResultCard({ item, formatPrice, index }) {
     >
       {/* MOBILE (<lg) — compact list row: thumbnail left, badges pinned at bottom. */}
       <div className="lg:hidden flex gap-4 py-5 pl-4 pr-3">
-        <div className="relative w-[92px] flex-none aspect-[3/4] bg-[var(--bg-elev)] overflow-hidden">
+        <div
+          className="ff-sheen-wrap relative w-[92px] flex-none aspect-[3/4] bg-[var(--bg-elev)] overflow-hidden"
+          onTouchStart={(e) => { e.currentTarget.classList.remove('ff-play'); void e.currentTarget.offsetWidth; e.currentTarget.classList.add('ff-play'); }}
+        >
           <WatchStar item={item} />
           {item.image ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -2443,7 +2468,10 @@ function ResultCard({ item, formatPrice, index }) {
 
         {/* Center column: image, the visual focal point */}
         <div className="order-1 md:order-2 mx-auto md:mx-0">
-          <div className="relative aspect-[3/4] w-[160px] md:w-[200px] bg-[var(--bg-elev)] overflow-hidden">
+          <div
+            className="ff-sheen-wrap relative aspect-[3/4] w-[160px] md:w-[200px] bg-[var(--bg-elev)] overflow-hidden"
+            onTouchStart={(e) => { e.currentTarget.classList.remove('ff-play'); void e.currentTarget.offsetWidth; e.currentTarget.classList.add('ff-play'); }}
+          >
             <CornerMarks />
             <WatchStar item={item} />
             {item.image ? (
