@@ -204,6 +204,11 @@ function Home() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [mobileSortOpen, setMobileSortOpen] = useState(false);
 
+  // "Search with new filters?" modal — fires when user leaves the filter
+  // panel/drawer with unapplied changes, or tries to interact with stale
+  // results on desktop. Cancelling reverts filters to the applied set.
+  const [pendingSearchOpen, setPendingSearchOpen] = useState(false);
+
   const [filters, setFilters] = useState({
     autoCards: false,
     numberedCards: false,
@@ -223,6 +228,11 @@ function Home() {
   // Search button when changes are pending.
   // sortBy is intentionally excluded — it's client-side and updates instantly.
   const [appliedFilters, setAppliedFilters] = useState(null);
+
+  function revertFiltersToApplied() {
+    if (!appliedFilters) return;
+    Object.entries(appliedFilters).forEach(([k, v]) => setFilter(k, v));
+  }
 
   function filtersDifferFromApplied() {
     if (!appliedFilters) return false;
@@ -576,7 +586,14 @@ function Home() {
           {/* Mobile filter drawer + sort sheet (lg:hidden, rendered last so they overlay) */}
           <MobileFilterDrawer
             open={mobileFiltersOpen}
-            onClose={() => setMobileFiltersOpen(false)}
+            onClose={() => {
+              // Mobile: closing the drawer with unapplied changes triggers
+              // the modal. With no pending changes, just close.
+              setMobileFiltersOpen(false);
+              if (appliedFilters && filtersDifferFromApplied()) {
+                setPendingSearchOpen(true);
+              }
+            }}
             filters={filters}
             setFilter={setFilter}
             onSearch={() => { handleSearch(); setMobileFiltersOpen(false); }}
@@ -586,6 +603,13 @@ function Home() {
             onClose={() => setMobileSortOpen(false)}
             value={filters.sortBy}
             onChange={(v) => { setFilter('sortBy', v); setMobileSortOpen(false); }}
+          />
+
+          {/* "Search with new filters?" modal — see PendingSearchModal */}
+          <PendingSearchModal
+            open={pendingSearchOpen}
+            onSearch={() => { setPendingSearchOpen(false); handleSearch(); }}
+            onCancel={() => { setPendingSearchOpen(false); revertFiltersToApplied(); }}
           />
         </section>
       )}
@@ -2093,6 +2117,73 @@ function RangeRow({ label, value, max, step, onChange, showPlus }) {
         className="ff-price-range w-full"
         aria-label={`${label} price slider`}
       />
+    </div>
+  );
+}
+
+/* "Search with new filters?" modal — fires when filters drift from the
+   active search and the user closes the filter drawer or tries to interact
+   with stale results. Strongly nudges the user to either rerun the search
+   or revert their filter changes. */
+function PendingSearchModal({ open, onSearch, onCancel }) {
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKey = (e) => { if (e.key === 'Escape') onCancel(); };
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open, onCancel]);
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center px-6" aria-modal="true" role="dialog">
+      <div
+        onClick={onCancel}
+        className="absolute inset-0"
+        style={{ background: 'rgba(5,4,3,0.7)', backdropFilter: 'blur(3px)' }}
+      />
+      <div
+        className="relative w-full max-w-[400px] rounded-[6px] p-7 text-center"
+        style={{
+          background: 'var(--bg-elev)',
+          border: '1px solid var(--gold-deep)',
+          boxShadow: '0 30px 80px -20px rgba(0,0,0,0.6), 0 0 32px -10px rgba(230,185,107,0.3)',
+        }}
+      >
+        <p className="text-[10px] tracking-[0.3em] uppercase mb-4" style={{ color: 'var(--gold)' }}>
+          Filters changed
+        </p>
+        <h3 className="font-display italic text-[26px] leading-tight mb-3" style={{ color: 'var(--ink-100)' }}>
+          Search with new filters?
+        </h3>
+        <p className="text-[13px] leading-relaxed mb-6" style={{ color: 'var(--ink-400)' }}>
+          You’ve adjusted your filters since your last search. Run it again to see updated results.
+        </p>
+        <div className="flex flex-col gap-3">
+          <button
+            onClick={onSearch}
+            className="w-full min-h-[48px] rounded-[8px] text-[12px] font-bold uppercase tracking-[0.14em]"
+            style={{
+              background: 'linear-gradient(180deg, #ffd97a 0%, #d99c14 100%)',
+              color: '#1a1612',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            Search →
+          </button>
+          <button
+            onClick={onCancel}
+            className="w-full min-h-[40px] text-[11px] tracking-[0.14em] uppercase"
+            style={{ background: 'transparent', color: 'var(--ink-400)', border: 'none', cursor: 'pointer' }}
+          >
+            Cancel · keep previous filters
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
