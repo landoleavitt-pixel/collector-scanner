@@ -2187,7 +2187,8 @@ function PendingSearchModal({ open, onSearch, onCancel, onDismiss }) {
     };
   }, [open, onCancel]);
   if (!open) return null;
-  return (
+  if (typeof document === 'undefined') return null;
+  return createPortal(
     <div className="fixed inset-0 z-[60] flex items-center justify-center px-6" aria-modal="true" role="dialog">
       <div
         onClick={onCancel}
@@ -2245,7 +2246,8 @@ function PendingSearchModal({ open, onSearch, onCancel, onDismiss }) {
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
