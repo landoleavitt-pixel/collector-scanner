@@ -216,3 +216,22 @@ select option {
   background: var(--bg-base);
   color: var(--ink-100);
 }
+
+/* ── Welcome-flow additions ── */
+/* Stage transition: filter panel & results slide in from the right */
+@keyframes stageIn {
+  from { opacity: 0; transform: translateX(36px); }
+  to   { opacity: 1; transform: none; }
+}
+.stage-in { animation: stageIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* Scroll cue arrow bob */
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(5px); }
+}
+.bob { display: inline-block; animation: bob 2s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .stage-in, .bob { animation: none; }
+}

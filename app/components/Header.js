@@ -41,8 +41,10 @@ export default function Header() {
         <Link href="/" className="flex items-center gap-4 group">
           <Seal size={32} />
           <span className="font-display text-2xl md:text-3xl tracking-tight leading-none">
-            Fields <em className="text-[var(--gold)] not-italic">&amp;</em> Floors{' '}
-            <em className="text-[var(--gold)] not-italic">Collectors</em>
+            <span data-ff-brand className="inline-block">
+              Fields <em className="text-[var(--gold)] not-italic">&amp;</em> Floors
+            </span>{' '}
+            <em data-ff-collectors className="text-[var(--gold)] not-italic">Collectors</em>
           </span>
         </Link>
 

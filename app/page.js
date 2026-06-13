@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useRef, Suspense, createContext, useContext } from 'react';
+import Link from 'next/link';
 import { ArrowRight, ArrowUpRight, ArrowUp } from 'lucide-react';
 import SaveSearchModal from './components/SaveSearchModal';
 import { useUser } from '../lib/useUser';
@@ -441,6 +442,7 @@ function Home() {
 
   return (
     <main className="relative min-h-screen z-10">
+      <SplashIntro />
       {/* Stage 1: idle landing — hero with search bar, then the why-section */}
       {appStage === 'idle' && (
         <>
@@ -468,19 +470,21 @@ function Home() {
       {/* Stage 2: configuring — filter panel replaces the hero. User picks
           Type / Listing / Condition / Price, then submits to search. */}
       {appStage === 'configuring' && (
-        <FilterPanel
-          query={query}
-          setQuery={setQuery}
-          filters={filters}
-          setFilter={setFilter}
-          onSubmit={() => handleSearch()}
-          onCancel={() => setAppStage('idle')}
-        />
+        <div className="stage-in">
+          <FilterPanel
+            query={query}
+            setQuery={setQuery}
+            filters={filters}
+            setFilter={setFilter}
+            onSubmit={() => handleSearch()}
+            onCancel={() => setAppStage('idle')}
+          />
+        </div>
       )}
 
       {/* Stage 3: searched — results page with sidebar filters */}
       {appStage === 'searched' && (
-        <section className="max-w-[1200px] mx-auto px-6 lg:px-10 pt-10 pb-16 relative z-10 rise">
+        <section className="max-w-[1200px] mx-auto px-6 lg:px-10 pt-10 pb-16 relative z-10 stage-in">
           {/* Header bar — full width above both columns. Query + count on
               left; sort + new search on right. */}
           <div className="flex flex-wrap items-end justify-between gap-6 pb-6 mb-8 border-b border-[var(--line)]">
@@ -593,113 +597,214 @@ function Home() {
 /* ─────────────────────────────────────────────
    Hero — featured find, oversized type, refined search
    ───────────────────────────────────────────── */
+/* Splash intro — the brand large and centered with the "Holy Grail search
+   engine" subtitle, then flying up to dock into the header's top-left brand
+   position. "Collectors" fades in only once the brand has landed. The real
+   header brand stays hidden until landing, so the flying title is the only
+   one on screen. Plays once per browser session; the played flag is set on
+   COMPLETION (not start) so React Strict Mode's dev-only double-mount can't
+   strand the overlay. Skipped for reduced-motion users. */
+function SplashIntro() {
+  const [phase, setPhase] = useState('boot'); // 'boot' | 'in' | 'dock' | 'skip'
+  const brandRef = useRef(null);
+  const subRef = useRef(null);
+
+  useEffect(() => {
+    const core = document.querySelector('[data-ff-brand]');
+    const coll = document.querySelector('[data-ff-collectors]');
+
+    let skip = false;
+    try {
+      if (sessionStorage.getItem('ffSplashDone')) skip = true;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        sessionStorage.setItem('ffSplashDone', '1');
+        skip = true;
+      }
+    } catch (e) {
+      skip = true;
+    }
+    if (skip) { setPhase('skip'); return; }
+
+    // Hide the real header brand while the splash plays — the flying title
+    // is the only one visible until it lands.
+    if (core) core.style.opacity = '0';
+    if (coll) coll.style.opacity = '0';
+    setPhase('in');
+
+    const t = setTimeout(() => {
+      const el = brandRef.current;
+      if (core && el) {
+        // FLIP: measure start and target, animate the transform between them
+        // (left edges aligned, scaled to the header brand's height).
+        const from = el.getBoundingClientRect();
+        const to = core.getBoundingClientRect();
+        const scale = to.height / from.height;
+        el.style.transformOrigin = 'left center';
+        el.style.transition = 'transform 0.85s cubic-bezier(0.4, 0, 0.2, 1)';
+        el.style.transform = `translate(${to.left - from.left}px, ${to.top + to.height / 2 - (from.top + from.height / 2)}px) scale(${scale})`;
+      }
+      if (subRef.current) subRef.current.style.opacity = '0';
+      setPhase('dock');
+
+      setTimeout(() => {
+        // Landed: swap in the real brand, then fade "Collectors" in after it.
+        if (core) { core.style.transition = 'opacity 0.2s'; core.style.opacity = '1'; }
+        if (coll) { coll.style.transition = 'opacity 0.5s ease 0.2s'; coll.style.opacity = '1'; }
+        try { sessionStorage.setItem('ffSplashDone', '1'); } catch (e) {}
+        setPhase('skip');
+      }, 900);
+    }, 1700);
+
+    return () => {
+      // Strict Mode / unmount cleanup: cancel and restore the header brand.
+      clearTimeout(t);
+      if (core) core.style.opacity = '';
+      if (coll) coll.style.opacity = '';
+    };
+  }, []);
+
+  if (phase === 'skip') return null;
+
+  // Pre-decision frame: a plain base-color cover so the header title never
+  // flashes before the splash takes over.
+  if (phase === 'boot') {
+    return <div className="fixed inset-0 z-50" style={{ background: 'var(--bg-base)' }} />;
+  }
+
+  return (
+    <div className="fixed inset-0 z-50" style={{ pointerEvents: phase === 'dock' ? 'none' : 'auto' }}>
+      {/* Background layer fades away during the flight, revealing the page
+          beneath while the brand is still airborne. */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: 'var(--bg-base)',
+          transition: 'opacity 0.5s ease 0.2s',
+          opacity: phase === 'dock' ? 0 : 1,
+        }}
+      />
+      <div className="relative w-full h-full flex flex-col items-center justify-center">
+        <div
+          ref={brandRef}
+          className="font-display text-[clamp(2.4rem,9vw,3.8rem)] tracking-tight leading-none rise"
+          style={{ animationDelay: '120ms' }}
+        >
+          Fields <em className="text-[var(--gold)] not-italic">&amp;</em> Floors
+        </div>
+        <div
+          ref={subRef}
+          className="mt-5 text-[11px] tracking-[0.32em] uppercase text-[var(--gold)] rise"
+          style={{ animationDelay: '520ms', transition: 'opacity 0.3s ease', fontFamily: 'ui-monospace, monospace' }}
+        >
+          A Holy Grail search engine
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSearch }) {
   return (
     <section className="relative border-b border-[var(--line-soft)] overflow-hidden">
-      <div className="max-w-[1200px] mx-auto px-6 lg:px-10 pt-14 pb-16 lg:pt-20 lg:pb-20 relative">
-        <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-12 items-center">
-          {/* Left: centered block, but words inside are left-aligned */}
-          <div className="flex justify-center">
-            <div className="text-left inline-block">
-              {/* Headline — block centered on the row, text flush left */}
-              <h2
-                className="font-display text-[clamp(2.5rem,6vw,5.5rem)] leading-[0.95] tracking-[-0.02em] text-balance rise"
-                style={{ animationDelay: '0ms' }}
-              >
-                Autos.
-                <br />
-                Rookies.
-                <br />
-                Numbered.
-                <br />
-                <em className="text-[var(--gold)]">Yours.</em>
-              </h2>
+      {/* Above the fold — centered hunt prompt. Calm for returning users;
+          the scroll cue leads first-timers down to the why-section. */}
+      <div className="min-h-[72vh] flex flex-col justify-center max-w-[820px] mx-auto px-6 lg:px-10 pt-8 pb-14">
+        <h1
+          className="font-display italic text-center text-[clamp(2.1rem,6vw,3.6rem)] leading-[1.05] tracking-[-0.01em] rise"
+          style={{ animationDelay: '120ms' }}
+        >
+          Who are you <em className="text-[var(--gold-bright)]">hunting?</em>
+        </h1>
 
-              {/* Short subtitle — also left-aligned within the centered block */}
-              <p
-                className="mt-7 text-[var(--ink-200)] leading-relaxed text-pretty rise"
-                style={{ animationDelay: '120ms' }}
-              >
-                A search instrument for sports card collectors.
-              </p>
-              <p
-                className="mt-2.5 text-sm text-[var(--ink-400)] leading-relaxed text-pretty rise max-w-[440px]"
-                style={{ animationDelay: '160ms' }}
-              >
-                Filter by print run, autograph, and grade — and get alerts when new cards surface.
-              </p>
-
-              {/* Search bar — bigger label, vertically centered, larger overall */}
-              <div className="mt-12 rise" style={{ animationDelay: '220ms' }}>
-                <div className="relative flex items-center">
-                  <span className="absolute left-0 text-sm md:text-base uppercase tracking-[0.22em] text-[var(--ink-400)] z-10 font-medium">
-                    Search
-                  </span>
-                  <input
-                    type="text"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && !loading && onSearch()}
-                  disabled={loading}
-                  className="relative w-full pl-28 pr-14 py-6 bg-transparent border-0 border-b border-[var(--line)] text-2xl md:text-3xl font-display text-[var(--ink-100)] focus:outline-none focus:border-[var(--gold)] transition-colors text-left"
-                />
-                {/* Animated rotating placeholder — only visible when input is empty */}
-                {!query && !loading && <RotatingPlaceholder />}
-                <button
-                  onClick={onSearch}
-                  disabled={loading}
-                  className="absolute right-0 w-11 h-11 flex items-center justify-center text-[var(--ink-100)] hover:text-[var(--gold)] transition-colors disabled:opacity-30 z-10"
-                  aria-label="Search"
-                >
-                  <ArrowRight className="w-6 h-6" strokeWidth={1.5} />
-                </button>
-              </div>
-              {error && (
-                <p className="mt-3 text-xs text-[var(--crit)] text-left">{error}</p>
-              )}
-
-              {/* Clickable example searches — these demonstrate the INTENDED
-                  flow: the player name goes in the search bar, and the rarity /
-                  attribute is applied as a structured filter (not typed as text).
-                  Each runs a filtered search immediately. */}
-              <div className="mt-6 flex flex-wrap items-center gap-2 rise" style={{ animationDelay: '300ms' }}>
-                <span className="text-[10px] uppercase tracking-[0.16em] mr-1 font-mono" style={{ color: 'var(--ink-600)' }}>
-                  Try
-                </span>
-                {[
-                  { label: 'Caitlin Clark · /25', q: 'Caitlin Clark', f: { numberedCards: true, selectedPrintRuns: ['/25'], customPrintRuns: [] } },
-                  { label: 'Wembanyama · Auto', q: 'Victor Wembanyama', f: { autoCards: true } },
-                  { label: 'Luka · Rookie', q: 'Luka Doncic', f: { rookieCards: true } },
-                  { label: '1986 Fleer Jordan', q: '1986 Fleer Jordan', f: {} },
-                ].map((ex) => (
-                  <button
-                    key={ex.label}
-                    type="button"
-                    onClick={() => onChipSearch(ex.q, ex.f)}
-                    disabled={loading}
-                    className="font-mono text-[12px] tracking-[0.02em] px-3.5 py-1.5 rounded-full transition-colors disabled:opacity-40"
-                    style={{
-                      border: '0.5px solid var(--line)',
-                      color: 'var(--ink-200)',
-                      background: 'var(--bg-elev)',
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--gold-deep)'; e.currentTarget.style.color = 'var(--gold-bright)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--line)'; e.currentTarget.style.color = 'var(--ink-200)'; }}
-                  >
-                    {ex.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-            </div>
+        {/* Search bar — editorial underline style, centered block */}
+        <div className="mt-10 rise" style={{ animationDelay: '280ms' }}>
+          <div className="relative flex items-center">
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && !loading && onSearch()}
+              disabled={loading}
+              className="relative w-full pr-14 py-5 bg-transparent border-0 border-b border-[var(--line)] text-2xl md:text-3xl font-display text-[var(--ink-100)] focus:outline-none focus:border-[var(--gold)] transition-colors text-left"
+            />
+            {!query && !loading && <RotatingPlaceholder />}
+            <button
+              onClick={onSearch}
+              disabled={loading}
+              className="absolute right-0 w-11 h-11 flex items-center justify-center text-[var(--ink-100)] hover:text-[var(--gold)] transition-colors disabled:opacity-30 z-10"
+              aria-label="Search"
+            >
+              <ArrowRight className="w-6 h-6" strokeWidth={1.5} />
+            </button>
           </div>
+          {error && <p className="mt-3 text-xs text-[var(--crit)]">{error}</p>}
+        </div>
 
-          {/* Right: featured find — auto-loads a real Grail card from eBay.
-              On mobile, this stacks below the headline at a capped width.
-              On desktop, it sits to the right via the parent's grid. */}
-          <div className="rise mx-auto max-w-[340px] lg:max-w-none w-full" style={{ animationDelay: '400ms' }}>
-            <FeaturedFind />
+        {/* Example athletes — tapping one auto-advances to the filter stage */}
+        <div className="mt-9 rise" style={{ animationDelay: '420ms' }}>
+          <div
+            className="text-[10px] uppercase tracking-[0.24em] text-center mb-3 font-mono"
+            style={{ color: 'var(--ink-600)' }}
+          >
+            Or try
           </div>
+          <div className="flex flex-wrap justify-center items-center gap-2.5">
+            {['Caitlin Clark', 'Victor Wembanyama', 'Connor Bedard', 'Cooper Flagg', 'Paul Skenes'].map((name) => (
+              <button
+                key={name}
+                type="button"
+                onClick={() => onSuggested(name)}
+                disabled={loading}
+                className="text-[13px] px-4 py-2 rounded-full transition-colors disabled:opacity-40"
+                style={{ border: '0.5px solid var(--line)', color: 'var(--ink-200)', background: 'var(--bg-elev)' }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--gold-deep)'; e.currentTarget.style.color = 'var(--gold-bright)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--line)'; e.currentTarget.style.color = 'var(--ink-200)'; }}
+              >
+                {name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Shortcuts for returning users */}
+        <div className="mt-10 flex justify-center gap-8 rise" style={{ animationDelay: '560ms' }}>
+          <Link
+            href="/watchlist"
+            className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
+          >
+            <span className="text-[var(--gold)]">◎</span> My hunts
+          </Link>
+          <Link
+            href="/watchlist-cards"
+            className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
+          >
+            <span className="text-[var(--gold)]">★</span> Watchlist
+          </Link>
+        </div>
+
+        {/* Scroll cue — leads to the why-section below */}
+        <a
+          href="#why"
+          className="mt-12 flex flex-col items-center gap-1.5 rise"
+          style={{ animationDelay: '700ms', textDecoration: 'none' }}
+        >
+          <span className="text-[9px] uppercase tracking-[0.26em]" style={{ color: 'var(--ink-600)' }}>
+            Why Fields &amp; Floors
+          </span>
+          <span className="bob text-sm" style={{ color: 'var(--gold)' }}>↓</span>
+        </a>
+      </div>
+
+      {/* Below the fold — the live featured Grail pull from eBay, kept */}
+      <div className="max-w-[1040px] mx-auto px-6 lg:px-10 pb-16">
+        <div
+          className="text-[10px] tracking-[0.22em] uppercase mb-4 text-center"
+          style={{ color: 'var(--gold)', fontFamily: 'ui-monospace, monospace' }}
+        >
+          Today on the floor
+        </div>
+        <div className="mx-auto max-w-[360px] rise" style={{ animationDelay: '820ms' }}>
+          <FeaturedFind />
         </div>
       </div>
     </section>
@@ -723,7 +828,7 @@ function RotatingPlaceholder() {
 
   return (
     <span
-      className="absolute left-28 top-1/2 -translate-y-1/2 pointer-events-none overflow-hidden"
+      className="absolute left-0 top-1/2 -translate-y-1/2 pointer-events-none overflow-hidden"
       style={{ height: '1.5em' }}
     >
       <span
@@ -742,7 +847,7 @@ function WhyFields() {
   const chip =
     'font-mono text-[10px] tracking-[0.04em] px-2 py-[3px] rounded';
   return (
-    <section className="relative max-w-[1040px] mx-auto px-6 lg:px-10 py-16 lg:py-24">
+    <section id="why" className="relative max-w-[1040px] mx-auto px-6 lg:px-10 py-16 lg:py-24 scroll-mt-24">
       <div className="text-[10px] tracking-[0.22em] uppercase mb-3.5" style={{ color: 'var(--gold)', fontFamily: 'ui-monospace, monospace' }}>
         Why Fields &amp; Floors
       </div>
