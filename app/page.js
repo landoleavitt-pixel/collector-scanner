@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useRef, Suspense, createContext, useContext } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 
 /* Upscale eBay thumbnail URLs from the small default (~225px) to a sharper 640px
@@ -208,6 +209,9 @@ function Home() {
   // panel/drawer with unapplied changes, or tries to interact with stale
   // results on desktop. Cancelling reverts filters to the applied set.
   const [pendingSearchOpen, setPendingSearchOpen] = useState(false);
+  // Tracks whether we've already auto-shown the modal during the current
+  // drift session so we don't nag the user on every tweak.
+  const [pendingShownThisDrift, setPendingShownThisDrift] = useState(false);
 
   const [filters, setFilters] = useState({
     autoCards: false,
@@ -245,6 +249,24 @@ function Home() {
     }
     return false;
   }
+
+  // Auto-fire the modal once when filters first start differing from the
+  // active search on desktop. Skip while the mobile drawer is open (the
+  // drawer's own close path handles that case).
+  useEffect(() => {
+    if (mobileFiltersOpen) return;
+    if (!appliedFilters) return;
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) return;
+    if (filtersDifferFromApplied()) {
+      if (!pendingShownThisDrift) {
+        setPendingSearchOpen(true);
+        setPendingShownThisDrift(true);
+      }
+    } else {
+      setPendingShownThisDrift(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, appliedFilters, mobileFiltersOpen]);
 
   // Loading phrase rotation
   const phraseTimer = useRef(null);
@@ -610,6 +632,7 @@ function Home() {
             open={pendingSearchOpen}
             onSearch={() => { setPendingSearchOpen(false); handleSearch(); }}
             onCancel={() => { setPendingSearchOpen(false); revertFiltersToApplied(); }}
+            onDismiss={() => { setPendingSearchOpen(false); }}
           />
         </section>
       )}
@@ -1582,7 +1605,9 @@ function MobileSheet({ open, onClose, title, children, footer, full = false }) {
     return () => { document.body.style.overflow = prev; };
   }, [open]);
 
-  return (
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
     <div className="lg:hidden" aria-hidden={!open}>
       {/* Scrim */}
       <div
@@ -1595,14 +1620,19 @@ function MobileSheet({ open, onClose, title, children, footer, full = false }) {
           transition: 'opacity 0.32s ease',
         }}
       />
-      {/* Sheet — nearly full-screen for 'full' (Filters), capped tall for short
-          sheets like Sort. An explicit height on the sheet is required so the
-          flex body inside can scroll; without it, flex children block scroll. */}
+      {/* Sheet — bottom-anchored. CSS Grid (auto / auto / 1fr [/ auto]) gives
+          the scroll body exactly the leftover space and never collapses. dvh
+          on the height handles mobile browser chrome reliably. */}
       <div
-        className="fixed inset-x-0 bottom-0 z-50 flex flex-col"
+        className="lg:hidden"
         style={{
-          height: full ? 'calc(100vh - 8px - env(safe-area-inset-top, 0px))' : 'auto',
-          maxHeight: full ? '100vh' : '75vh',
+          position: 'fixed',
+          left: 0, right: 0, bottom: 0,
+          zIndex: 50,
+          display: 'grid',
+          gridTemplateRows: footer ? 'auto auto 1fr auto' : 'auto auto 1fr',
+          height: full ? '94dvh' : 'auto',
+          maxHeight: full ? '94dvh' : '80vh',
           background: 'var(--bg-elev)',
           borderTop: '1px solid var(--line)',
           borderRadius: '20px 20px 0 0',
@@ -1625,7 +1655,7 @@ function MobileSheet({ open, onClose, title, children, footer, full = false }) {
             ✕
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto px-6 py-5" style={{ WebkitOverflowScrolling: 'touch', minHeight: 0 }}>
+        <div className="overflow-y-auto px-6 py-5" style={{ WebkitOverflowScrolling: 'touch', minHeight: 0 }}>
           {children}
         </div>
         {footer && (
@@ -1634,7 +1664,8 @@ function MobileSheet({ open, onClose, title, children, footer, full = false }) {
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -2143,7 +2174,7 @@ function RangeRow({ label, value, max, step, onChange, showPlus }) {
    active search and the user closes the filter drawer or tries to interact
    with stale results. Strongly nudges the user to either rerun the search
    or revert their filter changes. */
-function PendingSearchModal({ open, onSearch, onCancel }) {
+function PendingSearchModal({ open, onSearch, onCancel, onDismiss }) {
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
@@ -2171,6 +2202,18 @@ function PendingSearchModal({ open, onSearch, onCancel }) {
           boxShadow: '0 30px 80px -20px rgba(0,0,0,0.6), 0 0 32px -10px rgba(230,185,107,0.3)',
         }}
       >
+        {/* Dismiss × — closes the modal but keeps the user’s filter edits
+            so they can keep tweaking before searching. */}
+        {onDismiss && (
+          <button
+            onClick={onDismiss}
+            aria-label="Dismiss"
+            className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
+            style={{ border: '1px solid var(--line-soft)', background: 'var(--bg-base)' }}
+          >
+            ✕
+          </button>
+        )}
         <p className="text-[10px] tracking-[0.3em] uppercase mb-4" style={{ color: 'var(--gold)' }}>
           Filters changed
         </p>
