@@ -262,7 +262,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
             className="text-[10px] tracking-[0.18em] uppercase hidden sm:inline"
             style={{ color: notifyEnabled && canUseAlerts ? '#d4af5c' : '#6e675b' }}
           >
-            {!canUseAlerts ? 'Base' : notifyEnabled ? 'Live' : 'Paused'}
+            {!canUseAlerts ? 'Notify' : notifyEnabled ? 'Live' : 'Paused'}
           </span>
           <button
             type="button"
