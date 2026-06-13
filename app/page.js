@@ -1595,14 +1595,14 @@ function MobileSheet({ open, onClose, title, children, footer, full = false }) {
           transition: 'opacity 0.32s ease',
         }}
       />
-      {/* Sheet — nearly full-screen for 'full' (Filters), tall for everything
-          else. Uses dvh on capable browsers so mobile chrome doesn't eat the top. */}
+      {/* Sheet — nearly full-screen for 'full' (Filters), capped tall for short
+          sheets like Sort. An explicit height on the sheet is required so the
+          flex body inside can scroll; without it, flex children block scroll. */}
       <div
         className="fixed inset-x-0 bottom-0 z-50 flex flex-col"
         style={{
-          top: full ? 'max(8px, env(safe-area-inset-top, 0))' : 'auto',
-          maxHeight: full ? 'none' : '85vh',
-          height: full ? 'auto' : 'auto',
+          height: full ? 'calc(100vh - 8px - env(safe-area-inset-top, 0px))' : 'auto',
+          maxHeight: full ? '100vh' : '75vh',
           background: 'var(--bg-elev)',
           borderTop: '1px solid var(--line)',
           borderRadius: '20px 20px 0 0',
@@ -1625,7 +1625,7 @@ function MobileSheet({ open, onClose, title, children, footer, full = false }) {
             ✕
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto px-6 py-5" style={{ WebkitOverflowScrolling: 'touch' }}>
+        <div className="flex-1 overflow-y-auto px-6 py-5" style={{ WebkitOverflowScrolling: 'touch', minHeight: 0 }}>
           {children}
         </div>
         {footer && (
