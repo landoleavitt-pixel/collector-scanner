@@ -209,9 +209,6 @@ function Home() {
   // panel/drawer with unapplied changes, or tries to interact with stale
   // results on desktop. Cancelling reverts filters to the applied set.
   const [pendingSearchOpen, setPendingSearchOpen] = useState(false);
-  // Tracks whether we've already auto-shown the modal during the current
-  // drift session so we don't nag the user on every tweak.
-  const [pendingShownThisDrift, setPendingShownThisDrift] = useState(false);
 
   const [filters, setFilters] = useState({
     autoCards: false,
@@ -249,24 +246,6 @@ function Home() {
     }
     return false;
   }
-
-  // Auto-fire the modal once when filters first start differing from the
-  // active search on desktop. Skip while the mobile drawer is open (the
-  // drawer's own close path handles that case).
-  useEffect(() => {
-    if (mobileFiltersOpen) return;
-    if (!appliedFilters) return;
-    if (typeof window !== 'undefined' && window.innerWidth < 1024) return;
-    if (filtersDifferFromApplied()) {
-      if (!pendingShownThisDrift) {
-        setPendingSearchOpen(true);
-        setPendingShownThisDrift(true);
-      }
-    } else {
-      setPendingShownThisDrift(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, appliedFilters, mobileFiltersOpen]);
 
   // Loading phrase rotation
   const phraseTimer = useRef(null);
