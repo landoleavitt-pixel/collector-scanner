@@ -73,8 +73,33 @@ Deno.serve(async (_req) => {
       return jsonResponse({ ok: true, message: "No active searches", searchesChecked: 0 });
     }
 
+    // 1b. Gate by subscription tier. Only base-tier users and founding members
+    // receive alerts. We filter BEFORE grouping/searching so unentitled users
+    // never cost us an eBay API call.
+    const allUserIds = [...new Set((searches as SavedSearch[]).map((s) => s.user_id))];
+    const { data: profiles, error: profileError } = await supabase
+      .from("profiles")
+      .select("id, tier, is_founding_member")
+      .in("id", allUserIds);
+
+    if (profileError) throw profileError;
+
+    const entitled = new Set(
+      (profiles ?? [])
+        .filter((p) => p.tier === "base" || p.is_founding_member === true)
+        .map((p) => p.id)
+    );
+
+    const gatedSearches = (searches as SavedSearch[]).filter((s) =>
+      entitled.has(s.user_id)
+    );
+
+    if (gatedSearches.length === 0) {
+      return jsonResponse({ ok: true, message: "No entitled active searches", searchesChecked: 0 });
+    }
+
     // 2. Group by query+filter signature so identical searches share one eBay call
-    const groups = groupBySignature(searches as SavedSearch[]);
+    const groups = groupBySignature(gatedSearches);
 
     // Build a per-user digest as we process each group
     const userDigests = new Map<string, UserDigest>();

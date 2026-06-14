@@ -67,7 +67,7 @@ export async function POST(request) {
       console.error('LS webhook: could not resolve user for subscription_created');
       return NextResponse.json({ ok: false, error: 'User not found' }, { status: 200 });
     }
-    await supabase.from('profiles').upsert({
+    const { error: upsertError } = await supabase.from('profiles').upsert({
       id:                   uid,
       tier:                 'base',
       ls_customer_id:       lsCustomerId,
@@ -75,6 +75,10 @@ export async function POST(request) {
       trial_ends_at:        attrs.trial_ends_at ?? null,
       subscription_ends_at: attrs.renews_at ?? null,
     }, { onConflict: 'id' });
+    if (upsertError) {
+      console.error(`LS webhook: UPSERT FAILED for user ${uid}:`, JSON.stringify(upsertError));
+      return NextResponse.json({ ok: false, error: 'Upsert failed', details: upsertError.message }, { status: 500 });
+    }
     console.log(`LS webhook: granted base tier to user ${uid}`);
   }
 
