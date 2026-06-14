@@ -27,6 +27,25 @@ async function verifySignature(request, rawBody) {
 export async function POST(request) {
   const supabase = getSupabase();
 
+  // DIAGNOSTIC — confirm which key the function is actually receiving.
+  // Logs the JWT's role claim without exposing the key itself.
+  const rawKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+  let keyRole = 'MISSING';
+  try {
+    if (rawKey) {
+      const parts = rawKey.split('.');
+      if (parts.length === 3) {
+        const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
+        keyRole = payload.role || 'unknown';
+      } else {
+        keyRole = `malformed (parts=${parts.length}, len=${rawKey.length})`;
+      }
+    }
+  } catch (e) {
+    keyRole = `decode-error: ${e.message}`;
+  }
+  console.log(`LS webhook: SUPABASE key role=${keyRole}, key length=${rawKey.length}`);
+
   const rawBody = await request.text();
 
   const valid = await verifySignature(request, rawBody).catch(() => false);
