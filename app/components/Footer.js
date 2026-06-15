@@ -62,10 +62,10 @@ export default function Footer() {
             <span>Est. 2026</span>
             <span>Issue №&nbsp;001</span>
           </div>
-          <div className="flex gap-6 items-center">
+          <div className="flex gap-6 items-center flex-wrap">
             <Link href="/privacy" className="hover:text-[var(--gold)] transition-colors">Privacy</Link>
             <Link href="/terms" className="hover:text-[var(--gold)] transition-colors">Terms</Link>
-            <span>Data via eBay</span>
+            <span>Listing data via eBay — not affiliated with eBay Inc.</span>
           </div>
         </div>
       </div>
