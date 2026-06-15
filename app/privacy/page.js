@@ -92,8 +92,8 @@ export default function PrivacyPage() {
           <li><strong>Vercel</strong> &mdash; website hosting, technical/security logs, and aggregate analytics.</li>
           <li><strong>Resend</strong> &mdash; delivery of account and notification emails.</li>
           <li><strong>Google</strong> &mdash; if you choose "Sign in with Google," Google handles that authentication.</li>
-          <li><strong>eBay</strong> &mdash; we query eBay's public listing data to power search results. Your personal information is not sent to eBay.</li>
-          <li><strong>Payment processor</strong> &mdash; if we introduce paid plans, a third-party processor (such as Stripe) will handle billing and your payment card details. We do not store full card numbers ourselves.</li>
+          <li><strong>eBay</strong> &mdash; we query eBay's public Browse API in real time to display listing search results to you. We do not send your personal information to eBay, and we do not store eBay user data (such as seller usernames or eBay account identifiers). Listing data is shown live and is not persisted to our database.</li>
+          <li><strong>Lemon Squeezy</strong> &mdash; our payment processor and merchant of record for paid subscriptions. They handle billing, card details, sales tax, and invoicing. We never see or store your full payment card information.</li>
         </ul>
         <p>
           We may also disclose information if required by law, or to protect the
