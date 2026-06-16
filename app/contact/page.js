@@ -10,6 +10,12 @@ export const metadata = {
    omitted — add them here when the time comes. */
 const CONTACTS = [
   {
+    label: 'Billing & subscriptions',
+    handle: 'billing@fieldsandfloors.com',
+    href: 'mailto:billing@fieldsandfloors.com?subject=Billing%20question',
+    note: 'Charged unexpectedly, trouble cancelling, or anything else about your subscription. We respond as quickly as we can — usually within a day.',
+  },
+  {
     label: 'General',
     handle: 'hello@fieldsandfloors.com',
     href: 'mailto:hello@fieldsandfloors.com',
