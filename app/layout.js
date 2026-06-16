@@ -6,11 +6,11 @@ import { Analytics } from '@vercel/analytics/react';
 export const metadata = {
   metadataBase: new URL('https://fieldsandfloors.com'),
   title: {
-    default: 'Fields & Floors Collectors — eBay marketplace, for collectors',
+    default: 'Fields & Floors Collectors',
     template: '%s · Fields & Floors',
   },
   description:
-    'A search instrument for sports card collectors. Filter eBay by autograph, print run, rookie status, and price simultaneously. Save searches and get alerted the moment a new card lists.',
+    'A search instrument for sports card collectors. Filter eBay by autograph, print run, and price simultaneously.',
   keywords: [
     'sports cards',
     'card collecting',
