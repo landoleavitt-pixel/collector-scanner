@@ -139,18 +139,52 @@ export default function TermsPage() {
       </Prose>
 
       <SectionHeading number="09" label="Subscriptions, fees &amp; refunds">
-        If and when paid features exist.
+        Our paid plans and how billing works.
       </SectionHeading>
       <Prose>
         <p>
-          Some features may be offered free and others as part of a paid
-          subscription. Any fees, billing terms, and cancellation details will be
-          disclosed clearly at the point of purchase. Paid features are for access to
-          our tools and functionality &mdash; not for access to third-party listing data
-          itself. Except where required by law, subscription fees are non-refundable,
-          including for partially used periods. If we add paid plans, payments will be
-          handled by a third-party payment processor; we don't store your full payment
-          card details ourselves.
+          The Fields &amp; Floors service includes a free tier and at least one paid
+          subscription tier. Current pricing, billing intervals, and what each plan
+          includes are listed on our pricing page and shown again at checkout. Paid
+          features unlock additional functionality (such as automated alerts on
+          saved searches and bid reminders) &mdash; not access to third-party listing
+          data itself, which belongs to eBay and its sellers.
+        </p>
+        <p>
+          <strong>Free trial.</strong> Paid plans may include a free trial period
+          (currently 14 days). A valid payment method is required to start the
+          trial. Unless you cancel before the trial ends, your subscription will
+          automatically convert to a paid subscription and your payment method
+          will be charged the then-current rate. You can cancel at any time
+          before the trial ends to avoid being charged.
+        </p>
+        <p>
+          <strong>Recurring billing.</strong> Paid subscriptions renew automatically
+          at the end of each billing period (monthly unless otherwise stated)
+          until cancelled. You authorize our payment processor to charge your
+          payment method on each renewal. You can cancel at any time; access
+          continues through the end of the period you've already paid for, and
+          you won't be billed again.
+        </p>
+        <p>
+          <strong>Refunds.</strong> Except where required by law, subscription
+          fees are non-refundable, including for partially used periods. If you
+          believe you were charged in error, please contact us and we'll
+          investigate in good faith.
+        </p>
+        <p>
+          <strong>Payment processor.</strong> Payments are processed by Lemon
+          Squeezy, which acts as our merchant of record. Lemon Squeezy handles
+          billing, your payment card details, applicable sales tax, and invoicing
+          on our behalf. We never see or store your full payment card information.
+          Your purchase is also subject to Lemon Squeezy's terms of service and
+          privacy policy.
+        </p>
+        <p>
+          <strong>Price changes.</strong> We may change subscription pricing in
+          the future. If we do, we will give you reasonable advance notice
+          (typically by email) before the change takes effect for your account,
+          and you may cancel before the new price applies.
         </p>
       </Prose>
 
