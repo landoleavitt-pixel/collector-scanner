@@ -2675,6 +2675,29 @@ function ResultCard({ item, formatPrice, index, hasPendingFilters, onPendingClic
                 {item.isAuction && item.isBuyItNow && <span>Auction · or BIN</span>}
               </>
             )}
+          </div>
+        </div>
+
+        {/* Center column: image, the visual focal point */}
+        <div className="order-1 md:order-2 mx-auto md:mx-0">
+          <div
+            className="ff-sheen-wrap relative aspect-[3/4] w-[160px] md:w-[200px] bg-[var(--bg-elev)] overflow-hidden"
+            onTouchStart={(e) => { e.currentTarget.classList.remove('ff-play'); void e.currentTarget.offsetWidth; e.currentTarget.classList.add('ff-play'); }}
+          >
+            <CornerMarks />
+            <WatchStar item={item} />
+            {item.image ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={upscaleEbayImage(item.image)}
+                alt={item.title}
+                className="w-full h-full object-cover transition-all duration-700 group-hover:scale-[1.04]"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-[var(--ink-600)] font-display text-4xl italic">
+                ◇
+              </div>
+            )}
             {item.isAuction && (
               <span className="absolute top-2 left-2 text-[9px] uppercase tracking-[0.18em] text-[var(--gold)] bg-[var(--bg-base)]/85 backdrop-blur-sm px-1.5 py-0.5 border border-[var(--gold-deep)]/30">
                 Live
