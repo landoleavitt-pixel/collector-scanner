@@ -113,6 +113,22 @@ export default function BidCountdown({ endTime }) {
     );
   }
 
+  // Text mode for auctions more than 24 hours out — the odometer's per-second
+  // ticking adds nothing useful at that range and creates visual noise. Switch
+  // to a quiet "Nd Nh" / "Nh Nm" label until under 24h, then the odometer
+  // takes over to convey real urgency.
+  const ONE_DAY = 86400;
+  if (remainingSec > ONE_DAY) {
+    const days = Math.floor(remainingSec / 86400);
+    const hours = Math.floor((remainingSec % 86400) / 3600);
+    const label = days >= 1 ? `${days}d ${hours}h` : `${hours}h`;
+    return (
+      <div style={badgeWrapStyle} aria-label={`Auction ends in ${days} days ${hours} hours`}>
+        <span style={textLabelStyle}>{label}</span>
+      </div>
+    );
+  }
+
   const showHours = remainingSec >= 3600;
   const h = Math.floor(remainingSec / 3600);
   const m = Math.floor((remainingSec % 3600) / 60);
@@ -258,4 +274,14 @@ const endedTextStyle = {
   letterSpacing: '0.16em',
   color: '#6b6253',
   padding: '0 4px',
+};
+
+const textLabelStyle = {
+  fontFamily: '"SF Mono", Menlo, ui-monospace, monospace',
+  fontSize: 11,
+  fontWeight: 500,
+  color: '#c9954a',
+  letterSpacing: '0.04em',
+  padding: '2px 4px',
+  display: 'inline-block',
 };
