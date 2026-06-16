@@ -1,12 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { createClient } from '../../lib/supabaseClient';
 import Seal from '../components/Seal';
 
-export default function SignupPage() {
+function SignupForm() {
   const supabase = createClient();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  // Where to send the user after they finish signing up.
+  // /pricing's CTA passes ?next=/subscribe so post-confirmation lands at checkout.
+  const next = searchParams.get('next') || '/';
+
+  // If the user is already logged in (e.g. they hit /signup?next=/subscribe
+  // while already authenticated), skip the form and go straight to next.
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data?.session) router.replace(next);
+    });
+  }, [supabase, router, next]);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -28,7 +42,9 @@ export default function SignupPage() {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
+      },
     });
     setLoading(false);
 
@@ -43,7 +59,9 @@ export default function SignupPage() {
     setError('');
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
+      },
     });
     if (error) setError(error.message);
   }
@@ -274,5 +292,14 @@ function EyeOffIcon() {
       <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
       <line x1="1" y1="1" x2="23" y2="23"/>
     </svg>
+  );
+}
+
+// useSearchParams must be inside a Suspense boundary in Next.js 14.
+export default function SignupPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignupForm />
+    </Suspense>
   );
 }

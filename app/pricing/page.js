@@ -108,7 +108,7 @@ export default function PricingPage() {
             tagline="Let the rare ones come to you."
             price="$5"
             per="/ month"
-            cta={{ label: 'Start 14-day free trial', href: '/signup' }}
+            cta={{ label: 'Start 14-day free trial', href: '/signup?next=/subscribe' }}
             fineprint="Card required · we'll remind you before it bills"
             features={[
               { node: 'Everything in Free' },

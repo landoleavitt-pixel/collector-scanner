@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 
 // Routes that require an authenticated user
-const PROTECTED_PREFIXES = ['/watchlist', '/alerts/settings', '/account'];
+const PROTECTED_PREFIXES = ['/watchlist', '/alerts/settings', '/account', '/subscribe'];
 
 export async function middleware(request) {
   let response = NextResponse.next({ request: { headers: request.headers } });
