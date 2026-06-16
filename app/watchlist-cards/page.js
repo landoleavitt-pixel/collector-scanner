@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useUser } from '../../lib/useUser';
 import { useRouter } from 'next/navigation';
+import BidCountdown from '../components/BidCountdown';
 
 export const dynamic = 'force-dynamic';
 
@@ -233,6 +234,11 @@ function WatchlistTile({ listing, onRemove, onToast }) {
         >
           <span style={{ fontSize: '15px', lineHeight: 1 }}>★</span>
         </button>
+
+        {/* Live countdown — only when this is still an active auction */}
+        {listing.is_auction && listing.end_time && !isSold && (
+          <BidCountdown endTime={listing.end_time} />
+        )}
       </div>
 
       {/* Info strip */}

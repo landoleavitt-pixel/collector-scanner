@@ -13,6 +13,7 @@ function upscaleEbayImage(url) {
 }
 import { ArrowRight, ArrowUpRight, ArrowUp } from 'lucide-react';
 import SaveSearchModal from './components/SaveSearchModal';
+import BidCountdown from './components/BidCountdown';
 import { useUser } from '../lib/useUser';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -1031,6 +1032,9 @@ function FeaturedFind() {
               alt={item.title}
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
             />
+          )}
+          {item && item.isAuction && item.endTime && (
+            <BidCountdown endTime={item.endTime} />
           )}
         </div>
 
@@ -2586,6 +2590,9 @@ function ResultCard({ item, formatPrice, index, hasPendingFilters, onPendingClic
               Live
             </span>
           )}
+          {item.isAuction && item.endTime && (
+            <BidCountdown endTime={item.endTime} />
+          )}
         </div>
         <div className="min-w-0 flex-1 flex flex-col">
           <h3
@@ -2600,12 +2607,6 @@ function ResultCard({ item, formatPrice, index, hasPendingFilters, onPendingClic
               <>
                 <span className="text-[var(--ink-600)] mx-1.5">·</span>
                 <span>{Number(item.sellerFeedback).toFixed(1)}%</span>
-              </>
-            )}
-            {item.endTime && item.isAuction && (
-              <>
-                <span className="text-[var(--ink-600)] mx-1.5">·</span>
-                <span className="text-[var(--gold)] uppercase tracking-[0.08em]">{formatTimeRemaining(item.endTime)}</span>
               </>
             )}
           </div>
@@ -2674,39 +2675,13 @@ function ResultCard({ item, formatPrice, index, hasPendingFilters, onPendingClic
                 {item.isAuction && item.isBuyItNow && <span>Auction · or BIN</span>}
               </>
             )}
-            {item.endTime && item.isAuction && (
-              <>
-                <span className="text-[var(--ink-600)] mx-2">·</span>
-                <span className="text-[var(--gold)] uppercase tracking-[0.1em]">{formatTimeRemaining(item.endTime)}</span>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Center column: image, the visual focal point */}
-        <div className="order-1 md:order-2 mx-auto md:mx-0">
-          <div
-            className="ff-sheen-wrap relative aspect-[3/4] w-[160px] md:w-[200px] bg-[var(--bg-elev)] overflow-hidden"
-            onTouchStart={(e) => { e.currentTarget.classList.remove('ff-play'); void e.currentTarget.offsetWidth; e.currentTarget.classList.add('ff-play'); }}
-          >
-            <CornerMarks />
-            <WatchStar item={item} />
-            {item.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={upscaleEbayImage(item.image)}
-                alt={item.title}
-                className="w-full h-full object-cover transition-all duration-700 group-hover:scale-[1.04]"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-[var(--ink-600)] font-display text-4xl italic">
-                ◇
-              </div>
-            )}
             {item.isAuction && (
               <span className="absolute top-2 left-2 text-[9px] uppercase tracking-[0.18em] text-[var(--gold)] bg-[var(--bg-base)]/85 backdrop-blur-sm px-1.5 py-0.5 border border-[var(--gold-deep)]/30">
                 Live
               </span>
+            )}
+            {item.isAuction && item.endTime && (
+              <BidCountdown endTime={item.endTime} />
             )}
           </div>
         </div>
