@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import EarlyAccessBanner from './EarlyAccessBanner';
 
 export const metadata = {
   title: 'Pricing — Fields & Floors Collectors',
@@ -98,6 +99,11 @@ export default function PricingPage() {
             Hunt every numbered, auto, and rookie on eBay for nothing. Turn on alerts when you want the rare ones to come to you.
           </p>
         </header>
+
+        {/* Early-access banner — paid subscriptions are imminent but not live yet.
+            Capture interested emails so we can notify them the day it ships,
+            instead of letting the rare high-intent visitor dead-end. */}
+        <EarlyAccessBanner />
 
         {/* Paid tier listed first and styled as the hero so it's the easiest thing to see */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch rise" style={{ animationDelay: '240ms' }}>

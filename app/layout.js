@@ -47,8 +47,76 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  // JSON-LD structured data — tells Google and AI engines (ChatGPT, Claude,
+  // Perplexity, Gemini) exactly what this site IS, who runs it, and what it
+  // offers. Eligible for Google rich results and gets cited verbatim by AI
+  // search when someone asks a related question.
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'SoftwareApplication',
+        '@id': 'https://fieldsandfloors.com/#app',
+        name: 'Fields & Floors Collectors',
+        url: 'https://fieldsandfloors.com',
+        description:
+          'A search instrument for sports card collectors. Filters eBay listings by autograph status, print run, rookie cards, condition, and price — features eBay\'s native search does not offer. Save searches and get email alerts the moment a new matching card lists.',
+        applicationCategory: 'BusinessApplication',
+        operatingSystem: 'Web Browser',
+        offers: [
+          {
+            '@type': 'Offer',
+            name: 'Free',
+            price: '0',
+            priceCurrency: 'USD',
+            description: 'Unlimited search and watchlist',
+          },
+          {
+            '@type': 'Offer',
+            name: 'Base',
+            price: '5',
+            priceCurrency: 'USD',
+            description: 'Automated alerts on saved searches and bid reminders. 14-day free trial.',
+          },
+        ],
+        featureList: [
+          'eBay search with advanced filters',
+          'Filter by exact print run (/5, /10, /25, /99, /199)',
+          'Filter by autographed cards',
+          'Filter by rookie cards',
+          'Filter by graded vs raw',
+          'Save searches and receive email alerts',
+          'Bid reminders for tracked auctions',
+          'Watchlist with sold-status tracking',
+        ],
+      },
+      {
+        '@type': 'Organization',
+        '@id': 'https://fieldsandfloors.com/#org',
+        name: 'Fields & Floors',
+        url: 'https://fieldsandfloors.com',
+        logo: 'https://fieldsandfloors.com/icon.png',
+        description: 'A search instrument for sports card collectors.',
+      },
+      {
+        '@type': 'WebSite',
+        '@id': 'https://fieldsandfloors.com/#website',
+        url: 'https://fieldsandfloors.com',
+        name: 'Fields & Floors Collectors',
+        publisher: { '@id': 'https://fieldsandfloors.com/#org' },
+        inLanguage: 'en-US',
+      },
+    ],
+  };
+
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+      </head>
       <body>
         <Header />
         {children}

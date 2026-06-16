@@ -11,6 +11,7 @@ export const PRODUCT_LINKS = [
 ];
 
 export const HOBBY_LINKS = [
+  { href: '/guides', label: 'Guides' },
   { href: '/reading-list', label: 'Reading list' },
   { href: '/glossary', label: 'Glossary' },
   { href: '/contact', label: 'Contact' },

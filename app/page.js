@@ -484,6 +484,70 @@ function Home() {
 
   return (
     <main className="relative min-h-screen z-10">
+      {/* FAQ structured data — gets quoted directly by ChatGPT, Claude,
+          Perplexity, and Gemini when users ask related questions, and is
+          eligible for Google FAQ rich results. Answers are written to be
+          self-contained so they read well in any context (search snippet,
+          AI quote, voice assistant). */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: [
+              {
+                '@type': 'Question',
+                name: 'What is Fields & Floors Collectors?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Fields & Floors Collectors is a search tool for sports card collectors. It filters eBay listings by autograph, print run, rookie status, condition, and price — features eBay\'s native search does not offer. Users can save searches and get email alerts when new matching cards list.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'How does Fields & Floors filter eBay listings differently?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'eBay\'s native search caps results at 200 listings and lacks filters for exact print run (/5, /10, /99), autograph status, and rookie cards. Fields & Floors pre-filters at the API level so the most relevant cards reach you, and post-filters with pattern matching to reject false positives like dates or inventory numbers being mistaken for print runs.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'What does Fields & Floors cost?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Searching is free, including the watchlist. Automated alerts on saved searches and bid reminders require the Base plan at $5 per month, with a 14-day free trial. Premium and Pro tiers are planned but not yet available.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'What is a print run on a sports card?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'A print run is how many copies of that specific card were produced. Numbered cards like /99 or /25 are stamped individually (e.g. "47/99") and are rarer and typically more valuable than unnumbered base cards. Common print run tiers are: /1 (one-of-one), /5–/25 (grail), /26–/99 (ultra rare), /100–/499 (rare), and /500+ (scarce).',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'How do alerts work?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'After saving a search with your filters, Fields & Floors polls eBay once per hour for matching listings. The moment a new listing matches every filter — player, print run, condition, price ceiling — you get an email. This applies on up to 5 saved searches with the Base plan.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'Is Fields & Floors affiliated with eBay?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'No. Fields & Floors uses eBay\'s public Browse API to display real eBay listings, and clicking a listing takes you to eBay to complete the purchase. We are an independent search tool, not an eBay product or partner.',
+                },
+              },
+            ],
+          }),
+        }}
+      />
       <SplashIntro />
       {/* Stage 1: idle landing — hero with search bar, then the why-section */}
       {appStage === 'idle' && (

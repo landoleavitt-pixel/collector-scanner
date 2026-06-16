@@ -23,6 +23,8 @@ export default function sitemap() {
     { url: `${SITE}/pricing`,      lastModified, changeFrequency: 'monthly', priority: 0.9 },
     { url: `${SITE}/alerts`,       lastModified, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${SITE}/how-it-works`, lastModified, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${SITE}/guides`,       lastModified, changeFrequency: 'weekly',  priority: 0.8 },
+    { url: `${SITE}/guides/print-runs`, lastModified, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${SITE}/filters`,      lastModified, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${SITE}/glossary`,     lastModified, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${SITE}/reading-list`, lastModified, changeFrequency: 'monthly', priority: 0.5 },
