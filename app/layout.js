@@ -4,8 +4,46 @@ import Footer from './components/Footer';
 import { Analytics } from '@vercel/analytics/react';
 
 export const metadata = {
-  title: 'Fields & Floors Collectors — eBay marketplace, for collectors',
-  description: 'Collect the diamonds in the rough. A search instrument for trading card collectors — filter eBay by autograph, print run, and price simultaneously.',
+  metadataBase: new URL('https://fieldsandfloors.com'),
+  title: {
+    default: 'Fields & Floors Collectors — eBay marketplace, for collectors',
+    template: '%s · Fields & Floors',
+  },
+  description:
+    'A search instrument for sports card collectors. Filter eBay by autograph, print run, rookie status, and price simultaneously. Save searches and get alerted the moment a new card lists.',
+  keywords: [
+    'sports cards',
+    'card collecting',
+    'eBay search',
+    'rookie cards',
+    'autographed cards',
+    'numbered cards',
+    'card alerts',
+    'sports card hunting',
+  ],
+  authors: [{ name: 'Fields & Floors' }],
+  openGraph: {
+    type: 'website',
+    siteName: 'Fields & Floors Collectors',
+    title: 'Fields & Floors Collectors',
+    description:
+      'A search instrument for sports card collectors. Filter eBay by autograph, print run, rookie status, and price — then save searches and get alerted the moment a new card lists.',
+    url: 'https://fieldsandfloors.com',
+    locale: 'en_US',
+    // app/opengraph-image.png is auto-detected by Next.js — no explicit image needed
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Fields & Floors Collectors',
+    description:
+      'A search instrument for sports card collectors. Find the diamonds in the rough on eBay.',
+    // app/twitter-image.png would override the OG image for Twitter specifically;
+    // omitting it falls back to the OG image, which is what we want.
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({ children }) {
