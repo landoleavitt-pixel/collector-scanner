@@ -71,10 +71,15 @@ export default function HowItWorksPage() {
       </SectionHeading>
       <Prose>
         <p>
-          We don't sell anything. We don't take a cut of your transactions. We don't run our own marketplace. Every listing on Fields & Floors is a real eBay listing — clicking through takes you to eBay and you check out there.
+          We don't sell anything. We don't take a cut of your transactions. We
+          don't run our own marketplace. Every listing on Fields &amp; Floors is a
+          real eBay listing &mdash; clicking through takes you to eBay and you check
+          out there.
         </p>
         <p>
-          We also don't have your saved searches yet. We don't notify you when a new listing matches your watch criteria. We don't store anything about you. <strong>Those are next.</strong> See <a href="/alerts">Alerts</a>.
+          Saved searches and automated alerts are part of our Base plan &mdash; we
+          watch eBay for you and email when a new listing matches your filters.
+          See <a href="/alerts">Alerts</a> for details.
         </p>
       </Prose>
     </PageShell>

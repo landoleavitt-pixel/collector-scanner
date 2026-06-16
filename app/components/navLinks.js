@@ -6,7 +6,7 @@
 export const PRODUCT_LINKS = [
   { href: '/how-it-works', label: 'How it works' },
   { href: '/filters', label: 'Filters' },
-  { href: '/alerts', label: 'Alerts', badge: 'Soon' },
+  { href: '/alerts', label: 'Alerts' },
   { href: '/pricing', label: 'Pricing' },
 ];
 
