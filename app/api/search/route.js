@@ -19,6 +19,62 @@ const EBAY_SEARCH_URL = 'https://api.ebay.com/buy/browse/v1/item_summary/search'
 let cachedToken = null;
 let cachedExpiry = 0;
 
+// ── Per-IP rate limiter ────────────────────────────────────────────────────
+//
+// Goal: protect our eBay quota from rogue scripts or runaway loops by capping
+// each IP at RATE_LIMIT requests per RATE_WINDOW_MS. This is an in-memory
+// implementation — it lives only on the current serverless instance, so a
+// determined attacker can punch through by hitting different instances. That's
+// an acceptable trade for the threat model right now (small site, no auth).
+// If/when this becomes insufficient, swap to Upstash Redis with the same shape.
+//
+// We store, per IP, an array of recent request timestamps. On each hit we
+// prune anything older than the window, then count what's left.
+
+const RATE_LIMIT = 20;            // requests per window per IP
+const RATE_WINDOW_MS = 60_000;    // 1 minute
+const RATE_MAX_ENTRIES = 5_000;   // hard cap on tracked IPs (memory safety)
+
+const rateMap = new Map();        // ip -> number[] (timestamps, oldest first)
+
+function getClientIp(req) {
+  // Vercel sets x-forwarded-for; first IP is the real client.
+  const xff = req.headers.get('x-forwarded-for');
+  if (xff) return xff.split(',')[0].trim();
+  const real = req.headers.get('x-real-ip');
+  if (real) return real.trim();
+  return 'unknown';
+}
+
+// Returns { allowed: boolean, retryAfterSec: number }
+function checkRateLimit(ip) {
+  const now = Date.now();
+  const cutoff = now - RATE_WINDOW_MS;
+
+  // Memory safety: if we're tracking too many IPs, drop the oldest half.
+  // This is a crude eviction but it prevents the Map from growing unbounded
+  // under a botnet-style attack.
+  if (rateMap.size > RATE_MAX_ENTRIES) {
+    const keys = Array.from(rateMap.keys());
+    for (let i = 0; i < keys.length / 2; i++) rateMap.delete(keys[i]);
+  }
+
+  const hits = rateMap.get(ip) || [];
+  // Prune timestamps outside the window
+  const recent = hits.filter((t) => t > cutoff);
+
+  if (recent.length >= RATE_LIMIT) {
+    const oldest = recent[0];
+    const retryAfterSec = Math.ceil((oldest + RATE_WINDOW_MS - now) / 1000);
+    rateMap.set(ip, recent);
+    return { allowed: false, retryAfterSec: Math.max(1, retryAfterSec) };
+  }
+
+  recent.push(now);
+  rateMap.set(ip, recent);
+  return { allowed: true, retryAfterSec: 0 };
+}
+
 async function getAppToken() {
   const now = Date.now();
   // 60-second safety buffer
@@ -474,6 +530,23 @@ async function fetchEbayResults(criteria, token) {
 
 export async function POST(req) {
   try {
+    // Rate limit BEFORE doing any eBay work or parsing the body.
+    // Cheap to fail fast on abusive IPs.
+    const ip = getClientIp(req);
+    const rate = checkRateLimit(ip);
+    if (!rate.allowed) {
+      return NextResponse.json(
+        {
+          error: 'Too many searches. Please slow down and try again in a moment.',
+          retryAfter: rate.retryAfterSec,
+        },
+        {
+          status: 429,
+          headers: { 'Retry-After': String(rate.retryAfterSec) },
+        },
+      );
+    }
+
     const criteria = await req.json();
 
     if (!criteria.keywords || !criteria.keywords.trim()) {
