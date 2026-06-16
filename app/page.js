@@ -440,7 +440,8 @@ function Home() {
     new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-      maximumFractionDigits: 0,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(p);
 
   // Derived sorted results — re-runs whenever results OR sortBy changes,
@@ -1055,7 +1056,7 @@ function FeaturedFind() {
                   {item.cgcGrade && <Badge>CGC {item.cgcGrade}</Badge>}
                 </div>
                 <span className="font-display text-2xl text-[var(--gold)] leading-none">
-                  ${Math.round(item.price).toLocaleString()}
+                  ${item.price != null ? Number(item.price).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '—'}
                 </span>
               </div>
             </>

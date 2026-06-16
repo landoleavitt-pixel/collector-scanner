@@ -186,7 +186,7 @@ function WatchlistTile({ listing, onRemove, onToast }) {
   const isSold = listing.status === 'sold' || listing.status === 'ended';
 
   const price = listing.price != null
-    ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(Number(listing.price))
+    ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(listing.price))
     : '—';
 
   // Upscale eBay thumbnail
