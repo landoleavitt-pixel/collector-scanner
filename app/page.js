@@ -14,6 +14,7 @@ function upscaleEbayImage(url) {
 import { ArrowRight, ArrowUpRight, ArrowUp } from 'lucide-react';
 import SaveSearchModal from './components/SaveSearchModal';
 import BidCountdown from './components/BidCountdown';
+import CardModal from './components/CardModal';
 import { useUser } from '../lib/useUser';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -212,6 +213,49 @@ function Home() {
   // results on desktop. Cancelling reverts filters to the applied set.
   const [pendingSearchOpen, setPendingSearchOpen] = useState(false);
 
+  // ── Card detail modal ─────────────────────────────────────────────
+  // selectedCardItem holds the full item object for the currently-open
+  // modal. URL is the source of truth (?card=<id>); this state reflects
+  // whatever matches the URL param against current results.
+  // selectedExpired is set when the URL specifies a card id that doesn't
+  // appear in current results — we show the "listing expired" state.
+  const [selectedCardItem, setSelectedCardItem] = useState(null);
+  const [selectedExpired, setSelectedExpired] = useState(false);
+
+  function openCard(item) {
+    if (!item || !item.id) return;
+    setSelectedCardItem(item);
+    setSelectedExpired(false);
+    // Sync URL — use replace so back-button-to-close works without
+    // adding a history entry per open. Preserve any existing query
+    // string (search terms, filters, etc.) by reading current params.
+    if (typeof window !== 'undefined') {
+      const next = new URLSearchParams(window.location.search);
+      next.set('card', item.id);
+      const href = `${window.location.pathname}?${next.toString()}`;
+      window.history.pushState({ cardOpen: true }, '', href);
+    }
+  }
+
+  function closeCard() {
+    setSelectedCardItem(null);
+    setSelectedExpired(false);
+    if (typeof window !== 'undefined') {
+      const next = new URLSearchParams(window.location.search);
+      next.delete('card');
+      const qs = next.toString();
+      const href = `${window.location.pathname}${qs ? '?' + qs : ''}`;
+      // Use back() when the modal added a history entry so the user's
+      // browser history is left clean. Falls back to replace() if we
+      // somehow lost that state marker.
+      if (window.history.state?.cardOpen) {
+        window.history.back();
+      } else {
+        window.history.replaceState({}, '', href);
+      }
+    }
+  }
+
   const [filters, setFilters] = useState({
     autoCards: false,
     numberedCards: false,
@@ -322,6 +366,48 @@ function Home() {
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userLoading, searchParams]);
+
+  // ── Card modal: reconcile URL → modal state ──────────────────────
+  // Watches ?card=<id> and opens the matching item if found in current
+  // results. If the id is present but no match → expired state. Empty
+  // param closes the modal. Runs whenever search params or results
+  // change, so a fresh search that includes the URL's card id will
+  // promote the modal from expired → real automatically.
+  useEffect(() => {
+    const cardId = searchParams.get('card');
+    if (!cardId) {
+      setSelectedCardItem(null);
+      setSelectedExpired(false);
+      return;
+    }
+    const match = results.find((r) => r.id === cardId);
+    if (match) {
+      setSelectedCardItem(match);
+      setSelectedExpired(false);
+    } else if (results.length > 0 || appStage === 'searched') {
+      // Results have loaded but the id isn't among them → expired
+      setSelectedCardItem({ id: cardId, title: '', url: '', image: null });
+      setSelectedExpired(true);
+    }
+  }, [searchParams, results, appStage]);
+
+  // ── Card modal: back-button closes ───────────────────────────────
+  // The browser back button needs to close the modal cleanly.
+  // Because we pushState on open, the popstate fires when the user
+  // hits back, dropping us into a state where the ?card param is no
+  // longer in the URL. We just clear local state — the URL is already
+  // correct.
+  useEffect(() => {
+    function onPopState() {
+      const sp = new URLSearchParams(window.location.search);
+      if (!sp.get('card')) {
+        setSelectedCardItem(null);
+        setSelectedExpired(false);
+      }
+    }
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
 
   const setFilter = (key, value) => setFilters((f) => ({ ...f, [key]: value }));
 
@@ -670,6 +756,7 @@ function Home() {
               resultMeta={resultMeta}
               hasPendingFilters={filtersDifferFromApplied()}
               onPendingClick={() => setPendingSearchOpen(true)}
+              onCardClick={openCard}
             />
           </div>
 
@@ -712,6 +799,18 @@ function Home() {
         filters={filters}
         chips={buildSaveChips()}
       />
+      {/* Card detail modal — opens when a result is tapped or when
+          ?card=<id> is in the URL. Pass printRun so the rarity tree
+          can highlight the correct universal tier even when our set
+          database doesn't recognize the listing. */}
+      {selectedCardItem && (
+        <CardModal
+          item={selectedCardItem}
+          printRun={selectedExpired ? null : detectPrintRun(selectedCardItem.title || '')}
+          onClose={closeCard}
+          expired={selectedExpired}
+        />
+      )}
       <BackToTop />
     </main>
   );
@@ -2372,7 +2471,7 @@ function BackToTop() {
 
 const PAGE_DISPLAY_SIZE = 200; // how many cards to render at once
 
-function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase, onSuggested, appliedFilters, resultMeta, hasPendingFilters, onPendingClick }) {
+function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase, onSuggested, appliedFilters, resultMeta, hasPendingFilters, onPendingClick, onCardClick }) {
   // How many cards are currently shown. Resets to the first page whenever a new
   // result set arrives (keyed on result count + first id below).
   const [shown, setShown] = useState(PAGE_DISPLAY_SIZE);
@@ -2403,7 +2502,7 @@ function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase
       )}
       <div className="divide-y divide-[var(--line-soft)]">
         {visible.map((item, i) => (
-          <ResultCard key={item.id} item={item} formatPrice={formatPrice} index={i} hasPendingFilters={hasPendingFilters} onPendingClick={onPendingClick} />
+          <ResultCard key={item.id} item={item} formatPrice={formatPrice} index={i} hasPendingFilters={hasPendingFilters} onPendingClick={onPendingClick} onCardClick={onCardClick} />
         ))}
       </div>
 
@@ -2486,6 +2585,54 @@ function WatchlistProvider({ children }) {
       next.delete(String(id));
       return next;
     });
+
+  // Expose a stable global toggle that other components (e.g. CardModal,
+  // which is rendered as a portal outside this provider's children) can
+  // call without us having to thread context refs through. The handler
+  // mirrors the WatchStar toggle but skips the click-event-specific
+  // visual sparks; callers can fire their own micro-interactions.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.__ffWatchToggle = async (item) => {
+      if (!item || !item.id) return;
+      if (!user) {
+        // Not logged in — navigate to login. Same as WatchStar.
+        window.location.href = '/login';
+        return;
+      }
+      const id = String(item.id);
+      const wasSaved = savedIds.has(id);
+      // Optimistic update
+      if (wasSaved) markUnsaved(id); else markSaved(id);
+      try {
+        if (wasSaved) {
+          await fetch(`/api/watchlist/${encodeURIComponent(id)}`, { method: 'DELETE' });
+        } else {
+          await fetch('/api/watchlist', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              listing_id: id,
+              title: item.title,
+              price: item.price,
+              currency: item.currency || 'USD',
+              image_url: item.image,
+              listing_url: item.url,
+              badges: buildBadgePayload(item),
+              is_auction: !!item.isAuction,
+              end_time: item.endTime || null,
+            }),
+          });
+        }
+      } catch {
+        // Revert on failure
+        if (wasSaved) markSaved(id); else markUnsaved(id);
+      }
+    };
+    return () => {
+      if (typeof window !== 'undefined') delete window.__ffWatchToggle;
+    };
+  }, [user, savedIds]);
 
   return (
     <WatchlistContext.Provider value={{ isSaved, markSaved, markUnsaved }}>
@@ -2586,7 +2733,7 @@ function WatchStar({ item }) {
   );
 }
 
-function ResultCard({ item, formatPrice, index, hasPendingFilters, onPendingClick }) {
+function ResultCard({ item, formatPrice, index, hasPendingFilters, onPendingClick, onCardClick }) {
   // Heuristic badge detection from title
   const title = (item.title || '').toLowerCase();
   const hasAuto = /\bauto\b|autograph|signed/.test(title);
@@ -2627,6 +2774,16 @@ function ResultCard({ item, formatPrice, index, hasPendingFilters, onPendingClic
         if (hasPendingFilters && onPendingClick) {
           e.preventDefault();
           onPendingClick();
+          return;
+        }
+        // Default: open the in-app card modal instead of navigating to eBay.
+        // The modal has its own "View on eBay" CTA for users who want the
+        // listing directly. We honor cmd/ctrl-click + middle-click as
+        // "open in new tab" since power users expect that behavior.
+        if (e.metaKey || e.ctrlKey || e.button === 1) return;
+        if (onCardClick) {
+          e.preventDefault();
+          onCardClick(item);
         }
       }}
       className="group block rise"
@@ -2639,6 +2796,7 @@ function ResultCard({ item, formatPrice, index, hasPendingFilters, onPendingClic
       {/* MOBILE (<lg) — compact list row: thumbnail left, badges pinned at bottom. */}
       <div className="lg:hidden flex gap-4 py-5 pl-4 pr-3">
         <div
+          data-listing-id={item.id}
           className="ff-sheen-wrap relative w-[92px] flex-none aspect-[3/4] bg-[var(--bg-elev)] overflow-hidden"
           onTouchStart={(e) => { e.currentTarget.classList.remove('ff-play'); void e.currentTarget.offsetWidth; e.currentTarget.classList.add('ff-play'); }}
         >
@@ -2745,6 +2903,7 @@ function ResultCard({ item, formatPrice, index, hasPendingFilters, onPendingClic
         {/* Center column: image, the visual focal point */}
         <div className="order-1 md:order-2 mx-auto md:mx-0">
           <div
+            data-listing-id={item.id}
             className="ff-sheen-wrap relative aspect-[3/4] w-[160px] md:w-[200px] bg-[var(--bg-elev)] overflow-hidden"
             onTouchStart={(e) => { e.currentTarget.classList.remove('ff-play'); void e.currentTarget.offsetWidth; e.currentTarget.classList.add('ff-play'); }}
           >
