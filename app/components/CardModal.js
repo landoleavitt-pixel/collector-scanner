@@ -243,7 +243,25 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
     } else {
       const overlay = overlayRef.current;
       if (!overlay) return;
-      const handler = (e) => applyTilt(e.clientX, e.clientY);
+      const handler = (e) => {
+        // Skip tilt when the cursor is over interactive UI (buttons,
+        // links, the rarity tree) — those have their own behavior.
+        if (e.target && e.target.closest?.('button, a, [data-no-tilt]')) {
+          return;
+        }
+        // Skip tilt when hovering directly on the card frame — the
+        // card surface belongs to the magnifier. Tilt fires when the
+        // mouse is anywhere ELSE in the modal (meta panel, dark gutter,
+        // tree, etc.), so users still drive the tilt from the
+        // surrounding area.
+        if (e.target && e.target.closest?.('[data-card-frame]')) {
+          return;
+        }
+        // Also skip while the magnifier lens is active (extra safety
+        // for fast cursor movement across the card edge).
+        if (tiltSuppressed.current) return;
+        applyTilt(e.clientX, e.clientY);
+      };
       overlay.addEventListener('mousemove', handler);
       overlay.addEventListener('mouseleave', resetTilt);
       return () => {
@@ -344,7 +362,7 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
     >
       <div className="min-h-full flex items-start lg:items-center justify-center">
         <div
-          className="relative w-full max-w-4xl rounded-lg p-6 lg:p-8"
+          className="relative w-full max-w-5xl rounded-lg p-6 lg:p-10"
           style={{
             background: 'rgba(14,11,7,0.96)',
             border: '0.5px solid rgba(232,226,213,0.08)',
@@ -359,61 +377,7 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
             <X size={14} />
           </button>
 
-          {/* Prev/next arrows — pinned to the modal box's outer edges so
-              they sit in the dark padding gutter, never overlapping the
-              card image or the meta column.
-              Desktop only — mobile users get swipe + dots. Hidden when
-              there's only one image. Vertically aligned to the card's
-              vertical center when the tree is closed; when the tree
-              expands the modal grows taller and the alignment becomes
-              approximate, which is fine since users engaging with the
-              tree aren't typically also switching images. */}
-          {carouselImages.length > 1 && (
-            <>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCarouselIndex((carouselIndex - 1 + carouselImages.length) % carouselImages.length);
-                }}
-                data-no-tilt
-                aria-label="Previous image"
-                className="hidden lg:flex absolute z-20 items-center justify-center transition-colors"
-                style={{
-                  left: 8, top: '50%', transform: 'translateY(-50%)',
-                  width: 40, height: 80,
-                  background: 'transparent',
-                  color: 'var(--ink-300)',
-                  border: 'none',
-                  fontSize: 32, lineHeight: 1,
-                  cursor: 'pointer',
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--gold-bright)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ink-300)'; }}
-              >‹</button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCarouselIndex((carouselIndex + 1) % carouselImages.length);
-                }}
-                data-no-tilt
-                aria-label="Next image"
-                className="hidden lg:flex absolute z-20 items-center justify-center transition-colors"
-                style={{
-                  right: 8, top: '50%', transform: 'translateY(-50%)',
-                  width: 40, height: 80,
-                  background: 'transparent',
-                  color: 'var(--ink-300)',
-                  border: 'none',
-                  fontSize: 32, lineHeight: 1,
-                  cursor: 'pointer',
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--gold-bright)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ink-300)'; }}
-              >›</button>
-            </>
-          )}
-
-          <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+          <div className="flex flex-col lg:flex-row gap-6 lg:gap-14">
             {/* ─── Card column ─── */}
             {/* Two nested wrappers by design:
                 • The OUTER (flipRef) carries the FLIP flight transform
@@ -423,9 +387,60 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
                 Keeping them on separate elements means the two transforms
                 compose cleanly and don't fight each other. */}
             <div className="flex-none mx-auto lg:mx-0 relative" style={{ perspective: 1200 }}>
+              {/* Prev/next arrows — adjacent to the card, in the dark
+                  gutter between the card column and the meta column.
+                  Hidden when there's only one image. Desktop only;
+                  mobile uses swipe + dots. The wider gap (lg:gap-14
+                  on the row above) gives them clearance not to touch
+                  the meta panel. */}
+              {carouselImages.length > 1 && (
+                <>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCarouselIndex((carouselIndex - 1 + carouselImages.length) % carouselImages.length);
+                    }}
+                    data-no-tilt
+                    aria-label="Previous image"
+                    className="hidden lg:flex absolute z-20 items-center justify-center transition-colors"
+                    style={{
+                      left: -44, top: '50%', transform: 'translateY(-50%)',
+                      width: 32, height: 64,
+                      background: 'transparent',
+                      color: 'var(--ink-300)',
+                      border: 'none',
+                      fontSize: 28, lineHeight: 1,
+                      cursor: 'pointer',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--gold-bright)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ink-300)'; }}
+                  >‹</button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCarouselIndex((carouselIndex + 1) % carouselImages.length);
+                    }}
+                    data-no-tilt
+                    aria-label="Next image"
+                    className="hidden lg:flex absolute z-20 items-center justify-center transition-colors"
+                    style={{
+                      right: -44, top: '50%', transform: 'translateY(-50%)',
+                      width: 32, height: 64,
+                      background: 'transparent',
+                      color: 'var(--ink-300)',
+                      border: 'none',
+                      fontSize: 28, lineHeight: 1,
+                      cursor: 'pointer',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--gold-bright)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ink-300)'; }}
+                  >›</button>
+                </>
+              )}
+
               <div
                 ref={flipRef}
-                className="aspect-[3/4] w-[260px] lg:w-[320px]"
+                className="aspect-[3/4] w-[280px] lg:w-[400px]"
                 style={{ willChange: 'transform, opacity', opacity: 0 /* start invisible — fly-in sets to 1 */ }}
               >
                 <div

@@ -27,7 +27,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 
-const MAGNIFIER_DIAM = 140;
+const MAGNIFIER_DIAM = 180;
 const MAGNIFIER_ZOOM = 2.5;
 const LONGPRESS_MS   = 250;
 const SWIPE_THRESHOLD = 40;
@@ -157,6 +157,7 @@ export default function CardImageCarousel({
   return (
     <div
       ref={frameRef}
+      data-card-frame
       className="relative w-full h-full overflow-hidden select-none"
       style={{
         cursor: lensActive ? 'none' : (activeImg ? 'crosshair' : 'default'),
