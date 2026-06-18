@@ -24,9 +24,18 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { ArrowUpRight, X } from 'lucide-react';
 import RarityTree from './RarityTree';
+import CardImageCarousel from './CardImageCarousel';
 import { parseSetFromTitle } from '../../lib/parseSetFromTitle';
 import { getSet, getParallel } from '../../lib/parallelData';
 import { gradientCss } from './rarityUtils';
+
+// Upscale an eBay thumbnail URL to a higher-resolution variant so the
+// magnifier reveals real detail. eBay encodes the size as `s-l\d+`
+// in the filename; swap it. Safe no-op for non-eBay URLs.
+function upscalePrimary(url) {
+  if (!url) return url;
+  return url.replace(/\/s-l\d+\.(\w+)/, '/s-l1600.$1');
+}
 
 export default function CardModal({ item, printRun, onClose, expired = false }) {
   const cardRef = useRef(null);       // inner card — handles tilt (rotateX/Y)
@@ -39,6 +48,26 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
   // is touch-primary. matchMedia('(hover: none)').matches is reliable
   // enough and avoids assumptions about screen width.
   const [isTouchPrimary, setIsTouchPrimary] = useState(false);
+
+  // ─ Fetched images for the carousel ───────────────────────────────
+  // Starts as the single primary image from the search result, then
+  // gets replaced by the full image array once /api/listing/<id>
+  // returns. If the fetch fails or the listing is expired, we fall
+  // back to the primary only.
+  const [carouselImages, setCarouselImages] = useState(
+    item?.image ? [upscalePrimary(item.image)] : []
+  );
+  // Active image index. Hoisted here so the dots indicator (rendered
+  // outside the flying flipRef wrapper) and the in-frame carousel
+  // share a single source of truth.
+  const [carouselIndex, setCarouselIndex] = useState(0);
+  // Tilt is suppressed while the user is actively swiping the carousel
+  // or holding the magnifier lens. Using a ref (not state) so tilt
+  // handlers can check the latest value without re-subscribing.
+  const tiltSuppressed = useRef(false);
+
+  // Reset the active image whenever a different listing is opened
+  useEffect(() => { setCarouselIndex(0); }, [item?.id]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -123,6 +152,33 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item?.id]);
 
+  // ─ Fetch additional images on open ───────────────────────────────
+  // The search endpoint only returns the primary thumbnail, so we hit
+  // /api/listing/<id> for the full image array. Starts with the primary
+  // already populated, then upgrades to the full array on success.
+  // If the listing has expired (404) or the fetch fails, we silently
+  // keep the primary-only carousel.
+  useEffect(() => {
+    if (!item?.id || expired) return;
+    // Reset to the primary image while the fetch is in flight, so the
+    // carousel is never stale when the user opens a different card.
+    setCarouselImages(item.image ? [upscalePrimary(item.image)] : []);
+
+    const ctrl = new AbortController();
+    fetch(`/api/listing/${encodeURIComponent(item.id)}`, { signal: ctrl.signal })
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => {
+        if (!data || data.ok === false) return;
+        if (Array.isArray(data.images) && data.images.length > 0) {
+          setCarouselImages(data.images);
+        }
+      })
+      .catch(() => {
+        // Swallow — primary image is already showing, no need to surface
+      });
+    return () => ctrl.abort();
+  }, [item?.id, item?.image, expired]);
+
 
   // ─ Identify the set + parallel from the listing title ─────────────
   // Done once per item open. parseSetFromTitle returns null when the
@@ -164,7 +220,11 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
   // ─ Wire up tilt listeners while modal is open ────────────────────
   // Desktop: mousemove inside the overlay only — outside-modal mouse
   // shouldn't influence the card.
-  // Mobile:  taps anywhere on the document — the spec says screen-wide.
+  // Mobile:  touchstart anywhere on the document, but skip when the
+  // user is mid-swipe/long-press inside the carousel (tiltSuppressed
+  // is set by the carousel via its callbacks). Also skip if the
+  // touch originated on a control or inside the carousel frame
+  // itself — those have their own gestures.
   useEffect(() => {
     if (!item || closing) return;
 
@@ -172,11 +232,12 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
       const handler = (e) => {
         const t = e.touches?.[0] || e;
         if (!t) return;
-        // Ignore taps on interactive controls so a button tap doesn't
-        // also re-tilt the card (would feel jumpy when closing/opening).
+        if (tiltSuppressed.current) return;
         if (e.target && e.target.closest?.('button, a, [data-no-tilt]')) return;
         applyTilt(t.clientX, t.clientY);
       };
+      // touchstart only — not touchmove. A swipe is a sequence of moves
+      // and re-tilting on each one would feel chaotic.
       document.addEventListener('touchstart', handler, { passive: true });
       return () => document.removeEventListener('touchstart', handler);
     } else {
@@ -307,7 +368,59 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
                   mutated directly on mousemove/touchstart.
                 Keeping them on separate elements means the two transforms
                 compose cleanly and don't fight each other. */}
-            <div className="flex-none mx-auto lg:mx-0" style={{ perspective: 1200 }}>
+            <div className="flex-none mx-auto lg:mx-0 relative" style={{ perspective: 1200 }}>
+              {/* Prev/next arrows — desktop only. Positioned outside the
+                  card frame in the dark gutter so they don't sit on top
+                  of card detail (centering, autograph, corners). Hidden
+                  when there's only one image, or when the user is
+                  swiping/holding the lens (would be a distraction).
+                  Hit area is generous (40×80) so they're easy to click
+                  without aiming precisely. */}
+              {carouselImages.length > 1 && (
+                <>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCarouselIndex((carouselIndex - 1 + carouselImages.length) % carouselImages.length);
+                    }}
+                    data-no-tilt
+                    aria-label="Previous image"
+                    className="hidden lg:flex absolute z-20 items-center justify-center transition-opacity"
+                    style={{
+                      left: -52, top: '50%', transform: 'translateY(-50%)',
+                      width: 36, height: 72,
+                      background: 'transparent',
+                      color: 'var(--ink-200)',
+                      border: 'none',
+                      fontSize: 28, lineHeight: 1,
+                      cursor: 'pointer',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--gold-bright)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ink-200)'; }}
+                  >‹</button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCarouselIndex((carouselIndex + 1) % carouselImages.length);
+                    }}
+                    data-no-tilt
+                    aria-label="Next image"
+                    className="hidden lg:flex absolute z-20 items-center justify-center transition-opacity"
+                    style={{
+                      right: -52, top: '50%', transform: 'translateY(-50%)',
+                      width: 36, height: 72,
+                      background: 'transparent',
+                      color: 'var(--ink-200)',
+                      border: 'none',
+                      fontSize: 28, lineHeight: 1,
+                      cursor: 'pointer',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--gold-bright)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ink-200)'; }}
+                  >›</button>
+                </>
+              )}
+
               <div
                 ref={flipRef}
                 className="aspect-[3/4] w-[220px] lg:w-[240px]"
@@ -325,14 +438,14 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
                     transition: 'transform 0.5s cubic-bezier(0.2, 0.8, 0.3, 1)',
                   }}
                 >
-                  {item.image ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={item.image} alt={item.title}
-                         className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center font-serif italic text-5xl"
-                         style={{ color: 'var(--ink-600)' }}>◇</div>
-                  )}
+                  <CardImageCarousel
+                    images={carouselImages}
+                    index={carouselIndex}
+                    onIndexChange={setCarouselIndex}
+                    borderColor={borderColor}
+                    onSwipeStart={() => { tiltSuppressed.current = true; }}
+                    onLensActive={(active) => { tiltSuppressed.current = active; }}
+                  />
                   {/* Shimmer sweep — uses the existing ff-sheen keyframes */}
                   <div className="ff-card-shimmer pointer-events-none absolute inset-0" />
                   {borderGradient && (
@@ -344,6 +457,26 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
                   )}
                 </div>
               </div>
+              {/* Dots indicator — sits below the flying flipRef wrapper so
+                  it doesn't accompany the card on close (the grid card
+                  has no dots). Hidden until additional images load. */}
+              {carouselImages.length > 1 && (
+                <div className="flex items-center justify-center gap-1.5 mt-3" data-no-tilt>
+                  {carouselImages.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={(e) => { e.stopPropagation(); setCarouselIndex(i); }}
+                      aria-label={`Image ${i + 1}`}
+                      className="rounded-full transition-all"
+                      style={{
+                        width:  i === carouselIndex ? 16 : 6,
+                        height: 6,
+                        background: i === carouselIndex ? borderColor : 'rgba(232,226,213,0.2)',
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* ─── Meta + CTAs + tree column ─── */}
