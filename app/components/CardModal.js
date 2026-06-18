@@ -344,7 +344,7 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
     >
       <div className="min-h-full flex items-start lg:items-center justify-center">
         <div
-          className="relative w-full max-w-3xl rounded-lg p-6 lg:p-8"
+          className="relative w-full max-w-4xl rounded-lg p-6 lg:p-8"
           style={{
             background: 'rgba(14,11,7,0.96)',
             border: '0.5px solid rgba(232,226,213,0.08)',
@@ -359,6 +359,60 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
             <X size={14} />
           </button>
 
+          {/* Prev/next arrows — pinned to the modal box's outer edges so
+              they sit in the dark padding gutter, never overlapping the
+              card image or the meta column.
+              Desktop only — mobile users get swipe + dots. Hidden when
+              there's only one image. Vertically aligned to the card's
+              vertical center when the tree is closed; when the tree
+              expands the modal grows taller and the alignment becomes
+              approximate, which is fine since users engaging with the
+              tree aren't typically also switching images. */}
+          {carouselImages.length > 1 && (
+            <>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCarouselIndex((carouselIndex - 1 + carouselImages.length) % carouselImages.length);
+                }}
+                data-no-tilt
+                aria-label="Previous image"
+                className="hidden lg:flex absolute z-20 items-center justify-center transition-colors"
+                style={{
+                  left: 8, top: '50%', transform: 'translateY(-50%)',
+                  width: 40, height: 80,
+                  background: 'transparent',
+                  color: 'var(--ink-300)',
+                  border: 'none',
+                  fontSize: 32, lineHeight: 1,
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--gold-bright)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ink-300)'; }}
+              >‹</button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCarouselIndex((carouselIndex + 1) % carouselImages.length);
+                }}
+                data-no-tilt
+                aria-label="Next image"
+                className="hidden lg:flex absolute z-20 items-center justify-center transition-colors"
+                style={{
+                  right: 8, top: '50%', transform: 'translateY(-50%)',
+                  width: 40, height: 80,
+                  background: 'transparent',
+                  color: 'var(--ink-300)',
+                  border: 'none',
+                  fontSize: 32, lineHeight: 1,
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--gold-bright)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ink-300)'; }}
+              >›</button>
+            </>
+          )}
+
           <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
             {/* ─── Card column ─── */}
             {/* Two nested wrappers by design:
@@ -369,61 +423,9 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
                 Keeping them on separate elements means the two transforms
                 compose cleanly and don't fight each other. */}
             <div className="flex-none mx-auto lg:mx-0 relative" style={{ perspective: 1200 }}>
-              {/* Prev/next arrows — desktop only. Positioned outside the
-                  card frame in the dark gutter so they don't sit on top
-                  of card detail (centering, autograph, corners). Hidden
-                  when there's only one image, or when the user is
-                  swiping/holding the lens (would be a distraction).
-                  Hit area is generous (40×80) so they're easy to click
-                  without aiming precisely. */}
-              {carouselImages.length > 1 && (
-                <>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setCarouselIndex((carouselIndex - 1 + carouselImages.length) % carouselImages.length);
-                    }}
-                    data-no-tilt
-                    aria-label="Previous image"
-                    className="hidden lg:flex absolute z-20 items-center justify-center transition-opacity"
-                    style={{
-                      left: -52, top: '50%', transform: 'translateY(-50%)',
-                      width: 36, height: 72,
-                      background: 'transparent',
-                      color: 'var(--ink-200)',
-                      border: 'none',
-                      fontSize: 28, lineHeight: 1,
-                      cursor: 'pointer',
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--gold-bright)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ink-200)'; }}
-                  >‹</button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setCarouselIndex((carouselIndex + 1) % carouselImages.length);
-                    }}
-                    data-no-tilt
-                    aria-label="Next image"
-                    className="hidden lg:flex absolute z-20 items-center justify-center transition-opacity"
-                    style={{
-                      right: -52, top: '50%', transform: 'translateY(-50%)',
-                      width: 36, height: 72,
-                      background: 'transparent',
-                      color: 'var(--ink-200)',
-                      border: 'none',
-                      fontSize: 28, lineHeight: 1,
-                      cursor: 'pointer',
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--gold-bright)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ink-200)'; }}
-                  >›</button>
-                </>
-              )}
-
               <div
                 ref={flipRef}
-                className="aspect-[3/4] w-[220px] lg:w-[240px]"
+                className="aspect-[3/4] w-[260px] lg:w-[320px]"
                 style={{ willChange: 'transform, opacity', opacity: 0 /* start invisible — fly-in sets to 1 */ }}
               >
                 <div
