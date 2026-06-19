@@ -4,8 +4,50 @@ import { useState, useEffect } from 'react';
 import { useUser } from '../../lib/useUser';
 import { useRouter } from 'next/navigation';
 import BidCountdown from '../components/BidCountdown';
+import { WatchlistProvider } from '../../lib/watchlistContext';
+import CardModal from '../components/CardModal';
 
 export const dynamic = 'force-dynamic';
+
+/**
+ * Convert a watchlist row from /api/watchlist into the item shape that
+ * CardModal expects. The row schema and the search-result schema differ
+ * (snake_case persistence vs. camelCase API output), so we normalize
+ * here in one place rather than throughout the modal code.
+ */
+function listingToItem(listing) {
+  if (!listing) return null;
+  return {
+    id: String(listing.listing_id),
+    title: listing.title || '',
+    price: listing.price != null ? Number(listing.price) : null,
+    currency: listing.currency || 'USD',
+    image: listing.image_url || null,
+    url: listing.listing_url || '',
+    isAuction: !!listing.is_auction,
+    isBuyItNow: !listing.is_auction,
+    endTime: listing.end_time || null,
+    bidCount: listing.bid_count ?? null,
+    condition: listing.condition || null,
+  };
+}
+
+/**
+ * Detect the print run number from a title — small subset of the
+ * search page's heuristic, sufficient for highlighting the right
+ * universal rarity tier in the modal. Looks for "/N" patterns where
+ * N is a plausible print-run number; rejects season-year (22/23) and
+ * card-number patterns.
+ */
+function detectPrintRun(title) {
+  if (!title) return null;
+  // Look for /<digits> with word boundaries; capture the first match.
+  const m = String(title).match(/\/(\d{1,4})\b/);
+  if (!m) return null;
+  const n = parseInt(m[1], 10);
+  if (!Number.isFinite(n) || n < 1 || n > 9999) return null;
+  return n;
+}
 
 export default function WatchlistCardsPage() {
   const { user, loading: userLoading } = useUser();
@@ -16,6 +58,28 @@ export default function WatchlistCardsPage() {
   const [loading, setLoading] = useState(true);
   const [checking, setChecking] = useState(false);
   const [toast, setToast] = useState(null); // string | null
+
+  // ── Card detail modal ─────────────────────────────────────────────
+  // Tapping a watchlist tile opens the same lift-focus modal used on
+  // the search page. Holds the currently-selected item plus a flag
+  // for the "listing expired" state (e.g. tile clicked but the row
+  // is already marked sold/ended).
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedExpired, setSelectedExpired] = useState(false);
+
+  function openCard(listing) {
+    const item = listingToItem(listing);
+    if (!item) return;
+    setSelectedItem(item);
+    // Treat sold/ended rows as expired so the modal shows the graceful
+    // "this listing has ended" state instead of pretending it's still live.
+    setSelectedExpired(listing.status === 'sold' || listing.status === 'ended');
+  }
+
+  function closeCard() {
+    setSelectedItem(null);
+    setSelectedExpired(false);
+  }
 
   // Redirect logged-out users
   useEffect(() => {
@@ -76,7 +140,8 @@ export default function WatchlistCardsPage() {
   if (userLoading || !user) return null;
 
   return (
-    <main className="min-h-[calc(100vh-200px)] py-12 md:py-16">
+    <WatchlistProvider>
+      <main className="min-h-[calc(100vh-200px)] py-12 md:py-16">
       <div className="max-w-[1100px] mx-auto px-6 lg:px-10">
 
         {/* Page header */}
@@ -122,14 +187,28 @@ export default function WatchlistCardsPage() {
         ) : (
           <div className="grid grid-cols-2 gap-4">
             {listings.map((l) => (
-              <WatchlistTile key={l.id} listing={l} onRemove={() => handleRemove(l.listing_id)} onToast={setToast} />
+              <WatchlistTile key={l.id} listing={l} onRemove={() => handleRemove(l.listing_id)} onToast={setToast} onCardClick={openCard} />
             ))}
           </div>
         )}
       </div>
 
       {toast && <Toast message={toast} onClose={() => setToast(null)} />}
+
+      {/* Card detail modal — opens when a tile is tapped. printRun is
+          detected from the title so the rarity tree can highlight the
+          right universal tier even when our set database doesn't
+          recognize this listing. Sold/ended rows pass expired=true. */}
+      {selectedItem && (
+        <CardModal
+          item={selectedItem}
+          printRun={selectedExpired ? null : detectPrintRun(selectedItem.title || '')}
+          onClose={closeCard}
+          expired={selectedExpired}
+        />
+      )}
     </main>
+    </WatchlistProvider>
   );
 }
 
@@ -182,7 +261,7 @@ function EmptyState({ tab, onBrowse }) {
   );
 }
 
-function WatchlistTile({ listing, onRemove, onToast }) {
+function WatchlistTile({ listing, onRemove, onToast, onCardClick }) {
   const b = listing.badges || {};
   const isSold = listing.status === 'sold' || listing.status === 'ended';
 
@@ -205,8 +284,17 @@ function WatchlistTile({ listing, onRemove, onToast }) {
 
   return (
     <div className="rounded-xl overflow-hidden flex flex-col" style={{ background: 'var(--bg-elev)', border: '0.5px solid var(--line)' }}>
-      {/* Image */}
-      <div className="relative" style={{ aspectRatio: '3 / 3.4' }}>
+      {/* Image — tagged with data-listing-id so the CardModal's FLIP
+          animation can find this element as the flight origin. Whole
+          area is clickable to open the modal. The remove (star) button
+          and the bid-countdown badge live above this layer and stop
+          propagation on click so they don't also open the modal. */}
+      <div
+        data-listing-id={listing.listing_id}
+        onClick={() => onCardClick?.(listing)}
+        className="relative cursor-pointer"
+        style={{ aspectRatio: '3 / 3.4' }}
+      >
         {img ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -227,7 +315,7 @@ function WatchlistTile({ listing, onRemove, onToast }) {
 
         {/* Remove (filled star) */}
         <button
-          onClick={onRemove}
+          onClick={(e) => { e.stopPropagation(); onRemove(); }}
           aria-label="Remove from watchlist"
           className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full flex items-center justify-center"
           style={{ background: 'rgba(10,9,7,0.55)', backdropFilter: 'blur(4px)', border: '0.5px solid var(--gold)', color: 'var(--gold-bright)' }}
