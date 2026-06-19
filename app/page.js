@@ -15,6 +15,7 @@ import { ArrowRight, ArrowUpRight, ArrowUp } from 'lucide-react';
 import SaveSearchModal from './components/SaveSearchModal';
 import BidCountdown from './components/BidCountdown';
 import CardModal from './components/CardModal';
+import { WatchlistContext, WatchlistProvider } from '../lib/watchlistContext';
 import { useUser } from '../lib/useUser';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -2547,99 +2548,11 @@ function buildBadgePayload(item) {
 // Shared watchlist state — fetched ONCE and shared with every star, instead of
 // each star fetching the whole list on mount (which caused dozens of identical
 // requests on a results page). Provides the set of saved listing IDs + toggle.
-const WatchlistContext = createContext(null);
-
-function WatchlistProvider({ children }) {
-  const { user } = useUser();
-  const [savedIds, setSavedIds] = useState(() => new Set());
-
-  // Fetch the user's watchlist once when they're known.
-  useEffect(() => {
-    let cancelled = false;
-    if (!user) {
-      setSavedIds(new Set());
-      return;
-    }
-    fetch('/api/watchlist?status=all')
-      .then((r) => (r.ok ? r.json() : { listings: [] }))
-      .then((d) => {
-        if (cancelled) return;
-        setSavedIds(new Set((d.listings || []).map((l) => String(l.listing_id))));
-      })
-      .catch(() => {});
-    return () => { cancelled = true; };
-  }, [user]);
-
-  const isSaved = (id) => savedIds.has(String(id));
-
-  const markSaved = (id) =>
-    setSavedIds((prev) => {
-      const next = new Set(prev);
-      next.add(String(id));
-      return next;
-    });
-
-  const markUnsaved = (id) =>
-    setSavedIds((prev) => {
-      const next = new Set(prev);
-      next.delete(String(id));
-      return next;
-    });
-
-  // Expose a stable global toggle that other components (e.g. CardModal,
-  // which is rendered as a portal outside this provider's children) can
-  // call without us having to thread context refs through. The handler
-  // mirrors the WatchStar toggle but skips the click-event-specific
-  // visual sparks; callers can fire their own micro-interactions.
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    window.__ffWatchToggle = async (item) => {
-      if (!item || !item.id) return;
-      if (!user) {
-        // Not logged in — navigate to login. Same as WatchStar.
-        window.location.href = '/login';
-        return;
-      }
-      const id = String(item.id);
-      const wasSaved = savedIds.has(id);
-      // Optimistic update
-      if (wasSaved) markUnsaved(id); else markSaved(id);
-      try {
-        if (wasSaved) {
-          await fetch(`/api/watchlist/${encodeURIComponent(id)}`, { method: 'DELETE' });
-        } else {
-          await fetch('/api/watchlist', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              listing_id: id,
-              title: item.title,
-              price: item.price,
-              currency: item.currency || 'USD',
-              image_url: item.image,
-              listing_url: item.url,
-              badges: buildBadgePayload(item),
-              is_auction: !!item.isAuction,
-              end_time: item.endTime || null,
-            }),
-          });
-        }
-      } catch {
-        // Revert on failure
-        if (wasSaved) markSaved(id); else markUnsaved(id);
-      }
-    };
-    return () => {
-      if (typeof window !== 'undefined') delete window.__ffWatchToggle;
-    };
-  }, [user, savedIds]);
-
-  return (
-    <WatchlistContext.Provider value={{ isSaved, markSaved, markUnsaved }}>
-      {children}
-    </WatchlistContext.Provider>
-  );
-}
+const WATCHLIST_PROVIDER_MOVED_TO_LIB = true; // placeholder removed below
+// ^ The WatchlistProvider implementation lives in lib/watchlistContext.js
+// so the watchlist-cards page can also mount it. We import it at the top
+// of this file. This sentinel line is just a marker so future searches
+// for "WatchlistProvider" in this file lead readers to the lib instead.
 
 // Star toggle that saves/removes a listing from the user's watchlist.
 // Lives inside the result card's <a>, so clicks must not trigger the link.

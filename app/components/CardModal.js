@@ -22,12 +22,14 @@
 //                   loads but the listing is no longer in results)
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { ArrowUpRight, X } from 'lucide-react';
+import { ArrowUpRight, X, Star } from 'lucide-react';
 import RarityTree from './RarityTree';
 import CardImageCarousel from './CardImageCarousel';
 import { parseSetFromTitle } from '../../lib/parseSetFromTitle';
 import { getSet, getParallel } from '../../lib/parallelData';
 import { gradientCss } from './rarityUtils';
+import { useWatchlist } from '../../lib/watchlistContext';
+import { useUser } from '../../lib/useUser';
 
 // Upscale an eBay thumbnail URL to a higher-resolution variant so the
 // magnifier reveals real detail. eBay encodes the size as `s-l\d+`
@@ -68,6 +70,59 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
 
   // Reset the active image whenever a different listing is opened
   useEffect(() => { setCarouselIndex(0); }, [item?.id]);
+
+  // ─ Watchlist integration ─────────────────────────────────────────
+  // Read saved state from the same WatchlistContext that powers the grid
+  // star, so the modal button and grid star stay in sync. If we're
+  // somehow rendered outside the provider (shouldn't happen, but
+  // defensive), useWatchlist() returns null and we hide the button.
+  const watchlist = useWatchlist();
+  const { user } = useUser();
+  const [watchBusy, setWatchBusy] = useState(false);
+  const isWatched = watchlist && item ? watchlist.isSaved(item.id) : false;
+
+  async function toggleWatch(e) {
+    e?.stopPropagation();
+    if (!item || watchBusy || !watchlist) return;
+    // Logged-out users get sent to login (same behavior as WatchStar)
+    if (!user) {
+      if (typeof window !== 'undefined') window.location.href = '/login';
+      return;
+    }
+    setWatchBusy(true);
+    const wasSaved = watchlist.isSaved(item.id);
+    // Optimistic update so the button changes instantly
+    if (wasSaved) watchlist.markUnsaved(item.id);
+    else watchlist.markSaved(item.id);
+    try {
+      if (wasSaved) {
+        await fetch(`/api/watchlist/${encodeURIComponent(item.id)}`, { method: 'DELETE' });
+      } else {
+        // Mirror WatchStar's payload shape exactly so the row created
+        // by the modal looks the same as one created from the grid star.
+        await fetch('/api/watchlist', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            listing_id: item.id,
+            title: item.title,
+            price: item.price,
+            currency: item.currency || 'USD',
+            image_url: item.image,
+            listing_url: item.url,
+            is_auction: !!item.isAuction,
+            end_time: item.endTime || null,
+          }),
+        });
+      }
+    } catch {
+      // Revert on failure
+      if (wasSaved) watchlist.markSaved(item.id);
+      else watchlist.markUnsaved(item.id);
+    } finally {
+      setWatchBusy(false);
+    }
+  }
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -562,18 +617,24 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
                   View on eBay
                   <ArrowUpRight size={12} strokeWidth={2} />
                 </a>
-                {/* Watchlist button — fires the same handler as the grid star.
-                    Wired by the parent through window.__ffWatchToggle so this
-                    component stays decoupled from the watchlist code in page.js */}
-                <button onClick={(e) => {
-                  e.stopPropagation();
-                  if (typeof window !== 'undefined' && typeof window.__ffWatchToggle === 'function') {
-                    window.__ffWatchToggle(item);
-                  }
-                }} data-no-tilt
-                        className="flex-none inline-flex items-center justify-center gap-1.5 text-[10px] uppercase tracking-[0.18em] font-medium rounded px-4 py-2.5"
-                        style={{ background: 'transparent', color: 'var(--ink-100)', border: '0.5px solid rgba(232,226,213,0.18)' }}>
-                  ★ Watch
+                {/* Watch button — reads from WatchlistContext to show
+                    saved state (filled gold star + "Watching" when saved,
+                    outline + "Watch" when not). Stays in sync with the
+                    grid star because they share the same context. */}
+                <button onClick={toggleWatch} data-no-tilt disabled={watchBusy}
+                        aria-label={isWatched ? 'Remove from watchlist' : 'Add to watchlist'}
+                        aria-pressed={isWatched}
+                        className="flex-none inline-flex items-center justify-center gap-1.5 text-[10px] uppercase tracking-[0.18em] font-medium rounded px-4 py-2.5 transition-colors"
+                        style={{
+                          background: isWatched ? 'rgba(212,175,92,0.10)' : 'transparent',
+                          color: isWatched ? 'var(--gold-bright)' : 'var(--ink-100)',
+                          border: `0.5px solid ${isWatched ? 'rgba(212,175,92,0.5)' : 'rgba(232,226,213,0.18)'}`,
+                          opacity: watchBusy ? 0.6 : 1,
+                          cursor: watchBusy ? 'wait' : 'pointer',
+                        }}>
+                  <Star size={12} strokeWidth={2}
+                        fill={isWatched ? 'currentColor' : 'transparent'} />
+                  {isWatched ? 'Watching' : 'Watch'}
                 </button>
               </div>
 
