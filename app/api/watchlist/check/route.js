@@ -4,7 +4,9 @@ import { createServerSupabase } from '../../../../lib/supabaseServer';
 // eBay endpoints (same as the search route)
 const EBAY_OAUTH_URL = 'https://api.ebay.com/identity/v1/oauth2/token';
 const EBAY_ITEM_URL = 'https://api.ebay.com/buy/browse/v1/item';
-// getItem: GET {EBAY_ITEM_URL}?item_id=v1|123|0
+// getItem: GET {EBAY_ITEM_URL}/{itemId}?fieldgroups=COMPACT — itemId is in
+// the path (not a query param). COMPACT reliably returns bidCount,
+// currentBidPrice, and itemEndDate for auctions.
 
 let cachedToken = null;
 let cachedExpiry = 0;
@@ -47,7 +49,7 @@ async function getAppToken() {
 // card active on genuine transport failures (network error, 5xx, rate-limit) so
 // a temporary eBay hiccup never marks a live card as sold.
 async function checkItemStatus(listingId, token) {
-  const url = `${EBAY_ITEM_URL}?item_id=${encodeURIComponent(listingId)}`;
+  const url = `${EBAY_ITEM_URL}/${encodeURIComponent(listingId)}?fieldgroups=COMPACT`;
 
   let res;
   try {

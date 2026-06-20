@@ -359,7 +359,10 @@ type ItemSnapshot =
   | { state: "transient" };
 
 async function fetchItemSnapshot(listingId: string, token: string): Promise<ItemSnapshot> {
-  const url = `https://api.ebay.com/buy/browse/v1/item?item_id=${encodeURIComponent(listingId)}`;
+  // eBay's Browse getItem takes the item ID in the URL path, not as a query
+  // parameter. The COMPACT fieldgroup is the documented way to reliably get
+  // bidCount + currentBidPrice + itemEndDate for auctions.
+  const url = `https://api.ebay.com/buy/browse/v1/item/${encodeURIComponent(listingId)}?fieldgroups=COMPACT`;
   let res: Response;
   try {
     res = await fetch(url, {
