@@ -20,20 +20,30 @@ const TIER_STYLES = {
   neutral: { bg: 'rgba(232,226,213,0.04)', color: '#a8a090', border: 'rgba(232,226,213,0.12)' },
 };
 
-export default function SaveSearchModal({ open, onClose, query, filters, chips = [] }) {
+export default function SaveSearchModal({ open, onClose, query, filters, chips = [], editingSearch = null }) {
   const router = useRouter();
   const [name, setName] = useState('');
   const [notifyEnabled, setNotifyEnabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // In edit mode: pre-fill the name from the existing search and respect its
+  // current notify_enabled setting. In create mode: suggest a name from the
+  // query and default notifications on.
+  const isEditing = !!editingSearch;
+
   useEffect(() => {
     if (open) {
-      setName(suggestName(query));
+      if (isEditing) {
+        setName(editingSearch.name || '');
+        setNotifyEnabled(editingSearch.notify_enabled !== false);
+      } else {
+        setName(suggestName(query));
+        setNotifyEnabled(true);
+      }
       setError('');
-      setNotifyEnabled(true);
     }
-  }, [open, query]);
+  }, [open, query, isEditing, editingSearch]);
 
   useEffect(() => {
     function handleKey(e) {
@@ -52,11 +62,20 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
       return;
     }
     setLoading(true);
-    const res = await fetch('/api/saved-searches', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, query, filters, notify_enabled: notifyEnabled }),
-    });
+
+    // Edit mode → PATCH the existing row (no duplicate created).
+    // Create mode → POST a new saved search.
+    const res = isEditing
+      ? await fetch(`/api/saved-searches/${editingSearch.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, query, filters, notify_enabled: notifyEnabled }),
+        })
+      : await fetch('/api/saved-searches', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, query, filters, notify_enabled: notifyEnabled }),
+        });
     setLoading(false);
 
     if (!res.ok) {
@@ -70,7 +89,13 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
     }
 
     onClose();
-    router.refresh();
+    // After an edit, send the user back to their saved-searches list so they
+    // can see the updated row. After a create, refresh in place.
+    if (isEditing) {
+      router.push('/watchlist');
+    } else {
+      router.refresh();
+    }
   }
 
   return (
@@ -89,9 +114,13 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
           color: '#e8e2d5',
         }}
       >
-        <h2 className="font-serif italic text-[22px] text-center mb-1">Save this search.</h2>
+        <h2 className="font-serif italic text-[22px] text-center mb-1">
+          {isEditing ? 'Update search criteria.' : 'Save this search.'}
+        </h2>
         <p className="text-[13px] text-center mb-5" style={{ color: '#8a8275' }}>
-          We'll notify you when new matches appear.
+          {isEditing
+            ? 'Overwrite your saved search with these new filters.'
+            : "We'll notify you when new matches appear."}
         </p>
 
         {chips.length > 0 && (
@@ -191,7 +220,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
             className="py-3 rounded-lg text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50"
             style={{ background: '#d4af5c', color: '#1a1614', border: 'none' }}
           >
-            {loading ? 'Saving…' : 'Save'}
+            {loading ? (isEditing ? 'Updating…' : 'Saving…') : (isEditing ? 'Update' : 'Save')}
           </button>
         </div>
       </div>

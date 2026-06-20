@@ -189,6 +189,10 @@ function Home() {
   const searchParams = useSearchParams();
   const { user, loading: userLoading } = useUser();
   const [saveModalOpen, setSaveModalOpen] = useState(false);
+  // When editing a saved search (?editSearch=<id>): holds {id, name, notify_enabled}
+  // so the FilterPanel can show the edit eyebrow / CTA, and SaveSearchModal
+  // can PATCH instead of POST. null = create-new behavior.
+  const [editingSearch, setEditingSearch] = useState(null);
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -329,23 +333,26 @@ function Home() {
   }, [loading]);
 
   // Saved search URL loader.
-  // When the user clicks "View" on a row in /watchlist, we navigate here with
-  // ?savedSearch=<id>. Fetch that search and apply its filters + query, then
-  // run the search automatically.
+  // ?savedSearch=<id>  → View: load filters + run the search automatically.
+  // ?editSearch=<id>   → Edit: load filters into the FilterPanel and stop
+  //                      there. No eBay call. The CTA becomes "Update search
+  //                      criteria" which opens SaveSearchModal in edit mode.
   const savedSearchLoaded = useRef(false);
   useEffect(() => {
     if (savedSearchLoaded.current) return;
     if (userLoading) return;
 
-    const savedSearchId = searchParams.get('savedSearch');
-    if (!savedSearchId) return;
+    const viewId = searchParams.get('savedSearch');
+    const editId = searchParams.get('editSearch');
+    if (!viewId && !editId) return;
 
     // Mark loaded before the async work so we don't double-fire on re-render
     savedSearchLoaded.current = true;
 
     (async () => {
       try {
-        const res = await fetch(`/api/saved-searches/${savedSearchId}`);
+        const id = editId || viewId;
+        const res = await fetch(`/api/saved-searches/${id}`);
         if (!res.ok) return;
         const { search } = await res.json();
         if (!search) return;
@@ -358,9 +365,19 @@ function Home() {
         // Strip the param from URL so refresh doesn't loop
         router.replace('/', { scroll: false });
 
-        // Run the search with the restored filters (state hasn't flushed yet,
-        // so we pass them explicitly).
-        handleSearch(search.query, restored);
+        if (editId) {
+          // Edit mode: hand off to the FilterPanel (Stage 2). No search runs.
+          setEditingSearch({
+            id: search.id,
+            name: search.name,
+            notify_enabled: search.notify_enabled,
+          });
+          setAppStage('configuring');
+        } else {
+          // View mode: run the search with the restored filters (state hasn't
+          // flushed yet, so pass them explicitly).
+          handleSearch(search.query, restored);
+        }
       } catch {
         // Silently fail — user lands on home page if anything went wrong
       }
@@ -669,8 +686,25 @@ function Home() {
             setQuery={setQuery}
             filters={filters}
             setFilter={setFilter}
-            onSubmit={() => handleSearch()}
-            onCancel={() => setAppStage('idle')}
+            onSubmit={() => {
+              if (editingSearch) {
+                // Edit mode: jump straight to the update-confirm modal,
+                // never run an eBay search from the edit flow.
+                setSaveModalOpen(true);
+              } else {
+                handleSearch();
+              }
+            }}
+            onCancel={() => {
+              if (editingSearch) {
+                // Cancel an edit → drop back to /watchlist instead of /
+                setEditingSearch(null);
+                router.push('/watchlist');
+              } else {
+                setAppStage('idle');
+              }
+            }}
+            editingSearch={editingSearch}
           />
         </div>
       )}
@@ -795,10 +829,16 @@ function Home() {
 
       <SaveSearchModal
         open={saveModalOpen}
-        onClose={() => setSaveModalOpen(false)}
+        onClose={() => {
+          setSaveModalOpen(false);
+          // If the user closes mid-edit (Cancel or X), clear edit state so a
+          // later "Save this search" click doesn't accidentally PATCH.
+          if (editingSearch) setEditingSearch(null);
+        }}
         query={query}
         filters={filters}
         chips={buildSaveChips()}
+        editingSearch={editingSearch}
       />
       {/* Card detail modal — opens when a result is tapped or when
           ?card=<id> is in the URL. Pass printRun so the rarity tree
@@ -1616,20 +1656,25 @@ function SegmentedGroup({ value, onChange, options, vertical = false }) {
 /* ─────────────────────────────────────────────
    FilterPanel — Stage 2: configuring (full takeover).
    ───────────────────────────────────────────── */
-function FilterPanel({ query, setQuery, filters, setFilter, onSubmit, onCancel }) {
+function FilterPanel({ query, setQuery, filters, setFilter, onSubmit, onCancel, editingSearch = null }) {
+  const isEditing = !!editingSearch;
   return (
     <section className="relative max-w-[1100px] mx-auto px-6 lg:px-10 pt-12 lg:pt-16 pb-16">
       {/* Eyebrow + back link */}
       <div className="flex items-center justify-between mb-9">
         <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--gold)]">
           <span className="inline-block w-6 h-px bg-[var(--gold)] align-middle mr-3 -translate-y-[2px]" />
-          Step 02 · Refine
+          {isEditing ? (
+            <>Editing · <span className="normal-case tracking-normal italic font-serif text-[var(--ink-100)] ml-1">{editingSearch.name}</span></>
+          ) : (
+            <>Step 02 · Refine</>
+          )}
         </p>
         <button
           onClick={onCancel}
           className="text-[11px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
         >
-          ← Back
+          {isEditing ? 'Cancel' : '← Back'}
         </button>
       </div>
 
@@ -1654,7 +1699,7 @@ function FilterPanel({ query, setQuery, filters, setFilter, onSubmit, onCancel }
         <FilterControls filters={filters} setFilter={setFilter} />
       </div>
 
-      {/* Search CTA */}
+      {/* Search CTA — becomes "Update search criteria" in edit mode */}
       <div className="flex justify-between items-center rise" style={{ animationDelay: '220ms' }}>
         <span className="text-[11px] text-[var(--ink-600)]">All filters apply with AND logic</span>
         <button
@@ -1665,7 +1710,7 @@ function FilterPanel({ query, setQuery, filters, setFilter, onSubmit, onCancel }
             color: '#0e0c0a',
           }}
         >
-          Search
+          {isEditing ? 'Update search criteria' : 'Search'}
           <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" strokeWidth={1.8} />
         </button>
       </div>

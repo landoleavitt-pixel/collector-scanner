@@ -35,6 +35,14 @@ export async function PATCH(request, { params }) {
   const updates = {};
   if (typeof body.name === 'string') updates.name = body.name.trim();
   if (typeof body.notify_enabled === 'boolean') updates.notify_enabled = body.notify_enabled;
+  // Edit flow: query + filters can be updated together when the user
+  // overwrites a saved search from the home page's filter panel.
+  if (typeof body.query === 'string' && body.query.trim()) {
+    updates.query = body.query.trim();
+  }
+  if (body.filters && typeof body.filters === 'object') {
+    updates.filters = body.filters;
+  }
 
   if (Object.keys(updates).length === 0) {
     return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 });

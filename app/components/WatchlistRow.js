@@ -200,6 +200,10 @@ export default function WatchlistRow({ search, canUseAlerts }) {
     router.push(`/?savedSearch=${search.id}`);
   }
 
+  function handleEdit() {
+    router.push(`/?editSearch=${search.id}`);
+  }
+
   return (
     <>
       {showPaywall && <PaywallModal onClose={() => setShowPaywall(false)} />}
@@ -318,6 +322,18 @@ export default function WatchlistRow({ search, canUseAlerts }) {
             </>
           ) : (
             <>
+              <button
+                type="button"
+                onClick={handleEdit}
+                className="px-3.5 py-1.5 rounded-full text-[10px] tracking-[0.18em] uppercase transition-colors"
+                style={{
+                  background: 'transparent',
+                  border: '0.5px solid rgba(201,149,74,0.40)',
+                  color: 'var(--gold)',
+                }}
+              >
+                Edit
+              </button>
               <button
                 type="button"
                 onClick={handleView}
