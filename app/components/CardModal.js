@@ -606,7 +606,24 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
               {item.isAuction ? (
                 <p className="text-[11px] tracking-[0.06em] mb-4" style={{ color: 'var(--ink-300)' }}>
                   {item.bidCount != null ? `${item.bidCount} BID${item.bidCount === 1 ? '' : 'S'}` : 'CURRENT BID'}
-                  {item.endTime ? ' · ENDS SOON' : ''}
+                  {(() => {
+                    // Show time remaining only when meaningful. "ENDS SOON" used
+                    // to fire for every auction with an end time, even ones
+                    // 8 days out — wrong and misleading. Now: under 24h reads
+                    // "ENDS SOON"; otherwise show actual time remaining; if
+                    // already past the end time, show nothing (the badge above
+                    // will show "Ended").
+                    if (!item.endTime) return '';
+                    const end = new Date(item.endTime).getTime();
+                    if (isNaN(end)) return '';
+                    const diffMs = end - Date.now();
+                    if (diffMs <= 0) return '';
+                    const ONE_DAY = 86400000;
+                    if (diffMs <= ONE_DAY) return ' · ENDS SOON';
+                    const days = Math.floor(diffMs / ONE_DAY);
+                    const hours = Math.floor((diffMs % ONE_DAY) / 3600000);
+                    return ` · ${days}D ${hours}H LEFT`;
+                  })()}
                 </p>
               ) : (
                 <p className="text-[11px] tracking-[0.06em] mb-4" style={{ color: 'var(--ink-300)' }}>
