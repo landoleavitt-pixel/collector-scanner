@@ -14,6 +14,7 @@ export async function GET(request, { params }) {
     .from('saved_searches')
     .select('*')
     .eq('id', params.id)
+    .eq('user_id', user.id)
     .single();
 
   if (error) {
@@ -52,6 +53,7 @@ export async function PATCH(request, { params }) {
     .from('saved_searches')
     .update(updates)
     .eq('id', params.id)
+    .eq('user_id', user.id)
     .select()
     .single();
 
@@ -73,7 +75,8 @@ export async function DELETE(request, { params }) {
   const { error } = await supabase
     .from('saved_searches')
     .delete()
-    .eq('id', params.id);
+    .eq('id', params.id)
+    .eq('user_id', user.id);
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

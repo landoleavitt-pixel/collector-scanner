@@ -48,6 +48,14 @@ async function getAppToken() {
 // longer available (ended or sold). We treat 404 as "ended". We still leave the
 // card active on genuine transport failures (network error, 5xx, rate-limit) so
 // a temporary eBay hiccup never marks a live card as sold.
+// Hit eBay's getItem (COMPACT) and return a discriminated result.
+//   { state: 'ended' }     — 404 or OUT_OF_STOCK; listing is gone.
+//   { state: 'active', … } — eBay responded with usable data.
+//   { state: 'transient' } — network blip, 5xx, rate-limit, or unparseable
+//                            response. Caller MUST skip these rows entirely
+//                            (don't even bump last_checked) so the next call
+//                            retries instead of being locked out by the
+//                            10-minute throttle.
 async function checkItemStatus(listingId, token) {
   const url = `${EBAY_ITEM_URL}/${encodeURIComponent(listingId)}?fieldgroups=COMPACT`;
 
@@ -61,37 +69,27 @@ async function checkItemStatus(listingId, token) {
       },
     });
   } catch {
-    return { status: 'active', price: null, bidCount: null, endTime: null }; // network error → leave as-is
+    return { state: 'transient' };
   }
 
-  // 404 = listing gone (ended or sold). This is eBay's normal signal for it.
-  if (res.status === 404) {
-    return { status: 'ended', price: null, bidCount: null, endTime: null };
-  }
-  // Other non-OK (5xx, 429, auth) → transient; don't assume ended.
-  if (!res.ok) {
-    return { status: 'active', price: null, bidCount: null, endTime: null };
-  }
+  if (res.status === 404) return { state: 'ended' };
+  if (!res.ok) return { state: 'transient' };
 
   let data;
   try {
     data = await res.json();
   } catch {
-    return { status: 'active', price: null, bidCount: null, endTime: null };
+    return { state: 'transient' };
   }
 
   const avail = data?.estimatedAvailabilities?.[0]?.estimatedAvailabilityStatus;
-  // Auctions carry the live high bid in currentBidPrice; fixed-price in price.
   const rawPrice = data?.currentBidPrice?.value ?? data?.price?.value;
   const price = rawPrice != null ? Number(rawPrice) : null;
   const bidCount = data?.bidCount != null ? Number(data.bidCount) : null;
   const endTime = data?.itemEndDate ?? null;
 
-  // Explicit out-of-stock is also an "ended" signal.
-  if (avail === 'OUT_OF_STOCK') {
-    return { status: 'ended', price, bidCount, endTime };
-  }
-  return { status: 'active', price, bidCount, endTime };
+  if (avail === 'OUT_OF_STOCK') return { state: 'ended' };
+  return { state: 'active', price, bidCount, endTime };
 }
 
 // POST — re-check the user's ACTIVE watched listings against eBay, update
@@ -150,18 +148,23 @@ export async function POST() {
 
   for (const row of stale) {
     try {
-      const { status, price, bidCount, endTime } = await checkItemStatus(row.listing_id, token);
+      const snap = await checkItemStatus(row.listing_id, token);
+      // Transient failure: don't update anything (including last_checked) so
+      // the next call retries this row instead of skipping it for 10 min.
+      if (snap.state === 'transient') continue;
 
       const patch = { last_checked: now };
-      if (status === 'ended') {
+      if (snap.state === 'ended') {
         patch.status = 'ended';
         patch.sold_at = now;
         updated++;
-        // keep last-known price / bid_count so the tile reads "Ended · last bid $X · N bids"
-      } else if (status === 'active') {
-        if (price != null) patch.price = price;
-        if (bidCount != null) patch.bid_count = bidCount;
-        if (endTime) patch.end_time = endTime;
+        // keep last-known price / bid_count so the tile reads
+        // "Ended · last bid $X · N bids"
+      } else {
+        // active — only write fields eBay actually returned
+        if (snap.price != null) patch.price = snap.price;
+        if (snap.bidCount != null) patch.bid_count = snap.bidCount;
+        if (snap.endTime) patch.end_time = snap.endTime;
       }
 
       await supabase
