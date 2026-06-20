@@ -59,40 +59,48 @@ async function checkItemStatus(listingId, token) {
       },
     });
   } catch {
-    return { status: 'active', price: null }; // network error → leave as-is
+    return { status: 'active', price: null, bidCount: null, endTime: null }; // network error → leave as-is
   }
 
   // 404 = listing gone (ended or sold). This is eBay's normal signal for it.
   if (res.status === 404) {
-    return { status: 'ended', price: null };
+    return { status: 'ended', price: null, bidCount: null, endTime: null };
   }
   // Other non-OK (5xx, 429, auth) → transient; don't assume ended.
   if (!res.ok) {
-    return { status: 'active', price: null };
+    return { status: 'active', price: null, bidCount: null, endTime: null };
   }
 
   let data;
   try {
     data = await res.json();
   } catch {
-    return { status: 'active', price: null };
+    return { status: 'active', price: null, bidCount: null, endTime: null };
   }
 
   const avail = data?.estimatedAvailabilities?.[0]?.estimatedAvailabilityStatus;
   // Auctions carry the live high bid in currentBidPrice; fixed-price in price.
   const rawPrice = data?.currentBidPrice?.value ?? data?.price?.value;
   const price = rawPrice != null ? Number(rawPrice) : null;
+  const bidCount = data?.bidCount != null ? Number(data.bidCount) : null;
+  const endTime = data?.itemEndDate ?? null;
 
   // Explicit out-of-stock is also an "ended" signal.
   if (avail === 'OUT_OF_STOCK') {
-    return { status: 'ended', price };
+    return { status: 'ended', price, bidCount, endTime };
   }
-  return { status: 'active', price };
+  return { status: 'active', price, bidCount, endTime };
 }
 
-// POST — re-check all of the user's ACTIVE watched listings against eBay,
-// update any that have ended/sold, and return the updated set.
-// Called when the user opens the Watchlist page (no scheduled job).
+// POST — re-check the user's ACTIVE watched listings against eBay, update
+// any that have ended/sold, and refresh live price + bid count. Called when
+// the user opens the Watchlist page.
+//
+// Per-row throttle (10 min): skip rows the background poller (or a recent
+// page-load) already checked. Keeps a reload-spammer from draining quota,
+// and avoids stepping on the hourly poller's work.
+const PAGE_CHECK_THROTTLE_MS = 10 * 60 * 1000;
+
 export async function POST() {
   const supabase = createServerSupabase();
   const { data: { user } } = await supabase.auth.getUser();
@@ -103,7 +111,7 @@ export async function POST() {
 
   const { data: active, error } = await supabase
     .from('watched_listings')
-    .select('id, listing_id')
+    .select('id, listing_id, last_checked')
     .eq('user_id', user.id)
     .eq('status', 'active');
 
@@ -111,7 +119,20 @@ export async function POST() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
   if (!active || active.length === 0) {
-    return NextResponse.json({ checked: 0, updated: 0 });
+    return NextResponse.json({ checked: 0, updated: 0, skipped: 0 });
+  }
+
+  const nowMs = Date.now();
+  const stale = active.filter((row) => {
+    if (!row.last_checked) return true;
+    const last = new Date(row.last_checked).getTime();
+    if (isNaN(last)) return true;
+    return nowMs - last >= PAGE_CHECK_THROTTLE_MS;
+  });
+  const skipped = active.length - stale.length;
+
+  if (stale.length === 0) {
+    return NextResponse.json({ checked: 0, updated: 0, skipped });
   }
 
   let token;
@@ -119,25 +140,26 @@ export async function POST() {
     token = await getAppToken();
   } catch (e) {
     // If eBay is unreachable, don't fail the page — just report nothing updated.
-    return NextResponse.json({ checked: 0, updated: 0, error: e.message });
+    return NextResponse.json({ checked: 0, updated: 0, skipped, error: e.message });
   }
 
   let updated = 0;
   const now = new Date().toISOString();
 
-  // Check sequentially-ish but cap concurrency to be gentle on the API.
-  // Watchlists are small, so a simple loop is fine.
-  for (const row of active) {
+  for (const row of stale) {
     try {
-      const { status, price } = await checkItemStatus(row.listing_id, token);
+      const { status, price, bidCount, endTime } = await checkItemStatus(row.listing_id, token);
 
       const patch = { last_checked: now };
       if (status === 'ended') {
         patch.status = 'ended';
         patch.sold_at = now;
         updated++;
-      } else if (status === 'active' && price != null) {
-        patch.price = price; // keep price fresh
+        // keep last-known price / bid_count so the tile reads "Ended · last bid $X · N bids"
+      } else if (status === 'active') {
+        if (price != null) patch.price = price;
+        if (bidCount != null) patch.bid_count = bidCount;
+        if (endTime) patch.end_time = endTime;
       }
 
       await supabase
@@ -150,5 +172,5 @@ export async function POST() {
     }
   }
 
-  return NextResponse.json({ checked: active.length, updated });
+  return NextResponse.json({ checked: stale.length, updated, skipped });
 }

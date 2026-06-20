@@ -178,11 +178,18 @@ Deno.serve(async (_req) => {
       }
     }
 
+    // Keep tiles fresh (price, bid count, ended/sold) in the background —
+    // tiered + capped so it never blows the daily eBay quota.
+    const watchlist = await refreshWatchlist(errors);
+
     return jsonResponse({
       ok: true,
       startedAt,
       searchesChecked,
       notificationsSent,
+      watchlistRefreshed: watchlist.refreshed,
+      watchlistEnded: watchlist.ended,
+      watchlistSkipped: watchlist.skipped,
       bidRemindersSent: await processBidReminders(errors),
       errorCount: errors.length,
       errors: errors.slice(0, 5),
@@ -309,6 +316,149 @@ async function getEbayToken(): Promise<string | null> {
   } catch {
     return null;
   }
+}
+
+// ── Watchlist freshness refresh ───────────────────────────────────────────
+// Keeps watched-listing tiles current in the background so users see live
+// prices / bid counts and ended-or-sold status without having to open the
+// Watchlist page. Quota-aware tiering (this poll runs hourly):
+//   • auctions ending within 24h  → every poll
+//   • auctions 1–7 days out       → every ~6h
+//   • everything else / BIN       → once a day
+// A hard ceiling on eBay calls per run keeps the daily total well under the
+// app cap no matter how large watchlists grow; ending-soonest rows go first.
+const REFRESH_BATCH_LIMIT = 80;          // max eBay item calls per poll run
+const RW_HOUR = 60 * 60 * 1000;
+const RW_DAY = 24 * RW_HOUR;
+const RW_POLL_SLACK = 30 * 60 * 1000;    // cushion so the hourly poll never misses a tier
+
+function refreshIntervalMs(row: Record<string, any>, nowMs: number): number {
+  // Fixed-price (BIN) and rows with no end date refresh once a day.
+  if (!row.is_auction || !row.end_time) return RW_DAY;
+  const endMs = new Date(row.end_time).getTime();
+  if (isNaN(endMs)) return RW_DAY;
+  const msLeft = endMs - nowMs;
+  if (msLeft <= 24 * RW_HOUR) return 0;         // ending soon (or already past) → every poll
+  if (msLeft <= 7 * RW_DAY) return 6 * RW_HOUR; // this week
+  return RW_DAY;                                // far out
+}
+
+function isRefreshDue(row: Record<string, any>, nowMs: number): boolean {
+  const interval = refreshIntervalMs(row, nowMs);
+  if (interval === 0) return true;
+  const last = row.last_checked ? new Date(row.last_checked).getTime() : 0;
+  if (isNaN(last)) return true;
+  return nowMs - last >= interval - RW_POLL_SLACK;
+}
+
+// Discriminated result so a transient failure (network / 5xx / rate-limit)
+// never marks a live card ended — only a real 404 / OUT_OF_STOCK counts.
+type ItemSnapshot =
+  | { state: "ended" }
+  | { state: "active"; price: number | null; bidCount: number | null; endTime: string | null }
+  | { state: "transient" };
+
+async function fetchItemSnapshot(listingId: string, token: string): Promise<ItemSnapshot> {
+  const url = `https://api.ebay.com/buy/browse/v1/item?item_id=${encodeURIComponent(listingId)}`;
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "X-EBAY-C-MARKETPLACE-ID": "EBAY_US",
+        "Content-Type": "application/json",
+      },
+    });
+  } catch {
+    return { state: "transient" };
+  }
+  if (res.status === 404) return { state: "ended" };
+  if (!res.ok) return { state: "transient" };
+
+  let data: any;
+  try {
+    data = await res.json();
+  } catch {
+    return { state: "transient" };
+  }
+
+  const avail = data?.estimatedAvailabilities?.[0]?.estimatedAvailabilityStatus;
+  if (avail === "OUT_OF_STOCK") return { state: "ended" };
+
+  const rawPrice = data?.currentBidPrice?.value ?? data?.price?.value;
+  const price = rawPrice != null ? Number(rawPrice) : null;
+  const bidCount = data?.bidCount != null ? Number(data.bidCount) : null;
+  const endTime = data?.itemEndDate ?? null;
+  return { state: "active", price, bidCount, endTime };
+}
+
+async function refreshWatchlist(
+  errors: string[],
+): Promise<{ refreshed: number; ended: number; skipped: number }> {
+  let refreshed = 0;
+  let ended = 0;
+  let skipped = 0;
+  try {
+    const { data: rows, error } = await supabase
+      .from("watched_listings")
+      .select("id, listing_id, is_auction, end_time, last_checked, status")
+      .eq("status", "active");
+    if (error) throw error;
+    if (!rows || rows.length === 0) return { refreshed, ended, skipped };
+
+    const nowMs = Date.now();
+    const nowIso = new Date(nowMs).toISOString();
+
+    // Only rows actually due, ending-soonest first, capped per run.
+    const due = (rows as Record<string, any>[])
+      .filter((r) => isRefreshDue(r, nowMs))
+      .sort((a, b) => {
+        const ae = a.end_time ? new Date(a.end_time).getTime() : Infinity;
+        const be = b.end_time ? new Date(b.end_time).getTime() : Infinity;
+        return ae - be;
+      });
+    skipped = rows.length - due.length;
+    const batch = due.slice(0, REFRESH_BATCH_LIMIT);
+    if (batch.length === 0) return { refreshed, ended, skipped };
+
+    const token = await getEbayToken();
+    if (!token) {
+      errors.push("Watchlist refresh: no eBay token");
+      return { refreshed, ended, skipped };
+    }
+
+    for (const row of batch) {
+      try {
+        const snap = await fetchItemSnapshot(row.listing_id, token);
+        if (snap.state === "transient") continue; // leave as-is; retry next poll
+
+        if (snap.state === "ended") {
+          await supabase
+            .from("watched_listings")
+            .update({ status: "ended", sold_at: nowIso, last_checked: nowIso })
+            .eq("id", row.id);
+          ended++;
+          refreshed++;
+          continue;
+        }
+
+        // active — refresh live fields, keep last-known values for anything missing
+        const patch: Record<string, any> = { last_checked: nowIso };
+        if (snap.price != null) patch.price = snap.price;
+        if (snap.bidCount != null) patch.bid_count = snap.bidCount;
+        if (snap.endTime) patch.end_time = snap.endTime;
+        await supabase.from("watched_listings").update(patch).eq("id", row.id);
+        refreshed++;
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        errors.push(`Refresh ${row.listing_id}: ${msg}`);
+      }
+    }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    errors.push(`Watchlist refresh: ${msg}`);
+  }
+  return { refreshed, ended, skipped };
 }
 
 function jsonResponse(body: unknown, status = 200) {

@@ -2617,6 +2617,8 @@ function WatchStar({ item }) {
             badges: buildBadgePayload(item),
             is_auction: !!item.isAuction,
             end_time: item.endTime || null,
+            bid_count: item.bidCount ?? null,
+            condition: item.condition || null,
           }),
         });
       }

@@ -112,6 +112,8 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
             listing_url: item.url,
             is_auction: !!item.isAuction,
             end_time: item.endTime || null,
+            bid_count: item.bidCount ?? null,
+            condition: item.condition || null,
           }),
         });
       }
@@ -261,7 +263,10 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
     const dx = (clientX - cx) / (window.innerWidth  / 2);
     const dy = (clientY - cy) / (window.innerHeight / 2);
     const clamp = (v) => Math.max(-1, Math.min(1, v));
-    const maxRot = isTouchPrimary ? 20 : 12;
+    // 22° on both desktop and mobile — bumped from 12°/20° for a more
+    // dramatic, holo-card-in-hand feel. Kept identical across input modes
+    // so the effect reads the same on every device.
+    const maxRot = 22;
     const ry =  clamp(dx) * maxRot;
     const rx = -clamp(dy) * maxRot;
     card.style.transform = `rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg)`;

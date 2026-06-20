@@ -360,6 +360,20 @@ function WatchlistTile({ listing, onRemove, onToast, onCardClick }) {
           )}
         </div>
 
+        {/* Live status line — bid count for active auctions; last-bid summary
+            once an auction has ended so the user can see how it closed. */}
+        {listing.is_auction && !isSold && listing.bid_count != null && (
+          <div className="text-[10px] tracking-[0.06em] mt-1.5" style={{ color: 'var(--ink-300)' }}>
+            {listing.bid_count} BID{listing.bid_count === 1 ? '' : 'S'}
+          </div>
+        )}
+        {isSold && listing.is_auction && (
+          <div className="text-[10px] tracking-[0.06em] mt-1.5" style={{ color: 'var(--ink-300)' }}>
+            {listing.price != null ? `LAST BID ${price}` : 'ENDED'}
+            {listing.bid_count != null ? ` · ${listing.bid_count} BID${listing.bid_count === 1 ? '' : 'S'}` : ''}
+          </div>
+        )}
+
         {/* Bid reminder — only for active auctions */}
         {listing.is_auction && !isSold && <BidReminderControl listing={listing} onToast={onToast} />}
       </div>
