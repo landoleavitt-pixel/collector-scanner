@@ -209,15 +209,17 @@ function Home() {
   //
   // 'transition' is a brief in-between state used when arriving via a deep
   // link (?savedSearch= or ?editSearch=) — it suppresses the idle hero so
-  // the landing page doesn't flash for a frame before the useEffect below
-  // resolves the saved search and switches to the correct stage.
+  // the landing page doesn't flash before the useEffect below resolves
+  // the saved search and switches to the correct stage.
+  //
+  // We read `searchParams` (the Next.js router-aware hook called above)
+  // here in the useState init so the very first render sees the deep-link
+  // case. Using window.location.search instead would race the client-side
+  // navigation — at first mount, window.location can still hold the
+  // previous route's URL even though the React tree is mounting the new one.
   const [appStage, setAppStage] = useState(() => {
-    if (typeof window === 'undefined') return 'idle';
-    try {
-      const sp = new URLSearchParams(window.location.search);
-      if (sp.get('savedSearch') || sp.get('editSearch')) return 'transition';
-    } catch (e) {
-      // ignore; fall through to default
+    if (searchParams?.get('savedSearch') || searchParams?.get('editSearch')) {
+      return 'transition';
     }
     return 'idle';
   });
