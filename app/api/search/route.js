@@ -216,20 +216,32 @@ function buildSearchParams(criteria) {
     // Multi-select: send all selected print runs as an eBay OR query.
     // e.g. ["/25", "/99"] → ("/25", "/99")
     // If only one run, send it directly (no parens needed).
-    const runs = criteria.selectedPrintRuns;
+    // Sanitize: keep only entries that match the expected /N pattern. Stops
+    // a malicious client from injecting arbitrary eBay query syntax.
+    const runs = criteria.selectedPrintRuns
+      .filter((r) => typeof r === 'string')
+      .map((r) => r.trim())
+      .filter((r) => /^\/\d{1,5}$/.test(r));
     if (runs.length === 1) {
       parts.push(runs[0]);
-    } else {
+    } else if (runs.length > 1) {
       parts.push('(' + runs.map((r) => `"${r}"`).join(', ') + ')');
     }
   }
 
   const q = parts.filter(Boolean).join(' ');
 
+  // Coerce price bounds to safe non-negative numbers. Anything non-numeric
+  // (string, object, NaN) falls back to the default. Prevents arbitrary
+  // strings from being interpolated into the eBay filter expression.
   const filters = [];
+  const toPrice = (v, fallback) => {
+    const n = Number(v);
+    return Number.isFinite(n) && n >= 0 ? n : fallback;
+  };
   if (criteria.priceMin != null || criteria.priceMax != null) {
-    const min = criteria.priceMin ?? 0;
-    const max = criteria.priceMax ?? '';
+    const min = criteria.priceMin != null ? toPrice(criteria.priceMin, 0) : 0;
+    const max = criteria.priceMax != null ? toPrice(criteria.priceMax, '') : '';
     filters.push(`price:[${min}..${max}],priceCurrency:USD`);
   }
 
@@ -549,7 +561,7 @@ export async function POST(req) {
 
     const criteria = await req.json();
 
-    if (!criteria.keywords || !criteria.keywords.trim()) {
+    if (typeof criteria?.keywords !== 'string' || !criteria.keywords.trim()) {
       return NextResponse.json(
         { error: 'Please enter a search term.' },
         { status: 400 },

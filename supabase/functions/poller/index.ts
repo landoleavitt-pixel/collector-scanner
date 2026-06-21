@@ -270,11 +270,12 @@ async function processBidReminders(errors: string[]): Promise<number> {
 
 // Fetch a single item's current price from eBay via the Browse API getItem.
 // Returns null on any error (we then fall back to the stored price).
+// COMPACT fieldgroup reliably returns currentBidPrice for auctions.
 async function fetchLiveItemPrice(listingId: string): Promise<number | null> {
   try {
     const token = await getEbayToken();
     if (!token) return null;
-    const url = `https://api.ebay.com/buy/browse/v1/item?item_id=${encodeURIComponent(listingId)}`;
+    const url = `https://api.ebay.com/buy/browse/v1/item/${encodeURIComponent(listingId)}?fieldgroups=COMPACT`;
     const res = await fetch(url, {
       headers: {
         Authorization: `Bearer ${token}`,

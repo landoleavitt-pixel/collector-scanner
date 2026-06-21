@@ -7,10 +7,15 @@
  *   RESEND_API_KEY      — from resend.com → API Keys
  *   RESEND_AUDIENCE_ID  — from resend.com → Audiences → (your audience) → ID
  *
- * If either is missing in production, the endpoint returns a 503 so the form
- * still degrades gracefully instead of throwing a 500. In dev with no key,
- * we log to the console and return success so the UI can be tested.
+ * Rate-limited: 5 submissions per IP per minute. Stops bots from mass-adding
+ * emails or hammering Resend.
+ *
+ * If either env is missing in production, the endpoint returns a 503 so the
+ * form still degrades gracefully instead of throwing a 500. In dev with no
+ * key, we log to the console and return success so the UI can be tested.
  */
+
+import { rateLimit, getClientIp } from '../../../lib/rateLimit';
 
 export const runtime = 'edge';
 
@@ -23,6 +28,20 @@ function isValidEmail(email) {
 }
 
 export async function POST(request) {
+  // Rate-limit BEFORE parsing the body — cheap fail-fast for abusive callers.
+  const rate = rateLimit({
+    bucket: 'waitlist',
+    key: getClientIp(request),
+    limit: 5,
+    windowMs: 60_000,
+  });
+  if (!rate.allowed) {
+    return Response.json(
+      { error: 'Too many requests. Try again shortly.' },
+      { status: 429, headers: { 'Retry-After': String(rate.retryAfterSec) } },
+    );
+  }
+
   let body;
   try {
     body = await request.json();

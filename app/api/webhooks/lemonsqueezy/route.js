@@ -56,16 +56,39 @@ export async function POST(request) {
   async function resolveUserId() {
     if (userId) return userId;
     if (!customerEmail) return null;
-    const { data: list } = await supabase.auth.admin.listUsers();
-    const match = list?.users?.find(u => u.email === customerEmail);
-    return match?.id ?? null;
+    // Page through auth.users — Supabase's default page size is 50 and
+    // listUsers() doesn't filter by email server-side. Walk pages until we
+    // find the match or run out. Caps at 50 pages (2500 users) to bound
+    // worst-case latency — beyond that the lookup-by-email-via-RPC route
+    // would need a custom DB function, but at that scale you've earned it.
+    const PER_PAGE = 50;
+    const MAX_PAGES = 50;
+    for (let page = 1; page <= MAX_PAGES; page++) {
+      const { data, error } = await supabase.auth.admin.listUsers({
+        page,
+        perPage: PER_PAGE,
+      });
+      if (error) {
+        console.error('LS webhook: listUsers error on page', page, error);
+        return null;
+      }
+      const users = data?.users ?? [];
+      if (users.length === 0) return null;
+      const match = users.find((u) => u.email === customerEmail);
+      if (match) return match.id;
+      if (users.length < PER_PAGE) return null; // last page, no match
+    }
+    console.error('LS webhook: hit MAX_PAGES without finding', customerEmail);
+    return null;
   }
 
   if (eventName === 'subscription_created') {
     const uid = await resolveUserId();
     if (!uid) {
       console.error('LS webhook: could not resolve user for subscription_created');
-      return NextResponse.json({ ok: false, error: 'User not found' }, { status: 200 });
+      // Return 5xx so Lemon Squeezy retries — otherwise a paying user could
+      // be permanently dropped if email matching races their account creation.
+      return NextResponse.json({ ok: false, error: 'User not found' }, { status: 500 });
     }
     const { error: upsertError } = await supabase.from('profiles').upsert({
       id:                   uid,

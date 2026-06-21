@@ -12,12 +12,14 @@
 //   { ok: false, expired: true }  — listing not found / 404 from eBay
 //   { ok: false, error: '...' }   — other error
 //
-// Rate limiting: same in-memory bucket as /api/search would be ideal,
-// but keeping it simple for now — relying on the upstream search
-// rate limit since users have to search before opening a modal.
+// Rate limiting: 30 req/min per IP. The 5-min edge cache below already
+// absorbs most repeat hits cheaply; this cap prevents a script from
+// iterating arbitrary item IDs to drain our eBay quota.
 //
 // Caching: eBay item detail rarely changes mid-listing; cache 5 min
 // at the edge so refreshing the modal doesn't re-hit eBay.
+
+import { rateLimit, getClientIp } from '../../../../lib/rateLimit';
 
 const EBAY_OAUTH_URL = 'https://api.ebay.com/identity/v1/oauth2/token';
 const EBAY_ITEM_URL  = 'https://api.ebay.com/buy/browse/v1/item';
@@ -62,10 +64,24 @@ function upscaleImage(url) {
   return url.replace(/\/s-l\d+\.(\w+)/, '/s-l1600.$1');
 }
 
-export async function GET(_request, { params }) {
+export async function GET(request, { params }) {
   const { id } = params;
   if (!id) {
     return Response.json({ ok: false, error: 'Missing listing id' }, { status: 400 });
+  }
+
+  // Rate-limit per IP so a script can't iterate item IDs to drain quota.
+  const rate = rateLimit({
+    bucket: 'listing',
+    key: getClientIp(request),
+    limit: 30,
+    windowMs: 60_000,
+  });
+  if (!rate.allowed) {
+    return Response.json(
+      { ok: false, error: 'Too many requests' },
+      { status: 429, headers: { 'Retry-After': String(rate.retryAfterSec) } },
+    );
   }
 
   try {
@@ -115,6 +131,9 @@ export async function GET(_request, { params }) {
       currency: data.price?.currency || 'USD',
     });
   } catch (err) {
-    return Response.json({ ok: false, error: String(err?.message || err) }, { status: 500 });
+    // Log the real error internally; return a generic message to the client
+    // so we don't leak stack traces or environment hints.
+    console.error('listing route error:', err);
+    return Response.json({ ok: false, error: 'Internal error' }, { status: 500 });
   }
 }
