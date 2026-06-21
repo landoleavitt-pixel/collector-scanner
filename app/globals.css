@@ -358,3 +358,11 @@ select option {
 }
 .ff-price-range:focus { outline: none; }
 .ff-price-range:focus::-webkit-slider-thumb { box-shadow: 0 0 0 2px var(--gold), 0 4px 12px rgba(0,0,0,0.4); }
+
+/* Deep-link arrival from the watchlist Edit/View flow — synchronous script
+   at the top of page.js sets .ff-deep-link on <html> before paint, so the
+   statically-prerendered idle hero is hidden until React hydrates and
+   transitions to the correct stage. Prevents the ~1s flash of landing UI. */
+html.ff-deep-link [data-ff-idle] {
+  display: none;
+}

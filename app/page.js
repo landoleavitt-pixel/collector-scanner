@@ -669,9 +669,21 @@ function Home() {
         }}
       />
       <SplashIntro />
-      {/* Stage 1: idle landing — hero with search bar, then the why-section */}
+      {/* Synchronous, blocking script that runs BEFORE the body paints.
+          Detects deep-link URLs (?savedSearch= / ?editSearch= from the
+          watchlist Edit/View flow) and marks <html> so CSS can hide the
+          idle stage. Without this, a statically-prerendered home page
+          paints the landing hero for ~1s before React hydrates and
+          transitions to the correct stage. Runs in <5ms, safe to inline. */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `try{var s=new URLSearchParams(window.location.search);if(s.get('savedSearch')||s.get('editSearch'))document.documentElement.classList.add('ff-deep-link');}catch(e){}`,
+        }}
+      />
+      {/* Stage 1: idle landing — hero with search bar, then the why-section.
+          data-ff-idle hides this via CSS when the deep-link class is set. */}
       {appStage === 'idle' && (
-        <>
+        <div data-ff-idle>
           <Hero
             query={query}
             setQuery={setQuery}
@@ -690,7 +702,7 @@ function Home() {
             }}
           />
           <WhyFields />
-        </>
+        </div>
       )}
 
       {/* Stage 2: configuring — filter panel replaces the hero. User picks
