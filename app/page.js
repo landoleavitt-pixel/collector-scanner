@@ -204,7 +204,23 @@ function Home() {
   // App flow state: 'idle' (landing, hero showing) → 'configuring' (user
   // submitted query, filter panel showing) → 'searched' (results showing
   // with compact filter bar above).
-  const [appStage, setAppStage] = useState('idle');
+  // App flow state: 'idle' (landing, hero showing) → 'configuring' (user
+  // adjusting filters) → 'searched' (results visible).
+  //
+  // 'transition' is a brief in-between state used when arriving via a deep
+  // link (?savedSearch= or ?editSearch=) — it suppresses the idle hero so
+  // the landing page doesn't flash for a frame before the useEffect below
+  // resolves the saved search and switches to the correct stage.
+  const [appStage, setAppStage] = useState(() => {
+    if (typeof window === 'undefined') return 'idle';
+    try {
+      const sp = new URLSearchParams(window.location.search);
+      if (sp.get('savedSearch') || sp.get('editSearch')) return 'transition';
+    } catch (e) {
+      // ignore; fall through to default
+    }
+    return 'idle';
+  });
   const hasSearched = appStage === 'searched';
   const [scanIdx, setScanIdx] = useState(0);
 
@@ -878,9 +894,13 @@ function SplashIntro() {
 
     let skip = false;
     try {
-      if (sessionStorage.getItem('ffSplashDone')) skip = true;
+      // Skip the splash when arriving via a Watchlist Edit/View click — those
+      // land at /?savedSearch= or /?editSearch= and immediately transition to
+      // a different stage, so playing the splash would just be a 2.6s detour.
+      const sp = new URLSearchParams(window.location.search);
+      if (sp.get('savedSearch') || sp.get('editSearch')) skip = true;
+      // Respect accessibility preferences.
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        sessionStorage.setItem('ffSplashDone', '1');
         skip = true;
       }
     } catch (e) {
@@ -913,7 +933,6 @@ function SplashIntro() {
         // Landed: swap in the real brand, then fade "Collectors" in after it.
         if (core) { core.style.transition = 'opacity 0.2s'; core.style.opacity = '1'; }
         if (coll) { coll.style.transition = 'opacity 0.5s ease 0.2s'; coll.style.opacity = '1'; }
-        try { sessionStorage.setItem('ffSplashDone', '1'); } catch (e) {}
         setPhase('skip');
       }, 900);
     }, 1700);
