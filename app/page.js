@@ -695,6 +695,7 @@ function Home() {
             loading={false}
             onSuggested={(s) => handleQuerySubmit(s)}
             user={user}
+            onCardClick={openCard}
             onChipSearch={(chipQuery, partialFilters) => {
               // Apply the matching filters and run the search immediately. The
               // selected filters remain visible in the Stage 3 results sidebar,
@@ -1001,7 +1002,7 @@ function SplashIntro() {
   );
 }
 
-function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSearch, user }) {
+function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSearch, user, onCardClick }) {
   return (
     <section className="relative border-b border-[var(--line-soft)] overflow-hidden">
       {/* Above the fold — explainer-first hero. Headline names the value
@@ -1118,7 +1119,7 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
           so we don't add a duplicate header here.) */}
       <div className="max-w-[1040px] mx-auto px-6 lg:px-10 pb-16 pt-8">
         <div className="mx-auto max-w-[360px] rise" style={{ animationDelay: '820ms' }}>
-          <FeaturedFind />
+          <FeaturedFind onCardClick={onCardClick} />
         </div>
       </div>
     </section>
@@ -1643,7 +1644,12 @@ function PlansSection({ user }) {
      - Loading: shimmer placeholder card.
      - Success: real card with image, badges, price, link to the eBay listing.
      - Failure: gracefully hides (since this is decorative, not critical). */
-function FeaturedFind() {
+/* FeaturedFind — auto-loads a real Grail-tier card from eBay via /api/featured.
+   Clicking opens the same CardModal that search results use, keeping the
+   homepage card-tap experience consistent with the rest of the app. The
+   modal then provides its own "View on eBay" link if the user wants to
+   leave the site. */
+function FeaturedFind({ onCardClick }) {
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
@@ -1673,6 +1679,10 @@ function FeaturedFind() {
 
   if (failed) return null; // decorative — gracefully hide on error
 
+  const handleClick = () => {
+    if (item && onCardClick) onCardClick(item);
+  };
+
   return (
     <figure className="relative">
       <figcaption className="absolute -top-6 left-0 text-[10px] uppercase tracking-[0.3em] text-[var(--ink-400)] flex items-center gap-3">
@@ -1680,12 +1690,11 @@ function FeaturedFind() {
         Featured Find · Live from eBay
       </figcaption>
 
-      <a
-        href={item?.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={`block border border-[var(--line)] bg-[var(--bg-elev)] p-5 relative group transition-colors ${item ? 'hover:border-[var(--gold-deep)]' : ''}`}
-        style={!item ? { pointerEvents: 'none' } : undefined}
+      <button
+        type="button"
+        onClick={handleClick}
+        disabled={!item}
+        className={`block w-full text-left border border-[var(--line)] bg-[var(--bg-elev)] p-5 relative group transition-colors ${item ? 'hover:border-[var(--gold-deep)] cursor-pointer' : ''}`}
       >
         <CornerMarks />
 
@@ -1738,7 +1747,7 @@ function FeaturedFind() {
             </>
           )}
         </div>
-      </a>
+      </button>
     </figure>
   );
 }

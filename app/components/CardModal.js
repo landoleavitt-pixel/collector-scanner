@@ -314,12 +314,17 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
         if (e.target && e.target.closest?.('button, a, [data-no-tilt]')) {
           return;
         }
-        // Skip tilt when hovering directly on the card frame — the
-        // card surface belongs to the magnifier. Tilt fires when the
-        // mouse is anywhere ELSE in the modal (meta panel, dark gutter,
-        // tree, etc.), so users still drive the tilt from the
-        // surrounding area.
+        // When the cursor lands on the card frame itself, settle the
+        // card to neutral — the user is examining it, not gesturing
+        // around it. This also prevents a re-entry inversion bug: if
+        // the user left the modal while tilted and re-entered with
+        // their cursor landing directly on the card frame, holding
+        // the OLD tilt while their cursor was in a new spot looked
+        // like the card was facing the wrong way. Resetting on
+        // card-frame entry makes re-entry always start from neutral
+        // and only re-tilt from real gesture in the gutter.
         if (e.target && e.target.closest?.('[data-card-frame]')) {
+          resetTilt();
           return;
         }
         // Also skip while the magnifier lens is active (extra safety
