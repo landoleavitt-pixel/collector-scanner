@@ -693,6 +693,7 @@ function Home() {
             error={error}
             loading={false}
             onSuggested={(s) => handleQuerySubmit(s)}
+            user={user}
             onChipSearch={(chipQuery, partialFilters) => {
               // Apply the matching filters and run the search immediately. The
               // selected filters remain visible in the Stage 3 results sidebar,
@@ -703,7 +704,7 @@ function Home() {
               handleSearch(chipQuery, merged);
             }}
           />
-          <WhyFields />
+          <WhyFields user={user} />
         </div>
       )}
 
@@ -999,18 +1000,34 @@ function SplashIntro() {
   );
 }
 
-function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSearch }) {
+function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSearch, user }) {
   return (
     <section className="relative border-b border-[var(--line-soft)] overflow-hidden">
-      {/* Above the fold — centered hunt prompt. Calm for returning users;
-          the scroll cue leads first-timers down to the why-section. */}
+      {/* Above the fold — explainer-first hero. Headline names the value
+          ("better way to find rare sports cards"), sub-line spells out the
+          differentiator (multiple print runs at once) and the watchlist
+          win. Search bar sits beneath, anchoring the action. */}
       <div className="min-h-[72vh] flex flex-col justify-center max-w-[820px] mx-auto px-6 lg:px-10 pt-8 pb-14">
         <h1
           className="font-display italic text-center text-[clamp(2.1rem,6vw,3.6rem)] leading-[1.05] tracking-[-0.01em] rise"
           style={{ animationDelay: '120ms' }}
         >
-          Who are you <em className="text-[var(--gold-bright)]">hunting?</em>
+          A better way to find <em className="text-[var(--gold-bright)]">rare sports cards.</em>
         </h1>
+
+        {/* Sub-line — the plain-language explanation. Bolds the actual
+            differentiator (multiple print runs at once) and previews the
+            watchlist value without overpromising paid-only alerts. */}
+        <p
+          className="mt-5 text-center text-[15px] md:text-base leading-relaxed max-w-[580px] mx-auto rise"
+          style={{ color: 'var(--ink-200)', animationDelay: '200ms' }}
+        >
+          Search eBay by{' '}
+          <strong className="font-medium" style={{ color: 'var(--gold-bright)' }}>
+            multiple print runs at once
+          </strong>{' '}
+          — plus autograph, rookie, and condition. Save anything you want to keep an eye on.
+        </p>
 
         {/* Search bar — editorial underline style, centered block */}
         <div className="mt-10 rise" style={{ animationDelay: '280ms' }}>
@@ -1062,21 +1079,25 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
           </div>
         </div>
 
-        {/* Shortcuts for returning users */}
-        <div className="mt-10 flex justify-center gap-8 rise" style={{ animationDelay: '560ms' }}>
-          <Link
-            href="/watchlist"
-            className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
-          >
-            <span className="text-[var(--gold)]">◎</span> My hunts
-          </Link>
-          <Link
-            href="/watchlist-cards"
-            className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
-          >
-            <span className="text-[var(--gold)]">★</span> Watchlist
-          </Link>
-        </div>
+        {/* Returning-user shortcuts only show to logged-in users. For
+            anonymous visitors, the gold-bordered CTA strip below the hero
+            handles the call-to-action instead. */}
+        {user && (
+          <div className="mt-10 flex justify-center gap-8 rise" style={{ animationDelay: '560ms' }}>
+            <Link
+              href="/watchlist"
+              className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
+            >
+              <span className="text-[var(--gold)]">◎</span> My hunts
+            </Link>
+            <Link
+              href="/watchlist-cards"
+              className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
+            >
+              <span className="text-[var(--gold)]">★</span> Watchlist
+            </Link>
+          </div>
+        )}
 
         {/* Scroll cue — leads to the why-section below */}
         <a
@@ -1085,7 +1106,7 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
           style={{ animationDelay: '700ms', textDecoration: 'none' }}
         >
           <span className="text-[9px] uppercase tracking-[0.26em]" style={{ color: 'var(--ink-600)' }}>
-            Why Fields &amp; Floors
+            How it works
           </span>
           <span className="bob text-sm" style={{ color: 'var(--gold)' }}>↓</span>
         </a>
@@ -1136,64 +1157,349 @@ function RotatingPlaceholder() {
 
 /* WhyFields — the "why use this" section on the idle landing. Leads with the
    alert/first-to-market hook, three supporting steps, and a sample alert card. */
-function WhyFields() {
-  const chip =
-    'font-mono text-[10px] tracking-[0.04em] px-2 py-[3px] rounded';
+function WhyFields({ user }) {
   return (
-    <section id="why" className="relative max-w-[1040px] mx-auto px-6 lg:px-10 py-16 lg:py-24 scroll-mt-24">
-      <div className="text-[10px] tracking-[0.22em] uppercase mb-3.5" style={{ color: 'var(--gold)', fontFamily: 'ui-monospace, monospace' }}>
-        Why Fields &amp; Floors
+    <>
+      {/* Free-account CTA strip — sits between hero and how-it-works. Only
+          shown to logged-out visitors; signed-in users already converted. */}
+      {!user && <FreeAccountCTA />}
+
+      <section id="why" className="relative max-w-[1040px] mx-auto px-6 lg:px-10 py-16 lg:py-24 scroll-mt-24">
+        <div className="text-[10px] tracking-[0.22em] uppercase mb-3.5" style={{ color: 'var(--gold)', fontFamily: 'ui-monospace, monospace' }}>
+          How it works
+        </div>
+        <h2 className="font-display italic text-[clamp(2rem,5vw,3.4rem)] leading-[1.05] tracking-[-0.02em] mb-10">
+          Three steps.
+        </h2>
+
+        {/* Three-step grid. Step 3 includes a saved-search example + email
+            preview to make the upgrade pitch tangible — visitors see exactly
+            what they'd be paying for. */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-px items-start" style={{ background: 'var(--line-soft)', border: '0.5px solid var(--line-soft)' }}>
+          {/* Step 01 */}
+          <div className="px-6 py-5" style={{ background: 'var(--bg-base)' }}>
+            <div className="font-mono text-[11px] tracking-[0.2em]" style={{ color: 'var(--gold)', fontFamily: 'ui-monospace, monospace' }}>01</div>
+            <h4 className="font-display italic text-[19px] mt-2 mb-1.5">Set your tier</h4>
+            <p className="text-[13.5px] leading-relaxed" style={{ color: 'var(--ink-400)' }}>
+              Pick the print runs you want — /5, /10, /25, /99 — and stack on autos, rookies, condition.
+            </p>
+          </div>
+          {/* Step 02 */}
+          <div className="px-6 py-5" style={{ background: 'var(--bg-base)' }}>
+            <div className="font-mono text-[11px] tracking-[0.2em]" style={{ color: 'var(--gold)', fontFamily: 'ui-monospace, monospace' }}>02</div>
+            <h4 className="font-display italic text-[19px] mt-2 mb-1.5">Save what catches your eye</h4>
+            <p className="text-[13.5px] leading-relaxed" style={{ color: 'var(--ink-400)' }}>
+              Add listings to your watchlist. We keep price, bid count, and sold status fresh.
+            </p>
+          </div>
+          {/* Step 03 — the upgrade pitch, with saved-search + email mockups */}
+          <div className="px-6 py-5" style={{ background: 'var(--bg-base)' }}>
+            <div className="font-mono text-[11px] tracking-[0.2em]" style={{ color: 'var(--gold)', fontFamily: 'ui-monospace, monospace' }}>03</div>
+            <h4 className="font-display italic text-[19px] mt-2 mb-1.5">Upgrade to be alerted</h4>
+            <p className="text-[13.5px] leading-relaxed mb-4" style={{ color: 'var(--ink-400)' }}>
+              Save your filters as a search — we'll email you the moment a new match lists.
+            </p>
+
+            {/* Saved-search example card */}
+            <SavedSearchExampleCard />
+
+            <div
+              className="font-mono text-[9px] tracking-[0.18em] uppercase text-center my-2"
+              style={{ color: 'var(--ink-500)' }}
+            >
+              ↓ Produces this email
+            </div>
+
+            {/* Email preview — visually matches the production Resend email
+                with the new saved-search filter badges row. */}
+            <EmailPreview />
+          </div>
+        </div>
+      </section>
+
+      {/* Plans — three-tier breakdown with full feature lists in each tier
+          and gold-highlighted items showing what's NEW at each level. */}
+      <PlansSection user={user} />
+    </>
+  );
+}
+
+/* Free-account CTA — sits below the hero, above how-it-works.
+   The pitch is the watchlist value (the real free-account benefit),
+   not alerts. Alerts get pitched honestly in step 3 + the Plans table. */
+function FreeAccountCTA() {
+  return (
+    <section
+      className="px-6 lg:px-10 py-10 text-center"
+      style={{
+        background: 'rgba(201,149,74,0.04)',
+        borderTop: '0.5px solid var(--gold-deep)',
+        borderBottom: '0.5px solid var(--gold-deep)',
+      }}
+    >
+      <div
+        className="font-mono text-[9px] tracking-[0.24em] uppercase mb-2.5"
+        style={{ color: 'var(--gold)', fontFamily: 'ui-monospace, monospace' }}
+      >
+        Free account
       </div>
-      <h2 className="font-display italic text-[clamp(2rem,5vw,3.4rem)] leading-[1.05] tracking-[-0.02em] mb-5">
-        Find it first.
-      </h2>
-      <p className="text-lg leading-relaxed max-w-[600px]" style={{ color: 'var(--ink-200)' }}>
-        Tell Fields &amp; Floors the rarity you're hunting — a print-run range, autos,
-        rookies — and we'll alert you{' '}
-        <em className="not-italic font-display" style={{ color: 'var(--ink-100)', fontStyle: 'italic' }}>
-          the moment a match hits the market.
-        </em>{' '}
-        First to know, first to buy.
+      <h3 className="font-display italic text-[26px] leading-tight mb-2">
+        Track cards you find. <em className="not-italic" style={{ color: 'var(--gold-bright)', fontStyle: 'italic' }}>For free.</em>
+      </h3>
+      <p
+        className="text-[13px] leading-relaxed max-w-[480px] mx-auto mb-5"
+        style={{ color: 'var(--ink-300)' }}
+      >
+        Save listings to your watchlist and we'll keep them updated — live price,
+        bid count, sold status. No credit card.
       </p>
+      <Link
+        href="/signup"
+        className="inline-flex items-center gap-2 px-6 py-3 rounded text-[11px] tracking-[0.16em] uppercase font-semibold"
+        style={{
+          backgroundImage: 'linear-gradient(180deg, #ffd97a 0%, #d99c14 100%)',
+          color: '#1a1612',
+        }}
+      >
+        Create free account →
+      </Link>
+      <div
+        className="mt-3 text-[11px]"
+        style={{ color: 'var(--ink-500)' }}
+      >
+        Search works without an account · upgrade anytime
+      </div>
+    </section>
+  );
+}
 
-      <div className="grid grid-cols-1 md:grid-cols-[1.25fr_1fr] gap-10 items-start mt-12">
-        {/* Three steps */}
-        <div className="grid grid-cols-1 gap-px" style={{ background: 'var(--line-soft)', border: '0.5px solid var(--line-soft)' }}>
-          {[
-            ['01', 'Set your tier', 'Pick a print-run range — say /1 to /99 — and stack on autos, rookies, or grade.'],
-            ['02', 'We watch the market', 'Fields & Floors scans new listings around the clock so you don\u2019t have to refresh.'],
-            ['03', 'You hear first', 'The moment a card in your tier lists, it lands in your inbox — before the crowd finds it.'],
-          ].map(([n, title, body]) => (
-            <div key={n} className="px-6 py-5" style={{ background: 'var(--bg-base)' }}>
-              <div className="font-mono text-[11px] tracking-[0.2em]" style={{ color: 'var(--gold)', fontFamily: 'ui-monospace, monospace' }}>{n}</div>
-              <h4 className="font-display italic text-[19px] mt-2 mb-1.5">{title}</h4>
-              <p className="text-[13.5px] leading-relaxed" style={{ color: 'var(--ink-400)' }}>{body}</p>
-            </div>
-          ))}
+/* Saved-search example card — visual that lives inside step 03. Shows a
+   user's saved search with the same star + name + filter badges as the
+   real watchlist row, so the visitor sees what they'd create. */
+function SavedSearchExampleCard() {
+  const filterChip = 'font-mono text-[9px] tracking-[0.04em] px-1.5 py-[2px] rounded';
+  return (
+    <div
+      className="rounded-lg p-3.5"
+      style={{ background: 'var(--bg-elev-2)', border: '0.5px solid var(--gold-deep)' }}
+    >
+      <div className="flex items-center gap-1.5 mb-2" style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: '13px', color: 'var(--ink-100)' }}>
+        <span style={{ color: 'var(--gold)', fontSize: '11px' }}>★</span>
+        <span>Caitlin Clark</span>
+      </div>
+      <div className="flex flex-wrap gap-1 mb-2.5">
+        <span className={filterChip} style={{ color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#ffd97a,#d99c14)', fontWeight: 700 }}>/5</span>
+        <span className={filterChip} style={{ color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#ffd97a,#d99c14)', fontWeight: 700 }}>/10</span>
+        <span className={filterChip} style={{ color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#ffd97a,#d99c14)', fontWeight: 700 }}>/25</span>
+        <span className={filterChip} style={{ color: 'var(--gold-bright)', background: 'rgba(201,149,74,0.06)', border: '0.5px solid var(--gold-deep)', letterSpacing: '0.14em' }}>Auto</span>
+        <span className={filterChip} style={{ color: 'var(--gold-bright)', background: 'rgba(201,149,74,0.06)', border: '0.5px solid var(--gold-deep)', letterSpacing: '0.14em' }}>RC</span>
+      </div>
+      <div className="h-px -mx-3.5 mb-2.5" style={{ background: 'var(--line)' }} />
+      <div className="flex items-start gap-2">
+        <span className="w-1.5 h-1.5 rounded-full mt-1.5 flex-none" style={{ background: 'var(--gold)', boxShadow: '0 0 6px var(--gold)' }} />
+        <div className="text-[11px] leading-snug" style={{ color: 'var(--ink-200)' }}>
+          <span className="block font-mono text-[8.5px] tracking-[0.18em] uppercase mb-0.5" style={{ color: 'var(--gold)' }}>
+            New match · just listed
+          </span>
+          2024 Bowman Chrome Auto Gold Refractor /25
         </div>
+      </div>
+    </div>
+  );
+}
 
-        {/* Sample alert card */}
-        <div className="rounded-[14px] overflow-hidden max-w-[380px]" style={{ background: 'var(--bg-elev)', border: '0.5px solid var(--line)' }}>
-          <div className="flex items-center gap-2.5 px-[18px] py-3.5" style={{ borderBottom: '0.5px solid var(--line-soft)' }}>
-            <span className="w-[7px] h-[7px] rounded-full" style={{ background: 'var(--gold)', boxShadow: '0 0 8px var(--gold)' }} />
-            <span className="font-mono text-[10px] tracking-[0.16em] uppercase" style={{ color: 'var(--ink-400)', fontFamily: 'ui-monospace, monospace' }}>
-              New match · F&amp;F alert
+/* Email preview — matches the production Resend email visually. Critically,
+   includes the new "filter badges" row beneath the search name, which is a
+   pending feature add on the live email template (see renderSearchSection
+   in the poller). The mockup here represents the end-state design. */
+function EmailPreview() {
+  const filterChip = 'font-mono text-[9px] tracking-[0.04em] px-1.5 py-[2px] rounded';
+  return (
+    <div
+      className="rounded-lg p-3.5"
+      style={{ background: '#0f0c0a', border: '0.5px solid var(--line)' }}
+    >
+      {/* Email brand header */}
+      <div className="text-center" style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: '17px', color: '#d4af5c' }}>
+        Fields <em className="not-italic" style={{ color: '#d4af5c' }}>&amp;</em> Floors
+      </div>
+      <div className="text-center mt-1 font-mono uppercase" style={{ fontSize: '8.5px', letterSpacing: '0.22em', color: '#6e675b' }}>
+        New on the hunt
+      </div>
+      <div className="h-px my-4" style={{ background: 'rgba(232,226,213,0.10)' }} />
+
+      {/* Saved-search name + the new filter badges row */}
+      <div style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: '15px', color: '#e8e2d5' }}>
+        ★ Caitlin Clark
+      </div>
+      <div className="flex flex-wrap gap-1 mt-2">
+        <span className={filterChip} style={{ color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#ffd97a,#d99c14)', fontWeight: 700 }}>/5</span>
+        <span className={filterChip} style={{ color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#ffd97a,#d99c14)', fontWeight: 700 }}>/10</span>
+        <span className={filterChip} style={{ color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#ffd97a,#d99c14)', fontWeight: 700 }}>/25</span>
+        <span className={filterChip} style={{ color: 'var(--gold-bright)', background: 'rgba(201,149,74,0.06)', border: '0.5px solid var(--gold-deep)', letterSpacing: '0.14em' }}>Auto</span>
+        <span className={filterChip} style={{ color: 'var(--gold-bright)', background: 'rgba(201,149,74,0.06)', border: '0.5px solid var(--gold-deep)', letterSpacing: '0.14em' }}>RC</span>
+      </div>
+      <div className="mt-2 font-mono uppercase" style={{ fontSize: '9px', letterSpacing: '0.18em', color: '#8a8275' }}>
+        1 new match
+      </div>
+      <div className="h-px my-3" style={{ background: 'rgba(232,226,213,0.10)' }} />
+
+      {/* A single matched listing — visually matches the live email row */}
+      <div
+        className="flex gap-2.5 p-3"
+        style={{
+          background: '#1a1614',
+          backgroundImage: 'linear-gradient(90deg, rgba(255,180,30,0.18) 0%, rgba(245,200,80,0.05) 30%, transparent 60%)',
+          borderLeft: '2px solid #ffc14d',
+        }}
+      >
+        <div
+          className="w-14 h-[74px] rounded flex items-center justify-center flex-none"
+          style={{
+            background: 'radial-gradient(ellipse at 30% 30%, rgba(255,217,122,0.22) 0%, transparent 60%), linear-gradient(140deg, #3a2e1f 0%, #1a1310 100%)',
+            color: 'var(--gold-deep)', fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: '22px',
+          }}
+        >
+          ◇
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-wrap gap-1 mb-1.5">
+            <span className={filterChip} style={{ color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#ffd97a,#d99c14)', fontWeight: 700 }}>/25</span>
+            <span className={filterChip} style={{ color: 'var(--gold-bright)', background: 'rgba(201,149,74,0.06)', border: '0.5px solid var(--gold-deep)', letterSpacing: '0.14em' }}>Auto</span>
+            <span className={filterChip} style={{ color: 'var(--gold-bright)', background: 'rgba(201,149,74,0.06)', border: '0.5px solid var(--gold-deep)', letterSpacing: '0.14em' }}>RC</span>
+          </div>
+          <div className="text-[11px] leading-snug" style={{ color: '#e8e2d5' }}>
+            2024 Bowman Chrome Auto Gold Refractor /25
+          </div>
+          <div className="mt-1" style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: '14px', color: '#ffd97a' }}>
+            $1,840
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* PlansSection — three columns showing Anonymous / Free / Base.
+   Each tier lists its FULL feature set rather than referring back to
+   the previous one. Items NEW at that tier are highlighted in gold
+   so the upgrade value scans at a glance. */
+function PlansSection({ user }) {
+  // Single feature-list component for consistency across all three tiers
+  const Tier = ({ name, price, priceUnit, line, features, ctaLabel, ctaHref, highlight }) => (
+    <div
+      className="rounded-[10px] p-6 flex flex-col"
+      style={{
+        background: highlight
+          ? 'linear-gradient(180deg, rgba(201,149,74,0.06) 0%, var(--bg-elev) 100%)'
+          : 'var(--bg-elev)',
+        border: highlight ? '0.5px solid var(--gold-deep)' : '0.5px solid var(--line)',
+      }}
+    >
+      <div
+        className="font-mono uppercase tracking-[0.22em] text-[10px] mb-2"
+        style={{ color: highlight ? 'var(--gold)' : 'var(--ink-400)' }}
+      >
+        {name}
+      </div>
+      <div
+        className="font-display italic leading-none mb-1"
+        style={{ fontSize: '28px', color: 'var(--ink-100)' }}
+      >
+        {price}{priceUnit && <small className="not-italic ml-1" style={{ fontFamily: 'ui-sans-serif', fontSize: '13px', color: 'var(--ink-400)' }}>{priceUnit}</small>}
+      </div>
+      <div className="text-[11.5px] mb-4 min-h-[16px]" style={{ color: 'var(--ink-400)' }}>{line}</div>
+      <ul className="list-none p-0 m-0 mb-5 flex-1">
+        {features.map((f) => (
+          <li
+            key={f.label}
+            className="text-[13px] leading-snug pl-4 relative mb-2"
+            style={{ color: f.isNew ? 'var(--gold-bright)' : 'var(--ink-300)', fontWeight: f.isNew ? 500 : 400 }}
+          >
+            <span
+              className="absolute left-0 top-0.5 text-[11px]"
+              style={{ color: f.isNew ? 'var(--gold)' : 'var(--ink-500)', fontWeight: f.isNew ? 700 : 400 }}
+            >
+              ✓
             </span>
-          </div>
-          <div className="px-[18px] py-4">
-            <div className="flex flex-wrap gap-1.5 mb-2.5">
-              <span className={chip} style={{ color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#ffd97a,#d99c14)', fontWeight: 700, fontFamily: 'ui-monospace, monospace' }}>/25</span>
-              <span className={chip} style={{ color: 'var(--gold-bright)', background: 'rgba(201,149,74,0.06)', border: '0.5px solid var(--gold-deep)', fontFamily: 'ui-monospace, monospace' }}>Auto</span>
-              <span className={chip} style={{ color: 'var(--gold-bright)', background: 'rgba(201,149,74,0.06)', border: '0.5px solid var(--gold-deep)', fontFamily: 'ui-monospace, monospace' }}>RC</span>
-            </div>
-            <div className="text-[13.5px] leading-snug" style={{ color: 'var(--ink-100)' }}>
-              2025 Bowman Chrome Prospect Auto Gold Refractor /25
-            </div>
-            <div className="text-[12px] italic mt-2" style={{ color: 'var(--ink-400)' }}>
-              Just listed — you're the first to know.
-            </div>
-          </div>
+            {f.label}
+          </li>
+        ))}
+      </ul>
+      <Link
+        href={ctaHref}
+        className="inline-flex items-center justify-center px-4 py-2.5 rounded font-sans text-[10.5px] tracking-[0.16em] uppercase no-underline"
+        style={highlight
+          ? { backgroundImage: 'linear-gradient(180deg, #ffd97a 0%, #d99c14 100%)', color: '#1a1612', fontWeight: 600 }
+          : { background: 'transparent', color: 'var(--ink-200)', border: '0.5px solid var(--ink-600)' }
+        }
+      >
+        {ctaLabel}
+      </Link>
+    </div>
+  );
+
+  return (
+    <section className="max-w-[980px] mx-auto px-6 lg:px-10 pb-16">
+      <div className="text-center">
+        <div
+          className="font-mono uppercase tracking-[0.22em] text-[10px] mb-3"
+          style={{ color: 'var(--gold)' }}
+        >
+          Plans
         </div>
+        <h3 className="font-display italic text-[clamp(1.8rem,4vw,2rem)] leading-tight mb-9">
+          What you get.
+        </h3>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+        <Tier
+          name="Anonymous"
+          price="$0"
+          line="No account"
+          features={[
+            { label: 'Unlimited search', isNew: true },
+            { label: 'Improved search filters', isNew: true },
+          ]}
+          ctaLabel="Start hunting"
+          ctaHref="/"
+          highlight={false}
+        />
+        <Tier
+          name="Free account"
+          price="$0"
+          line="No credit card"
+          features={[
+            { label: 'Unlimited search', isNew: false },
+            { label: 'Improved search filters', isNew: false },
+            { label: 'Watchlist of saved cards', isNew: true },
+            { label: 'Live price & sold status', isNew: true },
+            { label: 'Saved listings across devices', isNew: true },
+          ]}
+          ctaLabel={user ? 'You\u2019re signed in' : 'Create free account'}
+          ctaHref={user ? '/watchlist-cards' : '/signup'}
+          highlight={true}
+        />
+        <Tier
+          name="Base"
+          price="$5"
+          priceUnit="/mo"
+          line="14-day trial · card required"
+          features={[
+            { label: 'Unlimited search', isNew: false },
+            { label: 'Improved search filters', isNew: false },
+            { label: 'Watchlist of saved cards', isNew: false },
+            { label: 'Live price & sold status', isNew: false },
+            { label: 'Saved listings across devices', isNew: false },
+            { label: '5 saved searches', isNew: true },
+            { label: 'Email alerts on new listings', isNew: true },
+            { label: 'Bid reminders below price cap', isNew: true },
+          ]}
+          ctaLabel="Start 14-day trial"
+          ctaHref="/subscribe"
+          highlight={false}
+        />
       </div>
     </section>
   );
