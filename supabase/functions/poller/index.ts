@@ -687,27 +687,50 @@ function renderSearchSection(search: SavedSearch, listings: Listing[]): string {
    email so the recipient remembers WHY this alert fired ("oh right, /5-/25
    Caitlin Clark autos") without having to open the watchlist.
    This is distinct from renderListingCard's chips, which describe what the
-   matched listing itself contains. */
+   matched listing itself contains.
+   Print-run chips use the same four-tier color system as the watchlist tile
+   and the homepage example — gold for /1–25, silver for /26–99, copper for
+   /100–249, gray for /250+. Outline-gold for non-numeric toggles. */
 function renderFilterBadges(filters: Record<string, unknown>): string {
   const chips: string[] = [];
 
-  // Solid gold tier-style chip — matches the badge style on the watchlist
-  // saved-search row and the homepage example card.
-  const solidStyle =
-    "display:inline-block;padding:3px 7px;margin-right:3px;font-family:ui-monospace,monospace;font-size:9px;letter-spacing:0.04em;color:#1a1612;background-image:linear-gradient(180deg,#ffd97a,#d99c14);border-radius:3px;font-weight:700;";
-  // Gold-outline chip for non-numeric filter toggles (Auto, RC, etc.)
+  // Tier-coloured solid chip styles — must mirror tierChipStyle() in
+  // app/components/rarityUtils.js so the email and the website stay
+  // visually consistent.
+  const tierStyles: Record<string, string> = {
+    grail:
+      "display:inline-block;padding:3px 7px;margin-right:3px;font-family:ui-monospace,monospace;font-size:9px;color:#1a1612;background-image:linear-gradient(180deg,#ffd97a,#d99c14);border:0.5px solid #ffc14d;border-radius:3px;font-weight:700;",
+    ultra:
+      "display:inline-block;padding:3px 7px;margin-right:3px;font-family:ui-monospace,monospace;font-size:9px;color:#1a1612;background-image:linear-gradient(180deg,#e0e8f0,#98a5b3);border:0.5px solid #c8d4e0;border-radius:3px;font-weight:700;",
+    rare:
+      "display:inline-block;padding:3px 7px;margin-right:3px;font-family:ui-monospace,monospace;font-size:9px;color:#1a1612;background-image:linear-gradient(180deg,#d6884a,#8e4f1f);border:0.5px solid #d6722d;border-radius:3px;font-weight:700;",
+    scarce:
+      "display:inline-block;padding:3px 7px;margin-right:3px;font-family:ui-monospace,monospace;font-size:9px;color:#1a1612;background-image:linear-gradient(180deg,#8a96a4,#4a5360);border:0.5px solid #5a6470;border-radius:3px;font-weight:600;",
+  };
+  // Outline chip for boolean toggles (Auto, RC, Condition, Listing-type)
   const outlineStyle =
     "display:inline-block;padding:3px 7px;margin-right:3px;font-family:ui-monospace,monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:#ffd97a;background:rgba(201,149,74,0.06);border:0.5px solid #8a7548;border-radius:3px;";
 
-  // Print runs — combine selectedPrintRuns + customPrintRuns, dedupe, sort by rarity
+  // Map a /N print run to its rarity tier (mirrors tierForRun in rarityUtils)
+  function tierForRun(run: string): string {
+    const n = Number(run.replace(/^\//, ""));
+    if (!Number.isFinite(n) || n < 1) return "grail";
+    if (n <= 25) return "grail";
+    if (n <= 99) return "ultra";
+    if (n <= 249) return "rare";
+    return "scarce";
+  }
+
+  // Print runs — combine selectedPrintRuns + customPrintRuns, dedupe, sort
+  // by rarity (smaller number first). Each chip gets its tier-specific style.
   const selected = Array.isArray(filters.selectedPrintRuns) ? filters.selectedPrintRuns as string[] : [];
   const custom = Array.isArray(filters.customPrintRuns) ? filters.customPrintRuns as string[] : [];
   const allRuns = [...new Set([...selected, ...custom])]
     .filter((r) => typeof r === "string" && /^\/\d{1,5}$/.test(r))
-    // Sort numerically by the part after the slash so /5 comes before /99
     .sort((a, b) => Number(a.slice(1)) - Number(b.slice(1)));
   for (const run of allRuns) {
-    chips.push(`<span style="${solidStyle}">${escapeHtml(run)}</span>`);
+    const style = tierStyles[tierForRun(run)] || tierStyles.grail;
+    chips.push(`<span style="${style}">${escapeHtml(run)}</span>`);
   }
 
   // Boolean filter toggles

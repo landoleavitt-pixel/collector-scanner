@@ -15,6 +15,7 @@ import { ArrowRight, ArrowUpRight, ArrowUp } from 'lucide-react';
 import SaveSearchModal from './components/SaveSearchModal';
 import BidCountdown from './components/BidCountdown';
 import CardModal from './components/CardModal';
+import { tierForRun, tierChipStyle, OUTLINE_CHIP_STYLE } from './components/rarityUtils';
 import { WatchlistContext, WatchlistProvider } from '../lib/watchlistContext';
 import { useUser } from '../lib/useUser';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -1155,8 +1156,12 @@ function RotatingPlaceholder() {
   );
 }
 
-/* WhyFields — the "why use this" section on the idle landing. Leads with the
-   alert/first-to-market hook, three supporting steps, and a sample alert card. */
+/* WhyFields — Direction C layout.
+   Three equal-height columns, each carrying its own mini-artifact so no
+   column has dead space. Step 1 shows the multi-tier filter picker
+   (demonstrates the rarity color system). Step 2 shows two watchlist
+   rows (active + sold). Step 3 shows the saved-search card. The email
+   preview gets its own dedicated section below for full readable width. */
 function WhyFields({ user }) {
   return (
     <>
@@ -1172,48 +1177,69 @@ function WhyFields({ user }) {
           Three steps.
         </h2>
 
-        {/* Three-step grid. Step 3 includes a saved-search example + email
-            preview to make the upgrade pitch tangible — visitors see exactly
-            what they'd be paying for. */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-px items-start" style={{ background: 'var(--line-soft)', border: '0.5px solid var(--line-soft)' }}>
-          {/* Step 01 */}
-          <div className="px-6 py-5" style={{ background: 'var(--bg-base)' }}>
-            <div className="font-mono text-[11px] tracking-[0.2em]" style={{ color: 'var(--gold)', fontFamily: 'ui-monospace, monospace' }}>01</div>
+        {/* Three balanced columns — each gets an artifact so heights match */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 mb-12">
+          {/* Step 01 — multi-tier filter picker */}
+          <div
+            className="rounded-[10px] p-6 flex flex-col"
+            style={{ background: 'var(--bg-elev)', border: '0.5px solid var(--line-soft)' }}
+          >
+            <div className="font-mono text-[11px] tracking-[0.2em]" style={{ color: 'var(--gold)' }}>01</div>
             <h4 className="font-display italic text-[19px] mt-2 mb-1.5">Set your tier</h4>
-            <p className="text-[13.5px] leading-relaxed" style={{ color: 'var(--ink-400)' }}>
-              Pick the print runs you want — /5, /10, /25, /99 — and stack on autos, rookies, condition.
+            <p className="text-[13px] leading-relaxed" style={{ color: 'var(--ink-400)' }}>
+              Pick the print runs you want and stack on autos, rookies, condition.
             </p>
+            <FilterPickerArtifact />
           </div>
-          {/* Step 02 */}
-          <div className="px-6 py-5" style={{ background: 'var(--bg-base)' }}>
-            <div className="font-mono text-[11px] tracking-[0.2em]" style={{ color: 'var(--gold)', fontFamily: 'ui-monospace, monospace' }}>02</div>
+
+          {/* Step 02 — watchlist rows */}
+          <div
+            className="rounded-[10px] p-6 flex flex-col"
+            style={{ background: 'var(--bg-elev)', border: '0.5px solid var(--line-soft)' }}
+          >
+            <div className="font-mono text-[11px] tracking-[0.2em]" style={{ color: 'var(--gold)' }}>02</div>
             <h4 className="font-display italic text-[19px] mt-2 mb-1.5">Save what catches your eye</h4>
-            <p className="text-[13.5px] leading-relaxed" style={{ color: 'var(--ink-400)' }}>
-              Add listings to your watchlist. We keep price, bid count, and sold status fresh.
+            <p className="text-[13px] leading-relaxed" style={{ color: 'var(--ink-400)' }}>
+              Add listings to your watchlist. We keep price and status fresh.
             </p>
+            <WatchlistArtifact />
           </div>
-          {/* Step 03 — the upgrade pitch, with saved-search + email mockups */}
-          <div className="px-6 py-5" style={{ background: 'var(--bg-base)' }}>
-            <div className="font-mono text-[11px] tracking-[0.2em]" style={{ color: 'var(--gold)', fontFamily: 'ui-monospace, monospace' }}>03</div>
+
+          {/* Step 03 — saved-search card */}
+          <div
+            className="rounded-[10px] p-6 flex flex-col"
+            style={{ background: 'var(--bg-elev)', border: '0.5px solid var(--line-soft)' }}
+          >
+            <div className="font-mono text-[11px] tracking-[0.2em]" style={{ color: 'var(--gold)' }}>03</div>
             <h4 className="font-display italic text-[19px] mt-2 mb-1.5">Upgrade to be alerted</h4>
-            <p className="text-[13.5px] leading-relaxed mb-4" style={{ color: 'var(--ink-400)' }}>
-              Save your filters as a search — we'll email you the moment a new match lists.
+            <p className="text-[13px] leading-relaxed" style={{ color: 'var(--ink-400)' }}>
+              Save your filters — we'll email you when a match lists.
             </p>
-
-            {/* Saved-search example card */}
-            <SavedSearchExampleCard />
-
-            <div
-              className="font-mono text-[9px] tracking-[0.18em] uppercase text-center my-2"
-              style={{ color: 'var(--ink-500)' }}
-            >
-              ↓ Produces this email
+            <div className="mt-4 flex-1">
+              <SavedSearchExampleCard />
             </div>
-
-            {/* Email preview — visually matches the production Resend email
-                with the new saved-search filter badges row. */}
-            <EmailPreview />
           </div>
+        </div>
+
+        {/* Email preview as its own dedicated section below — gives the
+            email full readable width instead of squeezing it into a column */}
+        <div
+          className="pt-12 mt-4 max-w-[560px] mx-auto"
+          style={{ borderTop: '0.5px solid var(--line)' }}
+        >
+          <h3
+            className="text-center font-display italic text-[24px] mb-2"
+            style={{ fontWeight: 400 }}
+          >
+            Here's the email you'd get.
+          </h3>
+          <p
+            className="text-center text-[12.5px] mb-7"
+            style={{ color: 'var(--ink-400)' }}
+          >
+            Filter badges in the email show which saved-search filters triggered the alert.
+          </p>
+          <EmailPreview />
         </div>
       </section>
 
@@ -1221,6 +1247,107 @@ function WhyFields({ user }) {
           and gold-highlighted items showing what's NEW at each level. */}
       <PlansSection user={user} />
     </>
+  );
+}
+
+/* Step 1 artifact — the multi-tier filter picker. Demonstrates that
+   different print runs map to different rarity tiers (gold/silver/copper/gray).
+   Visitors learn the color system at a glance. */
+function FilterPickerArtifact() {
+  const chipBase = 'font-mono text-[9px] px-1.5 py-[2px] rounded';
+  return (
+    <div
+      className="mt-4 rounded-lg p-3.5 flex-1"
+      style={{ background: 'var(--bg-elev-2)', border: '0.5px solid var(--line-soft)' }}
+    >
+      <div
+        className="font-mono text-[8.5px] tracking-[0.18em] uppercase mb-2"
+        style={{ color: 'var(--ink-500)' }}
+      >
+        Print runs
+      </div>
+      <div className="flex flex-wrap gap-1 mb-3">
+        <TierChip run="/5" />
+        <TierChip run="/10" />
+        <TierChip run="/25" />
+        <TierChip run="/50" />
+        <TierChip run="/99" />
+        <TierChip run="/199" />
+        <TierChip run="/499" />
+      </div>
+      <div
+        className="font-mono text-[8.5px] tracking-[0.18em] uppercase mb-2"
+        style={{ color: 'var(--ink-500)' }}
+      >
+        Toggles
+      </div>
+      <div className="flex flex-wrap gap-1">
+        <span className={chipBase} style={{ ...OUTLINE_CHIP_STYLE, letterSpacing: '0.14em' }}>Auto</span>
+        <span className={chipBase} style={{ ...OUTLINE_CHIP_STYLE, letterSpacing: '0.14em' }}>RC</span>
+        <span className={chipBase} style={{ ...OUTLINE_CHIP_STYLE, letterSpacing: '0.14em' }}>Graded</span>
+      </div>
+    </div>
+  );
+}
+
+/* Step 2 artifact — two watchlist rows showing different rarity tiers.
+   First row is an active /25 (grail); second is a sold /99 (ultra). Shows
+   the watchlist auto-refreshes status. */
+function WatchlistArtifact() {
+  const cardImg = {
+    width: 44, height: 56, borderRadius: 4, flex: 'none',
+    background: 'radial-gradient(ellipse at 30% 30%, rgba(255,217,122,0.18) 0%, transparent 60%), linear-gradient(140deg, #3a2e1f 0%, #1a1310 100%)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    color: 'var(--gold-deep)', fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: 18,
+  };
+  const Row = ({ tierRun, toggle, title, meta }) => (
+    <div
+      className="rounded-lg p-2.5 flex gap-2.5 items-center"
+      style={{ background: 'var(--bg-elev-2)', border: '0.5px solid var(--line-soft)' }}
+    >
+      <div style={cardImg}>◇</div>
+      <div className="flex-1 min-w-0">
+        <div className="flex gap-1 mb-1">
+          <TierChip run={tierRun} />
+          {toggle && (
+            <span
+              className="font-mono text-[9px] px-1.5 py-[2px] rounded"
+              style={{ ...OUTLINE_CHIP_STYLE, letterSpacing: '0.14em' }}
+            >
+              {toggle}
+            </span>
+          )}
+        </div>
+        <div className="text-[11px] leading-snug mb-1" style={{ color: 'var(--ink-200)' }}>{title}</div>
+        <div
+          className="font-mono text-[8.5px] tracking-[0.14em] uppercase"
+          style={{ color: 'var(--gold)' }}
+        >
+          {meta}
+        </div>
+      </div>
+    </div>
+  );
+  return (
+    <div className="mt-4 flex flex-col gap-2.5 flex-1">
+      <Row tierRun="/25" toggle="Auto" title="2024 Bowman Chrome Auto Gold Refractor" meta="$1,840 · 3 bids · 2d left" />
+      <Row tierRun="/99" toggle="RC" title="2025 Topps Chrome Refractor — Skenes" meta="$120 · sold · yesterday" />
+    </div>
+  );
+}
+
+/* Reusable tier-coloured chip. Always single source of truth for print-run
+   colors via tierForRun + tierChipStyle from rarityUtils. */
+function TierChip({ run }) {
+  const tier = tierForRun(run);
+  if (!tier) return null;
+  return (
+    <span
+      className="font-mono text-[9px] px-1.5 py-[2px] rounded"
+      style={tierChipStyle(tier)}
+    >
+      {run.startsWith('/') ? run : `/${run}`}
+    </span>
   );
 }
 
@@ -1275,9 +1402,10 @@ function FreeAccountCTA() {
 
 /* Saved-search example card — visual that lives inside step 03. Shows a
    user's saved search with the same star + name + filter badges as the
-   real watchlist row, so the visitor sees what they'd create. */
+   real watchlist row, so the visitor sees what they'd create. Uses the
+   shared TierChip helper so badge colors stay consistent with production. */
 function SavedSearchExampleCard() {
-  const filterChip = 'font-mono text-[9px] tracking-[0.04em] px-1.5 py-[2px] rounded';
+  const toggleChip = 'font-mono text-[9px] px-1.5 py-[2px] rounded';
   return (
     <div
       className="rounded-lg p-3.5"
@@ -1288,11 +1416,11 @@ function SavedSearchExampleCard() {
         <span>Caitlin Clark</span>
       </div>
       <div className="flex flex-wrap gap-1 mb-2.5">
-        <span className={filterChip} style={{ color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#ffd97a,#d99c14)', fontWeight: 700 }}>/5</span>
-        <span className={filterChip} style={{ color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#ffd97a,#d99c14)', fontWeight: 700 }}>/10</span>
-        <span className={filterChip} style={{ color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#ffd97a,#d99c14)', fontWeight: 700 }}>/25</span>
-        <span className={filterChip} style={{ color: 'var(--gold-bright)', background: 'rgba(201,149,74,0.06)', border: '0.5px solid var(--gold-deep)', letterSpacing: '0.14em' }}>Auto</span>
-        <span className={filterChip} style={{ color: 'var(--gold-bright)', background: 'rgba(201,149,74,0.06)', border: '0.5px solid var(--gold-deep)', letterSpacing: '0.14em' }}>RC</span>
+        <TierChip run="/5" />
+        <TierChip run="/10" />
+        <TierChip run="/25" />
+        <span className={toggleChip} style={{ ...OUTLINE_CHIP_STYLE, letterSpacing: '0.14em' }}>Auto</span>
+        <span className={toggleChip} style={{ ...OUTLINE_CHIP_STYLE, letterSpacing: '0.14em' }}>RC</span>
       </div>
       <div className="h-px -mx-3.5 mb-2.5" style={{ background: 'var(--line)' }} />
       <div className="flex items-start gap-2">
@@ -1309,11 +1437,12 @@ function SavedSearchExampleCard() {
 }
 
 /* Email preview — matches the production Resend email visually. Critically,
-   includes the new "filter badges" row beneath the search name, which is a
-   pending feature add on the live email template (see renderSearchSection
-   in the poller). The mockup here represents the end-state design. */
+   includes the new "filter badges" row beneath the search name, matching the
+   live email template's renderFilterBadges helper.
+   Uses the shared TierChip + OUTLINE_CHIP_STYLE so this preview's colors stay
+   in lockstep with both the watchlist tile and the production email. */
 function EmailPreview() {
-  const filterChip = 'font-mono text-[9px] tracking-[0.04em] px-1.5 py-[2px] rounded';
+  const toggleChip = 'font-mono text-[9px] px-1.5 py-[2px] rounded';
   return (
     <div
       className="rounded-lg p-3.5"
@@ -1328,16 +1457,16 @@ function EmailPreview() {
       </div>
       <div className="h-px my-4" style={{ background: 'rgba(232,226,213,0.10)' }} />
 
-      {/* Saved-search name + the new filter badges row */}
+      {/* Saved-search name + filter badges row matching the production email */}
       <div style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: '15px', color: '#e8e2d5' }}>
         ★ Caitlin Clark
       </div>
       <div className="flex flex-wrap gap-1 mt-2">
-        <span className={filterChip} style={{ color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#ffd97a,#d99c14)', fontWeight: 700 }}>/5</span>
-        <span className={filterChip} style={{ color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#ffd97a,#d99c14)', fontWeight: 700 }}>/10</span>
-        <span className={filterChip} style={{ color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#ffd97a,#d99c14)', fontWeight: 700 }}>/25</span>
-        <span className={filterChip} style={{ color: 'var(--gold-bright)', background: 'rgba(201,149,74,0.06)', border: '0.5px solid var(--gold-deep)', letterSpacing: '0.14em' }}>Auto</span>
-        <span className={filterChip} style={{ color: 'var(--gold-bright)', background: 'rgba(201,149,74,0.06)', border: '0.5px solid var(--gold-deep)', letterSpacing: '0.14em' }}>RC</span>
+        <TierChip run="/5" />
+        <TierChip run="/10" />
+        <TierChip run="/25" />
+        <span className={toggleChip} style={{ ...OUTLINE_CHIP_STYLE, letterSpacing: '0.14em' }}>Auto</span>
+        <span className={toggleChip} style={{ ...OUTLINE_CHIP_STYLE, letterSpacing: '0.14em' }}>RC</span>
       </div>
       <div className="mt-2 font-mono uppercase" style={{ fontSize: '9px', letterSpacing: '0.18em', color: '#8a8275' }}>
         1 new match
@@ -1364,9 +1493,9 @@ function EmailPreview() {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap gap-1 mb-1.5">
-            <span className={filterChip} style={{ color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#ffd97a,#d99c14)', fontWeight: 700 }}>/25</span>
-            <span className={filterChip} style={{ color: 'var(--gold-bright)', background: 'rgba(201,149,74,0.06)', border: '0.5px solid var(--gold-deep)', letterSpacing: '0.14em' }}>Auto</span>
-            <span className={filterChip} style={{ color: 'var(--gold-bright)', background: 'rgba(201,149,74,0.06)', border: '0.5px solid var(--gold-deep)', letterSpacing: '0.14em' }}>RC</span>
+            <TierChip run="/25" />
+            <span className={toggleChip} style={{ ...OUTLINE_CHIP_STYLE, letterSpacing: '0.14em' }}>Auto</span>
+            <span className={toggleChip} style={{ ...OUTLINE_CHIP_STYLE, letterSpacing: '0.14em' }}>RC</span>
           </div>
           <div className="text-[11px] leading-snug" style={{ color: '#e8e2d5' }}>
             2024 Bowman Chrome Auto Gold Refractor /25
