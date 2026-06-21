@@ -667,17 +667,64 @@ function buildEmailHtml(digest: UserDigest): string {
 }
 
 function renderSearchSection(search: SavedSearch, listings: Listing[]): string {
+  const filterBadges = renderFilterBadges(search.filters);
   return `
     <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin-bottom:28px;">
       <tr><td style="padding-bottom:14px;border-bottom:0.5px solid rgba(232,226,213,0.1);">
         <div style="font-family:Georgia,serif;font-style:italic;font-size:20px;color:#e8e2d5;">${escapeHtml(search.name)}</div>
-        <div style="font-size:11px;color:#8a8275;letter-spacing:0.08em;text-transform:uppercase;margin-top:4px;">
+        ${filterBadges ? `<div style="margin-top:8px;">${filterBadges}</div>` : ""}
+        <div style="font-size:11px;color:#8a8275;letter-spacing:0.08em;text-transform:uppercase;margin-top:8px;">
           ${listings.length} new ${listings.length === 1 ? "match" : "matches"}
         </div>
       </td></tr>
       ${listings.map(renderListingCard).join("")}
     </table>
   `;
+}
+
+/* Render the saved-search's own filter chips — the ones the USER picked
+   when saving the search. These appear right under the search name in the
+   email so the recipient remembers WHY this alert fired ("oh right, /5-/25
+   Caitlin Clark autos") without having to open the watchlist.
+   This is distinct from renderListingCard's chips, which describe what the
+   matched listing itself contains. */
+function renderFilterBadges(filters: Record<string, unknown>): string {
+  const chips: string[] = [];
+
+  // Solid gold tier-style chip — matches the badge style on the watchlist
+  // saved-search row and the homepage example card.
+  const solidStyle =
+    "display:inline-block;padding:3px 7px;margin-right:3px;font-family:ui-monospace,monospace;font-size:9px;letter-spacing:0.04em;color:#1a1612;background-image:linear-gradient(180deg,#ffd97a,#d99c14);border-radius:3px;font-weight:700;";
+  // Gold-outline chip for non-numeric filter toggles (Auto, RC, etc.)
+  const outlineStyle =
+    "display:inline-block;padding:3px 7px;margin-right:3px;font-family:ui-monospace,monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:#ffd97a;background:rgba(201,149,74,0.06);border:0.5px solid #8a7548;border-radius:3px;";
+
+  // Print runs — combine selectedPrintRuns + customPrintRuns, dedupe, sort by rarity
+  const selected = Array.isArray(filters.selectedPrintRuns) ? filters.selectedPrintRuns as string[] : [];
+  const custom = Array.isArray(filters.customPrintRuns) ? filters.customPrintRuns as string[] : [];
+  const allRuns = [...new Set([...selected, ...custom])]
+    .filter((r) => typeof r === "string" && /^\/\d{1,5}$/.test(r))
+    // Sort numerically by the part after the slash so /5 comes before /99
+    .sort((a, b) => Number(a.slice(1)) - Number(b.slice(1)));
+  for (const run of allRuns) {
+    chips.push(`<span style="${solidStyle}">${escapeHtml(run)}</span>`);
+  }
+
+  // Boolean filter toggles
+  if (filters.autoCards) chips.push(`<span style="${outlineStyle}">Auto</span>`);
+  if (filters.rookieCards) chips.push(`<span style="${outlineStyle}">RC</span>`);
+
+  // Condition filter — only show if user actively picked something specific
+  if (typeof filters.condition === "string" && filters.condition !== "any" && filters.condition.length > 0) {
+    const label = filters.condition.charAt(0).toUpperCase() + filters.condition.slice(1);
+    chips.push(`<span style="${outlineStyle}">${escapeHtml(label)}</span>`);
+  }
+
+  // Listing type — only show non-default
+  if (filters.listingType === "auction") chips.push(`<span style="${outlineStyle}">Auctions</span>`);
+  else if (filters.listingType === "fixed") chips.push(`<span style="${outlineStyle}">Buy It Now</span>`);
+
+  return chips.join("");
 }
 
 function renderListingCard(l: Listing): string {

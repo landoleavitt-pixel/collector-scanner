@@ -1485,7 +1485,7 @@ function PlansSection({ user }) {
           name="Base"
           price="$5"
           priceUnit="/mo"
-          line="14-day trial · card required"
+          line="Launching soon · join the waitlist"
           features={[
             { label: 'Unlimited search', isNew: false },
             { label: 'Improved search filters', isNew: false },
@@ -1496,8 +1496,8 @@ function PlansSection({ user }) {
             { label: 'Email alerts on new listings', isNew: true },
             { label: 'Bid reminders below price cap', isNew: true },
           ]}
-          ctaLabel="Start 14-day trial"
-          ctaHref="/subscribe"
+          ctaLabel="Notify me when available"
+          ctaHref="/alerts"
           highlight={false}
         />
       </div>
