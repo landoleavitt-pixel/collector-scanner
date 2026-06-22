@@ -263,17 +263,14 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
     const dx = (clientX - cx) / (window.innerWidth  / 2);
     const dy = (clientY - cy) / (window.innerHeight / 2);
     const clamp = (v) => Math.max(-1, Math.min(1, v));
-    // 22° on both desktop and mobile — bumped from 12°/20° for a more
-    // dramatic, holo-card-in-hand feel. Kept identical across input modes
-    // so the effect reads the same on every device.
-    //
-    // Sign convention: with these signs the card's face TURNS TOWARD the
-    // cursor (the cursor-side edge comes forward, the far edge recedes) —
-    // matching how a real holo card behaves when you tilt it to catch light.
-    // Flipping either sign produces "pushed away from cursor" instead.
+    // 22° on both desktop and mobile. Empirically corrected after several
+    // iterations: the Y axis (horizontal tilt) was already right; the X axis
+    // (vertical tilt) was inverted only in the top half of the modal. Flipping
+    // the X sign makes "cursor above center" tilt the top edge forward, so
+    // the card visibly faces the cursor in all four quadrants.
     const maxRot = 22;
     const ry = -clamp(dx) * maxRot;
-    const rx =  clamp(dy) * maxRot;
+    const rx = -clamp(dy) * maxRot;
     card.style.transform = `rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg)`;
   }, [isTouchPrimary]);
 
