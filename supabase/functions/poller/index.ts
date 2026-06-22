@@ -667,12 +667,10 @@ function buildEmailHtml(digest: UserDigest): string {
 }
 
 function renderSearchSection(search: SavedSearch, listings: Listing[]): string {
-  const filterBadges = renderFilterBadges(search.filters);
   return `
     <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin-bottom:28px;">
       <tr><td style="padding-bottom:14px;border-bottom:0.5px solid rgba(232,226,213,0.1);">
         <div style="font-family:Georgia,serif;font-style:italic;font-size:20px;color:#e8e2d5;">${escapeHtml(search.name)}</div>
-        ${filterBadges ? `<div style="margin-top:8px;">${filterBadges}</div>` : ""}
         <div style="font-size:11px;color:#8a8275;letter-spacing:0.08em;text-transform:uppercase;margin-top:8px;">
           ${listings.length} new ${listings.length === 1 ? "match" : "matches"}
         </div>
@@ -680,74 +678,6 @@ function renderSearchSection(search: SavedSearch, listings: Listing[]): string {
       ${listings.map(renderListingCard).join("")}
     </table>
   `;
-}
-
-/* Render the saved-search's own filter chips — the ones the USER picked
-   when saving the search. These appear right under the search name in the
-   email so the recipient remembers WHY this alert fired ("oh right, /5-/25
-   Caitlin Clark autos") without having to open the watchlist.
-   This is distinct from renderListingCard's chips, which describe what the
-   matched listing itself contains.
-   Print-run chips use the same four-tier color system as the watchlist tile
-   and the homepage example — gold for /1–25, silver for /26–99, copper for
-   /100–249, gray for /250+. Outline-gold for non-numeric toggles. */
-function renderFilterBadges(filters: Record<string, unknown>): string {
-  const chips: string[] = [];
-
-  // Tier-coloured solid chip styles — must mirror tierChipStyle() in
-  // app/components/rarityUtils.js so the email and the website stay
-  // visually consistent.
-  const tierStyles: Record<string, string> = {
-    grail:
-      "display:inline-block;padding:3px 7px;margin-right:3px;font-family:ui-monospace,monospace;font-size:9px;color:#1a1612;background-image:linear-gradient(180deg,#ffd97a,#d99c14);border:0.5px solid #ffc14d;border-radius:3px;font-weight:700;",
-    ultra:
-      "display:inline-block;padding:3px 7px;margin-right:3px;font-family:ui-monospace,monospace;font-size:9px;color:#1a1612;background-image:linear-gradient(180deg,#e0e8f0,#98a5b3);border:0.5px solid #c8d4e0;border-radius:3px;font-weight:700;",
-    rare:
-      "display:inline-block;padding:3px 7px;margin-right:3px;font-family:ui-monospace,monospace;font-size:9px;color:#1a1612;background-image:linear-gradient(180deg,#d6884a,#8e4f1f);border:0.5px solid #d6722d;border-radius:3px;font-weight:700;",
-    scarce:
-      "display:inline-block;padding:3px 7px;margin-right:3px;font-family:ui-monospace,monospace;font-size:9px;color:#1a1612;background-image:linear-gradient(180deg,#8a96a4,#4a5360);border:0.5px solid #5a6470;border-radius:3px;font-weight:600;",
-  };
-  // Outline chip for boolean toggles (Auto, RC, Condition, Listing-type)
-  const outlineStyle =
-    "display:inline-block;padding:3px 7px;margin-right:3px;font-family:ui-monospace,monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:#ffd97a;background:rgba(201,149,74,0.06);border:0.5px solid #8a7548;border-radius:3px;";
-
-  // Map a /N print run to its rarity tier (mirrors tierForRun in rarityUtils)
-  function tierForRun(run: string): string {
-    const n = Number(run.replace(/^\//, ""));
-    if (!Number.isFinite(n) || n < 1) return "grail";
-    if (n <= 25) return "grail";
-    if (n <= 99) return "ultra";
-    if (n <= 249) return "rare";
-    return "scarce";
-  }
-
-  // Print runs — combine selectedPrintRuns + customPrintRuns, dedupe, sort
-  // by rarity (smaller number first). Each chip gets its tier-specific style.
-  const selected = Array.isArray(filters.selectedPrintRuns) ? filters.selectedPrintRuns as string[] : [];
-  const custom = Array.isArray(filters.customPrintRuns) ? filters.customPrintRuns as string[] : [];
-  const allRuns = [...new Set([...selected, ...custom])]
-    .filter((r) => typeof r === "string" && /^\/\d{1,5}$/.test(r))
-    .sort((a, b) => Number(a.slice(1)) - Number(b.slice(1)));
-  for (const run of allRuns) {
-    const style = tierStyles[tierForRun(run)] || tierStyles.grail;
-    chips.push(`<span style="${style}">${escapeHtml(run)}</span>`);
-  }
-
-  // Boolean filter toggles
-  if (filters.autoCards) chips.push(`<span style="${outlineStyle}">Auto</span>`);
-  if (filters.rookieCards) chips.push(`<span style="${outlineStyle}">RC</span>`);
-
-  // Condition filter — only show if user actively picked something specific
-  if (typeof filters.condition === "string" && filters.condition !== "any" && filters.condition.length > 0) {
-    const label = filters.condition.charAt(0).toUpperCase() + filters.condition.slice(1);
-    chips.push(`<span style="${outlineStyle}">${escapeHtml(label)}</span>`);
-  }
-
-  // Listing type — only show non-default
-  if (filters.listingType === "auction") chips.push(`<span style="${outlineStyle}">Auctions</span>`);
-  else if (filters.listingType === "fixed") chips.push(`<span style="${outlineStyle}">Buy It Now</span>`);
-
-  return chips.join("");
 }
 
 function renderListingCard(l: Listing): string {

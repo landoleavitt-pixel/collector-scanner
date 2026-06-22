@@ -1020,7 +1020,11 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
           ("better way to find rare sports cards"), sub-line spells out the
           differentiator (multiple print runs at once) and the watchlist
           win. Search bar sits beneath, anchoring the action. */}
-      <div className="min-h-screen flex flex-col justify-center max-w-[820px] mx-auto px-6 lg:px-10 pt-8 pb-14">
+      {/* Hero wrapper: dynamic viewport height (100dvh) so it accounts for
+          mobile browser chrome — `min-h-screen` (100vh) lies on iOS Safari
+          and leaks the next section into view. Position-relative so the
+          scroll cue can absolutely-anchor to the bottom edge below. */}
+      <div className="relative min-h-[100dvh] flex flex-col justify-center max-w-[820px] mx-auto px-6 lg:px-10 pt-8 pb-24">
         <h1
           className="font-display italic text-center text-[clamp(2.1rem,6vw,3.6rem)] leading-[1.05] tracking-[-0.01em] rise"
           style={{ animationDelay: '120ms' }}
@@ -1111,36 +1115,38 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
             </Link>
           </div>
         )}
-
-        {/* Scroll cue — leads to the why-section below. Larger and clearly
-            visible since the hero now fills the full viewport — visitors
-            need an unambiguous "more below" signal. */}
-        <a
-          href="#why"
-          className="mt-16 flex flex-col items-center gap-3 rise group"
-          style={{ animationDelay: '700ms', textDecoration: 'none' }}
-        >
-          <span
-            className="text-[11px] uppercase tracking-[0.28em] transition-colors group-hover:text-[var(--gold-bright)]"
-            style={{ color: 'var(--gold)' }}
-          >
-            How it works
-          </span>
-          <span
-            className="bob flex items-center justify-center rounded-full transition-colors group-hover:bg-[rgba(201,149,74,0.10)]"
-            style={{
-              width: 44, height: 44,
-              border: '0.5px solid var(--gold-deep)',
-              color: 'var(--gold-bright)',
-              fontSize: 22,
-              lineHeight: 1,
-            }}
-            aria-hidden="true"
-          >
-            ↓
-          </span>
-        </a>
       </div>
+
+      {/* Scroll cue — pinned to the bottom edge of the hero section itself
+          (not inside the centered flex column above). This is what actually
+          makes it sit flush with the bottom of the viewport regardless of
+          how tall the headline/search/chips content is — the centered-stack
+          approach left the arrow floating mid-screen on short content. */}
+      <a
+        href="#why"
+        className="absolute bottom-8 left-0 right-0 flex flex-col items-center gap-3 rise group"
+        style={{ animationDelay: '700ms', textDecoration: 'none' }}
+      >
+        <span
+          className="text-[11px] uppercase tracking-[0.28em] transition-colors group-hover:text-[var(--gold-bright)]"
+          style={{ color: 'var(--gold)' }}
+        >
+          How it works
+        </span>
+        <span
+          className="bob flex items-center justify-center rounded-full transition-colors group-hover:bg-[rgba(201,149,74,0.10)]"
+          style={{
+            width: 44, height: 44,
+            border: '0.5px solid var(--gold-deep)',
+            color: 'var(--gold-bright)',
+            fontSize: 22,
+            lineHeight: 1,
+          }}
+          aria-hidden="true"
+        >
+          ↓
+        </span>
+      </a>
 
       {/* Below the fold — the live featured Grail pull from eBay.
           (FeaturedFind has its own "Featured Find · Live from eBay" caption,
@@ -1248,27 +1254,6 @@ function WhyFields({ user }) {
               <SavedSearchExampleCard />
             </div>
           </div>
-        </div>
-
-        {/* Email preview as its own dedicated section below — gives the
-            email full readable width instead of squeezing it into a column */}
-        <div
-          className="pt-12 mt-4 max-w-[560px] mx-auto"
-          style={{ borderTop: '0.5px solid var(--line)' }}
-        >
-          <h3
-            className="text-center font-display italic text-[24px] mb-2"
-            style={{ fontWeight: 400 }}
-          >
-            Here's the email you'd get.
-          </h3>
-          <p
-            className="text-center text-[12.5px] mb-7"
-            style={{ color: 'var(--ink-400)' }}
-          >
-            Filter badges in the email show which saved-search filters triggered the alert.
-          </p>
-          <EmailPreview />
         </div>
       </section>
 
@@ -1459,79 +1444,6 @@ function SavedSearchExampleCard() {
             New match · just listed
           </span>
           2024 Bowman Chrome Auto Gold Refractor /25
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* Email preview — matches the production Resend email visually. Critically,
-   includes the new "filter badges" row beneath the search name, matching the
-   live email template's renderFilterBadges helper.
-   Uses the shared TierChip + OUTLINE_CHIP_STYLE so this preview's colors stay
-   in lockstep with both the watchlist tile and the production email. */
-function EmailPreview() {
-  const toggleChip = 'font-mono text-[9px] px-1.5 py-[2px] rounded';
-  return (
-    <div
-      className="rounded-lg p-3.5"
-      style={{ background: '#0f0c0a', border: '0.5px solid var(--line)' }}
-    >
-      {/* Email brand header */}
-      <div className="text-center" style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: '17px', color: '#d4af5c' }}>
-        Fields <em className="not-italic" style={{ color: '#d4af5c' }}>&amp;</em> Floors
-      </div>
-      <div className="text-center mt-1 font-mono uppercase" style={{ fontSize: '8.5px', letterSpacing: '0.22em', color: '#6e675b' }}>
-        New on the hunt
-      </div>
-      <div className="h-px my-4" style={{ background: 'rgba(232,226,213,0.10)' }} />
-
-      {/* Saved-search name + filter badges row matching the production email */}
-      <div style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: '15px', color: '#e8e2d5' }}>
-        ★ Caitlin Clark
-      </div>
-      <div className="flex flex-wrap gap-1 mt-2">
-        <TierChip run="/5" />
-        <TierChip run="/10" />
-        <TierChip run="/25" />
-        <span className={toggleChip} style={{ ...OUTLINE_CHIP_STYLE, letterSpacing: '0.14em' }}>Auto</span>
-        <span className={toggleChip} style={{ ...OUTLINE_CHIP_STYLE, letterSpacing: '0.14em' }}>RC</span>
-      </div>
-      <div className="mt-2 font-mono uppercase" style={{ fontSize: '9px', letterSpacing: '0.18em', color: '#8a8275' }}>
-        1 new match
-      </div>
-      <div className="h-px my-3" style={{ background: 'rgba(232,226,213,0.10)' }} />
-
-      {/* A single matched listing — visually matches the live email row */}
-      <div
-        className="flex gap-2.5 p-3"
-        style={{
-          background: '#1a1614',
-          backgroundImage: 'linear-gradient(90deg, rgba(255,180,30,0.18) 0%, rgba(245,200,80,0.05) 30%, transparent 60%)',
-          borderLeft: '2px solid #ffc14d',
-        }}
-      >
-        <div
-          className="w-14 h-[74px] rounded flex items-center justify-center flex-none"
-          style={{
-            background: 'radial-gradient(ellipse at 30% 30%, rgba(255,217,122,0.22) 0%, transparent 60%), linear-gradient(140deg, #3a2e1f 0%, #1a1310 100%)',
-            color: 'var(--gold-deep)', fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: '22px',
-          }}
-        >
-          ◇
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex flex-wrap gap-1 mb-1.5">
-            <TierChip run="/25" />
-            <span className={toggleChip} style={{ ...OUTLINE_CHIP_STYLE, letterSpacing: '0.14em' }}>Auto</span>
-            <span className={toggleChip} style={{ ...OUTLINE_CHIP_STYLE, letterSpacing: '0.14em' }}>RC</span>
-          </div>
-          <div className="text-[11px] leading-snug" style={{ color: '#e8e2d5' }}>
-            2024 Bowman Chrome Auto Gold Refractor /25
-          </div>
-          <div className="mt-1" style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: '14px', color: '#ffd97a' }}>
-            $1,840
-          </div>
         </div>
       </div>
     </div>
