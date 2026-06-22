@@ -745,18 +745,29 @@ function Home() {
       {/* Stage 3: searched — results page with sidebar filters */}
       {appStage === 'searched' && (
         <section className="max-w-[1200px] mx-auto px-6 lg:px-10 pt-10 pb-16 relative z-10 stage-in">
-          {/* Header bar — full width above both columns. Query + count on
-              left; sort + new search on right. */}
+          {/* Header bar — full width above both columns.
+              The searched player name is the big editable headline; click it
+              to type a new name and run another search without scrolling
+              back to the hero. Listing count moves to a subtitle. */}
           <div className="flex flex-wrap items-end justify-between gap-6 pb-6 mb-8 border-b border-[var(--line)]">
-            <div>
+            <div className="min-w-0 flex-1">
               <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--ink-400)] mb-2">
-                Searching · <span className="italic normal-case tracking-normal text-[var(--gold)] ml-1">{query}</span>
+                Searching for
               </p>
-              <p className="font-display text-4xl md:text-5xl leading-none tracking-tight">
-                <span className="text-[var(--gold)] italic">{sortedResults.length}</span>
-                <span className="text-[var(--ink-400)] text-2xl md:text-3xl ml-3">
-                  {sortedResults.length === 1 ? 'listing' : 'listings'}
-                </span>
+              <EditableSearchHeading
+                value={query}
+                onSubmit={(next) => {
+                  const trimmed = (next || '').trim();
+                  if (!trimmed || trimmed === query) return;
+                  setQuery(trimmed);
+                  handleSearch(trimmed);
+                }}
+              />
+              <p className="text-[12px] uppercase tracking-[0.22em] mt-3" style={{ color: 'var(--ink-400)' }}>
+                <span style={{ color: 'var(--gold)' }} className="italic normal-case tracking-normal">
+                  {sortedResults.length}
+                </span>{' '}
+                {sortedResults.length === 1 ? 'listing' : 'listings'}
               </p>
             </div>
             <div className="flex items-center gap-6">
@@ -1009,7 +1020,7 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
           ("better way to find rare sports cards"), sub-line spells out the
           differentiator (multiple print runs at once) and the watchlist
           win. Search bar sits beneath, anchoring the action. */}
-      <div className="min-h-[72vh] flex flex-col justify-center max-w-[820px] mx-auto px-6 lg:px-10 pt-8 pb-14">
+      <div className="min-h-screen flex flex-col justify-center max-w-[820px] mx-auto px-6 lg:px-10 pt-8 pb-14">
         <h1
           className="font-display italic text-center text-[clamp(2.1rem,6vw,3.6rem)] leading-[1.05] tracking-[-0.01em] rise"
           style={{ animationDelay: '120ms' }}
@@ -1101,16 +1112,33 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
           </div>
         )}
 
-        {/* Scroll cue — leads to the why-section below */}
+        {/* Scroll cue — leads to the why-section below. Larger and clearly
+            visible since the hero now fills the full viewport — visitors
+            need an unambiguous "more below" signal. */}
         <a
           href="#why"
-          className="mt-12 flex flex-col items-center gap-1.5 rise"
+          className="mt-16 flex flex-col items-center gap-3 rise group"
           style={{ animationDelay: '700ms', textDecoration: 'none' }}
         >
-          <span className="text-[9px] uppercase tracking-[0.26em]" style={{ color: 'var(--ink-600)' }}>
+          <span
+            className="text-[11px] uppercase tracking-[0.28em] transition-colors group-hover:text-[var(--gold-bright)]"
+            style={{ color: 'var(--gold)' }}
+          >
             How it works
           </span>
-          <span className="bob text-sm" style={{ color: 'var(--gold)' }}>↓</span>
+          <span
+            className="bob flex items-center justify-center rounded-full transition-colors group-hover:bg-[rgba(201,149,74,0.10)]"
+            style={{
+              width: 44, height: 44,
+              border: '0.5px solid var(--gold-deep)',
+              color: 'var(--gold-bright)',
+              fontSize: 22,
+              lineHeight: 1,
+            }}
+            aria-hidden="true"
+          >
+            ↓
+          </span>
         </a>
       </div>
 
@@ -1761,6 +1789,95 @@ function CornerMarks() {
       <span className="absolute bottom-2 left-2 w-2 h-2 border-l border-b" style={{ borderColor: stroke }} />
       <span className="absolute bottom-2 right-2 w-2 h-2 border-r border-b" style={{ borderColor: stroke }} />
     </>
+  );
+}
+
+/* EditableSearchHeading — the big italic player name on the results page.
+   Behaves like a static heading until clicked; then becomes an inline
+   input pre-filled with the current query. Submit (Enter) commits a new
+   search; Escape cancels; blur with no change just exits edit mode.
+
+   Designed to be the visible primary action on the results page so users
+   can pivot to a new search without scrolling back to the hero. */
+function EditableSearchHeading({ value, onSubmit }) {
+  const [editing, setEditing] = useState(false);
+  const [pending, setPending] = useState(value);
+  const inputRef = useRef(null);
+
+  // Keep local pending state in sync if parent's query changes externally
+  // (e.g. after a chip-search from the hero or a saved-search deep link).
+  useEffect(() => { if (!editing) setPending(value); }, [value, editing]);
+
+  // Focus + select-all once the input mounts so user can immediately retype.
+  useEffect(() => {
+    if (editing && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [editing]);
+
+  function commit() {
+    setEditing(false);
+    onSubmit(pending);
+  }
+  function cancel() {
+    setEditing(false);
+    setPending(value);
+  }
+
+  if (editing) {
+    return (
+      <input
+        ref={inputRef}
+        type="text"
+        value={pending}
+        onChange={(e) => setPending(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') { e.preventDefault(); commit(); }
+          else if (e.key === 'Escape') { e.preventDefault(); cancel(); }
+        }}
+        onBlur={commit}
+        className="font-display italic w-full bg-transparent border-0 border-b outline-none p-0 m-0"
+        style={{
+          fontSize: 'clamp(2rem, 5.5vw, 3.6rem)',
+          lineHeight: 1.05,
+          letterSpacing: '-0.015em',
+          color: 'var(--gold-bright)',
+          borderBottomColor: 'var(--gold)',
+        }}
+      />
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => setEditing(true)}
+      className="group block text-left p-0 m-0 bg-transparent border-0 cursor-text"
+      title="Click to search a different name"
+    >
+      <span
+        className="font-display italic transition-colors group-hover:text-[var(--gold-bright)]"
+        style={{
+          fontSize: 'clamp(2rem, 5.5vw, 3.6rem)',
+          lineHeight: 1.05,
+          letterSpacing: '-0.015em',
+          color: 'var(--gold)',
+          display: 'inline-block',
+          borderBottom: '0.5px dashed transparent',
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.borderBottomColor = 'var(--gold-deep)'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.borderBottomColor = 'transparent'; }}
+      >
+        {value}
+      </span>
+      <span
+        className="ml-3 text-[10px] uppercase tracking-[0.22em] opacity-0 group-hover:opacity-100 transition-opacity align-middle"
+        style={{ color: 'var(--ink-400)' }}
+      >
+        ✎ edit
+      </span>
+    </button>
   );
 }
 
