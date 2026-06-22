@@ -263,14 +263,20 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
     const dx = (clientX - cx) / (window.innerWidth  / 2);
     const dy = (clientY - cy) / (window.innerHeight / 2);
     const clamp = (v) => Math.max(-1, Math.min(1, v));
-    // 22° on both desktop and mobile. Empirically corrected after several
-    // iterations: the Y axis (horizontal tilt) was already right; the X axis
-    // (vertical tilt) was inverted only in the top half of the modal. Flipping
-    // the X sign makes "cursor above center" tilt the top edge forward, so
-    // the card visibly faces the cursor in all four quadrants.
+    // 22° on both desktop and mobile. Kept identical across input modes
+    // so the effect reads the same on every device.
+    //
+    // KNOWN ISSUE (low priority): when the cursor is in the upper half of
+    // the modal, the card visibly tilts away from rather than toward the
+    // cursor. The lower half works correctly. Flipping the X sign trades
+    // which half is wrong rather than fixing it, so for now we keep the
+    // "lower half correct" state. Likely culprit when we return to it:
+    // the cardCenterY used by applyTilt doesn't account for the modal's
+    // actual scrolled position, so the perceived center differs from the
+    // mathematical center the rotation is computed against.
     const maxRot = 22;
     const ry = -clamp(dx) * maxRot;
-    const rx = -clamp(dy) * maxRot;
+    const rx =  clamp(dy) * maxRot;
     card.style.transform = `rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg)`;
   }, [isTouchPrimary]);
 
