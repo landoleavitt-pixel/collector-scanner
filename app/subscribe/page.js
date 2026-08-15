@@ -41,7 +41,7 @@ export default function SubscribePage() {
       setStage('opening');
 
       try {
-        const res = await fetch('/api/create-checkout', { method: 'POST' });
+        const res = await fetch('/api/stripe/create-checkout', { method: 'POST' });
         const data = await res.json();
         if (cancelled) return;
 

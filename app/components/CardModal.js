@@ -254,7 +254,16 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
   const applyTilt = useCallback((clientX, clientY) => {
     const card = cardRef.current;
     if (!card) return;
-    const rect = card.getBoundingClientRect();
+    // Measure the card's center from the FLIGHT wrapper (flipRef), not the
+    // tilting card itself. The card's own getBoundingClientRect() is its
+    // PROJECTED box — it shifts toward the viewer-near edge while tilted,
+    // which moved the reference center as a function of the current tilt.
+    // That feedback loop is what made the response feel inverted in some
+    // regions no matter which signs we chose. The flight wrapper never
+    // rotates (its FLIP transform is identity once landed), so its rect is
+    // a stable layout-truth for where the card actually sits.
+    const ref = flipRef.current || card;
+    const rect = ref.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
     // Normalize the offset by half the viewport so extreme screen corners
@@ -266,23 +275,30 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
     // 22° on both desktop and mobile. Kept identical across input modes
     // so the effect reads the same on every device.
     //
-    // KNOWN ISSUE (low priority): when the cursor is in the upper half of
-    // the modal, the card visibly tilts away from rather than toward the
-    // cursor. The lower half works correctly. Flipping the X sign trades
-    // which half is wrong rather than fixing it, so for now we keep the
-    // "lower half correct" state. Likely culprit when we return to it:
-    // the cardCenterY used by applyTilt doesn't account for the modal's
-    // actual scrolled position, so the perceived center differs from the
-    // mathematical center the rotation is computed against.
+    // Direction constants — ONE place to flip if the uniform direction ever
+    // needs to invert. After the geometry fix (stable center + self
+    // perspective below) all four quadrants respond CONSISTENTLY, so any
+    // future direction complaint is a single sign change here, not a
+    // per-corner mystery.
+    const SIGN_X = -1; // vertical:   cursor above center → top edge toward viewer
+    const SIGN_Y = -1; // horizontal: cursor right of center → right edge toward viewer
     const maxRot = 22;
-    const ry = -clamp(dx) * maxRot;
-    const rx =  clamp(dy) * maxRot;
-    card.style.transform = `rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg)`;
+    const rx = SIGN_X * clamp(dy) * maxRot;
+    const ry = SIGN_Y * clamp(dx) * maxRot;
+    // perspective() INSIDE the card's own transform (rather than on a parent
+    // container) pins the vanishing point to the card's own center at all
+    // times — independent of container layout, scroll position, or where the
+    // card sits in the viewport. Parent-level perspective put the vanishing
+    // point at the container's center, which is the other half of why the
+    // tilt read asymmetrically.
+    card.style.transform = `perspective(1100px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg)`;
   }, [isTouchPrimary]);
 
   const resetTilt = useCallback(() => {
     const card = cardRef.current;
-    if (card) card.style.transform = 'rotateX(0deg) rotateY(0deg)';
+    // Keep the perspective term in the reset so returning to neutral is a
+    // pure rotation ease-out, not a projection snap.
+    if (card) card.style.transform = 'perspective(1100px) rotateX(0deg) rotateY(0deg)';
   }, []);
 
   // ─ Wire up tilt listeners while modal is open ────────────────────
@@ -459,7 +475,14 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
                   mutated directly on mousemove/touchstart.
                 Keeping them on separate elements means the two transforms
                 compose cleanly and don't fight each other. */}
-            <div className="flex-none mx-auto lg:mx-0 relative" style={{ perspective: 1200 }}>
+            <div className="flex-none mx-auto lg:mx-0 relative">
+              {/* NOTE: no `perspective` on this container. The card applies
+                  perspective() inside its own transform (see applyTilt), which
+                  keeps the 3D vanishing point locked to the card's center.
+                  A container-level perspective put the vanishing point at
+                  the CONTAINER's center instead, which made identical-angle
+                  tilts read differently depending on direction — the root of
+                  the long-standing "some corners tilt wrong" bug. */}
               {/* Prev/next arrows — adjacent to the card, in the dark
                   gutter between the card column and the meta column.
                   Hidden when there's only one image. Desktop only;
@@ -524,6 +547,7 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
                     boxShadow: `0 0 0 1px rgba(0,0,0,0.4) inset, 0 0 30px -8px ${borderColor}, 0 30px 60px -20px rgba(0,0,0,0.7)`,
                     background: '#0e0a06',
                     transformStyle: 'preserve-3d',
+                    transformOrigin: 'center center',
                     willChange: 'transform',
                     transition: 'transform 0.5s cubic-bezier(0.2, 0.8, 0.3, 1)',
                   }}

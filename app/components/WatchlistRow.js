@@ -55,7 +55,7 @@ function PaywallModal({ onClose }) {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/create-checkout', { method: 'POST' });
+      const res = await fetch('/api/stripe/create-checkout', { method: 'POST' });
       const data = await res.json();
       if (!res.ok || !data.url) throw new Error(data.error || 'Could not open checkout');
       window.open(data.url, '_blank', 'noopener');

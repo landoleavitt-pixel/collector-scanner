@@ -410,6 +410,13 @@ function Home() {
   // param closes the modal. Runs whenever search params or results
   // change, so a fresh search that includes the URL's card id will
   // promote the modal from expired → real automatically.
+  //
+  // COLD-START PATH (email deep links): when someone arrives at
+  // /?card=<id> with no search run (alert-email click), there are no
+  // results to match against — so we hydrate the item directly from
+  // /api/listing/<id> and open the modal fully populated. The modal's
+  // own image fetch then hits the same 5-min edge cache, so this costs
+  // one eBay call total.
   useEffect(() => {
     const cardId = searchParams.get('card');
     if (!cardId) {
@@ -421,11 +428,45 @@ function Home() {
     if (match) {
       setSelectedCardItem(match);
       setSelectedExpired(false);
-    } else if (results.length > 0 || appStage === 'searched') {
+      return;
+    }
+    if (results.length > 0 || appStage === 'searched') {
       // Results have loaded but the id isn't among them → expired
       setSelectedCardItem({ id: cardId, title: '', url: '', image: null });
       setSelectedExpired(true);
+      return;
     }
+    // Cold arrival — no search context. Fetch the listing and hydrate.
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`/api/listing/${encodeURIComponent(cardId)}`);
+        const data = await res.json().catch(() => null);
+        if (cancelled) return;
+        if (data?.ok) {
+          setSelectedCardItem({
+            id: cardId,
+            title: data.title || '',
+            price: data.price ?? null,
+            image: Array.isArray(data.images) && data.images[0] ? data.images[0] : null,
+            url: data.url || '',
+            isAuction: !!data.isAuction,
+            endTime: data.endTime || null,
+          });
+          setSelectedExpired(false);
+        } else {
+          // Listing gone (404/expired) or fetch failed — show expired state
+          setSelectedCardItem({ id: cardId, title: '', url: '', image: null });
+          setSelectedExpired(true);
+        }
+      } catch {
+        if (!cancelled) {
+          setSelectedCardItem({ id: cardId, title: '', url: '', image: null });
+          setSelectedExpired(true);
+        }
+      }
+    })();
+    return () => { cancelled = true; };
   }, [searchParams, results, appStage]);
 
   // ── Card modal: back-button closes ───────────────────────────────
@@ -926,7 +967,7 @@ function SplashIntro() {
       // land at /?savedSearch= or /?editSearch= and immediately transition to
       // a different stage, so playing the splash would just be a 2.6s detour.
       const sp = new URLSearchParams(window.location.search);
-      if (sp.get('savedSearch') || sp.get('editSearch')) skip = true;
+      if (sp.get('savedSearch') || sp.get('editSearch') || sp.get('card')) skip = true;
       // Respect accessibility preferences.
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         skip = true;

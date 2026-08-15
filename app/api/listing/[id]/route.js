@@ -127,8 +127,16 @@ export async function GET(request, { params }) {
       ok: true,
       images,
       title: data.title,
-      price: data.price?.value ? parseFloat(data.price.value) : null,
+      price: data.currentBidPrice?.value
+        ? parseFloat(data.currentBidPrice.value)
+        : (data.price?.value ? parseFloat(data.price.value) : null),
       currency: data.price?.currency || 'USD',
+      // eBay's canonical listing page — used by email deep-link arrivals
+      // (?card=<id> with no search context) so the modal's "View on eBay"
+      // button works without a prior search having populated the item.
+      url: data.itemWebUrl || null,
+      isAuction: Array.isArray(data.buyingOptions) && data.buyingOptions.includes('AUCTION'),
+      endTime: data.itemEndDate || null,
     });
   } catch (err) {
     // Log the real error internally; return a generic message to the client

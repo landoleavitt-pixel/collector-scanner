@@ -692,7 +692,16 @@ function renderListingCard(l: Listing): string {
   // Upscale eBay's thumbnail using their s-l URL trick (only if we have an image)
   const upscaledImg = img ? img.replace(/\/s-l\d+\.(\w+)/, "/s-l500.$1") : "";
   const title = l?.title ?? "";
-  const webUrl = l?.url ?? "#";
+  // Link to OUR card modal (?card=<id> deep link on the homepage) instead of
+  // straight to eBay. The modal gives the full image carousel, rarity tree,
+  // and watch button — with its own "View on eBay" for the final hop. This
+  // turns every alert click into a site visit instead of an eBay visit, and
+  // preserves our ability to attach affiliate tracking later.
+  // utm_source lets Vercel Analytics attribute the visit to alert emails.
+  // Fallback to the raw eBay url only if the listing id is somehow missing.
+  const viewUrl = l?.id
+    ? `${APP_BASE_URL}/?card=${encodeURIComponent(l.id)}&utm_source=alert_email`
+    : (l?.url ?? "#");
 
   // Derive chips from the listing — print run + tier, auto, rookie, grading, listing type
   const lowerTitle = title.toLowerCase();
@@ -756,7 +765,7 @@ function renderListingCard(l: Listing): string {
           </td>
           <td width="110" style="padding:16px 18px 16px 8px;vertical-align:middle;text-align:right;">
             <div style="font-family:Georgia,serif;font-style:italic;font-size:30px;color:#d4af5c;line-height:1;margin-bottom:12px;">${escapeHtml(price)}</div>
-            <a href="${escapeHtml(webUrl)}" style="display:inline-block;padding:7px 14px;background:transparent;border:0.5px solid rgba(212,175,92,0.5);color:#d4af5c;text-decoration:none;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;border-radius:999px;">View</a>
+            <a href="${escapeHtml(viewUrl)}" style="display:inline-block;padding:7px 14px;background:transparent;border:0.5px solid rgba(212,175,92,0.5);color:#d4af5c;text-decoration:none;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;border-radius:999px;">View</a>
           </td>
         </tr>
       </table>
