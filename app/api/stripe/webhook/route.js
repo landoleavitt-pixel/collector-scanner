@@ -72,6 +72,23 @@ export async function POST(request) {
     return sub?.metadata?.user_id || null;
   }
 
+  // Read the subscription's current period end.
+  //
+  // As of Stripe's Basil release (API 2025-03-31), current_period_end and
+  // current_period_start were REMOVED from the Subscription object and MOVED
+  // onto SubscriptionItem. Our webhook endpoint runs a post-Basil API version,
+  // so sub.current_period_end is undefined — and it fails silently: the event
+  // still delivers 200 OK, the object still serializes, the field just comes
+  // back undefined and subscription_ends_at would never populate.
+  //
+  // Read from the item first, fall back to the legacy subscription-level field
+  // so this keeps working regardless of which API version delivers the event.
+  function periodEndFromSubscription(sub) {
+    const fromItem = sub?.items?.data?.[0]?.current_period_end;
+    const value = fromItem ?? sub?.current_period_end;
+    return typeof value === 'number' ? new Date(value * 1000).toISOString() : null;
+  }
+
   // Fallback: map a Stripe customer ID back to a profile we've already
   // stamped. Covers renewal/cancellation events that don't carry our metadata.
   async function userIdFromCustomer(customerId) {
@@ -120,9 +137,7 @@ export async function POST(request) {
           tier,
           stripe_customer_id:     String(sub.customer || ''),
           stripe_subscription_id: String(sub.id || ''),
-          subscription_ends_at:   sub.current_period_end
-            ? new Date(sub.current_period_end * 1000).toISOString()
-            : null,
+          subscription_ends_at:   periodEndFromSubscription(sub),
           trial_ends_at:          sub.trial_end
             ? new Date(sub.trial_end * 1000).toISOString()
             : null,
