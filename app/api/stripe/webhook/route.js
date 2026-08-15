@@ -125,12 +125,18 @@ export async function POST(request) {
         break;
       }
 
+      case 'customer.subscription.created':
       case 'customer.subscription.updated': {
         const sub = event.data.object;
         const uid = userIdFromSubscription(sub) || await userIdFromCustomer(sub.customer);
-        if (!uid) { console.warn('Stripe webhook: sub.updated unresolved user'); break; }
+        if (!uid) { console.warn(`Stripe webhook: ${event.type} unresolved user`); break; }
         // trialing + active both grant access; anything else (past_due,
         // canceled, unpaid, incomplete) drops them to free.
+        //
+        // 'created' is handled alongside 'updated' because a trialing
+        // subscription does NOT emit 'updated' at signup — Stripe only
+        // sends 'created'. Without this case the trial and period dates
+        // stayed null until the trial converted two weeks later.
         const tier = ['trialing', 'active'].includes(sub.status) ? 'base' : 'free';
         await supabase.from('profiles').upsert({
           id:                     uid,
@@ -138,11 +144,11 @@ export async function POST(request) {
           stripe_customer_id:     String(sub.customer || ''),
           stripe_subscription_id: String(sub.id || ''),
           subscription_ends_at:   periodEndFromSubscription(sub),
-          trial_ends_at:          sub.trial_end
+          trial_ends_at:          typeof sub.trial_end === 'number'
             ? new Date(sub.trial_end * 1000).toISOString()
             : null,
         }, { onConflict: 'id' });
-        console.log(`Stripe webhook: ${uid} → tier=${tier} status=${sub.status}`);
+        console.log(`Stripe webhook: ${uid} → tier=${tier} status=${sub.status} (${event.type})`);
         break;
       }
 
