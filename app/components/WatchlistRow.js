@@ -163,6 +163,9 @@ export default function WatchlistRow({ search, canUseAlerts }) {
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
+  // Inline message when the server rejects turning this search on because
+  // the user already has the max number of searches actively watching.
+  const [limitMsg, setLimitMsg] = useState('');
 
   // True only when this search will actually send email. Drives the gold
   // outline so "armed" is the state we visually mark, rather than dimming
@@ -179,6 +182,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
     }
 
     setBusy(true);
+    setLimitMsg('');
     const newValue = !notifyEnabled;
     setNotifyEnabled(newValue);
     const res = await fetch(`/api/saved-searches/${search.id}`, {
@@ -186,7 +190,15 @@ export default function WatchlistRow({ search, canUseAlerts }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ notify_enabled: newValue }),
     });
-    if (!res.ok) setNotifyEnabled(!newValue);
+    if (!res.ok) {
+      setNotifyEnabled(!newValue);
+      // 409 = hit the active-watch cap. Show the reason inline rather than
+      // silently snapping the toggle back, which looks like a bug.
+      const detail = await res.json().catch(() => ({}));
+      if (detail?.code === 'WATCH_LIMIT') {
+        setLimitMsg(detail.error || 'Watch limit reached. Pause one to watch this.');
+      }
+    }
     setBusy(false);
   }
 
@@ -275,12 +287,13 @@ export default function WatchlistRow({ search, canUseAlerts }) {
         </div>
 
         {/* Alert toggle — shows paywall for free users */}
+        <div className="flex flex-col items-end gap-1">
         <div className="flex items-center gap-2.5">
           <span
             className="text-[10px] tracking-[0.18em] uppercase hidden sm:inline"
             style={{ color: alertsLive ? '#d4af5c' : '#6e675b' }}
           >
-            {!canUseAlerts ? 'Notify' : notifyEnabled ? 'Live' : 'Paused'}
+            {!canUseAlerts ? 'Notify' : notifyEnabled ? 'Watching' : 'Paused'}
           </span>
           <button
             type="button"
@@ -306,6 +319,15 @@ export default function WatchlistRow({ search, canUseAlerts }) {
               }}
             />
           </button>
+        </div>
+        {limitMsg && (
+          <span
+            className="text-[10px] leading-tight text-right max-w-[180px]"
+            style={{ color: '#d97757' }}
+          >
+            {limitMsg}
+          </span>
+        )}
         </div>
 
         <div className="flex items-center gap-2">
