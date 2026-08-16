@@ -79,6 +79,7 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
   const watchlist = useWatchlist();
   const { user } = useUser();
   const [watchBusy, setWatchBusy] = useState(false);
+  const [shareMsg, setShareMsg] = useState('');
   const isWatched = watchlist && item ? watchlist.isSaved(item.id) : false;
 
   async function toggleWatch(e) {
@@ -133,6 +134,35 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
       else watchlist.markUnsaved(item.id);
     } finally {
       setWatchBusy(false);
+    }
+  }
+
+  // Share this specific card. Links to /share/card?card=<id>, which renders
+  // the same modal for the recipient AND carries a preview image built from
+  // the eBay photo, title, and price — so a pasted link looks like handing
+  // someone the card rather than a bare URL.
+  async function handleShareCard(e) {
+    e?.stopPropagation();
+    if (!item?.id) return;
+    const url = `https://fieldsandfloors.com/share/card?card=${encodeURIComponent(item.id)}`;
+    const text = item.title
+      ? `${item.title} — on Fields & Floors`
+      : 'Check out this card on Fields & Floors';
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({ title: item.title || 'Fields & Floors', text, url });
+        return;
+      } catch (err) {
+        if (err?.name === 'AbortError') return;
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setShareMsg('Copied');
+      setTimeout(() => setShareMsg(''), 1800);
+    } catch {
+      setShareMsg('Failed');
+      setTimeout(() => setShareMsg(''), 2200);
     }
   }
 
@@ -704,6 +734,17 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
                   <Star size={12} strokeWidth={2}
                         fill={isWatched ? 'currentColor' : 'transparent'} />
                   {isWatched ? 'Watching' : 'Watch'}
+                </button>
+                <button onClick={handleShareCard} data-no-tilt
+                        aria-label="Share this card"
+                        className="flex-none inline-flex items-center justify-center gap-1.5 text-[10px] uppercase tracking-[0.18em] font-medium rounded px-4 py-2.5 transition-colors"
+                        style={{
+                          background: 'transparent',
+                          color: shareMsg ? 'var(--gold-bright)' : 'var(--ink-100)',
+                          border: `0.5px solid ${shareMsg ? 'rgba(212,175,92,0.5)' : 'rgba(232,226,213,0.18)'}`,
+                        }}>
+                  <span aria-hidden="true" style={{ fontSize: 12 }}>{shareMsg ? '✓' : '↗'}</span>
+                  {shareMsg || 'Share'}
                 </button>
               </div>
 
