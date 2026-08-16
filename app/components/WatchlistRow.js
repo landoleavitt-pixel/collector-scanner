@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { buildShareUrl } from '../../lib/shareLink';
 
 const TIER_STYLES = {
   grail:   { bg: 'rgba(255,193,77,0.12)',  color: '#ffc14d', border: 'rgba(255,193,77,0.35)' },
@@ -166,6 +167,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
   // Inline message when the server rejects turning this search on because
   // the user already has the max number of searches actively watching.
   const [limitMsg, setLimitMsg] = useState('');
+  const [shareMsg, setShareMsg] = useState('');
 
   // True only when this search will actually send email. Drives the gold
   // outline so "armed" is the state we visually mark, rather than dimming
@@ -215,6 +217,29 @@ export default function WatchlistRow({ search, canUseAlerts }) {
 
   function handleView() {
     router.push(`/?savedSearch=${search.id}`);
+  }
+
+  async function handleShare() {
+    // Share the saved search's CRITERIA (not its id) so the recipient gets
+    // a link that runs the same search under their own account.
+    const url = buildShareUrl(search.query, search.filters || {});
+    const text = `Check out this ${search.name} search on Fields & Floors`;
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({ title: search.name, text, url });
+        return;
+      } catch (err) {
+        if (err?.name === 'AbortError') return;
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setShareMsg('Copied');
+      setTimeout(() => setShareMsg(''), 1800);
+    } catch {
+      setShareMsg('Copy failed');
+      setTimeout(() => setShareMsg(''), 2200);
+    }
   }
 
   function handleEdit() {
@@ -381,6 +406,18 @@ export default function WatchlistRow({ search, canUseAlerts }) {
                 }}
               >
                 View
+              </button>
+              <button
+                type="button"
+                onClick={handleShare}
+                className="px-3.5 py-1.5 rounded-full text-[10px] tracking-[0.18em] uppercase transition-colors hover:text-[var(--gold)]"
+                style={{
+                  background: 'transparent',
+                  border: '0.5px solid rgba(232,226,213,0.18)',
+                  color: shareMsg ? 'var(--gold)' : '#8a8275',
+                }}
+              >
+                {shareMsg || 'Share'}
               </button>
               <button
                 type="button"

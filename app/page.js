@@ -16,6 +16,8 @@ import SaveSearchModal from './components/SaveSearchModal';
 import BidCountdown from './components/BidCountdown';
 import CardModal from './components/CardModal';
 import { tierForRun, tierChipStyle, OUTLINE_CHIP_STYLE } from './components/rarityUtils';
+import ShareSearchButton from './components/ShareSearchButton';
+import { hasShareParams, parseShareParams } from '../lib/shareLink';
 import { WatchlistContext, WatchlistProvider } from '../lib/watchlistContext';
 import { useUser } from '../lib/useUser';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -219,7 +221,7 @@ function Home() {
   // navigation — at first mount, window.location can still hold the
   // previous route's URL even though the React tree is mounting the new one.
   const [appStage, setAppStage] = useState(() => {
-    if (searchParams?.get('savedSearch') || searchParams?.get('editSearch')) {
+    if (searchParams?.get('savedSearch') || searchParams?.get('editSearch') || searchParams?.get('q')) {
       return 'transition';
     }
     return 'idle';
@@ -403,6 +405,33 @@ function Home() {
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userLoading, searchParams]);
+
+  // ── Shared search links ──────────────────────────────────────────
+  // Someone was sent /?q=Caitlin+Clark&runs=5,10,25&auto=1 — decode the
+  // criteria, apply the filters, and run the search automatically so the
+  // recipient lands on results rather than an empty home page. This is the
+  // growth loop: a good search is one tap to pass along.
+  //
+  // Guarded by a ref so it fires once per arrival. Without that, setFilters
+  // would retrigger the effect and loop the search endlessly.
+  const sharedSearchRan = useRef(false);
+  useEffect(() => {
+    if (sharedSearchRan.current) return;
+    if (!searchParams) return;
+    // Saved-search deep links have their own handler; don't double-run.
+    if (searchParams.get('savedSearch') || searchParams.get('editSearch')) return;
+    if (!hasShareParams(searchParams)) return;
+
+    const { query: sharedQuery, filters: sharedFilters } =
+      parseShareParams(searchParams, filters, ALL_PRESET_PRINT_RUNS);
+    if (!sharedQuery) return;
+
+    sharedSearchRan.current = true;
+    setQuery(sharedQuery);
+    setFilters(sharedFilters);
+    handleSearch(sharedQuery, sharedFilters);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   // ── Card modal: reconcile URL → modal state ──────────────────────
   // Watches ?card=<id> and opens the matching item if found in current
@@ -812,6 +841,13 @@ function Home() {
               </p>
             </div>
             <div className="flex items-center gap-6">
+              {/* Share the current criteria as a link that reproduces this
+                  exact search for whoever receives it. */}
+              <ShareSearchButton
+                query={query}
+                filters={filters}
+                allPresetRuns={ALL_PRESET_PRINT_RUNS}
+              />
               <div className="hidden lg:block">
                 <SortDropdown
                   value={filters.sortBy}
@@ -967,7 +1003,7 @@ function SplashIntro() {
       // land at /?savedSearch= or /?editSearch= and immediately transition to
       // a different stage, so playing the splash would just be a 2.6s detour.
       const sp = new URLSearchParams(window.location.search);
-      if (sp.get('savedSearch') || sp.get('editSearch') || sp.get('card')) skip = true;
+      if (sp.get('savedSearch') || sp.get('editSearch') || sp.get('card') || sp.get('q')) skip = true;
       // Respect accessibility preferences.
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         skip = true;
