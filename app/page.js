@@ -3193,10 +3193,11 @@ function WatchStar({ item }) {
     }
 
     try {
+      let res;
       if (saved) {
-        await fetch(`/api/watchlist/${encodeURIComponent(item.id)}`, { method: 'DELETE' });
+        res = await fetch(`/api/watchlist/${encodeURIComponent(item.id)}`, { method: 'DELETE' });
       } else {
-        await fetch('/api/watchlist', {
+        res = await fetch('/api/watchlist', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -3214,8 +3215,16 @@ function WatchStar({ item }) {
           }),
         });
       }
-    } catch {
+      // fetch() only rejects on NETWORK failure — a 401/500 resolves
+      // normally, so without this check a server-side error left the star
+      // filled while nothing was saved. Surface it instead.
+      if (!res.ok) {
+        const detail = await res.json().catch(() => ({}));
+        throw new Error(detail?.error || `Watchlist request failed (${res.status})`);
+      }
+    } catch (err) {
       // Revert optimistic update on failure
+      console.error('Watchlist save failed:', err?.message || err);
       if (saved) ctx?.markSaved(item.id);
       else ctx?.markUnsaved(item.id);
     } finally {

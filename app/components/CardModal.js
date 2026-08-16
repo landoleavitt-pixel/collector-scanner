@@ -95,12 +95,13 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
     if (wasSaved) watchlist.markUnsaved(item.id);
     else watchlist.markSaved(item.id);
     try {
+      let res;
       if (wasSaved) {
-        await fetch(`/api/watchlist/${encodeURIComponent(item.id)}`, { method: 'DELETE' });
+        res = await fetch(`/api/watchlist/${encodeURIComponent(item.id)}`, { method: 'DELETE' });
       } else {
         // Mirror WatchStar's payload shape exactly so the row created
         // by the modal looks the same as one created from the grid star.
-        await fetch('/api/watchlist', {
+        res = await fetch('/api/watchlist', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -117,8 +118,17 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
           }),
         });
       }
-    } catch {
-      // Revert on failure
+      // fetch() only rejects on NETWORK failure — a 401/500 resolves
+      // normally. Without this check a server-side failure left the
+      // optimistic "saved" state in place, so the button looked like it
+      // worked while nothing was ever written. Check the status explicitly.
+      if (!res.ok) {
+        const detail = await res.json().catch(() => ({}));
+        throw new Error(detail?.error || `Watchlist request failed (${res.status})`);
+      }
+    } catch (err) {
+      // Revert on failure so the button honestly reflects what happened.
+      console.error('Watchlist save failed:', err?.message || err);
       if (wasSaved) watchlist.markSaved(item.id);
       else watchlist.markUnsaved(item.id);
     } finally {

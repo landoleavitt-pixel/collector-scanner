@@ -75,6 +75,17 @@ export async function POST(request) {
     if (error.code === '23505') {
       return NextResponse.json({ alreadySaved: true });
     }
+    // Log the full Postgres error server-side — the code and details name
+    // the cause (missing column, RLS denial, type mismatch) far more
+    // precisely than the message alone.
+    console.error('Watchlist insert failed:', {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+      user_id: user.id,
+      listing_id: String(listing_id),
+    });
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
   return NextResponse.json({ listing: data });
