@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { createClient } from '../../lib/supabaseClient';
 
 function suggestName(query) {
   if (!query) return '';
@@ -26,6 +27,32 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
   const [notifyEnabled, setNotifyEnabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  // Whether this user can actually receive alerts. Saving a search is free
+  // and unlimited; only the notification half is a Base feature. Null while
+  // loading so we don't flash the wrong state.
+  const [canAlert, setCanAlert] = useState(null);
+
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) { if (!cancelled) setCanAlert(false); return; }
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('tier, is_founding_member')
+          .eq('id', user.id)
+          .single();
+        if (cancelled) return;
+        setCanAlert(profile?.tier === 'base' || profile?.is_founding_member === true);
+      } catch {
+        if (!cancelled) setCanAlert(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [open]);
 
   // In edit mode: pre-fill the name from the existing search and respect its
   // current notify_enabled setting. In create mode: suggest a name from the
@@ -63,18 +90,23 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
     }
     setLoading(true);
 
+    // Free users can save unlimited searches, but alerts are a Base
+    // feature — never persist notify_enabled:true for them, or the poller
+    // would try to email someone who isn't entitled to alerts.
+    const effectiveNotify = canAlert === true ? notifyEnabled : false;
+
     // Edit mode → PATCH the existing row (no duplicate created).
     // Create mode → POST a new saved search.
     const res = isEditing
       ? await fetch(`/api/saved-searches/${editingSearch.id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, query, filters, notify_enabled: notifyEnabled }),
+          body: JSON.stringify({ name, query, filters, notify_enabled: effectiveNotify }),
         })
       : await fetch('/api/saved-searches', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, query, filters, notify_enabled: notifyEnabled }),
+          body: JSON.stringify({ name, query, filters, notify_enabled: effectiveNotify }),
         });
     setLoading(false);
 
@@ -167,31 +199,63 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
           />
         </div>
 
-        <div className="flex items-center justify-between py-2 mb-4">
-          <div>
-            <div className="text-[13px]" style={{ color: '#e8e2d5' }}>
-              Email me new matches
-            </div>
-            <div className="text-[11px]" style={{ color: '#8a8275' }}>
-              Quiet mode pauses notifications
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => setNotifyEnabled(!notifyEnabled)}
-            aria-label="Toggle notifications"
-            className="relative w-9 h-5 rounded-full transition-colors"
-            style={{ background: notifyEnabled ? '#d4af5c' : '#3a3530' }}
+        {canAlert === false ? (
+          <div
+            className="py-3 px-3 mb-4 rounded-lg"
+            style={{ background: 'rgba(212,175,92,0.06)', border: '0.5px solid rgba(212,175,92,0.35)' }}
           >
-            <div
-              className="absolute top-0.5 w-4 h-4 rounded-full transition-all"
-              style={{
-                background: '#1a1614',
-                left: notifyEnabled ? 'calc(100% - 18px)' : '2px',
-              }}
-            />
-          </button>
-        </div>
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <div className="text-[13px]" style={{ color: '#e8e2d5' }}>
+                  Email me new matches
+                </div>
+                <div className="text-[11px]" style={{ color: '#8a8275' }}>
+                  Alerts are part of Base — saving searches is always free
+                </div>
+              </div>
+              <span
+                className="text-[9px] uppercase tracking-[0.16em] px-2 py-1 rounded flex-none"
+                style={{ color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#ffd97a,#d99c14)', fontWeight: 700 }}
+              >
+                Base
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => router.push('/subscribe')}
+              className="w-full mt-3 py-2 rounded-lg text-[11px] uppercase tracking-[0.16em]"
+              style={{ backgroundImage: 'linear-gradient(180deg,#ffd97a,#d99c14)', color: '#1a1612', fontWeight: 600 }}
+            >
+              Start 14-day free trial
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between py-2 mb-4">
+            <div>
+              <div className="text-[13px]" style={{ color: '#e8e2d5' }}>
+                Email me new matches
+              </div>
+              <div className="text-[11px]" style={{ color: '#8a8275' }}>
+                Quiet mode pauses notifications
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setNotifyEnabled(!notifyEnabled)}
+              aria-label="Toggle notifications"
+              className="relative w-9 h-5 rounded-full transition-colors"
+              style={{ background: notifyEnabled ? '#d4af5c' : '#3a3530' }}
+            >
+              <div
+                className="absolute top-0.5 w-4 h-4 rounded-full transition-all"
+                style={{
+                  background: '#1a1614',
+                  left: notifyEnabled ? 'calc(100% - 18px)' : '2px',
+                }}
+              />
+            </button>
+          </div>
+        )}
 
         {error && (
           <p className="text-[12px] mb-3 text-center" style={{ color: '#d97757' }}>

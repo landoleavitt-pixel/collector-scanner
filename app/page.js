@@ -1587,6 +1587,7 @@ function PlansSection({ user }) {
             { label: 'Watchlist of saved cards', isNew: true },
             { label: 'Live price & sold status', isNew: true },
             { label: 'Saved listings across devices', isNew: true },
+            { label: 'Unlimited saved searches', isNew: true },
           ]}
           ctaLabel={user ? 'You\u2019re signed in' : 'Create free account'}
           ctaHref={user ? '/watchlist-cards' : '/signup'}
@@ -1603,7 +1604,7 @@ function PlansSection({ user }) {
             { label: 'Watchlist of saved cards', isNew: false },
             { label: 'Live price & sold status', isNew: false },
             { label: 'Saved listings across devices', isNew: false },
-            { label: '5 saved searches', isNew: true },
+            { label: 'Unlimited saved searches', isNew: false },
             { label: 'Email alerts on new listings', isNew: true },
             { label: 'Bid reminders below price cap', isNew: true },
           ]}
