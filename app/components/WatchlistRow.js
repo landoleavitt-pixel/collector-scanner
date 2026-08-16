@@ -164,6 +164,11 @@ export default function WatchlistRow({ search, canUseAlerts }) {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
 
+  // True only when this search will actually send email. Drives the gold
+  // outline so "armed" is the state we visually mark, rather than dimming
+  // everything that isn't.
+  const alertsLive = canUseAlerts && notifyEnabled;
+
   const chips = buildChips(search.filters);
 
   async function toggleNotify() {
@@ -212,10 +217,19 @@ export default function WatchlistRow({ search, canUseAlerts }) {
         className="rounded-[10px] p-5 md:p-6 grid gap-6 items-center"
         style={{
           background: '#1a1614',
-          border: '0.5px solid rgba(232,226,213,0.08)',
+          // Alerts live → gold outline + faint glow. Everything else gets
+          // the neutral border at full opacity. Marking the ACTIVE state
+          // rather than dimming the inactive one means free users and
+          // paused subscribers both see a normal, healthy-looking list
+          // instead of a greyed-out one.
+          border: alertsLive
+            ? '0.5px solid var(--gold)'
+            : '0.5px solid rgba(232,226,213,0.08)',
+          boxShadow: alertsLive
+            ? '0 0 0 1px rgba(201,149,74,0.18), 0 0 18px -6px rgba(201,149,74,0.35)'
+            : 'none',
           gridTemplateColumns: '1fr auto auto',
-          opacity: notifyEnabled ? 1 : 0.55,
-          transition: 'opacity 0.2s',
+          transition: 'border-color 0.2s, box-shadow 0.2s',
         }}
       >
         <div className="min-w-0">
@@ -264,7 +278,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
         <div className="flex items-center gap-2.5">
           <span
             className="text-[10px] tracking-[0.18em] uppercase hidden sm:inline"
-            style={{ color: notifyEnabled && canUseAlerts ? '#d4af5c' : '#6e675b' }}
+            style={{ color: alertsLive ? '#d4af5c' : '#6e675b' }}
           >
             {!canUseAlerts ? 'Notify' : notifyEnabled ? 'Live' : 'Paused'}
           </span>
@@ -281,14 +295,14 @@ export default function WatchlistRow({ search, canUseAlerts }) {
             }
             className="relative w-7 h-4 rounded-full transition-colors disabled:opacity-50"
             style={{
-              background: notifyEnabled && canUseAlerts ? '#d4af5c' : '#3a3530',
+              background: alertsLive ? '#d4af5c' : '#3a3530',
             }}
           >
             <div
               className="absolute top-0.5 w-3 h-3 rounded-full transition-all"
               style={{
                 background: '#1a1614',
-                left: notifyEnabled && canUseAlerts ? 'calc(100% - 14px)' : '2px',
+                left: alertsLive ? 'calc(100% - 14px)' : '2px',
               }}
             />
           </button>
