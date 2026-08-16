@@ -113,67 +113,67 @@ export async function GET(request) {
               paddingBottom: 8,
             }}
           >
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 30 }}>
-                <div
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 999,
-                    border: `2px solid ${GOLD}`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: GOLD,
-                    fontSize: 16,
-                  }}
-                >
-                  F&amp;F
-                </div>
-                <div style={{ display: 'flex', color: INK_100, fontSize: 26 }}>
-                  Fields <span style={{ color: GOLD, margin: '0 7px' }}>&amp;</span> Floors
-                </div>
-              </div>
-
-              <div
-                style={{
-                  display: 'flex',
-                  color: INK_100,
-                  fontSize: title.length > 70 ? 38 : 46,
-                  lineHeight: 1.2,
-                }}
-              >
-                {title || 'A card worth watching'}
-              </div>
+            {/* Title gets the full width — no header lockup competing with it. */}
+            <div
+              style={{
+                display: 'flex',
+                color: INK_100,
+                fontSize: title.length > 70 ? 38 : 46,
+                lineHeight: 1.22,
+              }}
+            >
+              {title || 'A card worth watching'}
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              {priceLabel ? (
-                <div
-                  style={{
-                    display: 'flex',
-                    color: GOLD_BRIGHT,
-                    fontSize: 68,
-                    marginBottom: 22,
-                  }}
-                >
-                  {priceLabel}
+            {/* Price on the left, oversized seal on the right. The seal is the
+                only branding in the image: link platforms already print the
+                domain beneath the card, so repeating it was noise. */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'flex-end',
+                justifyContent: 'space-between',
+              }}
+            >
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {priceLabel ? (
+                  <div style={{ display: 'flex', color: GOLD_BRIGHT, fontSize: 68, lineHeight: 1 }}>
+                    {priceLabel}
+                  </div>
+                ) : null}
+                <div style={{ display: 'flex', color: INK_400, fontSize: 24, marginTop: 14 }}>
+                  Live from eBay
                 </div>
-              ) : null}
+              </div>
+
+              {/* Double-ring seal, echoing the header mark on the site. */}
               <div
                 style={{
                   display: 'flex',
-                  justifyContent: 'space-between',
-                  borderTop: '1px solid rgba(232,226,213,0.12)',
-                  paddingTop: 20,
+                  position: 'relative',
+                  width: 158,
+                  height: 158,
+                  flexShrink: 0,
+                  borderRadius: 999,
+                  border: `3px solid ${GOLD}`,
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
-                <div style={{ display: 'flex', color: INK_400, fontSize: 22 }}>
-                  Live from eBay
-                </div>
-                <div style={{ display: 'flex', color: GOLD, fontSize: 22 }}>
-                  fieldsandfloors.com
-                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    position: 'absolute',
+                    top: 15,
+                    left: 15,
+                    right: 15,
+                    bottom: 15,
+                    borderRadius: 999,
+                    border: `1.5px solid ${GOLD}`,
+                    opacity: 0.5,
+                  }}
+                />
+                <div style={{ display: 'flex', color: GOLD, fontSize: 43 }}>F&amp;F</div>
               </div>
             </div>
           </div>

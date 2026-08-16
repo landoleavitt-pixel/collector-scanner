@@ -634,7 +634,34 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
             </div>
 
             {/* ─── Meta + CTAs + tree column ─── */}
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 relative">
+              {/* Brand watermark — oversized seal bleeding off the bottom-right
+                  corner at very low opacity. Fills the dead space beneath the
+                  meta content as texture rather than as a logo; at 5% it reads
+                  as a background pattern and never competes with the card.
+                  pointer-events-none so it can't intercept tilt or clicks. */}
+              <div
+                aria-hidden="true"
+                data-no-tilt
+                className="pointer-events-none select-none absolute hidden lg:flex items-center justify-center"
+                style={{
+                  right: -56,
+                  bottom: -56,
+                  width: 290,
+                  height: 290,
+                  borderRadius: 9999,
+                  border: '3px solid var(--gold)',
+                  opacity: 0.05,
+                  color: 'var(--gold)',
+                  fontFamily: 'Georgia, serif',
+                  fontStyle: 'italic',
+                  fontSize: 82,
+                  zIndex: 0,
+                }}
+              >
+                F&amp;F
+              </div>
+              <div className="relative" style={{ zIndex: 1 }}>
               {detection && parallel && (
                 <p className="text-[9px] uppercase tracking-[0.26em] mb-1.5"
                    style={{ color: 'var(--gold)' }}>
@@ -764,6 +791,7 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
                   />
                 </div>
               )}
+              </div>
             </div>
           </div>
         </div>
