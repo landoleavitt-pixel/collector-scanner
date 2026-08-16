@@ -251,7 +251,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
       {showPaywall && <PaywallModal onClose={() => setShowPaywall(false)} />}
 
       <div
-        className="rounded-[10px] p-5 md:p-6 grid gap-6 items-center"
+        className="rounded-[10px] p-5 md:p-6 grid gap-5 lg:gap-6 grid-cols-1 lg:grid-cols-[1fr_auto_auto] items-start lg:items-center"
         style={{
           background: '#1a1614',
           // Alerts live → gold outline + faint glow. Everything else gets
@@ -265,7 +265,6 @@ export default function WatchlistRow({ search, canUseAlerts }) {
           boxShadow: alertsLive
             ? '0 0 0 1px rgba(201,149,74,0.18), 0 0 18px -6px rgba(201,149,74,0.35)'
             : 'none',
-          gridTemplateColumns: '1fr auto auto',
           transition: 'border-color 0.2s, box-shadow 0.2s',
         }}
       >
@@ -311,11 +310,16 @@ export default function WatchlistRow({ search, canUseAlerts }) {
           </div>
         </div>
 
+        {/* Toggle + actions share one row on narrow screens. `lg:contents`
+            dissolves this wrapper at desktop widths so both children drop
+            back into their own grid columns. */}
+        <div className="flex items-center justify-between gap-3 flex-wrap lg:contents">
+
         {/* Alert toggle — shows paywall for free users */}
-        <div className="flex flex-col items-end gap-1">
+        <div className="flex flex-col items-start lg:items-end gap-1">
         <div className="flex items-center gap-2.5">
           <span
-            className="text-[10px] tracking-[0.18em] uppercase hidden sm:inline"
+            className="text-[10px] tracking-[0.18em] uppercase"
             style={{ color: alertsLive ? '#d4af5c' : '#6e675b' }}
           >
             {!canUseAlerts ? 'Notify' : notifyEnabled ? 'Watching' : 'Paused'}
@@ -347,7 +351,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
         </div>
         {limitMsg && (
           <span
-            className="text-[10px] leading-tight text-right max-w-[180px]"
+            className="text-[10px] leading-tight text-left lg:text-right max-w-[220px]"
             style={{ color: '#d97757' }}
           >
             {limitMsg}
@@ -355,7 +359,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
         )}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           {confirmDelete ? (
             <>
               <button
@@ -435,6 +439,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
               </button>
             </>
           )}
+        </div>
         </div>
       </div>
     </>
