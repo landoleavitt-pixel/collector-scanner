@@ -31,6 +31,11 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
   // and unlimited; only the notification half is a Base feature. Null while
   // loading so we don't flash the wrong state.
   const [canAlert, setCanAlert] = useState(null);
+  // How many searches are already actively watching, and the cap. Used to
+  // default the toggle OFF (and explain why) when the user is already at
+  // the limit — otherwise the modal offers alerts the server will refuse.
+  const [atWatchLimit, setAtWatchLimit] = useState(false);
+  const WATCH_LIMIT = 5;
 
   useEffect(() => {
     if (!open) return;
@@ -46,7 +51,19 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
           .eq('id', user.id)
           .single();
         if (cancelled) return;
-        setCanAlert(profile?.tier === 'base' || profile?.is_founding_member === true);
+        const entitled = profile?.tier === 'base' || profile?.is_founding_member === true;
+        setCanAlert(entitled);
+        if (entitled && !editingSearch) {
+          const { count } = await supabase
+            .from('saved_searches')
+            .select('id', { count: 'exact', head: true })
+            .eq('user_id', user.id)
+            .eq('notify_enabled', true);
+          if (cancelled) return;
+          const full = (count ?? 0) >= WATCH_LIMIT;
+          setAtWatchLimit(full);
+          if (full) setNotifyEnabled(false);
+        }
       } catch {
         if (!cancelled) setCanAlert(false);
       }
@@ -235,15 +252,18 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
               <div className="text-[13px]" style={{ color: '#e8e2d5' }}>
                 Email me new matches
               </div>
-              <div className="text-[11px]" style={{ color: '#8a8275' }}>
-                Quiet mode pauses notifications
+              <div className="text-[11px]" style={{ color: atWatchLimit ? '#d97757' : '#8a8275' }}>
+                {atWatchLimit
+                  ? `Watching ${WATCH_LIMIT} of ${WATCH_LIMIT} — pause one to alert on this`
+                  : 'Quiet mode pauses notifications'}
               </div>
             </div>
             <button
               type="button"
-              onClick={() => setNotifyEnabled(!notifyEnabled)}
+              onClick={() => { if (!atWatchLimit) setNotifyEnabled(!notifyEnabled); }}
+              disabled={atWatchLimit}
               aria-label="Toggle notifications"
-              className="relative w-9 h-5 rounded-full transition-colors"
+              className="relative w-9 h-5 rounded-full transition-colors disabled:opacity-50"
               style={{ background: notifyEnabled ? '#d4af5c' : '#3a3530' }}
             >
               <div

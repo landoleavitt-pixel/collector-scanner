@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabase } from '../../../lib/supabaseServer';
 
+// Max searches that can be actively notifying at once (Base tier).
+// Must match MAX_ACTIVE_WATCHES in app/api/saved-searches/[id]/route.js.
+const MAX_ACTIVE_WATCHES = 5;
+
 // List all saved searches for the current user
 export async function GET() {
   const supabase = createServerSupabase();
@@ -37,6 +41,41 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Name and query are required' }, { status: 400 });
   }
 
+  // Saving is unlimited; only ACTIVE watching is capped. Decide here whether
+  // this new search is allowed to start watching, because the create path
+  // previously bypassed the cap entirely — a user could save 10 searches
+  // with notify on and sail past the limit that PATCH enforces.
+  //
+  // When the limit is already reached we still save the search (that's free
+  // and expected) but force alerts off and tell the client, so the UI can
+  // explain rather than silently doing something different than asked.
+  let effectiveNotify = notify_enabled === true;
+  let watchLimited = false;
+
+  if (effectiveNotify) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('tier, is_founding_member')
+      .eq('id', user.id)
+      .single();
+
+    const entitled = profile?.tier === 'base' || profile?.is_founding_member === true;
+    if (!entitled) {
+      effectiveNotify = false;
+    } else {
+      const { count } = await supabase
+        .from('saved_searches')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('notify_enabled', true);
+
+      if ((count ?? 0) >= MAX_ACTIVE_WATCHES) {
+        effectiveNotify = false;
+        watchLimited = true;
+      }
+    }
+  }
+
   const { data: newSearch, error } = await supabase
     .from('saved_searches')
     .insert({
@@ -44,7 +83,7 @@ export async function POST(request) {
       name: name.trim(),
       query: query.trim(),
       filters: filters ?? {},
-      notify_enabled,
+      notify_enabled: effectiveNotify,
     })
     .select()
     .single();
@@ -69,7 +108,7 @@ export async function POST(request) {
     console.error('Confirmation email failed for search', newSearch.id, err);
   });
 
-  return NextResponse.json({ search: newSearch });
+  return NextResponse.json({ search: newSearch, watchLimited, limit: MAX_ACTIVE_WATCHES });
 }
 
 // Build a compact, human-readable one-line summary of the search's filters.
