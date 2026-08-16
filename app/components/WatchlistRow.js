@@ -118,7 +118,7 @@ function PaywallModal({ onClose }) {
           style={{ color: 'var(--ink-400)' }}
         >
           Alerts on up to 5 saved searches + bid reminders.
-          We check eBay every fifteen minutes — you'll know the moment it lists.
+          We check eBay every hour. eBay's own saved searches email once a day.
         </p>
         <p
           className="text-[12px] mb-7"

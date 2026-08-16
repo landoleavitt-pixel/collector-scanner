@@ -52,7 +52,7 @@ export default async function WatchlistPage() {
             className="text-[14px] max-w-[460px] leading-[1.5]"
             style={{ color: 'var(--ink-400)' }}
           >
-            We check eBay every fifteen minutes. When a new match appears, you'll know.
+            We check eBay every hour — eBay's own saved searches email once a day. When a new match appears, you'll know first.
           </p>
         </div>
 
