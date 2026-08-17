@@ -17,6 +17,8 @@ import BidCountdown from './components/BidCountdown';
 import CardModal from './components/CardModal';
 import { tierForRun, tierChipStyle, OUTLINE_CHIP_STYLE } from './components/rarityUtils';
 import ShareSearchButton from './components/ShareSearchButton';
+import FilterReel from './components/FilterReel';
+import { isReturningVisitor, markVisited, getRecentSearches, addRecentSearch } from '../lib/visitState';
 import { hasShareParams, parseShareParams } from '../lib/shareLink';
 import { WatchlistContext, WatchlistProvider } from '../lib/watchlistContext';
 import { useUser } from '../lib/useUser';
@@ -246,6 +248,17 @@ function Home() {
   // selectedExpired is set when the URL specifies a card id that doesn't
   // appear in current results — we show the "listing expired" state.
   const [selectedCardItem, setSelectedCardItem] = useState(null);
+  // Landing-page tailoring. Read BEFORE markVisited() so the first load of a
+  // new browser still counts as a first visit. Null while undetermined so the
+  // hero doesn't flash the wrong variant.
+  const [isReturning, setIsReturning] = useState(null);
+  const [recentSearches, setRecentSearches] = useState([]);
+
+  useEffect(() => {
+    setIsReturning(isReturningVisitor());
+    setRecentSearches(getRecentSearches());
+    markVisited();
+  }, []);
   const [selectedExpired, setSelectedExpired] = useState(false);
 
   function openCard(item) {
@@ -586,6 +599,9 @@ function Home() {
     }
     if (overrideQuery) setQuery(overrideQuery);
     const f = overrideFilters || filters;
+    // Remember it so returning visitors get their own hunts as shortcuts
+    // instead of the generic athlete chips.
+    addRecentSearch(q);
     setError(null);
     setLoading(true);
     setAppStage('searched');
@@ -766,6 +782,8 @@ function Home() {
             onSuggested={(s) => handleQuerySubmit(s)}
             user={user}
             onCardClick={openCard}
+            isReturning={isReturning}
+            recentSearches={recentSearches}
             onChipSearch={(chipQuery, partialFilters) => {
               // Apply the matching filters and run the search immediately. The
               // selected filters remain visible in the Stage 3 results sidebar,
@@ -1090,7 +1108,7 @@ function SplashIntro() {
   );
 }
 
-function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSearch, user, onCardClick }) {
+function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSearch, user, onCardClick, isReturning, recentSearches = [] }) {
   return (
     <section className="relative border-b border-[var(--line-soft)] overflow-hidden">
       {/* Above the fold — explainer-first hero. Headline names the value
@@ -1123,6 +1141,17 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
           — plus autograph, rookie, and condition. Save anything you want to keep an eye on.
         </p>
 
+        {/* Demo reel — first-time visitors only. Someone who's been here
+            before already knows what the tool does; showing them the pitch
+            again just puts distance between them and the search bar.
+            isReturning is null until detection runs, so nothing renders on
+            that first tick and the reel never flashes for a returning user. */}
+        {isReturning === false && (
+          <div className="mt-8 max-w-[520px] mx-auto w-full rise" style={{ animationDelay: '240ms' }}>
+            <FilterReel />
+          </div>
+        )}
+
         {/* Search bar — editorial underline style, centered block */}
         <div className="mt-10 rise" style={{ animationDelay: '280ms' }}>
           <div className="relative flex items-center">
@@ -1153,10 +1182,13 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
             className="text-[10px] uppercase tracking-[0.24em] text-center mb-3 font-mono"
             style={{ color: 'var(--ink-600)' }}
           >
-            Or try
+            {recentSearches.length > 0 ? 'Pick up where you left off' : 'Or try'}
           </div>
           <div className="flex flex-wrap justify-center items-center gap-2.5">
-            {['Caitlin Clark', 'Victor Wembanyama', 'Connor Bedard', 'Cooper Flagg', 'Paul Skenes'].map((name) => (
+            {(recentSearches.length > 0
+              ? recentSearches
+              : ['Caitlin Clark', 'Victor Wembanyama', 'Connor Bedard', 'Cooper Flagg', 'Paul Skenes']
+            ).map((name) => (
               <button
                 key={name}
                 type="button"
