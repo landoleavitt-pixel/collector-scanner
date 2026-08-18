@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createServerSupabase } from '../../lib/supabaseServer';
 import WatchlistRow from '../components/WatchlistRow';
+import NotifyFrequency from '../components/NotifyFrequency';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,7 +21,7 @@ export default async function WatchlistPage() {
       .order('created_at', { ascending: false }),
     supabase
       .from('profiles')
-      .select('tier, is_founding_member')
+      .select('tier, is_founding_member, notify_frequency')
       .eq('id', user.id)
       .single(),
   ]);
@@ -55,6 +56,16 @@ export default async function WatchlistPage() {
             We check eBay every hour — eBay's own saved searches email once a day. When a new match appears, you'll know first.
           </p>
         </div>
+
+        {/* Alert frequency — account-wide, only meaningful to users who can
+            actually receive alerts, so hide it from free accounts entirely
+            rather than showing a control that does nothing. */}
+        {canUseAlerts && searches && searches.length > 0 && (
+          <NotifyFrequency
+            initialFrequency={profile?.notify_frequency || 'hourly'}
+            canUsePro={profile?.is_founding_member === true}
+          />
+        )}
 
         {/* Searches list */}
         {error ? (

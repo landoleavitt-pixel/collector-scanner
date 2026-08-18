@@ -59,6 +59,7 @@ Deno.serve(async (_req) => {
   const startedAt = new Date().toISOString();
   let searchesChecked = 0;
   let notificationsSent = 0;
+  let digestsDeferred = 0;
   const errors: string[] = [];
 
   try {
@@ -79,7 +80,7 @@ Deno.serve(async (_req) => {
     const allUserIds = [...new Set((searches as SavedSearch[]).map((s) => s.user_id))];
     const { data: profiles, error: profileError } = await supabase
       .from("profiles")
-      .select("id, tier, is_founding_member")
+      .select("id, tier, is_founding_member, notify_frequency, last_notified_at")
       .in("id", allUserIds);
 
     if (profileError) throw profileError;
@@ -89,6 +90,19 @@ Deno.serve(async (_req) => {
         .filter((p) => p.tier === "base" || p.is_founding_member === true)
         .map((p) => p.id)
     );
+
+    // Per-user notification cadence. The poller runs hourly regardless; this
+    // decides whether a given user's digest is actually SENT this run.
+    // Deferring is what makes digests work: if we don't send, we also don't
+    // write sent_notifications, so those matches stay "new" and roll into the
+    // next email instead of being silently swallowed.
+    const cadenceByUser = new Map<string, { frequency: string; lastNotifiedAt: string | null }>();
+    for (const p of profiles ?? []) {
+      cadenceByUser.set(p.id, {
+        frequency: p.notify_frequency || "hourly",
+        lastNotifiedAt: p.last_notified_at ?? null,
+      });
+    }
 
     const gatedSearches = (searches as SavedSearch[]).filter((s) =>
       entitled.has(s.user_id)
@@ -152,9 +166,18 @@ Deno.serve(async (_req) => {
       }
     }
 
-    // 5. Send one email per user with all their new matches
+    // 5. Send one email per user with all their new matches — but only if
+    //    their chosen cadence says they're due.
     for (const digest of userDigests.values()) {
       try {
+        const cadence = cadenceByUser.get(digest.userId);
+        if (!isDueForDigest(cadence?.frequency, cadence?.lastNotifiedAt)) {
+          // Not due. Skip WITHOUT writing sent_notifications so these matches
+          // remain unnotified and accumulate into the next scheduled digest.
+          digestsDeferred++;
+          continue;
+        }
+
         await sendDigestEmail(digest);
 
         // 6. Log everything we just notified about so we don't re-spam
@@ -171,6 +194,11 @@ Deno.serve(async (_req) => {
         if (rows.length > 0) {
           await supabase.from("sent_notifications").insert(rows);
         }
+        // Stamp the send so daily/weekly cadences can measure from it.
+        await supabase
+          .from("profiles")
+          .update({ last_notified_at: new Date().toISOString() })
+          .eq("id", digest.userId);
         notificationsSent++;
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
@@ -664,6 +692,38 @@ function buildEmailHtml(digest: UserDigest): string {
 </body>
 </html>
   `.trim();
+}
+
+/* Is this user due for a digest email right now?
+ *
+ * The poller runs hourly, so "hourly" and "15min" are always due — 15-minute
+ * cadence is a higher-tier promise that needs the cron interval tightened
+ * (and an eBay quota increase) before it means anything different. It's
+ * treated as hourly until then rather than silently under-delivering.
+ *
+ * Daily and weekly measure from the last time we actually sent this user
+ * something. A null last_notified_at means they've never been emailed, so
+ * they're due immediately.
+ */
+function isDueForDigest(frequency?: string, lastNotifiedAt?: string | null): boolean {
+  const freq = frequency || "hourly";
+  if (freq === "hourly" || freq === "15min") return true;
+
+  const intervals: Record<string, number> = {
+    daily: 24 * 60 * 60 * 1000,
+    weekly: 7 * 24 * 60 * 60 * 1000,
+  };
+  const interval = intervals[freq];
+  if (!interval) return true; // unknown value — fail open rather than mute someone
+
+  if (!lastNotifiedAt) return true;
+  const last = new Date(lastNotifiedAt).getTime();
+  if (!Number.isFinite(last)) return true;
+
+  // Small slack so an hourly cron that drifts by a few seconds doesn't push
+  // a daily digest to the following day.
+  const SLACK_MS = 5 * 60 * 1000;
+  return Date.now() - last >= interval - SLACK_MS;
 }
 
 function renderSearchSection(search: SavedSearch, listings: Listing[]): string {
