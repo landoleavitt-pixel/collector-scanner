@@ -2,6 +2,7 @@ import './globals.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { Analytics } from '@vercel/analytics/react';
+import ImageBlockNotice from './components/ImageBlockNotice';
 
 export const metadata = {
   metadataBase: new URL('https://fieldsandfloors.com'),
@@ -121,6 +122,10 @@ export default function RootLayout({ children }) {
         <Header />
         {children}
         <Footer />
+        {/* Explains blank listing photos when a browser's tracking protection
+            blocks eBay's image CDN. Renders nothing unless it detects the
+            failures, so it costs nothing for the majority who aren't affected. */}
+        <ImageBlockNotice />
         <Analytics />
       </body>
     </html>
