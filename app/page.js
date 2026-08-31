@@ -17,7 +17,6 @@ import BidCountdown from './components/BidCountdown';
 import CardModal from './components/CardModal';
 import { tierForRun, tierChipStyle, OUTLINE_CHIP_STYLE } from './components/rarityUtils';
 import ShareSearchButton from './components/ShareSearchButton';
-import FilterReel from './components/FilterReel';
 import { isReturningVisitor, markVisited, getRecentSearches, addRecentSearch } from '../lib/visitState';
 import { hasShareParams, parseShareParams } from '../lib/shareLink';
 import { WatchlistContext, WatchlistProvider } from '../lib/watchlistContext';
@@ -1140,17 +1139,6 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
           </strong>{' '}
           — plus autograph, rookie, and condition. Save anything you want to keep an eye on.
         </p>
-
-        {/* Demo reel — first-time visitors only. Someone who's been here
-            before already knows what the tool does; showing them the pitch
-            again just puts distance between them and the search bar.
-            isReturning is null until detection runs, so nothing renders on
-            that first tick and the reel never flashes for a returning user. */}
-        {isReturning === false && (
-          <div className="mt-8 max-w-[520px] mx-auto w-full rise" style={{ animationDelay: '240ms' }}>
-            <FilterReel />
-          </div>
-        )}
 
         {/* Search bar — editorial underline style, centered block */}
         <div className="mt-10 rise" style={{ animationDelay: '280ms' }}>
