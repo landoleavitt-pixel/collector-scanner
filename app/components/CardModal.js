@@ -320,7 +320,7 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
     // perspective below) all four quadrants respond CONSISTENTLY, so any
     // future direction complaint is a single sign change here, not a
     // per-corner mystery.
-    const SIGN_X = -1; // vertical:   cursor above center → top edge toward viewer
+    const SIGN_X = 1;  // vertical:   cursor above center → top edge leans toward it
     const SIGN_Y = -1; // horizontal: cursor right of center → right edge toward viewer
     const maxRot = 22;
     const rx = SIGN_X * clamp(dy) * maxRot;
