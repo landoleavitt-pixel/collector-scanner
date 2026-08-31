@@ -38,7 +38,21 @@ export default function Header() {
   return (
     <header className="relative z-20 border-b border-[var(--line-soft)]">
       <div className="max-w-[1200px] mx-auto px-6 lg:px-10 py-7 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-4 group">
+        <Link
+          href="/"
+          className="flex items-center gap-4 group"
+          onClick={(e) => {
+            // Already on the home route? Next's router treats this as a no-op,
+            // so the search results stay on screen — the stage lives in React
+            // state, not the URL. Force a real navigation so the brand always
+            // means "back to a fresh search", which is what people expect from
+            // a logo.
+            if (pathname === '/') {
+              e.preventDefault();
+              window.location.assign('/');
+            }
+          }}
+        >
           <Seal size={32} />
           <span className="font-display text-2xl md:text-3xl tracking-tight leading-none">
             <span data-ff-brand className="inline-block">
