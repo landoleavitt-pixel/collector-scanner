@@ -59,7 +59,7 @@ export default function ShareSearchButton({ query, filters, allPresetRuns = [], 
       className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] uppercase tracking-[0.18em] transition-colors ${className}`}
       style={{
         border: '0.5px solid var(--line)',
-        color: status === 'idle' ? 'var(--ink-300)' : 'var(--gold-bright)',
+        color: status === 'idle' ? 'inherit' : 'var(--gold-bright)',
         background: 'transparent',
       }}
       onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--gold-deep)'; }}

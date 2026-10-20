@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo, useRef, Suspense, createContext, useContext } from 'react';
+import { useState, useEffect, useLayoutEffect, useMemo, useRef, Suspense, createContext, useContext } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 
@@ -725,7 +725,7 @@ function Home() {
                 name: 'What does Fields & Floors cost?',
                 acceptedAnswer: {
                   '@type': 'Answer',
-                  text: 'Searching is free, including the watchlist. Automated alerts on saved searches and bid reminders require the Base plan at $5 per month, with a 14-day free trial. Premium and Pro tiers are planned but not yet available.',
+                  text: 'Searching is free, including the watchlist. Free accounts include 1 live email alert. Up to 5 alerts and bid reminders require the Base plan at $6.99 CAD per month ($59 CAD per year), with a 14-day free trial. Premium and Pro tiers are planned but not yet available.',
                 },
               },
               {
@@ -998,259 +998,298 @@ function Home() {
 /* ─────────────────────────────────────────────
    Hero — featured find, oversized type, refined search
    ───────────────────────────────────────────── */
-/* Splash intro — the brand large and centered with the "Holy Grail search
-   engine" subtitle, then flying up to dock into the header's top-left brand
-   position. "Collectors" fades in only once the brand has landed. The real
-   header brand stays hidden until landing, so the flying title is the only
-   one on screen. Plays once per browser session; the played flag is set on
-   COMPLETION (not start) so React Strict Mode's dev-only double-mount can't
-   strand the overlay. Skipped for reduced-motion users. */
+/* Splash intro — one continuous motion from the seal to the header.
+   The iOS app's launch screen shows this exact seal (same image, same size,
+   same centre), so the app hands off from the native launch screen with no
+   visible jump. Then: a gold bloom, the wordmark rises beneath the seal, and
+   both fly up to dock into the header's seal and brand while the hero rises
+   in underneath. "Collectors" fades in once the brand has landed.
+   Portalled to <body> so it covers the header too. The played flag isn't
+   stored — it plays every visit, as before. Skipped for deep links and
+   reduced-motion users. */
+const SPLASH_SEAL = 150; // px — matches SplashSeal in the iOS launch screen
+
 function SplashIntro() {
   const [phase, setPhase] = useState('boot'); // 'boot' | 'in' | 'dock' | 'skip'
+  const [mounted, setMounted] = useState(false);
+  const [centerY, setCenterY] = useState(null);
+  const [started, setStarted] = useState(false);
+  const sealRef = useRef(null);
   const brandRef = useRef(null);
   const subRef = useRef(null);
 
-  useEffect(() => {
-    const core = document.querySelector('[data-ff-brand]');
-    const coll = document.querySelector('[data-ff-collectors]');
-
+  // Before first paint: decide skip, and in the iOS app line the seal up with
+  // the native launch screen. The web view there starts below the status bar
+  // and ends above the home indicator, so screen-centre isn't view-centre.
+  useLayoutEffectSafe(() => {
+    setMounted(true);
     let skip = false;
     try {
-      // Skip the splash when arriving via a Watchlist Edit/View click — those
-      // land at /?savedSearch= or /?editSearch= and immediately transition to
-      // a different stage, so playing the splash would just be a 2.6s detour.
       const sp = new URLSearchParams(window.location.search);
-      if (sp.get('savedSearch') || sp.get('editSearch') || sp.get('card') || sp.get('q')) skip = true;
-      // Respect accessibility preferences.
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        skip = true;
-      }
-    } catch (e) {
+      if (sp.get('savedSearch') || sp.get('editSearch') || sp.get('card') || sp.get('q') || sp.get('tour')) skip = true;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) skip = true;
+    } catch {
       skip = true;
     }
-    if (skip) { setPhase('skip'); return; }
+    if (skip) { setPhase('skip'); announceIntroDone(); return; }
 
-    // Hide the real header brand while the splash plays — the flying title
-    // is the only one visible until it lands.
-    if (core) core.style.opacity = '0';
-    if (coll) coll.style.opacity = '0';
+    if (window.Capacitor?.isNativePlatform?.()) {
+      const insets = Math.max(0, window.screen.height - window.innerHeight);
+      const bottom = insets > 40 ? 34 : 0; // Face ID iPhones: 34pt home indicator
+      const top = insets - bottom;
+      setCenterY(window.innerHeight / 2 - (top - bottom) / 2);
+    }
     setPhase('in');
+    setStarted(true);
+  }, []);
 
-    const t = setTimeout(() => {
-      const el = brandRef.current;
-      if (core && el) {
-        // FLIP: measure start and target, animate the transform between them
-        // (left edges aligned, scaled to the header brand's height).
-        const from = el.getBoundingClientRect();
-        const to = core.getBoundingClientRect();
-        const scale = to.height / from.height;
-        el.style.transformOrigin = 'left center';
-        el.style.transition = 'transform 0.85s cubic-bezier(0.4, 0, 0.2, 1)';
-        el.style.transform = `translate(${to.left - from.left}px, ${to.top + to.height / 2 - (from.top + from.height / 2)}px) scale(${scale})`;
+  // Keyed on `started`, not `phase` — the phase changes mid-sequence and
+  // re-running this effect would cancel the landing timer.
+  useEffect(() => {
+    if (!started) return;
+    const headerSeal = document.querySelector('[data-ff-seal]');
+    const core = document.querySelector('[data-ff-brand]');
+    const coll = document.querySelector('[data-ff-collectors]');
+    for (const el of [headerSeal, core, coll]) if (el) el.style.opacity = '0';
+
+    const fly = (el, target, scale) => {
+      const from = el.getBoundingClientRect();
+      const to = target.getBoundingClientRect();
+      el.style.transition = 'transform 0.8s cubic-bezier(0.65, 0, 0.25, 1)';
+      el.style.transform = `translate(${to.left + to.width / 2 - (from.left + from.width / 2)}px, ${to.top + to.height / 2 - (from.top + from.height / 2)}px) scale(${scale})`;
+    };
+
+    const t1 = setTimeout(() => {
+      // The header seal is an SVG whose ring fills 91% of its box; the intro
+      // seal image's ring fills 78.5%. Scale ring-to-ring so they match.
+      if (sealRef.current && headerSeal) {
+        const to = headerSeal.getBoundingClientRect();
+        fly(sealRef.current, headerSeal, (to.width * 0.91) / (SPLASH_SEAL * 0.785));
+      }
+      if (brandRef.current && core) {
+        const scale = core.getBoundingClientRect().height / brandRef.current.getBoundingClientRect().height;
+        fly(brandRef.current, core, scale);
       }
       if (subRef.current) subRef.current.style.opacity = '0';
       setPhase('dock');
+    }, 1150);
 
-      setTimeout(() => {
-        // Landed: swap in the real brand, then fade "Collectors" in after it.
-        if (core) { core.style.transition = 'opacity 0.2s'; core.style.opacity = '1'; }
-        if (coll) { coll.style.transition = 'opacity 0.5s ease 0.2s'; coll.style.opacity = '1'; }
-        setPhase('skip');
-      }, 900);
-    }, 1700);
+    const t2 = setTimeout(() => {
+      if (headerSeal) { headerSeal.style.transition = 'opacity 0.15s'; headerSeal.style.opacity = '1'; }
+      if (core) { core.style.transition = 'opacity 0.15s'; core.style.opacity = '1'; }
+      if (coll) { coll.style.transition = 'opacity 0.5s ease 0.15s'; coll.style.opacity = '1'; }
+      setPhase('skip');
+      announceIntroDone();
+    }, 1150 + 820);
 
     return () => {
-      // Strict Mode / unmount cleanup: cancel and restore the header brand.
-      clearTimeout(t);
-      if (core) core.style.opacity = '';
-      if (coll) coll.style.opacity = '';
+      clearTimeout(t1);
+      clearTimeout(t2);
+      for (const el of [headerSeal, core, coll]) if (el) el.style.opacity = '';
     };
-  }, []);
+  }, [started]);
 
   if (phase === 'skip') return null;
 
-  // Pre-decision frame: a plain base-color cover so the header title never
-  // flashes before the splash takes over.
-  if (phase === 'boot') {
-    return <div className="fixed inset-0 z-50" style={{ background: 'var(--bg-base)' }} />;
-  }
+  const sealStyle = {
+    width: SPLASH_SEAL,
+    height: SPLASH_SEAL,
+    position: 'absolute',
+    left: '50%',
+    top: centerY != null ? centerY : '50%',
+    marginLeft: -SPLASH_SEAL / 2,
+    marginTop: -SPLASH_SEAL / 2,
+  };
 
-  return (
-    <div className="fixed inset-0 z-50" style={{ pointerEvents: phase === 'dock' ? 'none' : 'auto' }}>
-      {/* Background layer fades away during the flight, revealing the page
-          beneath while the brand is still airborne. */}
+  const overlay = (
+    <div className="fixed inset-0 z-[200]" style={{ pointerEvents: phase === 'dock' ? 'none' : 'auto' }}>
+      {/* Base layer fades during the flight, revealing the page beneath. */}
       <div
         className="absolute inset-0"
         style={{
           background: 'var(--bg-base)',
-          transition: 'opacity 0.5s ease 0.2s',
+          transition: 'opacity 0.55s ease 0.15s',
           opacity: phase === 'dock' ? 0 : 1,
         }}
       />
-      <div className="relative w-full h-full flex flex-col items-center justify-center">
+      {phase !== 'boot' && (
         <div
-          ref={brandRef}
-          className="font-display text-[clamp(2.4rem,9vw,3.8rem)] tracking-tight leading-none rise"
-          style={{ animationDelay: '120ms' }}
-        >
-          Fields <em className="text-[var(--gold)] not-italic">&amp;</em> Floors
-        </div>
+          aria-hidden="true"
+          className="absolute ff-bloom"
+          style={{
+            width: 360, height: 360, left: '50%', marginLeft: -180,
+            top: centerY != null ? centerY - 180 : 'calc(50% - 180px)',
+            background: 'radial-gradient(circle, rgba(230,185,107,0.22), transparent 62%)',
+            opacity: phase === 'dock' ? 0 : undefined,
+            transition: 'opacity 0.4s ease',
+          }}
+        />
+      )}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img ref={sealRef} src="/brand/seal.png" alt="" style={sealStyle} />
+      {phase !== 'boot' && (
         <div
-          ref={subRef}
-          className="mt-5 text-[11px] tracking-[0.32em] uppercase text-[var(--gold)] rise"
-          style={{ animationDelay: '520ms', transition: 'opacity 0.3s ease', fontFamily: 'ui-monospace, monospace' }}
+          className="absolute left-0 right-0 flex flex-col items-center"
+          style={{ top: `calc(${centerY != null ? `${centerY}px` : '50%'} + ${SPLASH_SEAL / 2 + 18}px)` }}
         >
-          A Holy Grail search engine
+          <div
+            ref={brandRef}
+            className="font-display text-[clamp(2.2rem,8.5vw,3.4rem)] tracking-tight leading-none rise"
+            style={{ animationDelay: '320ms' }}
+          >
+            Fields <em className="text-[var(--gold)] not-italic">&amp;</em> Floors
+          </div>
+          <div
+            ref={subRef}
+            className="mt-4 text-[10.5px] tracking-[0.32em] uppercase text-[var(--gold)] rise"
+            style={{ animationDelay: '560ms', transition: 'opacity 0.25s ease', fontFamily: 'ui-monospace, monospace' }}
+          >
+            A Holy Grail search engine
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
+
+  // First render (server + hydration) can't portal; render in place. It's
+  // fixed and full-screen either way, and portals on the next frame.
+  return mounted ? createPortal(overlay, document.body) : overlay;
 }
+
+// Other overlays (e.g. the new-user tour) wait for the intro to finish:
+// check window.__ffIntroDone, else listen for the 'ff:intro-done' event.
+function announceIntroDone() {
+  window.__ffIntroDone = true;
+  window.dispatchEvent(new Event('ff:intro-done'));
+}
+
+// useLayoutEffect warns during SSR; fall back to useEffect on the server.
+const useLayoutEffectSafe = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSearch, user, onCardClick, isReturning, recentSearches = [] }) {
   return (
     <section className="relative border-b border-[var(--line-soft)] overflow-hidden">
-      {/* Above the fold — explainer-first hero. Headline names the value
-          ("better way to find rare sports cards"), sub-line spells out the
-          differentiator (multiple print runs at once) and the watchlist
-          win. Search bar sits beneath, anchoring the action. */}
-      {/* Hero wrapper: dynamic viewport height (100dvh) so it accounts for
-          mobile browser chrome — `min-h-screen` (100vh) lies on iOS Safari
-          and leaks the next section into view. Position-relative so the
-          scroll cue can absolutely-anchor to the bottom edge below. */}
-      <div className="relative min-h-[100dvh] flex flex-col justify-center max-w-[820px] mx-auto px-6 lg:px-10 pt-8 pb-24">
-        <h1
-          className="font-display italic text-center text-[clamp(2.1rem,6vw,3.6rem)] leading-[1.05] tracking-[-0.01em] rise"
-          style={{ animationDelay: '120ms' }}
-        >
-          A better way to find <em className="text-[var(--gold-bright)]">rare sports cards.</em>
-        </h1>
+      {/* Gold bloom behind the featured card — top-centre on mobile, right
+          column on desktop where the card sits. */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none md:hidden"
+        style={{ background: 'radial-gradient(70% 34% at 50% 24%, rgba(201,149,74,0.16), transparent 72%)' }}
+      />
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none hidden md:block"
+        style={{ background: 'radial-gradient(38% 55% at 72% 48%, rgba(201,149,74,0.14), transparent 72%)' }}
+      />
 
-        {/* Sub-line — the plain-language explanation. Bolds the actual
-            differentiator (multiple print runs at once) and previews the
-            watchlist value without overpromising paid-only alerts. */}
-        <p
-          className="mt-5 text-center text-[15px] md:text-base leading-relaxed max-w-[580px] mx-auto rise"
-          style={{ color: 'var(--ink-200)', animationDelay: '200ms' }}
-        >
-          Search eBay by{' '}
-          <strong className="font-medium" style={{ color: 'var(--gold-bright)' }}>
-            multiple print runs at once
-          </strong>{' '}
-          — plus autograph, rookie, and condition. Save anything you want to keep an eye on.
-        </p>
-
-        {/* Search bar — editorial underline style, centered block */}
-        <div className="mt-10 rise" style={{ animationDelay: '280ms' }}>
-          <div className="relative flex items-center">
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && !loading && onSearch()}
-              disabled={loading}
-              className="relative w-full pl-14 pr-14 py-5 bg-transparent border-0 border-b border-[var(--line)] text-2xl md:text-3xl font-display text-[var(--ink-100)] focus:outline-none focus:border-[var(--gold)] transition-colors text-center"
-            />
-            {!query && !loading && <RotatingPlaceholder />}
-            <button
-              onClick={onSearch}
-              disabled={loading}
-              className="absolute right-0 w-11 h-11 flex items-center justify-center text-[var(--ink-100)] hover:text-[var(--gold)] transition-colors disabled:opacity-30 z-10"
-              aria-label="Search"
-            >
-              <ArrowRight className="w-6 h-6" strokeWidth={1.5} />
-            </button>
-          </div>
-          {error && <p className="mt-3 text-xs text-[var(--crit)]">{error}</p>}
+      {/* Direction A — "The Card". The live featured grail leads as a
+          floating object; headline and search follow. Desktop splits into
+          two columns (copy left, card right); mobile stacks card-first. */}
+      <div className="relative max-w-[1120px] mx-auto px-6 lg:px-10 pt-6 pb-16 md:pt-20 md:pb-28 grid md:grid-cols-[1.05fr_0.95fr] gap-9 md:gap-16 items-center">
+        <div className="md:order-2 flex flex-col items-center rise" style={{ animationDelay: '120ms' }}>
+          <HeroCard onCardClick={onCardClick} />
         </div>
 
-        {/* Example athletes — tapping one auto-advances to the filter stage */}
-        <div className="mt-9 rise" style={{ animationDelay: '420ms' }}>
-          <div
-            className="text-[10px] uppercase tracking-[0.24em] text-center mb-3 font-mono"
-            style={{ color: 'var(--ink-600)' }}
+        <div className="md:order-1 text-center md:text-left">
+          <h1
+            className="font-display italic text-[clamp(2.6rem,9vw,4.6rem)] leading-[0.98] tracking-[-0.015em] rise"
+            style={{ animationDelay: '220ms' }}
           >
-            {recentSearches.length > 0 ? 'Pick up where you left off' : 'Or try'}
-          </div>
-          <div className="flex flex-wrap justify-center items-center gap-2.5">
-            {(recentSearches.length > 0
-              ? recentSearches
-              : ['Caitlin Clark', 'Victor Wembanyama', 'Connor Bedard', 'Cooper Flagg', 'Paul Skenes']
-            ).map((name) => (
-              <button
-                key={name}
-                type="button"
-                onClick={() => onSuggested(name)}
+            Find the <em className="text-[var(--gold-bright)]">one.</em>
+            <span className="sr-only"> A search engine for rare sports cards on eBay.</span>
+          </h1>
+
+          {/* The differentiator, in plain language. */}
+          <p
+            className="mt-4 text-[15px] md:text-[17px] leading-relaxed max-w-[460px] mx-auto md:mx-0 rise"
+            style={{ color: 'var(--ink-400)', animationDelay: '300ms' }}
+          >
+            Search eBay by{' '}
+            <strong className="font-medium" style={{ color: 'var(--ink-100)' }}>
+              multiple print runs at once
+            </strong>
+            {' '}— plus autograph, rookie, and grade.
+          </p>
+
+          {/* Search — a solid gold-edged field with a gold go button. */}
+          <div className="mt-7 md:mt-9 rise" style={{ animationDelay: '380ms' }}>
+            <div
+              className="relative flex items-center rounded-2xl transition-colors focus-within:border-[var(--gold)]"
+              style={{
+                border: '0.5px solid var(--gold-deep)',
+                background: 'rgba(20,17,12,0.85)',
+                boxShadow: '0 0 0 4px rgba(201,149,74,0.05), 0 18px 40px rgba(0,0,0,0.45)',
+              }}
+            >
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && !loading && onSearch()}
                 disabled={loading}
-                className="text-[13px] px-4 py-2 rounded-full transition-colors disabled:opacity-40"
-                style={{ border: '0.5px solid var(--line)', color: 'var(--ink-200)', background: 'var(--bg-elev)' }}
-                onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--gold-deep)'; e.currentTarget.style.color = 'var(--gold-bright)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--line)'; e.currentTarget.style.color = 'var(--ink-200)'; }}
+                aria-label="Search a player"
+                className="relative w-full pl-5 pr-16 py-4 md:py-5 bg-transparent border-0 text-xl md:text-2xl font-display text-[var(--ink-100)] focus:outline-none"
+              />
+              {!query && !loading && <RotatingPlaceholder align="left" />}
+              <button
+                onClick={onSearch}
+                disabled={loading}
+                className="absolute right-2 w-11 h-11 rounded-xl flex items-center justify-center transition-opacity hover:opacity-90 disabled:opacity-40 z-10"
+                style={{ backgroundImage: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)', color: 'var(--ink-on-gold)' }}
+                aria-label="Search"
               >
-                {name}
+                <ArrowRight className="w-5 h-5" strokeWidth={2} />
               </button>
-            ))}
+            </div>
+            {error && <p className="mt-3 text-xs text-[var(--crit)]">{error}</p>}
           </div>
-        </div>
 
-        {/* Returning-user shortcuts only show to logged-in users. For
-            anonymous visitors, the gold-bordered CTA strip below the hero
-            handles the call-to-action instead. */}
-        {user && (
-          <div className="mt-10 flex justify-center gap-8 rise" style={{ animationDelay: '560ms' }}>
-            <Link
-              href="/watchlist"
-              className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
+          {/* Recent searches for returning visitors, examples otherwise. */}
+          <div className="mt-5 rise" style={{ animationDelay: '460ms' }}>
+            <div
+              className="text-[10px] uppercase tracking-[0.24em] mb-3 font-mono"
+              style={{ color: 'var(--ink-600)' }}
             >
-              <span className="text-[var(--gold)]">◎</span> My hunts
-            </Link>
-            <Link
-              href="/watchlist-cards"
-              className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
-            >
-              <span className="text-[var(--gold)]">★</span> Watchlist
-            </Link>
+              {recentSearches.length > 0 ? 'Pick up where you left off' : 'Or try'}
+            </div>
+            <div className="flex flex-wrap justify-center md:justify-start items-center gap-2">
+              {(recentSearches.length > 0
+                ? recentSearches
+                : ['Caitlin Clark', 'Victor Wembanyama', 'Connor Bedard', 'Cooper Flagg', 'Paul Skenes']
+              ).map((name) => (
+                <button
+                  key={name}
+                  type="button"
+                  onClick={() => onSuggested(name)}
+                  disabled={loading}
+                  className="text-[13px] px-4 py-2 rounded-full transition-colors disabled:opacity-40"
+                  style={{ border: '0.5px solid var(--line)', color: 'var(--ink-200)', background: 'var(--bg-elev)' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--gold-deep)'; e.currentTarget.style.color = 'var(--gold-bright)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--line)'; e.currentTarget.style.color = 'var(--ink-200)'; }}
+                >
+                  {name}
+                </button>
+              ))}
+            </div>
           </div>
-        )}
-      </div>
 
-      {/* Scroll cue — pinned to the bottom edge of the hero section itself
-          (not inside the centered flex column above). This is what actually
-          makes it sit flush with the bottom of the viewport regardless of
-          how tall the headline/search/chips content is — the centered-stack
-          approach left the arrow floating mid-screen on short content. */}
-      <a
-        href="#why"
-        className="absolute bottom-8 left-0 right-0 flex flex-col items-center gap-3 rise group"
-        style={{ animationDelay: '700ms', textDecoration: 'none' }}
-      >
-        <span
-          className="text-[11px] uppercase tracking-[0.28em] transition-colors group-hover:text-[var(--gold-bright)]"
-          style={{ color: 'var(--gold)' }}
-        >
-          How it works
-        </span>
-        <span
-          className="bob flex items-center justify-center rounded-full transition-colors group-hover:bg-[rgba(201,149,74,0.10)]"
-          style={{
-            width: 44, height: 44,
-            border: '0.5px solid var(--gold-deep)',
-            color: 'var(--gold-bright)',
-            fontSize: 22,
-            lineHeight: 1,
-          }}
-          aria-hidden="true"
-        >
-          ↓
-        </span>
-      </a>
-
-      {/* Below the fold — the live featured Grail pull from eBay.
-          (FeaturedFind has its own "Featured Find · Live from eBay" caption,
-          so we don't add a duplicate header here.) */}
-      <div className="max-w-[1040px] mx-auto px-6 lg:px-10 pb-16 pt-8">
-        <div className="mx-auto max-w-[360px] rise" style={{ animationDelay: '820ms' }}>
-          <FeaturedFind onCardClick={onCardClick} />
+          {/* Returning-user shortcuts only show to logged-in users. */}
+          {user && (
+            <div className="mt-8 flex justify-center md:justify-start gap-8 rise" style={{ animationDelay: '560ms' }}>
+              <Link
+                href="/watchlist"
+                className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
+              >
+                <span className="text-[var(--gold)]">◎</span> My hunts
+              </Link>
+              <Link
+                href="/watchlist-cards"
+                className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
+              >
+                <span className="text-[var(--gold)]">★</span> Watchlist
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </section>
@@ -1260,7 +1299,7 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
 /* Rotating animated placeholder for the search bar.
    Cycles through SUGGESTED_SEARCHES with a slide-up fade transition.
    Each entry sits for ~3 seconds before animating in the next one. */
-function RotatingPlaceholder() {
+function RotatingPlaceholder({ align = 'center' }) {
   const [idx, setIdx] = useState(0);
   const [animKey, setAnimKey] = useState(0);
 
@@ -1274,12 +1313,12 @@ function RotatingPlaceholder() {
 
   return (
     <span
-      className="absolute left-0 right-0 top-1/2 -translate-y-1/2 pointer-events-none overflow-hidden flex items-center justify-center text-center"
+      className={`absolute left-0 right-0 top-1/2 -translate-y-1/2 pointer-events-none overflow-hidden flex items-center ${align === 'left' ? 'justify-start pl-5 pr-16' : 'justify-center text-center'}`}
       style={{ height: '2.4em' }}
     >
       <span
         key={animKey}
-        className="block text-2xl md:text-3xl font-display italic text-[var(--ink-600)] rotate-placeholder text-center"
+        className={`block font-display italic text-[var(--ink-600)] rotate-placeholder ${align === 'left' ? 'text-xl md:text-2xl truncate' : 'text-2xl md:text-3xl text-center'}`}
         style={{ lineHeight: 1.4, paddingBottom: '0.15em' }}
       >
         {SUGGESTED_SEARCHES[idx]}
@@ -1486,7 +1525,7 @@ function FreeAccountCTA() {
       </h3>
       <p
         className="text-[13px] leading-relaxed max-w-[480px] mx-auto mb-5"
-        style={{ color: 'var(--ink-300)' }}
+        style={{ color: 'inherit' }}
       >
         Save listings to your watchlist and we'll keep them updated — live price,
         bid count, sold status. No credit card.
@@ -1495,8 +1534,8 @@ function FreeAccountCTA() {
         href="/signup"
         className="inline-flex items-center gap-2 px-6 py-3 rounded text-[11px] tracking-[0.16em] uppercase font-semibold"
         style={{
-          backgroundImage: 'linear-gradient(180deg, #ffd97a 0%, #d99c14 100%)',
-          color: '#1a1612',
+          backgroundImage: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)',
+          color: 'var(--ink-on-gold)',
         }}
       >
         Create free account →
@@ -1581,7 +1620,7 @@ function PlansSection({ user }) {
           <li
             key={f.label}
             className="text-[13px] leading-snug pl-4 relative mb-2"
-            style={{ color: f.isNew ? 'var(--gold-bright)' : 'var(--ink-300)', fontWeight: f.isNew ? 500 : 400 }}
+            style={{ color: f.isNew ? 'var(--gold-bright)' : 'inherit', fontWeight: f.isNew ? 500 : 400 }}
           >
             <span
               className="absolute left-0 top-0.5 text-[11px]"
@@ -1597,7 +1636,7 @@ function PlansSection({ user }) {
         href={ctaHref}
         className="inline-flex items-center justify-center px-4 py-2.5 rounded font-sans text-[10.5px] tracking-[0.16em] uppercase no-underline"
         style={highlight
-          ? { backgroundImage: 'linear-gradient(180deg, #ffd97a 0%, #d99c14 100%)', color: '#1a1612', fontWeight: 600 }
+          ? { backgroundImage: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)', color: 'var(--ink-on-gold)', fontWeight: 600 }
           : { background: 'transparent', color: 'var(--ink-200)', border: '0.5px solid var(--ink-600)' }
         }
       >
@@ -1644,6 +1683,7 @@ function PlansSection({ user }) {
             { label: 'Live price & sold status', isNew: true },
             { label: 'Saved listings across devices', isNew: true },
             { label: 'Unlimited saved searches', isNew: true },
+            { label: '1 live email alert', isNew: true },
           ]}
           ctaLabel={user ? 'You\u2019re signed in' : 'Create free account'}
           ctaHref={user ? '/watchlist-cards' : '/signup'}
@@ -1651,9 +1691,9 @@ function PlansSection({ user }) {
         />
         <Tier
           name="Base"
-          price="$5"
+          price="$6.99"
           priceUnit="/mo"
-          line="Launching soon · join the waitlist"
+          line="14-day free trial"
           features={[
             { label: 'Unlimited search', isNew: false },
             { label: 'Improved search filters', isNew: false },
@@ -1661,11 +1701,11 @@ function PlansSection({ user }) {
             { label: 'Live price & sold status', isNew: false },
             { label: 'Saved listings across devices', isNew: false },
             { label: 'Unlimited saved searches', isNew: false },
-            { label: 'Email alerts on new listings', isNew: true },
+            { label: 'Alerts the moment a match lists', isNew: true },
             { label: 'Bid reminders below price cap', isNew: true },
           ]}
-          ctaLabel="Notify me when available"
-          ctaHref="/alerts"
+          ctaLabel="Start free trial"
+          ctaHref={user ? '/subscribe' : '/signup?next=/subscribe'}
           highlight={false}
         />
       </div>
@@ -1673,120 +1713,108 @@ function PlansSection({ user }) {
   );
 }
 
-/* FeaturedFind — auto-loads a real Grail-tier card from eBay via /api/featured.
-   The endpoint is server-side cached (1-hour TTL) and rotates athletes hourly,
-   so visitors see a real, current high-rarity card without burning eBay quota
-   on every page load.
+/* HeroCard — the live featured grail from /api/featured, presented as a
+   floating, slabbed object with a slow foil sweep. /api/featured is cached
+   server-side (1-hour TTL, rotating athletes), so this costs no extra eBay
+   quota per visit. Tapping opens the same CardModal search results use.
 
-   States:
-     - Loading: shimmer placeholder card.
-     - Success: real card with image, badges, price, link to the eBay listing.
-     - Failure: gracefully hides (since this is decorative, not critical). */
-/* FeaturedFind — auto-loads a real Grail-tier card from eBay via /api/featured.
-   Clicking opens the same CardModal that search results use, keeping the
-   homepage card-tap experience consistent with the rest of the app. The
-   modal then provides its own "View on eBay" link if the user wants to
-   leave the site. */
-function FeaturedFind({ onCardClick }) {
+   Loading shows the empty frame at full size (no layout shift); if the
+   fetch fails, the brand seal stands in so the hero never looks broken. */
+function HeroCard({ onCardClick }) {
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    async function load() {
+    (async () => {
       try {
         const res = await fetch('/api/featured');
         if (!res.ok) throw new Error('featured fetch failed');
         const data = await res.json();
-        if (!cancelled) {
-          if (data.featured) setItem(data.featured);
-          else setFailed(true);
-          setLoading(false);
-        }
+        if (cancelled) return;
+        if (data.featured) setItem(data.featured);
+        else setFailed(true);
       } catch {
-        if (!cancelled) {
-          setFailed(true);
-          setLoading(false);
-        }
+        if (!cancelled) setFailed(true);
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-    }
-    load();
+    })();
     return () => { cancelled = true; };
   }, []);
 
-  if (failed) return null; // decorative — gracefully hide on error
+  if (failed) {
+    return (
+      <div className="flex items-center justify-center w-[min(52vw,230px)] md:w-[300px] aspect-[3/4]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/brand/seal.png" alt="" className="w-[70%] opacity-90" />
+      </div>
+    );
+  }
 
-  const handleClick = () => {
-    if (item && onCardClick) onCardClick(item);
-  };
+  const price = item?.price != null
+    ? `$${Number(item.price).toLocaleString('en-US', { maximumFractionDigits: 0 })}`
+    : null;
+  const grade = item && (
+    (item.psaGrade && `PSA ${item.psaGrade}`) ||
+    (item.bgsGrade && `BGS ${item.bgsGrade}`) ||
+    (item.sgcGrade && `SGC ${item.sgcGrade}`) ||
+    (item.cgcGrade && `CGC ${item.cgcGrade}`)
+  );
 
   return (
-    <figure className="relative">
-      <figcaption className="absolute -top-6 left-0 text-[10px] uppercase tracking-[0.3em] text-[var(--ink-400)] flex items-center gap-3">
-        <span className="w-4 h-px bg-[var(--ink-400)]" />
-        Featured Find · Live from eBay
-      </figcaption>
-
+    <>
       <button
         type="button"
-        onClick={handleClick}
+        onClick={() => item && onCardClick?.(item)}
         disabled={!item}
-        className={`block w-full text-left border border-[var(--line)] bg-[var(--bg-elev)] p-5 relative group transition-colors ${item ? 'hover:border-[var(--gold-deep)] cursor-pointer' : ''}`}
+        aria-label={item ? `Featured find: ${item.title}` : 'Loading featured find'}
+        className="block w-[min(52vw,230px)] md:w-[300px] group"
       >
-        <CornerMarks />
-
-        {/* Image area — foil sheen on tap (and on hover via CSS). */}
-        <div
-          className="ff-sheen-wrap aspect-[3/4] bg-gradient-to-br from-[var(--bg-elev-2)] via-[#1d180e] to-[#0e0b07] relative overflow-hidden"
-          onTouchStart={(e) => { e.currentTarget.classList.remove('ff-play'); void e.currentTarget.offsetWidth; e.currentTarget.classList.add('ff-play'); }}
-        >
-          {loading && (
-            <div className="absolute inset-0 shimmer" />
-          )}
-          {item && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={upscaleEbayImage(item.image)}
-              alt={item.title}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-            />
-          )}
-          {item && item.isAuction && item.endTime && (
-            <BidCountdown endTime={item.endTime} />
-          )}
-        </div>
-
-        {/* Metadata */}
-        <div className="mt-5 space-y-3">
-          {loading ? (
-            <>
-              <div className="h-5 w-3/4 bg-[var(--bg-elev-2)] shimmer" />
-              <div className="h-3 w-1/2 bg-[var(--bg-elev-2)] shimmer" />
-            </>
-          ) : item && (
-            <>
-              <h3 className="font-display text-base leading-snug text-[var(--ink-100)] line-clamp-2 group-hover:text-[var(--gold-bright)] transition-colors">
-                {item.title}
-              </h3>
-              <div className="flex items-end justify-between pt-2 border-t border-[var(--line-soft)]">
-                <div className="flex gap-1.5 flex-wrap">
-                  {item.hasAuto && <Badge>AUTO</Badge>}
-                  <Badge mono tier="grail">/{item.printRun}</Badge>
-                  {item.psaGrade && <Badge>PSA {item.psaGrade}</Badge>}
-                  {item.bgsGrade && <Badge>BGS {item.bgsGrade}</Badge>}
-                  {item.sgcGrade && <Badge>SGC {item.sgcGrade}</Badge>}
-                  {item.cgcGrade && <Badge>CGC {item.cgcGrade}</Badge>}
-                </div>
-                <span className="font-display text-2xl text-[var(--gold)] leading-none">
-                  ${item.price != null ? Number(item.price).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '—'}
-                </span>
-              </div>
-            </>
-          )}
+        <div className="ff-float">
+          <div
+            className="relative rounded-[14px] p-2.5 transition-shadow duration-500"
+            style={{
+              background: 'linear-gradient(160deg, rgba(255,255,255,0.13), rgba(255,255,255,0.03))',
+              border: '0.5px solid rgba(255,255,255,0.2)',
+              boxShadow: '0 30px 60px rgba(0,0,0,0.7), 0 0 90px rgba(230,185,107,0.16)',
+            }}
+          >
+            <div className="ff-sheen-wrap ff-sheen-loop relative aspect-[3/4] rounded-[8px] overflow-hidden bg-gradient-to-br from-[var(--bg-elev-2)] via-[#1d180e] to-[#0e0b07]">
+              {loading && <div className="absolute inset-0 shimmer" />}
+              {item && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={upscaleEbayImage(item.image)}
+                  alt={item.title}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                />
+              )}
+              {item?.isAuction && item.endTime && <BidCountdown endTime={item.endTime} />}
+            </div>
+          </div>
         </div>
       </button>
-    </figure>
+
+      {/* Live line + chips + price — reads as a caption to the card. */}
+      <div className="mt-6 flex items-center gap-2 font-mono text-[9.5px] uppercase tracking-[0.18em]" style={{ color: 'var(--ink-400)' }}>
+        <span className="ff-live-dot" aria-hidden="true" />
+        Featured find · Live on eBay
+      </div>
+      <div className="mt-3 min-h-[30px] flex items-center justify-center gap-1.5">
+        {item && (
+          <>
+            {item.hasAuto && <Badge>Auto</Badge>}
+            {item.printRun && <Badge mono tier={tierForRun(item.printRun) || 'grail'}>/{item.printRun}</Badge>}
+            {grade && <Badge>{grade}</Badge>}
+            {price && (
+              <span className="ml-2 font-display text-[22px] leading-none text-[var(--gold-bright)]">{price}</span>
+            )}
+          </>
+        )}
+      </div>
+    </>
   );
 }
 
@@ -2022,7 +2050,7 @@ function FilterControls({ filters, setFilter, compact = false }) {
                               padding: '0 14px',
                               border: `1px solid ${sel ? tierColor : 'var(--line)'}`,
                               background: sel ? tierColor : 'var(--bg-elev-2)',
-                              color: sel ? '#0e0c0a' : 'var(--ink-200)',
+                              color: sel ? 'var(--legacy-dark)' : 'var(--ink-200)',
                               fontWeight: sel ? 600 : 500,
                             }}
                           >
@@ -2174,13 +2202,13 @@ function TypeToggleCard({ label, checked, onChange }) {
       <span
         className="relative w-8 h-4 rounded-full transition-colors"
         style={{
-          background: checked ? 'linear-gradient(180deg, #ffd97a 0%, #d99c14 100%)' : 'rgba(255,255,255,0.10)',
+          background: checked ? 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)' : 'rgba(255,255,255,0.10)',
         }}
       >
         <span
           className="absolute top-0.5 left-0.5 w-3 h-3 rounded-full transition-transform"
           style={{
-            background: checked ? '#0e0c0a' : '#6a6356',
+            background: checked ? 'var(--legacy-dark)' : '#6a6356',
             transform: checked ? 'translateX(16px)' : 'translateX(0)',
           }}
         />
@@ -2241,8 +2269,8 @@ function SegmentedGroup({ value, onChange, options, vertical = false }) {
             style={
               active
                 ? {
-                    background: 'linear-gradient(180deg, #ffd97a 0%, #d99c14 100%)',
-                    color: '#1a1612',
+                    background: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)',
+                    color: 'var(--ink-on-gold)',
                     fontWeight: 600,
                     borderRightColor: 'transparent',
                   }
@@ -2310,8 +2338,8 @@ function FilterPanel({ query, setQuery, filters, setFilter, onSubmit, onCancel, 
           onClick={onSubmit}
           className="group inline-flex items-center gap-3 px-9 py-4 transition-all text-sm font-semibold tracking-[0.12em] uppercase"
           style={{
-            background: 'linear-gradient(180deg, #ffd97a 0%, #d99c14 100%)',
-            color: '#0e0c0a',
+            background: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)',
+            color: 'var(--legacy-dark)',
           }}
         >
           {isEditing ? 'Update search criteria' : 'Search'}
@@ -2346,8 +2374,8 @@ function ResultsSidebar({ filters, setFilter, onSearch, hasPending }) {
             hasPending ? 'pending-pulse' : ''
           }`}
           style={{
-            background: 'linear-gradient(180deg, #ffd97a 0%, #d99c14 100%)',
-            color: '#0e0c0a',
+            background: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)',
+            color: 'var(--legacy-dark)',
           }}
         >
           Search →
@@ -2406,7 +2434,7 @@ function MobileFilterBar({ activeCount, onOpenFilters, onOpenSort }) {
         {activeCount > 0 && (
           <span
             className="inline-flex items-center justify-center text-[11px] font-bold rounded-full"
-            style={{ minWidth: 18, height: 18, padding: '0 5px', background: 'var(--gold)', color: '#0e0c0a', letterSpacing: 0 }}
+            style={{ minWidth: 18, height: 18, padding: '0 5px', background: 'var(--gold)', color: 'var(--legacy-dark)', letterSpacing: 0 }}
           >
             {activeCount}
           </span>
@@ -2519,8 +2547,8 @@ function MobileFilterDrawer({ open, onClose, filters, setFilter, onSearch, onClo
           style={{
             minHeight: 52,
             borderRadius: 10,
-            background: 'linear-gradient(180deg, #ffd97a 0%, #d99c14 100%)',
-            color: '#0e0c0a',
+            background: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)',
+            color: 'var(--legacy-dark)',
           }}
         >
           Search →
@@ -2904,7 +2932,7 @@ function CustomPrintRunInput({ customRuns, onAdd, onRemove }) {
         </div>
       )}
 
-      {err && <p className="text-[10px] text-[#d4684a] mt-1.5">{err}</p>}
+      {err && <p className="text-[10px] text-[var(--crit)] mt-1.5">{err}</p>}
     </div>
   );
 }
@@ -3064,8 +3092,8 @@ function PendingSearchModal({ open, onSearch, onCancel, onDismiss, floating = fa
             onClick={onSearch}
             className="w-full min-h-[48px] rounded-[8px] text-[12px] font-bold uppercase tracking-[0.14em]"
             style={{
-              background: 'linear-gradient(180deg, #ffd97a 0%, #d99c14 100%)',
-              color: '#1a1612',
+              background: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)',
+              color: 'var(--ink-on-gold)',
               border: 'none',
               cursor: 'pointer',
             }}
@@ -3528,28 +3556,28 @@ function Badge({ children, mono, subtle, auction, tier }) {
     className = 'border-[#c97a3a] text-[#e6a86b] bg-[#c97a3a]/[0.10]';
   } else if (tier === 'grail') {
     // Grail tier (/1–/25) — rich warm gold
-    className = 'text-[#1a1612] font-bold';
+    className = 'text-[var(--ink-on-gold)] font-bold';
     inlineStyle = {
       borderColor: '#ffc14d',
-      backgroundImage: 'linear-gradient(180deg, #ffd97a 0%, #d99c14 100%)',
+      backgroundImage: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)',
     };
   } else if (tier === 'ultra') {
     // Ultra Rare tier (/26–/99) — cool platinum-blue
-    className = 'text-[#1a1612] font-bold';
+    className = 'text-[var(--ink-on-gold)] font-bold';
     inlineStyle = {
       borderColor: '#c8d4e0',
       backgroundImage: 'linear-gradient(180deg, #e0e8f0 0%, #98a5b3 100%)',
     };
   } else if (tier === 'rare') {
     // Rare tier (/100–/249) — deep bronze-orange
-    className = 'text-[#1a1612] font-bold';
+    className = 'text-[var(--ink-on-gold)] font-bold';
     inlineStyle = {
       borderColor: '#d6722d',
       backgroundImage: 'linear-gradient(180deg, #d6884a 0%, #8e4f1f 100%)',
     };
   } else if (tier === 'scarce') {
     // Scarce tier (/250–/999) — steel-gray
-    className = 'text-[#1a1612] font-semibold';
+    className = 'text-[var(--ink-on-gold)] font-semibold';
     inlineStyle = {
       borderColor: '#5a6470',
       backgroundImage: 'linear-gradient(180deg, #8a96a4 0%, #4a5360 100%)',

@@ -12,6 +12,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "https://esm.sh/resend@4";
+import { sendPushToUser } from "./apns.ts";
 
 // --- Environment ---
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -34,6 +35,7 @@ interface SavedSearch {
   query: string;
   filters: Record<string, unknown>;
   notify_enabled: boolean;
+  created_at?: string;
 }
 
 interface Listing {
@@ -104,9 +106,17 @@ Deno.serve(async (_req) => {
       });
     }
 
-    const gatedSearches = (searches as SavedSearch[]).filter((s) =>
-      entitled.has(s.user_id)
-    );
+    // Entitled users alert on everything they have switched on. Free accounts
+    // get one live alert: their oldest watching search.
+    const freeSeen = new Set<string>();
+    const gatedSearches = [...(searches as SavedSearch[])]
+      .sort((a, b) => String(a.created_at).localeCompare(String(b.created_at)))
+      .filter((s) => {
+        if (entitled.has(s.user_id)) return true;
+        if (freeSeen.has(s.user_id)) return false;
+        freeSeen.add(s.user_id);
+        return true;
+      });
 
     if (gatedSearches.length === 0) {
       return jsonResponse({ ok: true, message: "No entitled active searches", searchesChecked: 0 });
@@ -179,6 +189,7 @@ Deno.serve(async (_req) => {
         }
 
         await sendDigestEmail(digest);
+        await sendPushToUser(supabase, digest.userId, buildDigestPush(digest));
 
         // 6. Log everything we just notified about so we don't re-spam
         const rows: Array<{ user_id: string; saved_search_id: string; listing_id: string }> = [];
@@ -277,6 +288,12 @@ async function processBidReminders(errors: string[]): Promise<number> {
         if (!email) continue;
 
         await sendBidReminderEmail(email, row, currentPrice, msLeft);
+        const hoursLeft = Math.max(1, Math.round(msLeft / (60 * 60 * 1000)));
+        await sendPushToUser(supabase, row.user_id, {
+          title: `Ending in about ${hoursLeft} hour${hoursLeft === 1 ? "" : "s"}`,
+          body: row.title || "An auction you're watching is ending soon.",
+          url: "/watchlist-cards",
+        });
 
         await supabase
           .from("watched_listings")
@@ -631,6 +648,18 @@ async function sendBidReminderEmail(
     throw new Error(`Resend rejected: ${JSON.stringify(result.error)}`);
   }
   console.log(`Sent bid reminder to ${email} for ${row.listing_id}, id=${result.data?.id}`);
+}
+
+// Push version of the digest: same headline as the email subject; tapping
+// opens the card itself for a single match, otherwise the saved searches.
+function buildDigestPush(digest: UserDigest) {
+  const all = [...digest.bySearch.values()].flat();
+  const single = all.length === 1 ? all[0] : null;
+  return {
+    title: buildSubject(digest),
+    body: single ? single.title : all.slice(0, 2).map((l) => l.title).join(" · "),
+    url: single ? `/?card=${encodeURIComponent(single.id)}&utm_source=push` : "/watchlist",
+  };
 }
 
 function buildSubject(digest: UserDigest): string {

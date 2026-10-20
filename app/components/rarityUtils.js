@@ -16,27 +16,18 @@ export function gradientCss(gradient) {
 }
 
 /**
- * Given a serial-number print run (e.g. 25, 99, 250), return the
- * universal rarity tier key it belongs to.
- *
- * Returns one of: '1of1' | 'grail' | 'ultra' | 'rare' | 'scarce'
- * Returns null if run is not a positive integer.
+ * Universal ladder tier for a print run: the production tiers below plus
+ * a separate 1/1 rung. Returns '1of1' | 'grail' | 'ultra' | 'rare' |
+ * 'scarce', or null if run is not a positive integer.
  */
 export function universalTierForRun(run) {
-  const n = Number(run);
-  if (!Number.isFinite(n) || n < 1) return null;
-  if (n === 1)   return '1of1';
-  if (n <= 25)   return 'grail';
-  if (n <= 99)   return 'ultra';
-  if (n <= 499)  return 'rare';
-  return 'scarce';
+  if (Number(run) === 1) return '1of1';
+  return tierForRun(run);
 }
 
 /**
- * Production tier boundaries used by the watchlist tile, search results,
- * homepage example, and email template. Slightly tighter than the
- * universalTierForRun() boundaries (rare caps at 249 not 499) — these
- * are what the user actually sees in production.
+ * Tier boundaries used everywhere: watchlist tile, search results,
+ * homepage example, email template and the rarity tree.
  */
 export function tierForRun(run) {
   const n = typeof run === 'string'

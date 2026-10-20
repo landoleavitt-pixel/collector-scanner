@@ -4,6 +4,8 @@ import { createServerSupabase } from '../../../lib/supabaseServer';
 // Max searches that can be actively notifying at once (Base tier).
 // Must match MAX_ACTIVE_WATCHES in app/api/saved-searches/[id]/route.js.
 const MAX_ACTIVE_WATCHES = 5;
+// Free accounts get a taste: one live alert.
+const FREE_ACTIVE_WATCHES = 1;
 
 // List all saved searches for the current user
 export async function GET() {
@@ -60,19 +62,16 @@ export async function POST(request) {
       .single();
 
     const entitled = profile?.tier === 'base' || profile?.is_founding_member === true;
-    if (!entitled) {
-      effectiveNotify = false;
-    } else {
-      const { count } = await supabase
-        .from('saved_searches')
-        .select('id', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .eq('notify_enabled', true);
+    const limit = entitled ? MAX_ACTIVE_WATCHES : FREE_ACTIVE_WATCHES;
+    const { count } = await supabase
+      .from('saved_searches')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .eq('notify_enabled', true);
 
-      if ((count ?? 0) >= MAX_ACTIVE_WATCHES) {
-        effectiveNotify = false;
-        watchLimited = true;
-      }
+    if ((count ?? 0) >= limit) {
+      effectiveNotify = false;
+      watchLimited = true;
     }
   }
 

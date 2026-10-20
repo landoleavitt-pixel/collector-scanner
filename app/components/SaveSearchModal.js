@@ -35,7 +35,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
   // default the toggle OFF (and explain why) when the user is already at
   // the limit — otherwise the modal offers alerts the server will refuse.
   const [atWatchLimit, setAtWatchLimit] = useState(false);
-  const WATCH_LIMIT = 5;
+  const [watchLimit, setWatchLimit] = useState(5);
 
   useEffect(() => {
     if (!open) return;
@@ -52,15 +52,17 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
           .single();
         if (cancelled) return;
         const entitled = profile?.tier === 'base' || profile?.is_founding_member === true;
-        setCanAlert(entitled);
-        if (entitled && !editingSearch) {
+        // Every signed-in account can alert; free accounts get 1, Base gets 5.
+        setCanAlert(true);
+        setWatchLimit(entitled ? 5 : 1);
+        if (!editingSearch) {
           const { count } = await supabase
             .from('saved_searches')
             .select('id', { count: 'exact', head: true })
             .eq('user_id', user.id)
             .eq('notify_enabled', true);
           if (cancelled) return;
-          const full = (count ?? 0) >= WATCH_LIMIT;
+          const full = (count ?? 0) >= (entitled ? 5 : 1);
           setAtWatchLimit(full);
           if (full) setNotifyEnabled(false);
         }
@@ -157,16 +159,16 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
         onClick={(e) => e.stopPropagation()}
         className="w-full max-w-[420px] rounded-2xl p-8"
         style={{
-          background: '#1a1614',
+          background: 'var(--legacy-ink-on-gold)',
           border: '0.5px solid rgba(232,226,213,0.12)',
           boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
-          color: '#e8e2d5',
+          color: 'var(--legacy-cream)',
         }}
       >
         <h2 className="font-serif italic text-[22px] text-center mb-1">
           {isEditing ? 'Update search criteria.' : 'Save this search.'}
         </h2>
-        <p className="text-[13px] text-center mb-5" style={{ color: '#8a8275' }}>
+        <p className="text-[13px] text-center mb-5" style={{ color: 'var(--legacy-muted)' }}>
           {isEditing
             ? 'Overwrite your saved search with these new filters.'
             : "We'll notify you when new matches appear."}
@@ -197,7 +199,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
           <label
             htmlFor="search-name"
             className="block text-[11px] mb-1.5 tracking-wide"
-            style={{ color: '#8a8275' }}
+            style={{ color: 'var(--legacy-muted)' }}
           >
             Name this search
           </label>
@@ -208,9 +210,9 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
             onChange={(e) => setName(e.target.value)}
             className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
             style={{
-              background: '#221d1a',
+              background: 'var(--legacy-field)',
               border: '0.5px solid rgba(232,226,213,0.15)',
-              color: '#e8e2d5',
+              color: 'var(--legacy-cream)',
             }}
             autoFocus
           />
@@ -223,16 +225,16 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
           >
             <div className="flex items-center justify-between gap-3">
               <div>
-                <div className="text-[13px]" style={{ color: '#e8e2d5' }}>
+                <div className="text-[13px]" style={{ color: 'var(--legacy-cream)' }}>
                   Email me new matches
                 </div>
-                <div className="text-[11px]" style={{ color: '#8a8275' }}>
+                <div className="text-[11px]" style={{ color: 'var(--legacy-muted)' }}>
                   Alerts are part of Base — saving searches is always free
                 </div>
               </div>
               <span
                 className="text-[9px] uppercase tracking-[0.16em] px-2 py-1 rounded flex-none"
-                style={{ color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#ffd97a,#d99c14)', fontWeight: 700 }}
+                style={{ color: 'var(--ink-on-gold)', backgroundImage: 'linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom))', fontWeight: 700 }}
               >
                 Base
               </span>
@@ -241,7 +243,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
               type="button"
               onClick={() => router.push('/subscribe')}
               className="w-full mt-3 py-2 rounded-lg text-[11px] uppercase tracking-[0.16em]"
-              style={{ backgroundImage: 'linear-gradient(180deg,#ffd97a,#d99c14)', color: '#1a1612', fontWeight: 600 }}
+              style={{ backgroundImage: 'linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom))', color: 'var(--ink-on-gold)', fontWeight: 600 }}
             >
               Start 14-day free trial
             </button>
@@ -249,12 +251,12 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
         ) : (
           <div className="flex items-center justify-between py-2 mb-4">
             <div>
-              <div className="text-[13px]" style={{ color: '#e8e2d5' }}>
+              <div className="text-[13px]" style={{ color: 'var(--legacy-cream)' }}>
                 Email me new matches
               </div>
-              <div className="text-[11px]" style={{ color: atWatchLimit ? '#d97757' : '#8a8275' }}>
+              <div className="text-[11px]" style={{ color: atWatchLimit ? 'var(--legacy-crit)' : 'var(--legacy-muted)' }}>
                 {atWatchLimit
-                  ? `Watching ${WATCH_LIMIT} of ${WATCH_LIMIT} — pause one to alert on this`
+                  ? `Watching ${watchLimit} of ${watchLimit} — pause one to alert on this`
                   : 'Quiet mode pauses notifications'}
               </div>
             </div>
@@ -264,12 +266,12 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
               disabled={atWatchLimit}
               aria-label="Toggle notifications"
               className="relative w-9 h-5 rounded-full transition-colors disabled:opacity-50"
-              style={{ background: notifyEnabled ? '#d4af5c' : '#3a3530' }}
+              style={{ background: notifyEnabled ? 'var(--legacy-gold)' : '#3a3530' }}
             >
               <div
                 className="absolute top-0.5 w-4 h-4 rounded-full transition-all"
                 style={{
-                  background: '#1a1614',
+                  background: 'var(--legacy-ink-on-gold)',
                   left: notifyEnabled ? 'calc(100% - 18px)' : '2px',
                 }}
               />
@@ -278,7 +280,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
         )}
 
         {error && (
-          <p className="text-[12px] mb-3 text-center" style={{ color: '#d97757' }}>
+          <p className="text-[12px] mb-3 text-center" style={{ color: 'var(--legacy-crit)' }}>
             {error}
           </p>
         )}
@@ -292,7 +294,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
             style={{
               background: 'transparent',
               border: '0.5px solid rgba(232,226,213,0.22)',
-              color: '#8a8275',
+              color: 'var(--legacy-muted)',
             }}
           >
             Cancel
@@ -302,7 +304,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
             onClick={handleSave}
             disabled={loading}
             className="py-3 rounded-lg text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50"
-            style={{ background: '#d4af5c', color: '#1a1614', border: 'none' }}
+            style={{ background: 'var(--legacy-gold)', color: 'var(--legacy-ink-on-gold)', border: 'none' }}
           >
             {loading ? (isEditing ? 'Updating…' : 'Saving…') : (isEditing ? 'Update' : 'Save')}
           </button>

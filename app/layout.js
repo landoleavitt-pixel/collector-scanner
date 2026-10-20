@@ -3,6 +3,8 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import { Analytics } from '@vercel/analytics/react';
 import ImageBlockNotice from './components/ImageBlockNotice';
+import NativeBridge from './components/NativeBridge';
+import SiteTour from './components/SiteTour';
 
 export const metadata = {
   metadataBase: new URL('https://fieldsandfloors.com'),
@@ -126,6 +128,10 @@ export default function RootLayout({ children }) {
             blocks eBay's image CDN. Renders nothing unless it detects the
             failures, so it costs nothing for the majority who aren't affected. */}
         <ImageBlockNotice />
+        {/* iOS app only: push registration, in-app purchase identity. */}
+        <NativeBridge />
+        {/* First-visit walkthrough (web + iOS app variants); replay at /?tour=1. */}
+        <SiteTour />
         <Analytics />
       </body>
     </html>

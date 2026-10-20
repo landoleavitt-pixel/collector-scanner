@@ -85,7 +85,7 @@ export async function POST(request) {
 
   // ── 2. Delete their data ─────────────────────────────────────────
   // Explicit rather than relying on FK cascades, which aren't guaranteed here.
-  for (const table of ['sent_notifications', 'watched_listings', 'saved_searches', 'profiles']) {
+  for (const table of ['push_tokens', 'sent_notifications', 'watched_listings', 'saved_searches', 'profiles']) {
     const { error } = await admin.from(table).delete().eq(
       table === 'profiles' ? 'id' : 'user_id',
       user.id,

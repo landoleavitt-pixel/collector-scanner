@@ -24,6 +24,22 @@
   --gold-deep: #8f6a32;   /* deep / shadow */
 
   --crit: #d4684a;        /* errors, sparingly */
+
+  --ink-on-gold: #1a1612;      /* text on gold fills */
+  --gold-fill-top: #ffd97a;    /* gold fill gradient (grail chip, primary buttons) */
+  --gold-fill-bottom: #d99c14;
+
+  /* Legacy one-offs: exact values kept so nothing shifts on screen.
+     Fold these into the tokens above in the type/colour pass. */
+  --legacy-ink-on-gold: #1a1614;
+  --legacy-cream: #e8e2d5;
+  --legacy-muted: #8a8275;
+  --legacy-hint: #6e675b;
+  --legacy-gold: #d4af5c;
+  --legacy-crit: #d97757;
+  --legacy-field: #221d1a;
+  --legacy-page: #0f0c0a;
+  --legacy-dark: #0e0c0a;
 }
 
 * { box-sizing: border-box; }
@@ -365,4 +381,41 @@ select option {
    transitions to the correct stage. Prevents the ~1s flash of landing UI. */
 html.ff-deep-link [data-ff-idle] {
   display: none;
+}
+
+
+/* ── Landing hero (direction A): floating featured card, looping foil
+   sweep, live dot, and the intro's gold bloom. */
+@keyframes ffFloat {
+  0%, 100% { transform: rotate(-4deg) translateY(0); }
+  50%      { transform: rotate(-2.5deg) translateY(-8px); }
+}
+.ff-float { animation: ffFloat 6s ease-in-out infinite; will-change: transform; }
+
+.ff-sheen-loop::after { animation: ffSheenLoop 5.5s cubic-bezier(0.3, 0.6, 0.3, 1) 1.2s infinite; }
+@keyframes ffSheenLoop {
+  0%   { transform: translateX(0);    opacity: 0; }
+  4%   { opacity: 1; }
+  30%  { transform: translateX(280%); opacity: 0; }
+  100% { transform: translateX(280%); opacity: 0; }
+}
+
+.ff-live-dot {
+  width: 6px; height: 6px; border-radius: 999px; background: #7fd49a;
+  animation: ffLive 2s ease-out infinite;
+}
+@keyframes ffLive {
+  0%   { box-shadow: 0 0 0 0 rgba(127, 212, 154, 0.55); }
+  70%  { box-shadow: 0 0 0 7px rgba(127, 212, 154, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(127, 212, 154, 0); }
+}
+
+.ff-bloom { animation: ffBloom 0.9s ease-out 0.1s both; }
+@keyframes ffBloom {
+  from { opacity: 0; transform: scale(0.6); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ff-float, .ff-sheen-loop::after, .ff-live-dot, .ff-bloom { animation: none; }
 }

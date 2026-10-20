@@ -49,17 +49,17 @@ export default function AlertsPage() {
       </Prose>
 
       <SectionHeading number="03" label="What it costs">
-        Five dollars a month, fourteen days free.
+        $6.99 a month, fourteen days free.
       </SectionHeading>
       <Prose>
         <p>
-          Alerts are part of our Base plan: <strong>$5 / month</strong> with a
+          Alerts are part of our Base plan: <strong>$6.99 CAD / month</strong> with a
           14-day free trial. A valid card is required to start the trial; we'll
           email you a reminder before it converts. Cancel anytime.
         </p>
         <p>
           Free-tier users still get the full search experience and watchlist &mdash;
-          everything except the automated alerts and bid reminders.
+          plus one live email alert. Base adds up to five alerts and bid reminders.
         </p>
       </Prose>
 
@@ -67,7 +67,7 @@ export default function AlertsPage() {
         <Link
           href="/pricing"
           className="inline-flex items-center justify-center px-6 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase transition-opacity hover:opacity-90"
-          style={{ background: '#d4af5c', color: '#1a1614' }}
+          style={{ background: 'var(--legacy-gold)', color: 'var(--legacy-ink-on-gold)' }}
         >
           See pricing
         </Link>
@@ -77,7 +77,7 @@ export default function AlertsPage() {
           style={{
             background: 'transparent',
             border: '0.5px solid rgba(232,226,213,0.18)',
-            color: '#e8e2d5',
+            color: 'var(--legacy-cream)',
           }}
         >
           Start free trial &rarr;

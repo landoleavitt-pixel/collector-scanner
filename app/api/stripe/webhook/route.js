@@ -91,6 +91,19 @@ export async function POST(request) {
 
   // Fallback: map a Stripe customer ID back to a profile we've already
   // stamped. Covers renewal/cancellation events that don't carry our metadata.
+  // A user paying through Apple (iOS app) keeps Base even if a stale Stripe
+  // subscription ends — the RevenueCat sync owns their tier.
+  async function hasActiveApple(uid) {
+    const { data } = await supabase
+      .from('profiles')
+      .select('billing_source, iap_subscription_ends_at')
+      .eq('id', uid)
+      .single();
+    if (data?.billing_source !== 'apple') return false;
+    const ends = data.iap_subscription_ends_at ? Date.parse(data.iap_subscription_ends_at) : Infinity;
+    return ends > Date.now();
+  }
+
   async function userIdFromCustomer(customerId) {
     if (!customerId) return null;
     const { data } = await supabase
@@ -114,6 +127,7 @@ export async function POST(request) {
         const { error } = await supabase.from('profiles').upsert({
           id:                     uid,
           tier:                   'base',
+          billing_source:         'stripe',
           stripe_customer_id:     String(session.customer || ''),
           stripe_subscription_id: String(session.subscription || ''),
         }, { onConflict: 'id' });
@@ -138,9 +152,14 @@ export async function POST(request) {
         // sends 'created'. Without this case the trial and period dates
         // stayed null until the trial converted two weeks later.
         const tier = ['trialing', 'active'].includes(sub.status) ? 'base' : 'free';
+        if (tier === 'free' && await hasActiveApple(uid)) {
+          console.log(`Stripe webhook: ${uid} has active Apple subscription — not downgrading`);
+          break;
+        }
         await supabase.from('profiles').upsert({
           id:                     uid,
           tier,
+          ...(tier === 'base' ? { billing_source: 'stripe' } : {}),
           stripe_customer_id:     String(sub.customer || ''),
           stripe_subscription_id: String(sub.id || ''),
           subscription_ends_at:   periodEndFromSubscription(sub),
@@ -165,6 +184,10 @@ export async function POST(request) {
           .single();
         if (profile?.is_founding_member) {
           console.log(`Stripe webhook: founding member ${uid} — keeping alerts`);
+          break;
+        }
+        if (await hasActiveApple(uid)) {
+          console.log(`Stripe webhook: ${uid} has active Apple subscription — keeping base`);
           break;
         }
         await supabase.from('profiles').update({

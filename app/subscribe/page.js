@@ -18,13 +18,46 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '../../lib/supabaseClient';
+import { isNativeApp, getPurchases, purchaseBase, restorePurchases, enablePush } from '../../lib/native';
 import Seal from '../components/Seal';
+
+function PlanToggle({ plan, setPlan, prices, native }) {
+  const opts = [
+    { id: 'annual', label: 'Annual', sub: native ? (prices.annual || '') : '$59 CAD / year', note: 'Save 30%' },
+    { id: 'monthly', label: 'Monthly', sub: native ? (prices.monthly || '') : '$6.99 CAD / month' },
+  ];
+  return (
+    <div className="grid grid-cols-2 gap-2 mb-6">
+      {opts.map((o) => (
+        <button
+          key={o.id}
+          type="button"
+          onClick={() => setPlan(o.id)}
+          className="min-h-[64px] rounded-[8px] px-3 py-2 text-center"
+          style={{
+            background: plan === o.id ? 'rgba(212,175,92,0.12)' : 'transparent',
+            border: plan === o.id ? '1px solid #d4af5c' : '0.5px solid rgba(232,226,213,0.15)',
+            color: 'var(--legacy-cream)',
+          }}
+        >
+          <span className="block text-[12px] font-bold uppercase tracking-[0.12em]">{o.label}</span>
+          <span className="block text-[12px]" style={{ color: 'var(--legacy-muted)' }}>{o.sub}</span>
+          {o.note && <span className="block text-[10px] uppercase tracking-[0.12em]" style={{ color: 'var(--legacy-gold)' }}>{o.note}</span>}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 export default function SubscribePage() {
   const router = useRouter();
   const supabase = createClient();
   const [error, setError] = useState(null);
-  const [stage, setStage] = useState('checking'); // 'checking' | 'opening' | 'error'
+  const [stage, setStage] = useState('checking'); // 'checking' | 'choose' | 'opening' | 'error' | 'app' | 'buying' | 'done'
+  const [userId, setUserId] = useState(null);
+  const [prices, setPrices] = useState({ monthly: null, annual: null });
+  const [plan, setPlan] = useState('annual');
+  const price = prices[plan];
 
   useEffect(() => {
     let cancelled = false;
@@ -38,12 +71,43 @@ export default function SubscribePage() {
         return;
       }
 
-      setStage('opening');
+      // Inside the iOS app Base is sold through Apple in-app purchase —
+      // Apple doesn't allow Stripe checkout there.
+      if (isNativeApp()) {
+        setUserId(session.user.id);
+        setStage('app');
+        try {
+          const Purchases = await getPurchases(session.user.id);
+          const { current } = await Purchases.getOfferings();
+          const m = current?.monthly || current?.availablePackages?.[0];
+          const a = current?.annual;
+          if (!cancelled) setPrices({
+            monthly: m?.product?.priceString || null,
+            annual: a?.product?.priceString || null,
+          });
+        } catch (e) {
+          console.warn('Could not load App Store price:', e?.message);
+        }
+        return;
+      }
 
+      setStage('choose');
+    })();
+
+    return () => { cancelled = true; };
+  }, [router, supabase]);
+
+  async function handleWebCheckout() {
+    setStage('opening');
+    setError(null);
+    {
       try {
-        const res = await fetch('/api/stripe/create-checkout', { method: 'POST' });
+        const res = await fetch('/api/stripe/create-checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ plan }),
+        });
         const data = await res.json();
-        if (cancelled) return;
 
         if (!res.ok || !data.url) {
           throw new Error(data?.error || 'Could not open checkout');
@@ -53,19 +117,49 @@ export default function SubscribePage() {
         // so taking them to LS feels right; LS sends them back via redirect_url.
         window.location.assign(data.url);
       } catch (e) {
-        if (cancelled) return;
         setError(e.message);
         setStage('error');
       }
-    })();
+    }
+  }
 
-    return () => { cancelled = true; };
-  }, [router, supabase]);
+  async function handleBuy() {
+    setStage('buying');
+    setError(null);
+    try {
+      const result = await purchaseBase(userId, plan);
+      if (result?.cancelled) { setStage('app'); return; }
+      if (result?.tier !== 'base') throw new Error('Purchase went through but we could not confirm it yet. Tap Restore purchases in a minute.');
+      setStage('done');
+      enablePush((path) => router.push(path)).catch(() => {});
+    } catch (e) {
+      setError(e?.message || 'Purchase failed');
+      setStage('app');
+    }
+  }
+
+  async function handleRestore() {
+    setStage('buying');
+    setError(null);
+    try {
+      const result = await restorePurchases(userId);
+      if (result?.tier === 'base') {
+        setStage('done');
+        enablePush((path) => router.push(path)).catch(() => {});
+      } else {
+        setError('No active subscription found for this Apple ID.');
+        setStage('app');
+      }
+    } catch (e) {
+      setError(e?.message || 'Restore failed');
+      setStage('app');
+    }
+  }
 
   return (
     <main
       className="min-h-screen flex flex-col items-center justify-center px-6"
-      style={{ background: '#0f0c0a', color: '#e8e2d5' }}
+      style={{ background: 'var(--legacy-page)', color: 'var(--legacy-cream)' }}
     >
       <div className="flex items-center gap-3 mb-10 opacity-70">
         <Seal className="w-6 h-6" />
@@ -74,20 +168,111 @@ export default function SubscribePage() {
 
       <div
         className="w-full max-w-[400px] rounded-2xl p-8 text-center"
-        style={{ background: '#1a1614', border: '0.5px solid rgba(232,226,213,0.08)' }}
+        style={{ background: 'var(--legacy-ink-on-gold)', border: '0.5px solid rgba(232,226,213,0.08)' }}
       >
-        {stage === 'error' ? (
+        {(stage === 'app' || stage === 'buying') ? (
           <>
-            <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#d97757' }}>
+            <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'var(--legacy-gold)' }}>
+              Base Plan
+            </p>
+            <h1
+              className="font-serif italic text-[24px] leading-tight mb-3"
+              style={{ color: 'var(--legacy-cream)' }}
+            >
+              Get alerted the moment a card lists.
+            </h1>
+            <p className="text-[13px] mb-6 leading-relaxed" style={{ color: 'var(--legacy-muted)' }}>
+              Push and email alerts on up to 5 saved searches, plus bid reminders.
+              14 days free, then {price || 'the listed price'} per {plan === 'annual' ? 'year' : 'month'}.
+            </p>
+            <PlanToggle plan={plan} setPlan={setPlan} prices={prices} native />
+            {error && (
+              <p className="text-[12px] mb-4 leading-relaxed" style={{ color: 'var(--legacy-crit)' }}>{error}</p>
+            )}
+            <button
+              onClick={handleBuy}
+              disabled={stage === 'buying'}
+              className="w-full min-h-[44px] rounded-[8px] text-[12px] font-bold uppercase tracking-[0.14em] disabled:opacity-60"
+              style={{
+                background: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)',
+                color: 'var(--ink-on-gold)',
+                border: 'none',
+              }}
+            >
+              {stage === 'buying' ? 'One moment…' : 'Start 14-day free trial'}
+            </button>
+            <button
+              onClick={handleRestore}
+              disabled={stage === 'buying'}
+              className="block w-full min-h-[40px] py-3 text-[11px] tracking-[0.14em] uppercase disabled:opacity-60"
+              style={{ color: 'var(--legacy-muted)' }}
+            >
+              Restore purchases
+            </button>
+            <p className="text-[11px] mt-2 leading-relaxed" style={{ color: 'var(--legacy-hint)' }}>
+              Payment is charged to your Apple ID when the trial ends. The subscription
+              renews {plan === 'annual' ? 'yearly' : 'monthly'} unless cancelled at least 24 hours before the end of the
+              current period. Manage or cancel any time in your App Store account
+              settings.{' '}
+              <Link href="/terms" style={{ textDecoration: 'underline' }}>Terms</Link>
+              {' · '}
+              <Link href="/privacy" style={{ textDecoration: 'underline' }}>Privacy</Link>
+            </p>
+          </>
+        ) : stage === 'choose' ? (
+          <>
+            <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'var(--legacy-gold)' }}>
+              Base Plan
+            </p>
+            <h1 className="font-serif italic text-[24px] leading-tight mb-3" style={{ color: 'var(--legacy-cream)' }}>
+              Get alerted the moment a card lists.
+            </h1>
+            <p className="text-[13px] mb-6 leading-relaxed" style={{ color: 'var(--legacy-muted)' }}>
+              Email alerts on up to 5 saved searches, plus bid reminders. 14 days free, cancel anytime.
+            </p>
+            <PlanToggle plan={plan} setPlan={setPlan} prices={prices} />
+            <button
+              onClick={handleWebCheckout}
+              className="w-full min-h-[44px] rounded-[8px] text-[12px] font-bold uppercase tracking-[0.14em]"
+              style={{ background: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)', color: 'var(--ink-on-gold)', border: 'none' }}
+            >
+              Start 14-day free trial
+            </button>
+          </>
+        ) : stage === 'done' ? (
+          <>
+            <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'var(--legacy-gold)' }}>
+              Base Plan
+            </p>
+            <h1
+              className="font-serif italic text-[24px] leading-tight mb-3"
+              style={{ color: 'var(--legacy-cream)' }}
+            >
+              You're in.
+            </h1>
+            <p className="text-[13px] mb-6 leading-relaxed" style={{ color: 'var(--legacy-muted)' }}>
+              Turn on alerts for any saved search and we'll notify you the moment a match lists.
+            </p>
+            <Link
+              href="/watchlist"
+              className="block w-full min-h-[44px] py-3 rounded-[8px] text-[12px] font-bold uppercase tracking-[0.14em]"
+              style={{ background: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)', color: 'var(--ink-on-gold)' }}
+            >
+              Go to saved searches
+            </Link>
+          </>
+        ) : stage === 'error' ? (
+          <>
+            <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'var(--legacy-crit)' }}>
               Something went wrong
             </p>
             <h1
               className="font-serif italic text-[24px] leading-tight mb-3"
-              style={{ color: '#e8e2d5' }}
+              style={{ color: 'var(--legacy-cream)' }}
             >
               We couldn't open checkout.
             </h1>
-            <p className="text-[13px] mb-6 leading-relaxed" style={{ color: '#8a8275' }}>
+            <p className="text-[13px] mb-6 leading-relaxed" style={{ color: 'var(--legacy-muted)' }}>
               {error}
             </p>
             <div className="flex flex-col gap-2">
@@ -95,8 +280,8 @@ export default function SubscribePage() {
                 onClick={() => window.location.reload()}
                 className="w-full min-h-[44px] rounded-[8px] text-[12px] font-bold uppercase tracking-[0.14em]"
                 style={{
-                  background: 'linear-gradient(180deg, #ffd97a 0%, #d99c14 100%)',
-                  color: '#1a1612',
+                  background: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)',
+                  color: 'var(--ink-on-gold)',
                   border: 'none',
                 }}
               >
@@ -105,7 +290,7 @@ export default function SubscribePage() {
               <Link
                 href="/pricing"
                 className="block w-full min-h-[40px] py-3 text-[11px] tracking-[0.14em] uppercase"
-                style={{ color: '#8a8275' }}
+                style={{ color: 'var(--legacy-muted)' }}
               >
                 Back to pricing
               </Link>
@@ -113,17 +298,17 @@ export default function SubscribePage() {
           </>
         ) : (
           <>
-            <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#d4af5c' }}>
+            <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'var(--legacy-gold)' }}>
               Base Plan
             </p>
             <h1
               className="font-serif italic text-[24px] leading-tight mb-3"
-              style={{ color: '#e8e2d5' }}
+              style={{ color: 'var(--legacy-cream)' }}
             >
               Opening secure checkout…
             </h1>
-            <p className="text-[13px] leading-relaxed" style={{ color: '#8a8275' }}>
-              You'll be redirected to Lemon Squeezy to start your 14-day free trial.
+            <p className="text-[13px] leading-relaxed" style={{ color: 'var(--legacy-muted)' }}>
+              You'll be redirected to secure checkout to start your 14-day free trial.
               Hang tight — should be a second.
             </p>
           </>

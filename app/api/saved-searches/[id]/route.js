@@ -27,6 +27,8 @@ export async function GET(request, { params }) {
 // Saving searches is unlimited — this caps only the alerting half, since
 // every watched search costs eBay API calls on each hourly poll.
 const MAX_ACTIVE_WATCHES = 5;
+// Free accounts get a taste: one live alert.
+const FREE_ACTIVE_WATCHES = 1;
 
 // Update a saved search (rename, toggle notifications)
 export async function PATCH(request, { params }) {
@@ -66,12 +68,7 @@ export async function PATCH(request, { params }) {
       .single();
 
     const entitled = profile?.tier === 'base' || profile?.is_founding_member === true;
-    if (!entitled) {
-      return NextResponse.json(
-        { error: 'Alerts require a Base subscription.', code: 'NOT_ENTITLED' },
-        { status: 403 },
-      );
-    }
+    const limit = entitled ? MAX_ACTIVE_WATCHES : FREE_ACTIVE_WATCHES;
 
     // Count OTHER searches already watching (exclude this one so toggling
     // an already-on search off and on again doesn't false-trip the cap).
@@ -82,12 +79,14 @@ export async function PATCH(request, { params }) {
       .eq('notify_enabled', true)
       .neq('id', params.id);
 
-    if ((count ?? 0) >= MAX_ACTIVE_WATCHES) {
+    if ((count ?? 0) >= limit) {
       return NextResponse.json(
         {
-          error: `You're watching ${MAX_ACTIVE_WATCHES} of ${MAX_ACTIVE_WATCHES} searches. Pause one to watch this.`,
+          error: entitled
+            ? `You're watching ${limit} of ${limit} searches. Pause one to watch this.`
+            : 'Free accounts get 1 live alert. Pause it to watch this one, or upgrade to Base for 5.',
           code: 'WATCH_LIMIT',
-          limit: MAX_ACTIVE_WATCHES,
+          limit,
         },
         { status: 409 },
       );

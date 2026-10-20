@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { buildShareUrl } from '../../lib/shareLink';
+import { isNativeApp } from '../../lib/native';
 
 const TIER_STYLES = {
   grail:   { bg: 'rgba(255,193,77,0.12)',  color: '#ffc14d', border: 'rgba(255,193,77,0.35)' },
@@ -53,6 +54,11 @@ function PaywallModal({ onClose }) {
   const [error, setError] = useState(null);
 
   async function handleUpgrade() {
+    // iOS app: Apple in-app purchase lives on /subscribe.
+    if (isNativeApp()) {
+      window.location.assign('/subscribe');
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -124,11 +130,11 @@ function PaywallModal({ onClose }) {
           className="text-[12px] mb-7"
           style={{ color: 'var(--gold)' }}
         >
-          $5 / month · 14-day free trial
+          $6.99 / month · 14-day free trial
         </p>
 
         {error && (
-          <p className="text-[11px] mb-4" style={{ color: '#d97757' }}>{error}</p>
+          <p className="text-[11px] mb-4" style={{ color: 'var(--legacy-crit)' }}>{error}</p>
         )}
 
         <div className="flex flex-col gap-3">
@@ -137,8 +143,8 @@ function PaywallModal({ onClose }) {
             disabled={loading}
             className="w-full min-h-[48px] rounded-[8px] text-[12px] font-bold uppercase tracking-[0.14em] transition-opacity disabled:opacity-60"
             style={{
-              background: 'linear-gradient(180deg, #ffd97a 0%, #d99c14 100%)',
-              color: '#1a1612',
+              background: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)',
+              color: 'var(--ink-on-gold)',
               border: 'none',
               cursor: loading ? 'wait' : 'pointer',
             }}
@@ -253,7 +259,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
       <div
         className="rounded-[10px] p-5 md:p-6 grid gap-5 lg:gap-6 grid-cols-1 lg:grid-cols-[1fr_auto_auto] items-start lg:items-center"
         style={{
-          background: '#1a1614',
+          background: 'var(--legacy-ink-on-gold)',
           // Alerts live → gold outline + faint glow. Everything else gets
           // the neutral border at full opacity. Marking the ACTIVE state
           // rather than dimming the inactive one means free users and
@@ -271,13 +277,13 @@ export default function WatchlistRow({ search, canUseAlerts }) {
         <div className="min-w-0">
           <div
             className="font-serif italic text-[19px] mb-2 truncate"
-            style={{ color: '#e8e2d5' }}
+            style={{ color: 'var(--legacy-cream)' }}
           >
             {search.name}
           </div>
           <div
             className="text-[12px] font-serif italic mb-2.5 truncate"
-            style={{ color: '#8a8275' }}
+            style={{ color: 'var(--legacy-muted)' }}
           >
             "{search.query}"
           </div>
@@ -320,7 +326,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
         <div className="flex items-center gap-2.5">
           <span
             className="text-[10px] tracking-[0.18em] uppercase"
-            style={{ color: alertsLive ? '#d4af5c' : '#6e675b' }}
+            style={{ color: alertsLive ? 'var(--legacy-gold)' : 'var(--legacy-hint)' }}
           >
             {!canUseAlerts ? 'Notify' : notifyEnabled ? 'Watching' : 'Paused'}
           </span>
@@ -337,13 +343,13 @@ export default function WatchlistRow({ search, canUseAlerts }) {
             }
             className="relative w-7 h-4 rounded-full transition-colors disabled:opacity-50"
             style={{
-              background: alertsLive ? '#d4af5c' : '#3a3530',
+              background: alertsLive ? 'var(--legacy-gold)' : '#3a3530',
             }}
           >
             <div
               className="absolute top-0.5 w-3 h-3 rounded-full transition-all"
               style={{
-                background: '#1a1614',
+                background: 'var(--legacy-ink-on-gold)',
                 left: alertsLive ? 'calc(100% - 14px)' : '2px',
               }}
             />
@@ -352,7 +358,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
         {limitMsg && (
           <span
             className="text-[10px] leading-tight text-left lg:text-right max-w-[220px]"
-            style={{ color: '#d97757' }}
+            style={{ color: 'var(--legacy-crit)' }}
           >
             {limitMsg}
           </span>
@@ -367,7 +373,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
                 onClick={handleDelete}
                 disabled={busy}
                 className="px-3 py-1.5 rounded-full text-[10px] tracking-[0.18em] uppercase transition-opacity hover:opacity-90 disabled:opacity-50"
-                style={{ background: '#d97757', color: '#1a1614', border: 'none' }}
+                style={{ background: 'var(--legacy-crit)', color: 'var(--legacy-ink-on-gold)', border: 'none' }}
               >
                 Confirm
               </button>
@@ -379,7 +385,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
                 style={{
                   background: 'transparent',
                   border: '0.5px solid rgba(232,226,213,0.18)',
-                  color: '#8a8275',
+                  color: 'var(--legacy-muted)',
                 }}
               >
                 Cancel
@@ -406,7 +412,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
                 style={{
                   background: 'transparent',
                   border: '0.5px solid rgba(232,226,213,0.18)',
-                  color: '#8a8275',
+                  color: 'var(--legacy-muted)',
                 }}
               >
                 View
@@ -418,7 +424,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
                 style={{
                   background: 'transparent',
                   border: '0.5px solid rgba(232,226,213,0.18)',
-                  color: shareMsg ? 'var(--gold)' : '#8a8275',
+                  color: shareMsg ? 'var(--gold)' : 'var(--legacy-muted)',
                 }}
               >
                 {shareMsg || 'Share'}
@@ -427,8 +433,8 @@ export default function WatchlistRow({ search, canUseAlerts }) {
                 type="button"
                 onClick={() => setConfirmDelete(true)}
                 aria-label="Delete saved search"
-                className="p-1.5 rounded-full transition-colors hover:text-[#d97757]"
-                style={{ background: 'transparent', border: 'none', color: '#6e675b', cursor: 'pointer' }}
+                className="p-1.5 rounded-full transition-colors hover:text-[var(--legacy-crit)]"
+                style={{ background: 'transparent', border: 'none', color: 'var(--legacy-hint)', cursor: 'pointer' }}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <polyline points="3 6 5 6 21 6"/>

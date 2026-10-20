@@ -61,7 +61,7 @@ export default function NotifyFrequency({ initialFrequency = 'hourly', canUsePro
   return (
     <div
       className="rounded-[10px] p-5 md:p-6 mb-8"
-      style={{ background: '#1a1614', border: '0.5px solid rgba(232,226,213,0.08)' }}
+      style={{ background: 'var(--legacy-ink-on-gold)', border: '0.5px solid rgba(232,226,213,0.08)' }}
     >
       <div
         className="font-mono uppercase mb-1"
@@ -122,7 +122,7 @@ export default function NotifyFrequency({ initialFrequency = 'hourly', canUsePro
       </div>
 
       {error && (
-        <div className="mt-3 text-[11.5px]" style={{ color: '#d97757' }}>
+        <div className="mt-3 text-[11.5px]" style={{ color: 'var(--legacy-crit)' }}>
           {error}
         </div>
       )}

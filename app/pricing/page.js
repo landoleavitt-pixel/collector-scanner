@@ -4,7 +4,7 @@ import EarlyAccessBanner from './EarlyAccessBanner';
 export const metadata = {
   title: 'Pricing — Fields & Floors Collectors',
   description:
-    'Searching is always free. Turn on alerts for your saved searches with a 14-day free trial of Base — $5/month.',
+    'Searching is always free. Turn on alerts for your saved searches with a 14-day free trial of Base — $6.99 CAD/month.',
 };
 
 /* Single tier card. `hero` = the paid plan we want most visible.
@@ -21,7 +21,7 @@ function Tier({ name, tagline, price, per, cta, fineprint, features, hero = fals
           className="absolute top-0 left-6 -translate-y-1/2 text-[9.5px] uppercase tracking-[0.16em] px-[11px] py-[5px] rounded-[2px]"
           style={
             hero
-              ? { background: 'linear-gradient(180deg,#ffd97a,#d99c14)', color: '#1a1612', fontWeight: 700 }
+              ? { background: 'linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom))', color: 'var(--ink-on-gold)', fontWeight: 700 }
               : { background: 'var(--bg-elev-2)', color: 'var(--ink-400)', border: '1px solid var(--line)', fontWeight: 600 }
           }
         >
@@ -55,7 +55,7 @@ function Tier({ name, tagline, price, per, cta, fineprint, features, hero = fals
           className="mt-4 w-full text-center rounded-lg uppercase tracking-[0.12em] flex items-center justify-center transition-[filter] hover:brightness-105"
           style={
             hero
-              ? { minHeight: 54, background: 'linear-gradient(180deg,#ffd97a 0%,#d99c14 100%)', color: '#1a1612', fontWeight: 700, fontSize: 13, boxShadow: '0 8px 24px -10px rgba(217,156,20,0.6)' }
+              ? { minHeight: 54, background: 'linear-gradient(180deg,var(--gold-fill-top) 0%,var(--gold-fill-bottom) 100%)', color: 'var(--ink-on-gold)', fontWeight: 700, fontSize: 13, boxShadow: '0 8px 24px -10px rgba(217,156,20,0.6)' }
               : { minHeight: 48, background: 'transparent', border: '1px solid var(--line)', color: 'var(--ink-200)', fontWeight: 600, fontSize: 12 }
           }
         >
@@ -112,13 +112,13 @@ export default function PricingPage() {
             ribbon="14-day free trial"
             name="Base"
             tagline="Let the rare ones come to you."
-            price="$5"
+            price="$6.99"
             per="/ month"
             cta={{ label: 'Start 14-day free trial', href: '/signup?next=/subscribe' }}
             fineprint="Card required · we'll remind you before it bills"
             features={[
               { node: 'Everything in Free' },
-              { node: <>Alerts on up to <b className="text-[var(--ink-100)]">5 saved searches</b></> },
+              { node: <>Alerts on up to <b className="text-[var(--ink-100)]">5 saved searches</b> (free has 1)</> },
               { node: 'Bid reminders' },
               { node: 'Cancel anytime' },
             ]}
@@ -134,6 +134,7 @@ export default function PricingPage() {
               { node: 'Unlimited search' },
               { node: 'All filters & print-run tiers' },
               { node: 'Watchlist & sold tracking' },
+              { node: '1 live email alert' },
             ]}
           />
           <Tier

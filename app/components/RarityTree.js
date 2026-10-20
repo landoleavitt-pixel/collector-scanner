@@ -20,8 +20,8 @@ const UNIVERSAL_LADDER = [
   { key: '1of1',   name: '1/1 — One of one', range: '1',       lo: 1,   hi: 1 },
   { key: 'grail',  name: 'Grail',            range: '2–25',    lo: 2,   hi: 25 },
   { key: 'ultra',  name: 'Ultra rare',       range: '26–99',   lo: 26,  hi: 99 },
-  { key: 'rare',   name: 'Rare',             range: '100–499', lo: 100, hi: 499 },
-  { key: 'scarce', name: 'Scarce',           range: '500+',    lo: 500, hi: Infinity },
+  { key: 'rare',   name: 'Rare',             range: '100–249', lo: 100, hi: 249 },
+  { key: 'scarce', name: 'Scarce',           range: '250+',    lo: 250, hi: Infinity },
 ];
 
 export default function RarityTree({ setData, parallelKey, printRun }) {
@@ -90,7 +90,7 @@ export default function RarityTree({ setData, parallelKey, printRun }) {
         </span>
       </div>
       <p className="text-[9px] mb-3" style={{ color: 'var(--ink-400)' }}>
-        Source: {setData.sourceCredit}
+        Source: {setData.source?.name}
       </p>
 
       {/* Numbered parallels */}

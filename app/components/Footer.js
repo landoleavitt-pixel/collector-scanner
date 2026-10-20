@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Seal from './Seal';
 import { PRODUCT_LINKS, HOBBY_LINKS } from './navLinks';
+import { TourLink } from './SiteTour';
 
 function FilterLabel({ children }) {
   return (
@@ -63,6 +64,7 @@ export default function Footer() {
             <span>Issue №&nbsp;001</span>
           </div>
           <div className="flex gap-6 items-center flex-wrap">
+            <TourLink className="hover:text-[var(--gold)] transition-colors">Site tour</TourLink>
             <Link href="/contact" className="hover:text-[var(--gold)] transition-colors">Support</Link>
             <Link href="/privacy" className="hover:text-[var(--gold)] transition-colors">Privacy</Link>
             <Link href="/terms" className="hover:text-[var(--gold)] transition-colors">Terms</Link>

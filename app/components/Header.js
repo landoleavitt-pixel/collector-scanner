@@ -6,6 +6,7 @@ import { useState, useRef, useEffect } from 'react';
 import Seal from './Seal';
 import { useUser } from '../../lib/useUser';
 import { createClient } from '../../lib/supabaseClient';
+import { isNativeApp, unregisterPush, openAppleSubscriptions } from '../../lib/native';
 
 export default function Header() {
   const pathname = usePathname();
@@ -31,19 +32,23 @@ export default function Header() {
   // place it's shown, so a missing value just hides the badge rather than
   // blocking anything.
   const [tier, setTier] = useState(null);
+  const [billingSource, setBillingSource] = useState(null);
+  const [native, setNative] = useState(false);
+  useEffect(() => { setNative(isNativeApp()); }, []);
   useEffect(() => {
-    if (!user) { setTier(null); return; }
+    if (!user) { setTier(null); setBillingSource(null); return; }
     let cancelled = false;
     (async () => {
       try {
         const supabase = createClient();
         const { data } = await supabase
           .from('profiles')
-          .select('tier, is_founding_member')
+          .select('tier, is_founding_member, billing_source')
           .eq('id', user.id)
           .single();
         if (cancelled) return;
         setTier(data?.is_founding_member ? 'founding' : (data?.tier || 'free'));
+        setBillingSource(data?.billing_source || null);
       } catch {
         if (!cancelled) setTier(null);
       }
@@ -55,6 +60,7 @@ export default function Header() {
   const [closeOpen, setCloseOpen] = useState(false);
 
   async function handleSignOut() {
+    await unregisterPush();
     const supabase = createClient();
     await supabase.auth.signOut();
     setMenuOpen(false);
@@ -68,6 +74,20 @@ export default function Header() {
   async function openPortal() {
     if (portalBusy) return;
     setPortalBusy(true);
+    // iOS app: Apple manages its own subscriptions; free users go to the
+    // in-app purchase page. Stripe's portal is never opened inside the app.
+    if (native) {
+      try {
+        if (billingSource === 'apple') await openAppleSubscriptions(user.id);
+        else router.push('/subscribe');
+      } catch {
+        window.location.assign('https://apps.apple.com/account/subscriptions');
+      } finally {
+        setMenuOpen(false);
+        setPortalBusy(false);
+      }
+      return;
+    }
     try {
       const res = await fetch('/api/stripe/create-portal', { method: 'POST' });
       const data = await res.json().catch(() => ({}));
@@ -106,7 +126,9 @@ export default function Header() {
             }
           }}
         >
-          <Seal size={32} />
+          <span data-ff-seal className="inline-flex">
+            <Seal size={32} />
+          </span>
           <span className="font-display text-2xl md:text-3xl tracking-tight leading-none">
             <span data-ff-brand className="inline-block">
               Fields <em className="text-[var(--gold)] not-italic">&amp;</em> Floors
@@ -174,7 +196,7 @@ export default function Header() {
                   >
                     <span
                       className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-display"
-                      style={{ background: 'var(--gold)', color: '#1a1614' }}
+                      style={{ background: 'var(--gold)', color: 'var(--legacy-ink-on-gold)' }}
                     >
                       {(user.email?.[0] || '?').toUpperCase()}
                     </span>
@@ -185,7 +207,7 @@ export default function Header() {
                     <div
                       className="absolute right-0 mt-2 w-64 rounded-xl py-2 z-30"
                       style={{
-                        background: '#1a1614',
+                        background: 'var(--legacy-ink-on-gold)',
                         border: '0.5px solid rgba(232,226,213,0.12)',
                         boxShadow: '0 10px 40px rgba(0,0,0,0.4)',
                       }}
@@ -218,6 +240,7 @@ export default function Header() {
                           </span>
                         )}
                       </div>
+                      {!(native && billingSource === 'stripe' && tier !== 'free') && (
                       <button
                         onClick={openPortal}
                         disabled={portalBusy}
@@ -225,6 +248,8 @@ export default function Header() {
                       >
                         Manage membership
                       </button>
+                      )}
+                      {!native && (
                       <button
                         onClick={openPortal}
                         disabled={portalBusy}
@@ -232,7 +257,15 @@ export default function Header() {
                       >
                         Billing history
                       </button>
+                      )}
 
+                      <Link
+                        href="/?tour=1"
+                        onClick={() => setMenuOpen(false)}
+                        className="block px-4 py-2 text-[13px] text-[var(--ink-400)] hover:text-[var(--gold)] hover:bg-[rgba(212,175,92,0.05)] transition-colors"
+                      >
+                        Take the tour
+                      </Link>
                       <div
                         className="border-t mt-1"
                         style={{ borderColor: 'rgba(232,226,213,0.08)' }}
@@ -269,7 +302,7 @@ export default function Header() {
                     className="hidden sm:inline-block text-[12px] uppercase tracking-[0.22em] px-4 py-2 rounded-full transition-colors"
                     style={{
                       background: 'var(--gold)',
-                      color: '#1a1614',
+                      color: 'var(--legacy-ink-on-gold)',
                     }}
                   >
                     Join
@@ -308,7 +341,12 @@ export default function Header() {
         </div>
       )}
 
-      {closeOpen && <CloseAccountDialog onClose={() => setCloseOpen(false)} />}
+      {closeOpen && (
+        <CloseAccountDialog
+          onClose={() => setCloseOpen(false)}
+          appleBilled={billingSource === 'apple' && tier !== 'free'}
+        />
+      )}
     </header>
   );
 }
@@ -320,7 +358,7 @@ export default function Header() {
  * person to read what they're agreeing to. The same phrase is checked again
  * server-side, so the dialog is a UX guard rather than the security boundary.
  */
-function CloseAccountDialog({ onClose }) {
+function CloseAccountDialog({ onClose, appleBilled }) {
   const CONFIRM = 'DELETE MY ACCOUNT';
   const [typed, setTyped] = useState('');
   const [busy, setBusy] = useState(false);
@@ -343,6 +381,7 @@ function CloseAccountDialog({ onClose }) {
         return;
       }
       // Sign out locally and go home — the server session is already gone.
+      await unregisterPush();
       const supabase = createClient();
       await supabase.auth.signOut().catch(() => {});
       window.location.assign('/');
@@ -370,6 +409,12 @@ function CloseAccountDialog({ onClose }) {
           This cancels any active subscription and permanently deletes your
           watchlist, saved searches, and profile. It can&rsquo;t be undone.
         </p>
+        {appleBilled && (
+          <p className="text-[13px] leading-relaxed mb-4" style={{ color: 'var(--gold-bright)' }}>
+            Your subscription is billed by Apple, so we can&rsquo;t cancel it for you.
+            Cancel it in Settings &rarr; your name &rarr; Subscriptions, or you&rsquo;ll keep being charged.
+          </p>
+        )}
         <label
           className="block text-[11px] uppercase tracking-[0.16em] mb-2"
           style={{ color: 'var(--ink-600)' }}
@@ -406,7 +451,7 @@ function CloseAccountDialog({ onClose }) {
             onClick={handleDelete}
             disabled={typed !== CONFIRM || busy}
             className="px-4 py-2 rounded-full text-[11px] uppercase tracking-[0.16em] disabled:opacity-40"
-            style={{ background: 'var(--crit)', color: '#1a1614', border: 'none' }}
+            style={{ background: 'var(--crit)', color: 'var(--legacy-ink-on-gold)', border: 'none' }}
           >
             {busy ? 'Closing…' : 'Close account'}
           </button>

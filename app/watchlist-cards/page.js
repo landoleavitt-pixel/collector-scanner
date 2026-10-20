@@ -252,7 +252,7 @@ function EmptyState({ tab, onBrowse }) {
         <button
           onClick={onBrowse}
           className="text-[11px] uppercase tracking-[0.2em] px-5 py-2.5 rounded-full transition-opacity hover:opacity-90"
-          style={{ background: 'var(--gold)', color: '#1a1614' }}
+          style={{ background: 'var(--gold)', color: 'var(--legacy-ink-on-gold)' }}
         >
           Start searching
         </button>
@@ -275,10 +275,10 @@ function WatchlistTile({ listing, onRemove, onToast, onCardClick }) {
     : '';
 
   const TIER_CHIP = {
-    grail:  { color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#ffd97a,#d99c14)', border: '0.5px solid #ffc14d', fontWeight: 700 },
-    ultra:  { color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#e0e8f0,#98a5b3)', border: '0.5px solid #c8d4e0', fontWeight: 700 },
-    rare:   { color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#d6884a,#8e4f1f)', border: '0.5px solid #d6722d', fontWeight: 700 },
-    scarce: { color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#8a96a4,#4a5360)', border: '0.5px solid #5a6470', fontWeight: 600 },
+    grail:  { color: 'var(--ink-on-gold)', backgroundImage: 'linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom))', border: '0.5px solid #ffc14d', fontWeight: 700 },
+    ultra:  { color: 'var(--ink-on-gold)', backgroundImage: 'linear-gradient(180deg,#e0e8f0,#98a5b3)', border: '0.5px solid #c8d4e0', fontWeight: 700 },
+    rare:   { color: 'var(--ink-on-gold)', backgroundImage: 'linear-gradient(180deg,#d6884a,#8e4f1f)', border: '0.5px solid #d6722d', fontWeight: 700 },
+    scarce: { color: 'var(--ink-on-gold)', backgroundImage: 'linear-gradient(180deg,#8a96a4,#4a5360)', border: '0.5px solid #5a6470', fontWeight: 600 },
   };
   const outChip = { color: 'var(--gold-bright)', background: 'rgba(201,149,74,0.06)', border: '0.5px solid var(--gold-deep)' };
 
@@ -363,12 +363,12 @@ function WatchlistTile({ listing, onRemove, onToast, onCardClick }) {
         {/* Live status line — bid count for active auctions; last-bid summary
             once an auction has ended so the user can see how it closed. */}
         {listing.is_auction && !isSold && listing.bid_count != null && (
-          <div className="text-[10px] tracking-[0.06em] mt-1.5" style={{ color: 'var(--ink-300)' }}>
+          <div className="text-[10px] tracking-[0.06em] mt-1.5" style={{ color: 'inherit' }}>
             {listing.bid_count} BID{listing.bid_count === 1 ? '' : 'S'}
           </div>
         )}
         {isSold && listing.is_auction && (
-          <div className="text-[10px] tracking-[0.06em] mt-1.5" style={{ color: 'var(--ink-300)' }}>
+          <div className="text-[10px] tracking-[0.06em] mt-1.5" style={{ color: 'inherit' }}>
             {listing.price != null ? `LAST BID ${price}` : 'ENDED'}
             {listing.bid_count != null ? ` · ${listing.bid_count} BID${listing.bid_count === 1 ? '' : 'S'}` : ''}
           </div>
@@ -507,7 +507,7 @@ function BidReminderModal({ listing, initialPrice, isSet, onSubmit, onRemove, on
           <button
             onClick={() => onSubmit(price)}
             className="flex-1 text-[11px] uppercase tracking-[0.18em] py-3 rounded-full transition-opacity hover:opacity-90"
-            style={{ background: 'var(--gold)', color: '#1a1612' }}
+            style={{ background: 'var(--gold)', color: 'var(--ink-on-gold)' }}
           >
             {isSet ? 'Update reminder' : 'Set reminder'}
           </button>

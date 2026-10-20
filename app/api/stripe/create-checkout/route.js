@@ -18,10 +18,11 @@ import { createServerSupabase } from '../../../../lib/supabaseServer';
 //
 // Required env vars (set in Vercel):
 //   STRIPE_SECRET_KEY            — sk_test_... then sk_live_...
-//   STRIPE_BASE_PRICE_ID         — price_... from Dashboard → Products
+//   STRIPE_BASE_PRICE_ID         — monthly price_... from Dashboard → Products
+//   STRIPE_BASE_ANNUAL_PRICE_ID  — yearly price_... (same product)
 //   NEXT_PUBLIC_SITE_URL         — https://fieldsandfloors.com (or preview URL)
 
-export async function POST() {
+export async function POST(request) {
   const supabase = createServerSupabase();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -30,7 +31,11 @@ export async function POST() {
   }
 
   const secretKey = process.env.STRIPE_SECRET_KEY;
-  const priceId   = process.env.STRIPE_BASE_PRICE_ID;
+  let plan = 'monthly';
+  try { plan = (await request.json())?.plan === 'annual' ? 'annual' : 'monthly'; } catch {}
+  const priceId   = plan === 'annual'
+    ? process.env.STRIPE_BASE_ANNUAL_PRICE_ID
+    : process.env.STRIPE_BASE_PRICE_ID;
   const siteUrl   = process.env.NEXT_PUBLIC_SITE_URL || 'https://fieldsandfloors.com';
 
   if (!secretKey || !priceId) {

@@ -1,0 +1,30 @@
+{
+  "appId": "com.fieldsandfloors.app",
+  "appName": "Fields & Floors",
+  "webDir": "mobile-shell",
+  "server": {
+    "url": "https://fieldsandfloors.com",
+    "errorPath": "offline.html"
+  },
+  "ios": {
+    "contentInset": "always",
+    "backgroundColor": "#0a0907",
+    "scheme": "Fields & Floors"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": true,
+      "launchShowDuration": 4000,
+      "launchFadeOutDuration": 0,
+      "backgroundColor": "#0a0907",
+      "showSpinner": false
+    },
+    "PushNotifications": {
+      "presentationOptions": [
+        "badge",
+        "sound",
+        "alert"
+      ]
+    }
+  }
+}
