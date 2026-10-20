@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>F&amp;F Tour Mockup</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap');
+:root{--ink-100:#f7f1e1;--ink-200:#e8dfc9;--ink-400:#a99e85;--ink-600:#6b6354;--bg-base:#0a0907;--bg-elev:#14110c;--bg-elev-2:#1a160f;--line:#2a251c;--line-soft:#1f1c16;--gold:#c9954a;--gold-bright:#e6b96b;--gold-deep:#8f6a32}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg-base);color:var(--ink-100);font-family:Geist,system-ui,sans-serif;min-height:100vh}
+.note{max-width:900px;margin:0 auto;padding:24px 16px 0;font:12px 'Geist Mono',monospace;color:var(--ink-400);line-height:1.6}
+.note b{color:var(--gold)}
+/* fake page behind */
+.page{max-width:900px;margin:24px auto;padding:0 16px;opacity:.35;filter:blur(1px)}
+.page h1{font:italic 400 56px/1 'Instrument Serif',serif;margin:40px 0 20px}
+.fakebar{height:54px;border:1px solid var(--line);border-radius:8px;background:var(--bg-elev)}
+.backdrop{position:fixed;inset:0;background:rgba(5,4,3,.72);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:16px;z-index:10}
+.panel{width:100%;max-width:440px;background:var(--bg-elev-2);border:.5px solid var(--gold-deep);border-radius:12px;box-shadow:0 24px 60px -20px rgba(0,0,0,.8);overflow:hidden}
+.art{height:190px;background:var(--bg-elev);border-bottom:.5px solid var(--line);display:flex;align-items:center;justify-content:center;padding:20px;position:relative}
+.body{padding:22px 24px 20px}
+.eyebrow{font:500 9.5px 'Geist Mono',monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+h2{font:italic 400 30px/1.05 'Instrument Serif',serif;margin:0 0 10px;letter-spacing:-.01em}
+p{font-size:13.5px;line-height:1.6;color:var(--ink-200);margin:0}
+.foot{display:flex;align-items:center;justify-content:space-between;padding:0 24px 20px;gap:12px}
+.dots{display:flex;gap:6px}.dots i{width:6px;height:6px;border-radius:50%;background:var(--line)}.dots i.on{background:var(--gold);width:18px;border-radius:3px}
+.btns{display:flex;gap:8px;align-items:center}
+.skip{background:none;border:0;color:var(--ink-600);font:11px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+.back{background:none;border:.5px solid var(--line);color:var(--ink-200);border-radius:6px;padding:9px 14px;font:500 12.5px Geist;cursor:pointer}
+.next{background:var(--gold);border:0;color:#1a1208;border-radius:6px;padding:9px 18px;font:600 12.5px Geist;cursor:pointer}
+/* vignettes */
+.search{width:100%;max-width:320px;height:46px;border:.5px solid var(--gold-deep);border-radius:8px;background:var(--bg-base);display:flex;align-items:center;padding:0 6px 0 14px;gap:8px}
+.search span{flex:1;font-size:14px;color:var(--ink-100)}.search span::after{content:'|';color:var(--gold);animation:b 1s steps(1) infinite}
+@keyframes b{50%{opacity:0}}
+.search em{background:var(--gold);color:#1a1208;font:600 11px Geist;border-radius:5px;padding:9px 12px;font-style:normal}
+.chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:330px}
+.chip{font:500 11px 'Geist Mono',monospace;letter-spacing:.06em;border:.5px solid var(--line);border-radius:100px;padding:6px 10px;color:var(--ink-400)}
+.chip.on{border-color:var(--gold);color:var(--gold-bright);background:rgba(201,149,74,.08)}
+.chip.g{border-color:#e6b96b;color:#e6b96b}.chip.u{border-color:#b98be0;color:#cfa8f0}.chip.r{border-color:#6aa8d8;color:#8cc0e6}
+.row{width:100%;max-width:330px;display:flex;gap:12px;align-items:center;border:.5px solid var(--line);border-radius:8px;padding:10px;background:var(--bg-base)}
+.thumb{width:40px;height:56px;border-radius:3px;background:linear-gradient(145deg,#3a3326,#6b5a3a 50%,#2a251c)}
+.row .t{flex:1;font-size:12px;color:var(--ink-200);line-height:1.4}.row .t small{display:block;font:11px 'Geist Mono',monospace;color:var(--gold);margin-top:3px}
+.star{font-size:20px;color:var(--gold);animation:pop 1.6s ease-in-out infinite}
+@keyframes pop{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
+.bell{width:100%;max-width:320px;border:.5px solid var(--line);border-radius:8px;background:var(--bg-base);padding:14px}
+.bell .h{font:500 9.5px 'Geist Mono',monospace;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:8px}
+.bell .q{font-size:13px;color:var(--ink-100);margin-bottom:10px}
+.bell .f{display:flex;gap:6px}.bell .f span{font:11px 'Geist Mono',monospace;border:.5px solid var(--line);border-radius:4px;padding:5px 8px;color:var(--ink-400)}.bell .f span.on{border-color:var(--gold);color:var(--gold-bright)}
+.done{text-align:center}.done .seal{width:64px;height:64px;border:1px solid var(--gold);border-radius:50%;display:grid;place-items:center;margin:0 auto 12px;font:italic 26px 'Instrument Serif',serif;color:var(--gold)}
+.done small{font:11px 'Geist Mono',monospace;color:var(--ink-400);letter-spacing:.1em}
+/* replay link mockups */
+.replay{max-width:900px;margin:0 auto;padding:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;position:relative;z-index:20}
+.loc{border:.5px solid var(--line);border-radius:8px;padding:14px;background:var(--bg-elev)}
+.loc .lbl{font:500 9.5px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-600);margin-bottom:10px}
+.menu div{font-size:13px;color:var(--ink-200);padding:6px 0}.menu .hl{color:var(--gold-bright)}
+.tourbtn{display:inline-block;border:.5px solid var(--gold-deep);color:var(--gold-bright);border-radius:6px;padding:8px 12px;font:500 12.5px Geist}
+@media(max-width:520px){.backdrop{align-items:flex-end;padding:0}.panel{max-width:none;border-radius:14px 14px 0 0}}
+</style>
+</head>
+<body>
+<div class="note"><b>MOCKUP — site tour.</b> Pops up once on a new visitor's first visit (after the splash). Five short steps, skippable any time. Phones get it as a bottom sheet. Use Next/Back to click through. Replay locations are shown at the bottom.</div>
+<div class="page"><h1>Find the card.</h1><div class="fakebar"></div></div>
+
+<div class="backdrop" id="bd">
+  <div class="panel">
+    <div class="art" id="art"></div>
+    <div class="body">
+      <div class="eyebrow" id="eb"></div>
+      <h2 id="ti"></h2>
+      <p id="tx"></p>
+    </div>
+    <div class="foot">
+      <div class="dots" id="dots"></div>
+      <div class="btns">
+        <button class="skip" id="skip">Skip</button>
+        <button class="back" id="back">Back</button>
+        <button class="next" id="next"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="replay" id="replay" style="display:none">
+  <div class="loc"><div class="lbl">1 · Account menu</div><div class="menu"><div>Watchlist</div><div>Saved searches</div><div>Alerts</div><div class="hl">Take the tour</div><div>Sign out</div></div></div>
+  <div class="loc"><div class="lbl">2 · Footer (every page)</div><div class="menu"><div>How it works</div><div class="hl">Site tour</div><div>Filters</div><div>Pricing</div></div></div>
+  <div class="loc"><div class="lbl">3 · How it works page</div><span class="tourbtn">▶ Take the 1-minute tour</span></div>
+</div>
+
+<script>
+const S=[
+ {eb:'Step 1 of 5 · Search',ti:'Start with a player.',tx:'Type any name. We only show listings where that player is actually in the title — no keyword-stuffed junk.',art:'<div class="search"><span>Cooper Flagg</span><em>Search</em></div>'},
+ {eb:'Step 2 of 5 · Filters',ti:'Stack what eBay won\'t.',tx:'Autographed, rookie, numbered to 25 or lower, under $300 — all at once. Print runs are sorted into tiers from Scarce up to The Grail.',art:'<div class="chips"><span class="chip on">Autographed</span><span class="chip on">Rookie</span><span class="chip on">Numbered</span><span class="chip g">The Grail ≤25</span><span class="chip u">Ultra Rare</span><span class="chip r">Rare</span><span class="chip">Buy It Now</span><span class="chip">Under $300</span></div>'},
+ {eb:'Step 3 of 5 · Watchlist',ti:'Star the ones you like.',tx:'Tap the star on any card to save it. Your watchlist keeps price and status fresh, so you know when it\'s sold or ending. Free with an account.',art:'<div class="row"><div class="thumb"></div><div class="t">2025 Bowman Chrome Cooper Flagg Auto /10<small>$1,240 · 2h 14m left</small></div><div class="star">★</div></div>'},
+ {eb:'Step 4 of 5 · Alerts',ti:'Let the cards come to you.',tx:'Save a search and we\'ll email you when new matches list, plus bid reminders before auctions end. Part of the Base plan — 14-day free trial.',art:'<div class="bell"><div class="h">Saved search</div><div class="q">Cooper Flagg · Auto · ≤/25 · under $300</div><div class="f"><span class="on">Hourly</span><span>Daily</span><span>Weekly</span></div></div>'},
+ {eb:'Step 5 of 5 · Buy',ti:'Checkout happens on eBay.',tx:'Every listing is a real eBay listing. Open a card for details, then click through to buy there. We never take a cut.',art:'<div class="done"><div class="seal">F</div><small>YOU\'RE SET</small></div>'}
+];
+let i=0;const $=id=>document.getElementById(id);
+function r(){const s=S[i];$('eb').textContent=s.eb;$('ti').textContent=s.ti;$('tx').textContent=s.tx;$('art').innerHTML=s.art;
+$('dots').innerHTML=S.map((_,k)=>'<i class="'+(k===i?'on':'')+'"></i>').join('');
+$('back').style.visibility=i?'visible':'hidden';$('next').textContent=i===S.length-1?'Start searching':'Next';$('skip').style.display=i===S.length-1?'none':''}
+function close(){$('bd').style.display='none';$('replay').style.display='grid'}
+$('next').onclick=()=>{if(i<S.length-1){i++;r()}else close()};$('back').onclick=()=>{if(i){i--;r()}};$('skip').onclick=close;r();
+</script>
+</body>
+</html>

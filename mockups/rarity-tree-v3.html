@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rarity Tree v3</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap');
+:root{
+  --ink-100:#f7f1e1;--ink-200:#e8dfc9;--ink-400:#a99e85;--ink-600:#6b6354;
+  --bg-base:#0a0907;--bg-elev:#14110c;--bg-elev-2:#1a160f;
+  --line:#2a251c;--line-soft:#1f1c16;
+  --gold:#c9954a;--gold-bright:#e6b96b;--gold-deep:#8f6a32;
+  --ink-on-gold:#1a1612;--gold-fill-top:#ffd97a;--gold-fill-bottom:#d99c14;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg-base);color:var(--ink-100);font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
+.page{max-width:1180px;margin:0 auto;padding:40px 16px 80px}
+.eyebrow{font:500 11px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+h1{font:italic 400 44px/1 'Instrument Serif',serif;margin:10px 0 8px}
+.lede{color:var(--ink-400);font-size:15px;max-width:680px;line-height:1.6;margin:0 0 28px}
+.jump{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:48px}
+.jump a{color:var(--gold-bright);text-decoration:none;border:1px solid var(--gold-deep);border-radius:999px;padding:8px 14px;font-size:14px}
+.direction{margin-bottom:80px}
+.dir-head{border-top:1px solid var(--gold-deep);padding-top:20px;margin-bottom:28px}
+.dir-head .n{font:600 12px 'Geist Mono',monospace;color:var(--gold-bright);letter-spacing:.14em}
+.dir-head h2{font:italic 400 36px/1.1 'Instrument Serif',serif;margin:6px 0 6px}
+.dir-head p{margin:0;color:var(--ink-400);font-size:14px;max-width:640px;line-height:1.55}
+.sub-head{display:flex;align-items:baseline;gap:12px;margin:32px 0 14px}
+.sub-head b{font:600 12px 'Geist Mono',monospace;color:var(--gold-bright)}
+.sub-head span{font:400 22px 'Instrument Serif',serif}
+.sub-head em{margin-left:auto;font-style:normal;color:var(--ink-400);font-size:13px}
+
+/* modal shell */
+.modal{background:var(--bg-elev);border:1px solid var(--line);border-radius:16px;display:grid;grid-template-columns:300px 1fr;gap:32px;padding:28px;box-shadow:0 30px 80px rgba(0,0,0,.6);align-items:start}
+.photo{aspect-ratio:2.5/3.5;border-radius:10px;background:linear-gradient(135deg,#ff9842,#cc5e0d);padding:9px;position:relative}
+.photo::after{content:'';position:absolute;inset:9px;border-radius:5px;background:radial-gradient(ellipse at 50% 30%,#4a3524,#120d08 70%)}
+.photo span{position:absolute;bottom:20px;left:0;right:0;text-align:center;z-index:1;font:500 11px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(247,241,225,.45)}
+.title{font:400 24px/1.15 'Instrument Serif',serif;margin:0 0 8px}
+.meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{font:700 11px 'Geist Mono',monospace;padding:3px 8px;border-radius:4px;color:var(--ink-on-gold);letter-spacing:.04em;white-space:nowrap}
+.chip.outline{color:var(--gold-bright);background:rgba(201,149,74,.06);border:.5px solid var(--gold-deep);font-weight:500}
+.t-grail{background:linear-gradient(180deg,#ffd97a,#d99c14);border:.5px solid #ffc14d}
+.price{font:500 26px Geist,sans-serif;margin:2px 0 14px}
+.actions{display:flex;gap:8px;margin-bottom:20px}
+.btn{font:600 11px Geist,sans-serif;letter-spacing:.16em;text-transform:uppercase;padding:12px 16px;border-radius:6px;border:.5px solid rgba(232,226,213,.18);color:var(--ink-100);background:transparent}
+.btn.primary{flex:1;background:linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom));color:var(--ink-on-gold);border:0}
+
+/* rarity block */
+.rt{border:1px solid var(--line);border-radius:12px;background:var(--bg-base);padding:14px 14px 12px}
+.rt-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:6px}
+.rt-top .k{font:500 11px 'Geist Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-400)}
+.rt-line{font:italic 400 22px/1.2 'Instrument Serif',serif;margin:0 0 4px}
+.rt-line b{font-weight:400;color:var(--gold-bright)}
+.rt-sub{margin:0 0 6px;font-size:13px;color:var(--ink-200);line-height:1.45}
+.rt-line small{font:500 12px Geist,sans-serif;font-style:normal;color:var(--ink-400);margin-left:6px}
+.tree{display:block;width:100%;height:auto;overflow:visible}
+.tree .br{cursor:pointer}
+.tree .br:hover .lbl-run{fill:var(--gold-bright)}
+.detail{margin-top:8px;border-top:1px solid var(--line);padding-top:10px;min-height:44px}
+.detail .hint{font-size:13px;color:var(--ink-600);text-align:center;padding:6px 0}
+.detail h4{margin:0 0 8px;font:500 11px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.drow{display:grid;grid-template-columns:16px 1fr auto auto;gap:10px;align-items:center;padding:5px 0;font-size:13px;color:var(--ink-200);border-bottom:1px dashed var(--line-soft)}
+.drow:last-child{border-bottom:0}
+.drow .sw{width:14px;height:14px;border-radius:3px;box-shadow:inset 0 0 0 .5px rgba(232,226,213,.25)}
+.drow .o{font:500 11px 'Geist Mono',monospace;color:var(--ink-400);white-space:nowrap}
+.drow.me{color:var(--ink-100);font-weight:500}
+.here{font:600 10px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-on-gold);background:var(--gold-bright);padding:1px 5px;border-radius:3px;margin-left:6px}
+.notice{margin:6px 0 8px;padding:10px 12px;border-radius:8px;border:1px dashed rgba(201,149,74,.35);font-size:13px;line-height:1.5;color:var(--ink-200)}
+.notice a{color:var(--gold-bright);text-decoration:none;border-bottom:1px solid var(--gold-deep)}
+
+/* phones */
+.phones{display:flex;gap:28px;flex-wrap:wrap;justify-content:center}
+.phone{width:390px;max-width:100%;border:10px solid #1b1813;border-radius:48px;background:var(--bg-base);overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.phone .bar{height:44px;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font:600 14px Geist,sans-serif}
+.phone .sheet{background:var(--bg-elev);border-radius:20px 20px 0 0;padding:10px 10px 22px;border-top:1px solid var(--line);min-height:760px}
+.grab{width:40px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 12px}
+.phone .rt{padding:12px 8px 10px}
+.caption{text-align:center;color:var(--ink-400);font-size:13px;margin:12px auto 0;max-width:370px;line-height:1.45}
+
+/* family tree */
+.ft{position:relative}
+.ft svg.wires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.ft .root{display:flex;justify-content:center;margin-bottom:26px}
+.node{position:relative;z-index:1;background:var(--bg-elev);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:13px;color:var(--ink-200);text-align:center}
+.node.set{font:italic 400 18px 'Instrument Serif',serif;color:var(--ink-100);padding:8px 14px}
+.cols{display:grid;gap:6px}
+.col{display:flex;flex-direction:column;align-items:center;gap:10px}
+.tier{font:500 11px 'Geist Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-400);padding:5px 8px;margin-bottom:6px}
+.tier small{display:block;color:var(--ink-600);letter-spacing:.04em;margin-top:2px;font-size:11px}
+.run{display:inline-flex;align-items:center;gap:5px;font:500 12px 'Geist Mono',monospace;color:var(--ink-200);padding:4px 7px;border-radius:999px;cursor:pointer;white-space:nowrap}
+.run .dot{width:11px;height:11px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 .5px rgba(232,226,213,.3)}
+.run sup{font-size:10px;color:var(--ink-600);top:0;margin-left:-1px}
+.on{border-color:var(--gold-bright)!important;color:var(--gold-bright)!important;background:rgba(201,149,74,.12)!important}
+.cardnode{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:6px;z-index:1;position:relative}
+.cardnode .thumb{width:46px;height:64px;border-radius:5px;padding:3px;background:linear-gradient(135deg,#ff9842,#cc5e0d);box-shadow:0 0 0 2px var(--gold-bright),0 8px 20px rgba(0,0,0,.6)}
+.cardnode .thumb i{display:block;width:100%;height:100%;border-radius:3px;background:radial-gradient(ellipse at 50% 30%,#4a3524,#120d08 70%)}
+.cardnode .cap{font:600 10px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-on-gold);background:var(--gold-bright);padding:2px 6px;border-radius:3px;white-space:nowrap}
+.cardnode .nm{font-size:12px;color:var(--ink-100);white-space:nowrap}
+.ft .foot{margin-top:18px;text-align:center}
+.ft .foot button{background:transparent;border:1px dashed var(--line);border-radius:999px;color:var(--ink-400);font-size:12px;padding:6px 12px}
+
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.note{border:1px solid var(--line);border-radius:10px;padding:16px;background:var(--bg-elev)}
+.note h3{margin:0 0 6px;font:500 11px 'Geist Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.note p{margin:0;font-size:14px;line-height:1.55;color:var(--ink-200)}
+
+@media (max-width:860px){
+  .modal{grid-template-columns:1fr;padding:18px}
+  .modal .photo{width:180px;margin:0 auto}
+  .sub-head{flex-wrap:wrap}.sub-head em{margin:0;width:100%}
+}
+</style>
+<style>
+.rt-line{font:italic 400 28px/1.1 'Instrument Serif',serif;margin:0 0 4px;color:var(--gold-bright)}
+.rt-sub{margin:0 0 2px;font-size:14px;color:var(--ink-200);line-height:1.4}
+.rt-odds{margin:0 0 10px;font-size:13px;color:var(--ink-400)}
+.key{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-400);margin:6px 0 2px}
+.key i{font-style:normal;color:var(--gold)}
+.fallback{margin:4px 0 8px;font-size:13px;line-height:1.5;color:var(--ink-200)}
+.fallback a{color:var(--gold-bright);text-decoration:none;border-bottom:1px solid var(--gold-deep)}
+.rules{margin-top:22px;border:1px solid var(--line);border-radius:10px;background:var(--bg-elev);padding:16px 18px}
+.rules h3{margin:0 0 10px;font:500 11px 'Geist Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.rules ol{margin:0;padding-left:20px;color:var(--ink-200);font-size:14px;line-height:1.6}
+.rules li b{color:var(--ink-100);font-weight:500}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="eyebrow">Fields &amp; Floors · Design direction · v3</div>
+  <h1>The rarity tree, as a tree</h1>
+  <p class="lede">Two ways to show how rare this card is. Both use the real 2024 Topps Chrome checklist. Your card's photo is the loudest thing on the tree. Everything else stays quiet until you tap it.</p>
+  <div class="jump"><a href="#d1">1 · Classic tree</a><a href="#d2">2 · Family tree</a></div>
+
+  <section class="direction" id="d1">
+    <div class="dir-head"><div class="n">DIRECTION 1</div><h2>Classic tree</h2>
+      <p>The trunk runs from most common at the roots to rarest at the top. Each branch is one colour. Your card hangs on its branch.</p></div>
+
+    <div class="sub-head"><b>A</b><span>Desktop modal</span><em>Hover a branch to name it, click to list every colour</em></div>
+    <div class="modal">
+      <div><div class="photo"><span>LISTING PHOTO</span></div></div>
+      <div>
+        <h3 class="title">2024 Topps Chrome Jackson Holliday RC Orange Wave Refractor /25</h3>
+        <div class="meta"><span class="chip t-grail">/25</span><span class="chip outline">RC</span></div>
+        <div class="price">$1,240</div>
+        <div class="actions"><button class="btn primary">View on eBay ↗</button><button class="btn">☆ Watch</button><button class="btn">↗ Share</button></div>
+        <div class="rt" data-d="1" data-case="match" data-w="520"></div>
+      </div>
+    </div>
+
+    <div class="sub-head"><b>B</b><span>iPhone app</span><em>The whole tree on one screen</em></div>
+    <div class="phones">
+      <div><div class="phone"><div class="bar"><span>9:41</span><span>●●●</span></div><div class="sheet"><div class="grab"></div>
+        <div class="rt" data-d="1" data-case="match" data-w="352"></div></div></div>
+        <p class="caption">Default view</p></div>
+      <div><div class="phone"><div class="bar"><span>9:41</span><span>●●●</span></div><div class="sheet"><div class="grab"></div>
+        <div class="rt" data-d="1" data-case="match" data-w="352" data-open="25"></div></div></div>
+        <p class="caption">After tapping your card's branch</p></div>
+    </div>
+
+    <div class="sub-head"><b>C</b><span>When we know less</span></div>
+    <div class="phones">
+      <div><div class="phone"><div class="bar"><span>9:41</span><span>●●●</span></div><div class="sheet"><div class="grab"></div>
+        <div class="rt" data-d="1" data-case="serial" data-w="352"></div></div></div>
+        <p class="caption">Title says “/250” but not the colour</p></div>
+      <div><div class="phone"><div class="bar"><span>9:41</span><span>●●●</span></div><div class="sheet"><div class="grab"></div>
+        <div class="rt" data-d="1" data-case="unknown" data-w="352"></div></div></div>
+        <p class="caption">A set, auto or insert we haven't mapped</p></div>
+    </div>
+
+    <div class="rules"><h3>How Direction 1 meets the clarity rules</h3><ol>
+      <li><b>5 seconds:</b> the big line says “Only 25 made”, and the photo on the tree shows where the card sits.</li>
+      <li><b>Plain words:</b> “made”, “rarer”, “packs”. No /N without words, no ratios, no jargon.</li>
+      <li><b>One idea per line:</b> how many were made, how it ranks, pack odds. Three separate lines.</li>
+      <li><b>Key:</b> “Higher on the tree = rarer”, with “Rarest” at the top and “Most common” at the bottom.</li>
+      <li><b>One name per branch:</b> only your card's branch is labelled (“Orange Wave · 25 made”). The others are a coloured dot until tapped or hovered. Extra colours at the same number are tiny leaves, not text.</li>
+      <li><b>Prominence:</b> the gold branch, the photo and the “This card” tag. The trunk and the other branches use quiet tokens.</li>
+      <li><b>About 8 labels on iPhone:</b> three header lines, the key, Rarest, Most common, your branch and the tag.</li>
+      <li><b>Fallbacks:</b> one sentence each.</li>
+    </ol></div>
+  </section>
+
+  <section class="direction" id="d2">
+    <div class="dir-head"><div class="n">DIRECTION 2</div><h2>Family tree</h2>
+      <p>A lineage from the set down to your card. Each level shows its alternatives as small dots, rarer to the left, and the gold line traces your card's line.</p></div>
+
+    <div class="sub-head"><b>A</b><span>Desktop modal</span><em>Click any dot to name it</em></div>
+    <div class="modal">
+      <div><div class="photo"><span>LISTING PHOTO</span></div></div>
+      <div>
+        <h3 class="title">2024 Topps Chrome Jackson Holliday RC Orange Wave Refractor /25</h3>
+        <div class="meta"><span class="chip t-grail">/25</span><span class="chip outline">RC</span></div>
+        <div class="price">$1,240</div>
+        <div class="actions"><button class="btn primary">View on eBay ↗</button><button class="btn">☆ Watch</button><button class="btn">↗ Share</button></div>
+        <div class="rt" data-d="2" data-case="match" data-w="520"></div>
+      </div>
+    </div>
+
+    <div class="sub-head"><b>B</b><span>iPhone app</span></div>
+    <div class="phones">
+      <div><div class="phone"><div class="bar"><span>9:41</span><span>●●●</span></div><div class="sheet"><div class="grab"></div>
+        <div class="rt" data-d="2" data-case="match" data-w="352"></div></div></div>
+        <p class="caption">Default view</p></div>
+      <div><div class="phone"><div class="bar"><span>9:41</span><span>●●●</span></div><div class="sheet"><div class="grab"></div>
+        <div class="rt" data-d="2" data-case="match" data-w="352" data-open="25"></div></div></div>
+        <p class="caption">After tapping “25 made”</p></div>
+    </div>
+
+    <div class="sub-head"><b>C</b><span>When we know less</span></div>
+    <div class="phones">
+      <div><div class="phone"><div class="bar"><span>9:41</span><span>●●●</span></div><div class="sheet"><div class="grab"></div>
+        <div class="rt" data-d="2" data-case="serial" data-w="352"></div></div></div>
+        <p class="caption">Title says “/250” but not the colour</p></div>
+      <div><div class="phone"><div class="bar"><span>9:41</span><span>●●●</span></div><div class="sheet"><div class="grab"></div>
+        <div class="rt" data-d="2" data-case="unknown" data-w="352"></div></div></div>
+        <p class="caption">A set, auto or insert we haven't mapped</p></div>
+    </div>
+
+    <div class="rules"><h3>How Direction 2 meets the clarity rules</h3><ol>
+      <li><b>5 seconds:</b> follow the gold line from set to card. The big line says “Only 25 made”.</li>
+      <li><b>Plain words:</b> the levels read “2 to 25 made” and “Orange · 25 made”. The words Grail, Ultra and so on don't appear.</li>
+      <li><b>One idea per line:</b> same three header lines as Direction 1.</li>
+      <li><b>Key:</b> rarity here runs sideways, so the key reads “Further left = rarer”. Rule 4's wording is adapted for this layout.</li>
+      <li><b>One name per level:</b> only the gold path is labelled, and the alternatives are unlabelled dots.</li>
+      <li><b>Prominence:</b> the photo node is the largest item, sitting at the end of the gold line.</li>
+      <li><b>About 8 labels on iPhone:</b> three header lines, the key, set, level, colour and the tag.</li>
+      <li><b>Fallbacks:</b> one sentence each.</li>
+    </ol></div>
+  </section>
+</div>
+
+<script>
+const D = {"label":"2024 Topps Chrome","rungs":[[1,[{"n":"Superfractor","k":"superfractor","g":["#fff5c0","#ffd97a"],"o":{"Hobby":"1:35,584","Jumbo":"1:11,011","Breaker":"1:834","Blaster":"1:104,587","Monster":"1:40,062"}}]],[5,[{"n":"Red Refractor","k":"red","g":["#cc3340","#8a1c25"],"o":{"Hobby":"1:7,117","Jumbo":"1:2,163","Breaker":"1:173","Blaster":"1:20,184","Monster":"1:8,336"}},{"n":"Red Wave Refractor","k":"red-wave","g":["#cc3340","#8a1c25"],"o":{"Hobby":"1:3,657","Jumbo":"1:1,127","Breaker":"1:1,251"}},{"n":"Red Raywave Refractor","k":"red-raywave","g":["#cc3340","#8a1c25"],"o":{"Blaster":"1:6,024","Monster":"1:4,025"}},{"n":"FrozenFractor","k":"frozenfractor","g":["#e6f6ff","#8fc9e6"],"o":{"Jumbo":"1:506"},"x":"Jumbo"}]],[10,[{"n":"Black Refractor","k":"black","g":["#3a3a3a","#0a0a0a"],"o":{"Hobby":"1:1,833","Jumbo":"1:564","Breaker":"1:626"}},{"n":"Black Raywave Refractor","k":"black-raywave","g":["#3a3a3a","#0a0a0a"],"o":{"Blaster":"1:3,012","Monster":"1:2,013"}}]],[25,[{"n":"Orange Refractor","k":"orange","g":["#ff9842","#cc5e0d"],"o":{"Hobby":"1:388"}},{"n":"Orange Wave Refractor","k":"orange-wave","g":["#ff9842","#cc5e0d"],"o":{"Hobby":"1:733","Jumbo":"1:226","Breaker":"1:244"}},{"n":"Orange Raywave Refractor","k":"orange-raywave","g":["#ff9842","#cc5e0d"],"o":{"Blaster":"1:1,201","Monster":"1:800"}}]],[50,[{"n":"Gold Refractor","k":"gold","g":["#e6c14d","#a8851e"],"o":{"Hobby":"1:714","Jumbo":"1:218","Breaker":"1:18","Blaster":"1:2,014","Monster":"1:817"}},{"n":"Gold Wave Refractor","k":"gold-wave","g":["#e6c14d","#a8851e"],"o":{"Hobby":"1:367","Jumbo":"1:113","Breaker":"1:122"}},{"n":"Gold Raywave Refractor","k":"gold-raywave","g":["#e6c14d","#a8851e"],"o":{"Blaster":"1:601","Monster":"1:402"}}]],[75,[{"n":"Blue Wave Refractor","k":"blue-wave","g":["#5694ff","#2a5db8"],"o":{"Hobby":"1:245","Jumbo":"1:76","Breaker":"1:82"}}]],[99,[{"n":"Green Refractor","k":"green","g":["#86d957","#3fa61c"],"o":{"Hobby":"1:361","Jumbo":"1:110","Breaker":"1:9","Blaster":"1:1,016","Monster":"1:413"}},{"n":"Green Sonar","k":"green-sonar","g":["#86d957","#3fa61c"],"o":{"Hobby":"1:361","Jumbo":"1:110","Breaker":"1:9","Blaster":"1:1,016","Monster":"1:413"}},{"n":"Green Wave Refractor","k":"green-wave","g":["#86d957","#3fa61c"],"o":{"Hobby":"1:185","Jumbo":"1:57","Breaker":"1:62"}},{"n":"Green Raywave Refractor","k":"green-raywave","g":["#86d957","#3fa61c"],"o":{"Blaster":"1:304","Monster":"1:203"}}]],[125,[{"n":"Blue Sonar Refractor","k":"blue-sonar","g":["#5694ff","#2a5db8"],"o":{"Hobby":"1:285","Jumbo":"1:87","Breaker":"1:7","Blaster":"1:804","Monster":"1:326"}}]],[150,[{"n":"Blue Refractor","k":"blue","g":["#5694ff","#2a5db8"],"o":{"Hobby":"1:238","Jumbo":"1:73","Breaker":"1:6","Blaster":"1:669","Monster":"1:271"}},{"n":"Blue Raywave Refractor","k":"blue-raywave","g":["#5694ff","#2a5db8"],"o":{"Blaster":"1:200","Monster":"1:134"}}]],[199,[{"n":"Aqua Refractor","k":"aqua","g":["#3fc6c9","#1a8a90"],"o":{"Hobby":"1:179","Jumbo":"1:55","Breaker":"1:5","Blaster":"1:503","Monster":"1:205"}},{"n":"Aqua Lava Refractor","k":"aqua-lava","g":["#3fc6c9","#1a8a90"],"o":{"Hobby":"1:179","Jumbo":"1:55","Breaker":"1:5","Blaster":"1:503","Monster":"1:205"}},{"n":"Aqua Raywave Refractor","k":"aqua-raywave","g":["#3fc6c9","#1a8a90"],"o":{"Blaster":"1:151","Monster":"1:101"}}]],[250,[{"n":"Purple Refractor","k":"purple","g":["#8a4dd9","#5d2da3"],"o":{"Hobby":"1:143","Jumbo":"1:44","Breaker":"1:4","Blaster":"1:403","Monster":"1:164"}}]],[275,[{"n":"Purple Sonar Refractor","k":"purple-sonar","g":["#8a4dd9","#5d2da3"],"o":{"Blaster":"1:109","Monster":"1:73"}}]],[299,[{"n":"Purple Speckle Refractor","k":"purple-speckle","g":["#8a4dd9","#5d2da3"],"o":{"Hobby":"1:119","Jumbo":"1:36","Breaker":"1:3","Blaster":"1:334","Monster":"1:136"}}]],[350,[{"n":"Magenta Speckle Refractor","k":"magenta-speckle","g":["#d94db0","#93226e"],"o":{"Hobby":"1:102","Jumbo":"1:31","Breaker":"1:3","Blaster":"1:285","Monster":"1:116"}}]]],"unnum":[{"n":"Refractor","k":"refractor","g":["#d8d8d8","#9a9a9a"],"o":{"Hobby":"1:3","Jumbo":"1:1","Breaker":"1:1","Blaster":"1:4","Monster":"1:3"}},{"n":"Big Apple Refractor","k":"big-apple","g":["#d8d8d8","#9a9a9a"],"o":{},"x":"Fanatics Fest NYC"},{"n":"X-Fractor","k":"x-fractor","g":["#c4d6c4","#7da37d"],"o":{"Monster":"1:1"}},{"n":"Sepia Refractor","k":"sepia","g":["#b8a37a","#8a7045"],"o":{"Blaster":"1:4"}},{"n":"Pink Refractor","k":"pink","g":["#ffb3d1","#cc6f95"],"o":{"Blaster":"1:4"}},{"n":"Prism Refractor","k":"prism","g":["#d8d8d8","#9a9a9a"],"o":{"Hobby":"1:6","Jumbo":"1:2","Blaster":"1:7","Monster":"1:7"}},{"n":"Raywave Refractor","k":"raywave","g":["#d8d8d8","#9a9a9a"],"o":{"Blaster":"1:9","Monster":"1:4"}},{"n":"Negative Refractor","k":"negative","g":["#e8e8e8","#2a2a2a"],"o":{"Hobby":"1:89","Jumbo":"1:27","Breaker":"1:3","Blaster":"1:249","Monster":"1:101"}}]};
+const RUNGS = D.rungs, UNNUM = D.unnum;
+const MATCH = {run:25, key:'orange-wave', name:'Orange Wave'};
+const TIERS = [
+  {k:'1of1',  words:'1 made',          lo:1,   hi:1,   g:['#fff5c0','#ffd97a']},
+  {k:'grail', words:'2 to 25 made',    lo:2,   hi:25,  g:['#ffd97a','#d99c14']},
+  {k:'ultra', words:'26 to 99 made',   lo:26,  hi:99,  g:['#e0e8f0','#98a5b3']},
+  {k:'rare',  words:'100 to 249 made', lo:100, hi:249, g:['#d6884a','#8e4f1f']},
+  {k:'scarce',words:'250 or more made',lo:250, hi:1e9, g:['#8a96a4','#4a5360']},
+];
+const short = n => n==='Refractor' ? n : n.replace(/ Refractor$/,'');
+const tierOf = run => TIERS.find(t=>run>=t.lo&&run<=t.hi);
+const css = g => `linear-gradient(135deg,${g[0]},${g[1]})`;
+const made = run => run===1 ? 'one of one' : `${run} made`;
+const ord = n => n+(n%10===1&&n%100!==11?'st':n%10===2&&n%100!==12?'nd':n%10===3&&n%100!==13?'rd':'th');
+const packs = p => { const b=['Hobby','Jumbo','Breaker','Blaster','Monster'].find(x=>p&&p.o[x]); return b ? `About 1 in ${p.o[b].replace('1:','')} ${b.toLowerCase()} packs` : ''; };
+const packsFor = (p, boxes, word) => { const b = boxes.find(x=>p.o[x]); return b ? `1 in ${p.o[b].replace('1:','')} ${word}` : ''; };
+let uid = 0;
+
+function model(c){
+  if(c==='unknown') return {unknown:true, label:'hobby-wide', matchId:'ultra', run:50,
+    rungs: TIERS.map(t=>({id:t.k, run:t.hi, name:t.words, g:t.g, extra:0, members:[]}))};
+  const run = c==='serial' ? 250 : MATCH.run;
+  return {label:D.label, matchId:String(run), run, matchKey:c==='serial'?null:MATCH.key,
+    rungs: RUNGS.map(([r,ps])=>({id:String(r), run:r, name:short(ps[0].n), g:ps[0].g, extra:ps.length-1, members:ps}))};
+}
+
+function header(m, c, keyText){
+  const ix = m.rungs.findIndex(r=>r.id===m.matchId), n = m.rungs.length, r = m.rungs[ix];
+  if(c==='unknown') return `<p class="rt-line">Only 50 made</p>
+    <p class="fallback">We don't have this card's full rainbow yet. Here's how rare 50 copies is across the hobby.</p>
+    <div class="key"><i>${keyText.startsWith('Higher')?'↑':'←'}</i>${keyText}</div>`;
+  const p = m.matchKey && r.members.find(x=>x.k===m.matchKey);
+  const line1 = r.run===1 ? 'One of one' : `Only ${r.run} made`;
+  return `<p class="rt-line">${line1}</p>
+    <p class="rt-sub">${ix===0?'The rarest card in':ord(ix+1)+' rarest of '+n+' in'} ${D.label}</p>
+    ${p ? `<p class="rt-odds">${packs(p)}</p>` : `<p class="fallback">The listing says ${r.run} made but doesn't name the colour.</p>`}
+    <div class="key"><i>${keyText.startsWith('Higher')?'↑':'←'}</i>${keyText}</div>`;
+}
+
+function detail(m, id){
+  if(!id) return `<div class="hint">Tap any branch to see the colours made at that number</div>`;
+  if(id==='__roots') return `<h4>Not numbered · ${UNNUM.length} colours</h4>` + UNNUM.map(p=>row(p,false)).join('');
+  const r = m.rungs.find(x=>x.id===id);
+  if(m.unknown) return `<h4>${r.name}</h4><div class="hint" style="text-align:left">We don't have this card's colour list yet.</div>`;
+  return `<h4>${made(r.run)} · ${r.members.length} colour${r.members.length>1?'s':''}</h4>` + r.members.map(p=>row(p, p.k===m.matchKey)).join('');
+}
+function row(p, me){
+  const h = packsFor(p,['Hobby','Jumbo','Breaker'],'hobby packs'), rt = packsFor(p,['Blaster','Monster','Mega'],'retail packs');
+  return `<div class="drow${me?' me':''}" style="grid-template-columns:16px 1fr auto"><span class="sw" style="background:${css(p.g)}"></span><span>${short(p.n)}${me?'<span class="here">This card</span>':''}</span><span class="o">${p.x ? 'Event only' : (h || rt)}</span></div>`;
+}
+
+function grad(g){ const id='g'+(uid++); return [id, `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${g[0]}"/><stop offset="1" stop-color="${g[1]}"/></linearGradient></defs>`]; }
+function thumb(x, y, w, h){
+  const id='t'+(uid++);
+  return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9842"/><stop offset="1" stop-color="#cc5e0d"/></linearGradient>
+    <radialGradient id="${id}i" cx=".5" cy=".3" r=".75"><stop offset="0" stop-color="#4a3524"/><stop offset="1" stop-color="#120d08"/></radialGradient></defs>
+    <rect x="${x-2.5}" y="${y-2.5}" width="${w+5}" height="${h+5}" rx="6" style="fill:var(--gold-bright)"/>
+    <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="4" fill="url(#${id})"/>
+    <rect x="${x+3}" y="${y+3}" width="${w-6}" height="${h-6}" rx="2" fill="url(#${id}i)"/>`;
+}
+const T = (x,y,txt,o={}) => `<text x="${x}" y="${y}" text-anchor="${o.a||'start'}" style="fill:${o.c||'var(--ink-400)'};font:${o.f||"500 11px 'Geist Mono',monospace"};letter-spacing:${o.ls||'0'}">${txt}</text>`;
+function tag(x, y, anchor){ const w=66, x0 = anchor==='end'? x-w : anchor==='middle'? x-w/2 : x;
+  return `<rect x="${x0}" y="${y}" width="${w}" height="17" rx="3" style="fill:var(--gold-bright)"/>${T(x0+w/2, y+12, 'THIS CARD', {a:'middle', c:'var(--ink-on-gold)', f:"600 10px 'Geist Mono',monospace", ls:'.1em'})}`; }
+
+// ── Direction 1 ──
+function tree1(m, W, open, hover){
+  const N = m.rungs.length, phone = W < 420;
+  const rowH = m.unknown ? 64 : (phone ? 32 : 30), top = 40, cx = W/2, BL = phone ? 46 : 64;
+  const ys = i => top + i*rowH;
+  const trunkBot = ys(N-1) + 34, H = trunkBot + (m.unknown ? 40 : 62);
+  let s = `<svg class="tree" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">`;
+  s += T(cx, 12, 'RAREST', {a:'middle', c:'var(--ink-400)', ls:'.16em'});
+  s += `<path d="M${cx-1.5} ${top-6} L${cx+1.5} ${top-6} L${cx+5} ${trunkBot} L${cx-5} ${trunkBot} Z" style="fill:var(--line)"/>`;
+  if(!m.unknown){
+    const n = UNNUM.length, span = phone ? 120 : 160;
+    s += `<g class="br" data-id="__roots"><rect x="${cx-span/2-10}" y="${trunkBot-4}" width="${span+20}" height="36" fill="transparent"/>`;
+    UNNUM.forEach((u,i)=>{ const tx = cx - span/2 + (span/(n-1))*i, ty = trunkBot + 18 + (i%2)*6;
+      s += `<path d="M${cx} ${trunkBot-6} C ${cx} ${trunkBot+10}, ${tx} ${trunkBot+6}, ${tx} ${ty-4}" style="stroke:var(--line);fill:none" stroke-width="1.4"/>`;
+      s += `<circle cx="${tx}" cy="${ty}" r="3.5" style="fill:var(--ink-600)"/>`; });
+    s += `</g>`;
+    s += T(cx, H-6, open==='__roots' ? 'NOT NUMBERED · MOST COMMON' : 'MOST COMMON', {a:'middle', c: open==='__roots'?'var(--gold-bright)':'var(--ink-400)', ls:'.16em'});
+  } else {
+    s += `<path d="M${cx-34} ${trunkBot+12} Q ${cx} ${trunkBot-8} ${cx+34} ${trunkBot+12}" style="stroke:var(--line);fill:none" stroke-width="2"/>`;
+    s += T(cx, H-6, 'MOST COMMON', {a:'middle', ls:'.16em'});
+  }
+  m.rungs.forEach((r,i)=>{
+    const y = ys(i), isM = r.id===m.matchId, sel = r.id===open, hov = r.id===hover;
+    const side = i%2 ? -1 : 1, tx = cx + side*BL, ty = y;
+    const strokeC = isM ? 'var(--gold-bright)' : sel ? 'var(--gold)' : 'var(--line)';
+    const [gid, gdef] = grad(r.g);
+    s += `<g class="br" data-id="${r.id}">${gdef}<rect x="${side<0?0:cx}" y="${y-rowH/2}" width="${cx}" height="${rowH}" fill="transparent"/>`;
+    s += `<path d="M${cx} ${y+7} C ${cx+side*BL*.4} ${y+5}, ${tx-side*BL*.4} ${ty}, ${tx} ${ty}" style="stroke:${strokeC};fill:none" stroke-width="${isM?2.6:1.5}" stroke-linecap="round"/>`;
+    // sibling leaves: tiny dots along the branch, no text
+    for(let k=0;k<Math.min(r.extra,3);k++){ const lx = cx + side*(BL*(.42+k*.14)), ly = y + 4 - (k%2?6:-4);
+      s += `<circle cx="${lx}" cy="${ly}" r="2.2" fill="url(#${gid})" opacity=".85"/>`; }
+    const anchor = side<0 ? 'end' : 'start';
+    if(isM){
+      const tw = phone ? 30 : 34, th = phone ? 42 : 48, bx = side<0 ? tx - tw : tx, by = ty - th/2;
+      s += thumb(bx, by, tw, th);
+      const lx = side<0 ? bx - 10 : bx + tw + 10;
+      const l1 = m.unknown ? r.name : (m.matchKey ? MATCH.name : 'Colour unknown');
+      s += T(lx, ty-12, l1, {a:anchor, c:'var(--ink-100)', f:"500 14px Geist,sans-serif"});
+      if(!m.unknown) s += T(lx, ty+4, made(r.run), {a:anchor, c:'var(--ink-200)', f:"400 13px Geist,sans-serif"});
+      s += tag(lx, m.unknown ? ty-2 : ty+10, anchor);
+    } else {
+      s += `<circle cx="${tx}" cy="${ty}" r="${i===0?7.5:6}" fill="url(#${gid})" style="stroke:${sel||hov?'var(--gold-bright)':'rgba(232,226,213,.22)'}" stroke-width="${sel||hov?2:.75}"/>`;
+      if(sel || hov) s += T(tx + side*12, ty+4, m.unknown ? r.name : `${r.name} · ${made(r.run)}`, {a:anchor, c:'var(--gold-bright)', f:"500 13px Geist,sans-serif"});
+    }
+    s += `</g>`;
+  });
+  return s + `</svg>`;
+}
+
+// ── Direction 2 ──
+function tree2(m, W, open){
+  const phone = W < 420, cx = W/2;
+  const mi = m.rungs.findIndex(r=>r.id===m.matchId), mr = m.rungs[mi];
+  const mt = m.unknown ? TIERS[2] : tierOf(mr.run);
+  const y0 = 22, y1 = 92, y2 = m.unknown ? null : 172, yc = m.unknown ? 168 : 252, H = yc + 104;
+  let s = `<svg class="tree" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">`;
+  const line = (x1,y1_,x2,y2_,gold) => `<path d="M${x1} ${y1_} V${(y1_+y2_)/2} H${x2} V${y2_}" style="stroke:${gold?'var(--gold-bright)':'var(--line)'};fill:none" stroke-width="${gold?2.6:1.4}" stroke-linejoin="round"/>`;
+  // level 0: set
+  s += `<rect x="${cx-88}" y="${y0-16}" width="176" height="30" rx="8" style="fill:var(--bg-elev);stroke:var(--line)"/>`;
+  s += T(cx, y0+4, m.unknown ? 'Across the hobby' : D.label, {a:'middle', c:'var(--ink-100)', f:"italic 400 17px 'Instrument Serif',serif"});
+  // level 1: five tiers (rarer left), only the gold one labelled
+  const span = phone ? W-56 : W-120, xs = i => cx - span/2 + (span/4)*i;
+  TIERS.forEach((t,i)=>{
+    const on = t===mt, x = xs(i);
+    s += line(cx, y0+14, x, y1-10, on);
+    const [gid,gdef] = grad(t.g);
+    s += `<g class="br" data-id="tier-${t.k}">${gdef}<circle cx="${x}" cy="${y1}" r="${on?9:6}" fill="url(#${gid})" style="stroke:${on?'var(--gold-bright)':'rgba(232,226,213,.22)'}" stroke-width="${on?2:.75}"/></g>`;
+    if(on) s += T(x, y1+26, t.words, {a: i===0?'start':i===4?'end':'middle', c:'var(--ink-100)', f:"500 13px Geist,sans-serif"});
+    if(open==='tier-'+t.k && !on) s += T(x, y1+26, t.words, {a: i===0?'start':i===4?'end':'middle', c:'var(--gold-bright)', f:"500 12px Geist,sans-serif"});
+  });
+  const tx = xs(TIERS.indexOf(mt));
+  // level 2: colours at that tier (rarer left), only the matched one labelled
+  let cardX = tx;
+  if(!m.unknown){
+    const kids = m.rungs.filter(r=>tierOf(r.run)===mt), ks = phone ? 56 : 84, total = (kids.length-1)*ks;
+    const x0 = Math.min(Math.max(tx - total/2, 30), W - 30 - total);
+    kids.forEach((r,i)=>{
+      const x = x0 + i*ks, on = r.id===m.matchId, sel = r.id===open;
+      s += line(tx, y1+34, x, y2-10, on);
+      const [gid,gdef] = grad(r.g);
+      s += `<g class="br" data-id="${r.id}">${gdef}<rect x="${x-26}" y="${y2-20}" width="52" height="56" fill="transparent"/><circle cx="${x}" cy="${y2}" r="${on?9:6}" fill="url(#${gid})" style="stroke:${on||sel?'var(--gold-bright)':'rgba(232,226,213,.22)'}" stroke-width="${on||sel?2:.75}"/>`;
+      for(let k=0;k<Math.min(r.extra,3);k++) s += `<circle cx="${x+12+k*6}" cy="${y2-8}" r="2" fill="url(#${gid})" opacity=".8"/>`;
+      if(on) s += T(x, y2+26, m.matchKey ? `${MATCH.name} · ${made(r.run)}` : made(r.run), {a:'middle', c:'var(--ink-100)', f:"500 13px Geist,sans-serif"});
+      else if(sel) s += T(x, y2+26, `${r.name} · ${made(r.run)}`, {a:'middle', c:'var(--gold-bright)', f:"500 12px Geist,sans-serif"});
+      s += `</g>`;
+      if(on) cardX = x;
+    });
+  }
+  // level 3: the card
+  const tw = 52, th = 72, py = m.unknown ? y1+34 : y2+34;
+  s += `<path d="M${cardX} ${py} V${yc-4}" style="stroke:var(--gold-bright)" stroke-width="2.6"/>`;
+  s += thumb(cardX - tw/2, yc, tw, th);
+  s += tag(cardX, yc + th + 10, 'middle');
+  return s + `</svg>`;
+}
+
+document.querySelectorAll('.rt').forEach(el=>{
+  const d = el.dataset.d, c = el.dataset.case, W = +el.dataset.w;
+  let open = el.dataset.open || null, hover = null;
+  const draw = () => {
+    const m = model(c);
+    const key = d==='1' ? 'Higher on the tree = rarer' : 'Further left = rarer';
+    const body = d==='1' ? tree1(m, W, open, hover) : tree2(m, W, open);
+    let det = '';
+    if(open && !open.startsWith('tier-')) det = detail(m, open);
+    else if(!open) det = `<div class="hint">${c==='unknown'?'Tap a branch to see how many were made':d==='1'?'Tap any branch to see the colours made at that number':'Tap any dot to name it'}</div>`;
+    el.innerHTML = header(m, c, key) + body + `<div class="detail">${det}</div>`;
+  };
+  draw();
+  el.addEventListener('click', e=>{ const b = e.target.closest('[data-id]'); if(!b) return; open = open===b.dataset.id ? null : b.dataset.id; draw(); });
+  if(d==='1' && W>420){
+    el.addEventListener('mouseover', e=>{ const b = e.target.closest('.br'); const id = b ? b.dataset.id : null; if(id!==hover){ hover=id; draw(); } });
+    el.addEventListener('mouseleave', ()=>{ hover=null; draw(); });
+  }
+});
+</script>
+</body>
+</html>

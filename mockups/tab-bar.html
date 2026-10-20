@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>iOS Tab Bar</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap');
+:root{
+  --ink-100:#f7f1e1;--ink-200:#e8dfc9;--ink-400:#a99e85;--ink-600:#6b6354;
+  --bg-base:#0a0907;--bg-elev:#14110c;--bg-elev-2:#1a160f;--line:#2a251c;--line-soft:#1f1c16;
+  --gold:#c9954a;--gold-bright:#e6b96b;--gold-deep:#8f6a32;
+  --ink-on-gold:#1a1612;--gold-fill-top:#ffd97a;--gold-fill-bottom:#d99c14;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg-base);color:var(--ink-100);font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.page{max-width:1180px;margin:0 auto;padding:40px 16px 80px}
+.eyebrow{font:500 11px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+h1{font:italic 400 44px/1 'Instrument Serif',serif;margin:10px 0 8px}
+.lede{color:var(--ink-400);font-size:15px;max-width:700px;line-height:1.6;margin:0 0 36px}
+.sec{border-top:1px solid var(--gold-deep);padding-top:20px;margin:56px 0 26px}
+.sec .n{font:600 12px 'Geist Mono',monospace;color:var(--gold-bright);letter-spacing:.14em}
+.sec h2{font:italic 400 34px/1.1 'Instrument Serif',serif;margin:6px 0 6px}
+.sec p{margin:0;color:var(--ink-400);font-size:14px;max-width:680px;line-height:1.55}
+.phones{display:flex;gap:28px;flex-wrap:wrap;justify-content:center}
+.ph{display:flex;flex-direction:column;align-items:center}
+.phone{width:375px;max-width:100%;height:812px;border:10px solid #1b1813;border-radius:50px;background:var(--bg-base);overflow:hidden;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.6);display:flex;flex-direction:column}
+.status{height:44px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font:600 14px Geist,sans-serif}
+.appbar{height:48px;flex:none;display:flex;align-items:center;justify-content:center;gap:8px;border-bottom:1px solid var(--line-soft)}
+.appbar .seal{width:24px;height:24px;border-radius:50%;border:1px solid var(--gold-deep);display:grid;place-items:center;font:italic 11px 'Instrument Serif',serif;color:var(--gold)}
+.appbar span{font:400 17px 'Instrument Serif',serif}
+.content{flex:1;overflow:hidden;padding:18px 18px 0;position:relative}
+.homeind{height:34px;flex:none;display:flex;justify-content:center;align-items:center}
+.homeind i{width:134px;height:5px;border-radius:3px;background:var(--ink-200);opacity:.9}
+.caption{text-align:center;color:var(--ink-400);font-size:13px;margin:12px auto 0;max-width:360px;line-height:1.45}
+
+/* content bits */
+.k{font:500 11px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.big{font:italic 400 40px/1.02 'Instrument Serif',serif;margin:8px 0 14px}
+.big em{color:var(--gold-bright)}
+.search{display:flex;align-items:center;gap:8px;border:1px solid var(--gold-deep);border-radius:10px;padding:6px 6px 6px 14px;background:var(--bg-elev)}
+.search span{flex:1;color:var(--ink-600);font-size:15px}
+.search b{width:38px;height:38px;border-radius:8px;background:linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom));display:grid;place-items:center;color:var(--ink-on-gold);font-weight:600}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.chips span{font-size:13px;color:var(--ink-200);border:1px solid var(--line);border-radius:999px;padding:6px 11px}
+.slab{margin:26px auto 0;width:170px;aspect-ratio:2.6/4;border-radius:10px;background:linear-gradient(160deg,#2b2620,#14110c);border:1px solid var(--line);padding:22px 12px 12px;transform:rotate(-4deg);position:relative}
+.slab::before{content:'';position:absolute;top:8px;left:12px;right:12px;height:10px;border-radius:3px;background:var(--bg-elev-2)}
+.slab i{display:block;height:100%;border-radius:5px;background:linear-gradient(135deg,#ff9842,#cc5e0d);padding:4px}
+.slab i::after{content:'';display:block;height:100%;border-radius:3px;background:radial-gradient(ellipse at 50% 30%,#4a3524,#120d08 70%)}
+.wrow{display:grid;grid-template-columns:52px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line-soft)}
+.wrow .t{width:52px;aspect-ratio:2.5/3.5;border-radius:4px;padding:3px}
+.wrow .t::after{content:'';display:block;height:100%;border-radius:2px;background:radial-gradient(ellipse at 50% 30%,#4a3524,#120d08 70%)}
+.wrow h5{margin:0 0 4px;font:italic 400 17px/1.15 'Instrument Serif',serif}
+.wrow small{font:500 11px 'Geist Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-400)}
+.wrow .p{font:500 16px Geist,sans-serif;text-align:right}
+.wrow .p small{display:block;color:var(--gold-bright);letter-spacing:.08em;margin-top:2px}
+.gate{margin-top:70px;text-align:center;padding:0 10px}
+.gate .ic{width:56px;height:56px;border-radius:50%;border:1px solid var(--gold-deep);display:grid;place-items:center;margin:0 auto 16px;color:var(--gold-bright)}
+.gate h3{font:italic 400 30px/1.1 'Instrument Serif',serif;margin:0 0 8px}
+.gate p{color:var(--ink-400);font-size:15px;line-height:1.5;margin:0 0 20px}
+.btn{display:block;width:100%;font:600 13px Geist,sans-serif;letter-spacing:.12em;text-transform:uppercase;padding:15px;border-radius:10px;border:0;text-align:center}
+.btn.gold{background:linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom));color:var(--ink-on-gold)}
+.btn.ghost{background:transparent;color:var(--ink-100);border:1px solid rgba(232,226,213,.2);margin-top:10px}
+.acct h3{font:italic 400 30px 'Instrument Serif',serif;margin:6px 0 18px}
+.arow{display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-bottom:1px solid var(--line-soft);font-size:16px;color:var(--ink-200)}
+.arow span:last-child{color:var(--ink-600)}
+.arow.gold{color:var(--gold-bright)}
+.arow .pill{font:600 11px 'Geist Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-on-gold);background:var(--gold-bright);padding:3px 8px;border-radius:999px}
+
+/* ── Option A: solid bar ── */
+.tabs-a{height:56px;flex:none;display:grid;grid-template-columns:repeat(4,1fr);background:var(--bg-elev);border-top:1px solid var(--line)}
+/* ── Option B: floating pill ── */
+.tabs-b{position:absolute;left:14px;right:14px;bottom:46px;height:62px;display:grid;grid-template-columns:repeat(4,1fr);background:rgba(26,22,15,.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--line);border-radius:22px;box-shadow:0 16px 40px rgba(0,0,0,.6)}
+.tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--ink-600);font:500 11px Geist,sans-serif;position:relative}
+.tab svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.tab.on{color:var(--gold-bright)}
+.tabs-a .tab.on::before{content:'';position:absolute;top:-1px;left:30%;right:30%;height:2px;border-radius:2px;background:var(--gold-bright)}
+.tabs-b .tab.on .ic-wrap{background:rgba(201,149,74,.16)}
+.ic-wrap{width:48px;height:30px;border-radius:999px;display:grid;place-items:center}
+.badge{position:absolute;top:6px;left:calc(50% + 6px);min-width:18px;height:18px;border-radius:9px;background:var(--gold-bright);color:var(--ink-on-gold);font:700 11px Geist,sans-serif;display:grid;place-items:center;padding:0 5px;border:2px solid var(--bg-elev)}
+.tabs-b .badge{top:8px;border-color:#1a160f}
+
+.compare{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:8px}
+.opt{border:1px solid var(--line);border-radius:12px;background:var(--bg-elev);padding:18px}
+.opt h3{margin:0 0 6px;font:400 22px 'Instrument Serif',serif}
+.opt ul{margin:0;padding-left:18px;color:var(--ink-200);font-size:14px;line-height:1.65}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.note{border:1px solid var(--line);border-radius:10px;padding:16px;background:var(--bg-elev)}
+.note h3{margin:0 0 6px;font:500 11px 'Geist Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.note p{margin:0;font-size:14px;line-height:1.55;color:var(--ink-200)}
+.decide{margin-top:40px;border:1px solid var(--gold-deep);border-radius:12px;padding:18px 20px;background:var(--bg-elev)}
+.decide h3{margin:0 0 10px;font:500 11px 'Geist Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.decide ol{margin:0;padding-left:20px;font-size:15px;line-height:1.7;color:var(--ink-200)}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="eyebrow">Fields &amp; Floors · iOS app · (d)</div>
+  <h1>Bottom tab bar</h1>
+  <p class="lede">The app currently uses the website's top menu, which is hard to reach one-handed. A bottom tab bar with Search · Watchlist · Alerts · Account makes it feel like a real iPhone app and keeps the main screens a thumb away. It shows only in the app; the website is unchanged.</p>
+
+  <div class="sec"><div class="n">OPTION A</div><h2>Solid bar</h2><p>The classic iOS pattern, attached to the bottom edge. It's the calmest option and the one people know best.</p></div>
+  <div class="phones" data-opt="a"></div>
+
+  <div class="sec"><div class="n">OPTION B</div><h2>Floating pill</h2><p>A rounded bar that floats above the content with a soft blur. It's more premium and editorial, and it echoes the slabbed-card look.</p></div>
+  <div class="phones" data-opt="b"></div>
+
+  <div class="sec"><div class="n">COMPARE</div><h2>Trade-offs</h2></div>
+  <div class="compare">
+    <div class="opt"><h3>A · Solid bar</h3><ul><li>Instantly familiar, like Apple's own apps</li><li>Never covers content</li><li>Simplest to build: a fixed footer</li><li>Plainer, less brand character</li></ul></div>
+    <div class="opt" style="border-color:var(--gold-deep)"><h3>B · Floating pill</h3><ul><li>Feels premium and matches the slab and grail styling</li><li>Content scrolls under the blur, so screens feel taller</li><li>Covers about 70px of content, so lists need bottom padding</li><li>Slightly more work, and blur costs a little battery on older phones</li></ul></div>
+  </div>
+
+  <div class="sec"><div class="n">DETAILS</div><h2>How it behaves</h2></div>
+  <div class="notes">
+    <div class="note"><h3>Four tabs</h3><p>Search (home), Watchlist (saved cards), Alerts (saved searches) and Account. Guides and Pricing move into Account. The top bar keeps only the seal and wordmark.</p></div>
+    <div class="note"><h3>Badges</h3><p>Alerts shows a gold count of new matches since you last looked. Watchlist has no badge, so the bar stays quiet.</p></div>
+    <div class="note"><h3>Signed out</h3><p>Watchlist and Alerts still open, but show a one-screen invite (“Save cards you're watching”) with sign-up and sign-in buttons instead of an empty list.</p></div>
+    <div class="note"><h3>Fits the current setup</h3><p>The app's web view already stops above the home indicator, so the bar needs no extra safe-area padding, and the launch splash and its seal hand-off are untouched.</p></div>
+    <div class="note"><h3>App Store rules</h3><p>The Account tab shows the plan and “Manage membership” (Apple's sheet). No web prices or Stripe, per the existing isNativeApp() gate.</p></div>
+    <div class="note"><h3>Tokens</h3><p>Inactive tabs are ink-600 and the active one is gold-bright. The bar uses bg-elev with a line top border (A), or bg-elev-2 at 82% with blur (B). Labels are 11px.</p></div>
+  </div>
+
+  <div class="decide"><h3>Your picks</h3><ol>
+    <li>Add the tab bar to the app: yes or not yet?</li>
+    <li>If yes: <b>A</b> solid bar or <b>B</b> floating pill?</li>
+  </ol></div>
+</div>
+
+<script>
+const IC = {
+  search:'<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>',
+  star:'<svg viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.6l1-5.8L3.5 9.7l5.9-.9z"/></svg>',
+  bell:'<svg viewBox="0 0 24 24"><path d="M6 16.5V11a6 6 0 0112 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 004 0"/></svg>',
+  user:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.3-3.6 4.2-5.5 7.5-5.5s6.2 1.9 7.5 5.5"/></svg>',
+};
+const TABS = [['search','Search'],['star','Watchlist'],['bell','Alerts'],['user','Account']];
+function bar(opt, active, badge){
+  return `<nav class="tabs-${opt}">${TABS.map(([ic,l],i)=>`<div class="tab${i===active?' on':''}"><div class="ic-wrap">${IC[ic]}</div>${l}${i===2&&badge?`<span class="badge">${badge}</span>`:''}</div>`).join('')}</nav>`;
+}
+const SCREENS = [
+  {active:0, cap:'Search (home)', html:`<div class="k">Live on eBay</div><div class="big">Find the <em>one.</em></div>
+    <div class="search"><span>Search a player</span><b>→</b></div>
+    <div class="chips"><span>Caitlin Clark</span><span>Cooper Flagg</span><span>Paul Skenes</span></div><div class="slab"><i></i></div>`},
+  {active:1, cap:'Watchlist, signed in', html:`<div class="k">Watchlist</div><div class="big" style="font-size:32px">Saved cards</div>
+    ${[['#ff9842','#cc5e0d','Holliday Orange Wave /25','BIN · 2d','$1,240',''],['#e6c14d','#a8851e','Skenes Gold /50','Auction · 3h','$880','Ending'],['#cc3340','#8a1c25','Clark Red Auto /5','BIN','$4,200',''],['#5694ff','#2a5db8','Flagg Blue /150','Sold','$310','Sold']].map(r=>`<div class="wrow"><div class="t" style="background:linear-gradient(135deg,${r[0]},${r[1]})"></div><div><h5>${r[2]}</h5><small>${r[3]}</small></div><div class="p">${r[4]}${r[5]?`<small>${r[5]}</small>`:''}</div></div>`).join('')}`},
+  {active:2, cap:'Alerts, signed out', html:`<div class="gate"><div class="ic">${IC.bell.replace('<svg','<svg width="26" height="26" style="stroke:currentColor;fill:none;stroke-width:1.6"')}</div>
+    <h3>Get alerted the moment it lists</h3><p>Save a search and we'll tell you when a matching card hits eBay.</p>
+    <button class="btn gold">Create free account</button><button class="btn ghost">Sign in</button></div>`},
+  {active:3, cap:'Account', html:`<div class="acct"><div class="k">Account</div><h3>Signed in</h3>
+    <div class="arow"><span>Plan</span><span class="pill">Base</span></div>
+    <div class="arow"><span>Manage membership</span><span>›</span></div>
+    <div class="arow"><span>Notifications</span><span>›</span></div>
+    <div class="arow gold"><span>Take the tour</span><span>›</span></div>
+    <div class="arow"><span>Guides</span><span>›</span></div>
+    <div class="arow"><span>Contact</span><span>›</span></div>
+    <div class="arow"><span>Sign out</span><span></span></div></div>`},
+];
+document.querySelectorAll('.phones').forEach(el=>{
+  const opt = el.dataset.opt;
+  const list = opt==='a' ? SCREENS : [SCREENS[0], SCREENS[1]];
+  el.innerHTML = list.map(s=>`<div class="ph"><div class="phone"><div class="status"><span>9:41</span><span>●●●</span></div>
+    <div class="appbar"><div class="seal">F</div><span>Fields &amp; Floors</span></div>
+    <div class="content" ${opt==='b'?'style="padding-bottom:90px"':''}>${s.html}</div>
+    ${opt==='a' ? bar('a', s.active, 3) : bar('b', s.active, 3)}
+    <div class="homeind"><i></i></div></div><p class="caption">${s.cap}</p></div>`).join('');
+});
+</script>
+</body>
+</html>

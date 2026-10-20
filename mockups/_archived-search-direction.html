@@ -1,0 +1,96 @@
+<!-- ARCHIVED 2026-10-19: light-palette exploration, not adopted. The locked look is the dark tokens in app/globals.css. Do not build from this. -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fields & Floors - Search Direction</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap');
+
+    :root {
+      --canvas: #f4f2ed;
+      --surface: #fbfaf7;
+      --ink: #1e211f;
+      --muted: #777973;
+      --line: #deded7;
+      --accent: #b67836;
+      --accent-soft: #eee3d4;
+      --green: #506a59;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--canvas); color: var(--ink); font-family: 'DM Sans', sans-serif; }
+    .shell { max-width: 1240px; margin: auto; padding: 0 32px 72px; }
+    header { height: 84px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+    .brand { display: flex; align-items: center; gap: 12px; font-size: 15px; letter-spacing: .01em; }
+    .mark { width: 28px; height: 28px; border: 1px solid var(--accent); border-radius: 50%; display: grid; place-items: center; color: var(--accent); font-family: Georgia, serif; font-size: 13px; }
+    nav { display: flex; align-items: center; gap: 28px; color: var(--muted); font-size: 13px; }
+    nav a { color: inherit; text-decoration: none; }
+    .account { border: 1px solid var(--line); border-radius: 100px; padding: 9px 14px; color: var(--ink); }
+    main { padding-top: 76px; }
+    .eyebrow { color: var(--accent); font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: .18em; }
+    h1 { max-width: 710px; margin: 16px 0 18px; font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: clamp(52px, 7vw, 88px); letter-spacing: -.035em; line-height: .94; }
+    .lede { max-width: 470px; margin: 0 0 38px; color: var(--muted); font-size: 16px; line-height: 1.6; }
+    .search-wrap { max-width: 760px; display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 20px; background: var(--surface); border: 1px solid #c9c9c1; border-radius: 8px; box-shadow: 0 12px 30px rgba(44, 43, 35, .07); }
+    .search-wrap span { color: #aaa99f; font-size: 15px; flex: 1; }
+    .search-button { border: 0; border-radius: 5px; padding: 14px 22px; background: var(--ink); color: #fff; font: 500 13px 'DM Sans', sans-serif; }
+    .suggestions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; color: var(--muted); font-size: 12px; }
+    .suggestions b { color: var(--ink); font-weight: 500; }
+    .suggestions span { border: 1px solid var(--line); border-radius: 100px; padding: 6px 10px; background: rgba(255,255,255,.35); }
+    .section-head { display: flex; justify-content: space-between; align-items: baseline; margin: 116px 0 22px; border-bottom: 1px solid var(--line); padding-bottom: 13px; }
+    .section-head h2 { margin: 0; font: 400 27px 'Instrument Serif', Georgia, serif; }
+    .section-head small { color: var(--muted); font: 11px 'DM Mono', monospace; }
+    .feature-grid { display: grid; grid-template-columns: 1.1fr .9fr .9fr; gap: 16px; }
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
+    .card:first-child { grid-row: span 2; }
+    .card-art { height: 230px; background: linear-gradient(145deg, #d9d6ce 0%, #f0eee8 42%, #bbb8ae 100%); position: relative; display: grid; place-items: center; }
+    .card:first-child .card-art { height: 476px; background: linear-gradient(145deg, #787d7a, #d3d1c8 46%, #6d706c); }
+    .card-art::before { content: 'COLLECTOR\A EDITION'; white-space: pre; text-align: center; font: 500 13px/1.5 'DM Mono', monospace; letter-spacing: .15em; color: rgba(255,255,255,.8); border: 1px solid rgba(255,255,255,.65); padding: 34px 22px; transform: rotate(-4deg); }
+    .card:first-child .card-art::before { font-size: 17px; padding: 54px 35px; }
+    .card-info { padding: 17px 18px 19px; }
+    .card-meta { display: flex; justify-content: space-between; color: var(--muted); font: 10px 'DM Mono', monospace; text-transform: uppercase; letter-spacing: .12em; }
+    .card h3 { margin: 11px 0 9px; font-size: 15px; font-weight: 500; }
+    .price { color: var(--accent); font: 500 14px 'DM Mono', monospace; }
+    .status { color: var(--green); }
+    .note { margin-top: 68px; padding: 18px 20px; border-left: 2px solid var(--accent); background: var(--accent-soft); color: #68543c; font-size: 13px; line-height: 1.5; }
+    @media (max-width: 720px) {
+      .shell { padding: 0 20px 48px; }
+      header { height: 70px; }
+      nav a:not(.account) { display: none; }
+      main { padding-top: 52px; }
+      h1 { font-size: 58px; }
+      .search-wrap { display: block; padding: 17px; }
+      .search-wrap span { display: block; margin-bottom: 16px; }
+      .search-button { width: 100%; }
+      .section-head { margin-top: 76px; }
+      .feature-grid { grid-template-columns: 1fr; }
+      .card:first-child { grid-row: auto; }
+      .card:first-child .card-art, .card-art { height: 260px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand"><div class="mark">F</div><span>Fields &amp; Floors <em>Collectors</em></span></div>
+      <nav><a href="#">Watchlist</a><a href="#">Saved searches</a><a class="account" href="#">Account</a></nav>
+    </header>
+    <main>
+      <div class="eyebrow">Issue 001 · The collector's desk</div>
+      <h1>Find the card<br><em>worth keeping.</em></h1>
+      <p class="lede">Search the marketplace for numbered cards, rare finds, and the pieces that make a collection feel like yours.</p>
+      <div class="search-wrap"><span>Search a player, set, or print run...</span><button class="search-button">Start a search</button></div>
+      <div class="suggestions"><b>Try:</b><span>Patrick Mahomes</span><span>1986 Fleer Jordan</span><span>Caitlin Clark</span></div>
+
+      <div class="section-head"><h2>Worth a closer look</h2><small>Curated from the marketplace</small></div>
+      <section class="feature-grid">
+        <article class="card"><div class="card-art"></div><div class="card-info"><div class="card-meta"><span>01 · 25</span><span class="status">Active auction</span></div><h3>Chrome Refractor · Limited Edition</h3><div class="price">$1,240 · ends in 2h</div></div></article>
+        <article class="card"><div class="card-art"></div><div class="card-info"><div class="card-meta"><span>07 · 99</span><span>Rare</span></div><h3>Gold Parallel · Rookie Year</h3><div class="price">$385</div></div></article>
+        <article class="card"><div class="card-art"></div><div class="card-info"><div class="card-meta"><span>1 · 10</span><span>Grail</span></div><h3>Foundations · Signed</h3><div class="price">$860</div></div></article>
+      </section>
+      <div class="note">A calmer starting point: the search stays primary, while the marketplace gives collectors a reason to linger.</div>
+    </main>
+  </div>
+</body>
+</html>

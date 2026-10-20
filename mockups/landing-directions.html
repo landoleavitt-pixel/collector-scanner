@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Landing Directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink-100:#f7f1e1; --ink-200:#e8dfc9; --ink-400:#a99e85; --ink-600:#6b6354;
+    --bg-base:#0a0907; --bg-elev:#14110c; --bg-elev-2:#1a160f;
+    --line:#2a251c; --line-soft:#1f1c16;
+    --gold:#c9954a; --gold-bright:#e6b96b; --gold-deep:#8f6a32; --crit:#d4684a;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:#050403; color:var(--ink-100); font-family:'Geist',system-ui,sans-serif; }
+  .page { max-width:1320px; margin:0 auto; padding:48px 24px 96px; }
+  .mono { font-family:'Geist Mono',ui-monospace,monospace; }
+  .serif { font-family:'Instrument Serif',Georgia,serif; font-weight:400; }
+  .eyebrow { font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:var(--gold); }
+  h1.title { font-family:'Instrument Serif',serif; font-weight:400; font-style:italic; font-size:44px; margin:10px 0 8px; }
+  .lede { color:var(--ink-400); max-width:720px; line-height:1.6; font-size:15px; margin:0; }
+  .issues { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:12px; margin:28px 0 64px; }
+  .issue { border:.5px solid var(--line); background:var(--bg-elev); border-radius:12px; padding:16px; font-size:13px; line-height:1.5; color:var(--ink-200); }
+  .issue b { display:block; color:var(--gold-bright); font-weight:500; margin-bottom:4px; }
+  h2.sec { font-family:'Instrument Serif',serif; font-weight:400; font-size:30px; margin:6px 0 6px; }
+  .sec-note { color:var(--ink-400); font-size:14px; margin:0 0 26px; max-width:760px; line-height:1.55; }
+
+  /* Storyboard */
+  .story { display:grid; grid-template-columns:repeat(4,minmax(150px,1fr)); gap:14px; margin-bottom:72px; }
+  .frame { aspect-ratio:9/19.5; border-radius:28px; border:.5px solid var(--line); background:var(--bg-base); position:relative; overflow:hidden; }
+  .frame-cap { font-size:12px; color:var(--ink-400); margin-top:10px; line-height:1.45; }
+  .frame-cap b { color:var(--ink-100); font-weight:500; }
+  .seal { width:74px; height:74px; border-radius:50%; border:1.5px solid var(--gold); display:grid; place-items:center; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); }
+  .seal::after { content:''; position:absolute; inset:9px; border-radius:50%; border:.5px solid rgba(201,149,74,.45); }
+  .seal span { font-family:'Instrument Serif',serif; font-style:italic; color:var(--gold-bright); font-size:24px; }
+  .glow { position:absolute; left:50%; top:50%; width:220px; height:220px; transform:translate(-50%,-50%); background:radial-gradient(circle, rgba(230,185,107,.22), transparent 62%); }
+  .wm { position:absolute; left:50%; transform:translateX(-50%); white-space:nowrap; font-family:'Instrument Serif',serif; font-size:26px; }
+  .wm em { color:var(--gold); font-style:normal; }
+
+  /* Phones */
+  .directions { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:36px; }
+  .dir-head { margin-bottom:14px; }
+  .dir-head .tag { display:inline-block; font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; padding:4px 8px; border-radius:4px; color:#1a1612; background:linear-gradient(180deg,#ffd97a,#d99c14); }
+  .dir-head h3 { font-family:'Instrument Serif',serif; font-weight:400; font-size:26px; margin:10px 0 4px; }
+  .dir-head p { font-size:13px; color:var(--ink-400); margin:0; line-height:1.55; }
+  .phone { width:100%; max-width:390px; aspect-ratio:390/844; margin:0 auto; border-radius:46px; border:1px solid #2e2920; background:var(--bg-base); position:relative; overflow:hidden; box-shadow:0 40px 90px rgba(0,0,0,.6), inset 0 0 0 6px #0d0b08; }
+  .island { position:absolute; top:12px; left:50%; transform:translateX(-50%); width:110px; height:32px; border-radius:20px; background:#000; z-index:5; }
+  .status { position:absolute; top:16px; left:34px; right:30px; display:flex; justify-content:space-between; font-size:13px; font-weight:600; z-index:4; }
+  .scr { position:absolute; inset:0; padding:58px 22px 24px; display:flex; flex-direction:column; }
+  .hdr { display:flex; align-items:center; justify-content:space-between; padding-bottom:12px; }
+  .hdr .brand { display:flex; align-items:center; gap:8px; font-family:'Instrument Serif',serif; font-size:17px; }
+  .hdr .brand em { color:var(--gold); font-style:normal; }
+  .mini-seal { width:22px; height:22px; border-radius:50%; border:1px solid var(--gold); display:grid; place-items:center; font-family:'Instrument Serif',serif; font-style:italic; font-size:9px; color:var(--gold-bright); }
+  .hdr .act { font-family:'Geist Mono',monospace; font-size:9.5px; letter-spacing:.2em; color:var(--ink-400); }
+
+  .chip { display:inline-flex; align-items:center; font-family:'Geist Mono',monospace; font-size:10px; padding:3px 7px; border-radius:4px; font-weight:700; color:#1a1612; }
+  .grail { background:linear-gradient(180deg,#ffd97a,#d99c14); border:.5px solid #ffc14d; }
+  .ultra { background:linear-gradient(180deg,#e0e8f0,#98a5b3); border:.5px solid #c8d4e0; }
+  .rare { background:linear-gradient(180deg,#d6884a,#8e4f1f); border:.5px solid #d6722d; }
+  .scarce { background:linear-gradient(180deg,#8a96a4,#4a5360); border:.5px solid #5a6470; font-weight:600; }
+  .out { color:var(--gold-bright); background:rgba(201,149,74,.06); border:.5px solid var(--gold-deep); font-weight:500; }
+
+  .search { display:flex; align-items:center; gap:10px; border:.5px solid var(--gold-deep); background:rgba(20,17,12,.85); border-radius:14px; padding:14px 14px 14px 16px; box-shadow:0 0 0 4px rgba(201,149,74,.05), 0 18px 40px rgba(0,0,0,.45); }
+  .search .ph { flex:1; font-family:'Instrument Serif',serif; font-style:italic; font-size:19px; color:var(--ink-600); }
+  .search .go { width:34px; height:34px; border-radius:10px; display:grid; place-items:center; background:linear-gradient(180deg,#ffd97a,#d99c14); color:#1a1612; font-size:16px; }
+
+  /* Slab card */
+  .slab { position:relative; width:168px; aspect-ratio:2.5/4.1; border-radius:10px; padding:9px; background:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,.03)); border:.5px solid rgba(255,255,255,.25); box-shadow:0 30px 60px rgba(0,0,0,.7), 0 0 80px rgba(230,185,107,.18); }
+  .slab .label { height:28px; border-radius:4px; background:linear-gradient(180deg,#f2efe6,#d8d3c4); display:flex; align-items:center; justify-content:space-between; padding:0 7px; font-family:'Geist Mono',monospace; font-size:6.5px; color:#2a251c; }
+  .slab .label b { font-size:13px; color:#1a1612; font-family:'Geist',sans-serif; }
+  .slab .card { margin-top:7px; height:calc(100% - 35px); border-radius:4px; position:relative; overflow:hidden;
+    background:
+      radial-gradient(120% 60% at 20% 10%, rgba(255,255,255,.55), transparent 40%),
+      conic-gradient(from 210deg at 60% 55%, #ff9ad5, #ffd97a, #8ef0c9, #8fb7ff, #d39bff, #ff9ad5); }
+  .slab .card::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(115deg, rgba(255,255,255,.0) 0 6px, rgba(255,255,255,.18) 6px 7px); mix-blend-mode:overlay; }
+  .slab .card::after { content:''; position:absolute; left:10%; right:10%; top:22%; height:46%; border-radius:50% 50% 8px 8px; background:linear-gradient(180deg,rgba(20,17,12,.75),rgba(20,17,12,.35)); }
+  .slab svg { position:absolute; left:14%; top:58%; width:72%; z-index:2; }
+  .sheen { position:absolute; inset:0; border-radius:10px; background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.35) 48%,transparent 60%); background-size:250% 100%; animation:sheen 4.5s ease-in-out infinite; pointer-events:none; }
+  @keyframes sheen { 0%{background-position:120% 0} 55%,100%{background-position:-60% 0} }
+  .float { animation:float 6s ease-in-out infinite; }
+  @keyframes float { 0%,100%{transform:rotate(-5deg) translateY(0)} 50%{transform:rotate(-3deg) translateY(-8px)} }
+  .live-dot { width:6px; height:6px; border-radius:50%; background:#7fd49a; box-shadow:0 0 0 0 rgba(127,212,154,.6); animation:pulse 2s infinite; display:inline-block; }
+  @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(127,212,154,.55)} 70%{box-shadow:0 0 0 7px rgba(127,212,154,0)} 100%{box-shadow:0 0 0 0 rgba(127,212,154,0)} }
+
+  /* Ticker */
+  .ticker { overflow:hidden; border-top:.5px solid var(--line); border-bottom:.5px solid var(--line); padding:10px 0; mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent); }
+  .ticker-track { display:flex; gap:22px; width:max-content; animation:tick 26s linear infinite; }
+  @keyframes tick { to { transform:translateX(-50%); } }
+  .tick { display:flex; align-items:center; gap:8px; font-size:11.5px; color:var(--ink-200); white-space:nowrap; }
+  .tick .p { color:var(--gold-bright); font-family:'Instrument Serif',serif; font-size:15px; }
+
+  /* Feed rows */
+  .row { display:flex; gap:12px; align-items:center; padding:11px; border-radius:12px; background:var(--bg-elev); border:.5px solid var(--line-soft); }
+  .thumb { width:46px; height:62px; border-radius:5px; flex:none; background:conic-gradient(from 200deg at 60% 50%, #8fb7ff, #ffd97a, #ff9ad5, #8ef0c9, #8fb7ff); opacity:.85; position:relative; }
+  .thumb::after { content:''; position:absolute; inset:3px; border-radius:3px; border:.5px solid rgba(255,255,255,.35); }
+  .row .t { font-size:12.5px; line-height:1.35; color:var(--ink-100); }
+  .row .m { font-family:'Geist Mono',monospace; font-size:9.5px; letter-spacing:.08em; color:var(--ink-600); margin-top:5px; text-transform:uppercase; }
+  .row .pr { margin-left:auto; text-align:right; font-family:'Instrument Serif',serif; font-size:19px; color:var(--gold-bright); }
+  .row .pr small { display:block; white-space:nowrap; font-family:'Geist Mono',monospace; font-size:9px; color:#7fd49a; letter-spacing:.08em; }
+
+  .tabbar { margin-top:auto; display:flex; justify-content:space-around; padding:12px 0 6px; border-top:.5px solid var(--line); font-family:'Geist Mono',monospace; font-size:9px; letter-spacing:.16em; color:var(--ink-600); }
+  .tabbar .on { color:var(--gold-bright); }
+  .rec { margin-top:72px; border:.5px solid var(--gold-deep); background:linear-gradient(180deg,rgba(201,149,74,.08),rgba(201,149,74,.02)); border-radius:16px; padding:24px; }
+  .rec h3 { font-family:'Instrument Serif',serif; font-weight:400; font-size:26px; margin:6px 0 10px; }
+  .rec p, .rec li { color:var(--ink-200); font-size:14px; line-height:1.6; }
+  @media (max-width:720px) { .story { grid-template-columns:repeat(2,1fr); } h1.title { font-size:34px; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="eyebrow">Fields &amp; Floors · Landing page mockups</div>
+  <h1 class="title">The landing page, made to match the product.</h1>
+  <p class="lede">I reviewed the current landing page on iPhone. Below: what holds it back, a reworked intro, and three hero directions. All of them use the exact site colours, fonts and tier chips. Pick one (or mix) and I'll build it.</p>
+
+  <div class="issues">
+    <div class="issue"><b>The best visual is hidden</b>The Featured Find card is the most striking thing on the site, and it sits a full screen below the fold.</div>
+    <div class="issue"><b>The first screen is mostly empty</b>A generic headline and a faint search line, with a quarter of the screen blank above them. Nothing says "rare" or "live."</div>
+    <div class="issue"><b>The intro is disjointed in the app</b>The app's launch seal goes to black, then a different wordmark fades in while the header is already visible behind it. Three separate beats instead of one motion.</div>
+    <div class="issue"><b>Every section looks the same</b>Each section is a dark rounded box, so there's no rhythm and nothing stands out on a long scroll.</div>
+    <div class="issue"><b>The plans card is out of date</b>Base still says "Launching soon · join the waitlist" even though checkout is live.</div>
+  </div>
+
+  <div class="eyebrow">Intro: one continuous motion</div>
+  <h2 class="sec">From the seal to the header, in one move.</h2>
+  <p class="sec-note">The iPhone launch screen already shows the seal, so the web intro picks up from that exact frame. The seal lights up, the wordmark rises out of it, and both settle into the header while the hero comes in underneath. About 1.6 seconds instead of 2.6, and it looks the same on the website.</p>
+  <div class="story">
+    <div>
+      <div class="frame"><div class="seal" style="opacity:.55"><span>F&amp;F</span></div></div>
+      <div class="frame-cap"><b>0.0s</b> · The iOS launch screen. The seal is dim on the base colour.</div>
+    </div>
+    <div>
+      <div class="frame"><div class="glow"></div><div class="seal" style="box-shadow:0 0 30px rgba(230,185,107,.35)"><span>F&amp;F</span></div></div>
+      <div class="frame-cap"><b>0.3s</b> · The ring traces in gold and a soft glow blooms. Same position, so there's no jump.</div>
+    </div>
+    <div>
+      <div class="frame"><div class="glow" style="opacity:.6"></div><div class="seal" style="top:42%"><span>F&amp;F</span></div><div class="wm" style="top:56%">Fields <em>&amp;</em> Floors</div><div class="eyebrow" style="position:absolute;top:63%;width:100%;text-align:center;font-size:7px">A Holy Grail search engine</div></div>
+      <div class="frame-cap"><b>0.7s</b> · The seal lifts and the wordmark rises beneath it.</div>
+    </div>
+    <div>
+      <div class="frame">
+        <div style="position:absolute;top:9%;left:8%;display:flex;align-items:center;gap:6px"><div class="mini-seal" style="width:16px;height:16px;font-size:7px">F&amp;F</div><span class="serif" style="font-size:12px">Fields <span style="color:var(--gold)">&amp;</span> Floors</span></div>
+        <div style="position:absolute;top:28%;left:50%;transform:translateX(-50%) rotate(-5deg);width:38%;aspect-ratio:2.5/4.1;border-radius:6px;background:conic-gradient(from 210deg at 60% 55%,#ff9ad5,#ffd97a,#8ef0c9,#8fb7ff,#d39bff,#ff9ad5);opacity:.75;box-shadow:0 0 40px rgba(230,185,107,.25)"></div>
+      </div>
+      <div class="frame-cap"><b>1.2–1.6s</b> · Seal and wordmark dock into the header together, and the hero card rises in.</div>
+    </div>
+  </div>
+
+  <div class="eyebrow">Hero directions</div>
+  <h2 class="sec">Three ways to open.</h2>
+  <p class="sec-note">Each shows the first screen on an iPhone. The cards and listings here are stand-ins; the real build uses the live Featured Find and real listings.</p>
+
+  <div class="directions">
+    <!-- A -->
+    <div>
+      <div class="dir-head">
+        <span class="tag">A · Recommended</span>
+        <h3>The Card</h3>
+        <p>Lead with the real featured find as a floating, holographic object, with a short, confident headline and a gold search bar. The product sells itself before anyone scrolls.</p>
+      </div>
+      <div class="phone">
+        <div class="island"></div>
+        <div class="status"><span>9:41</span><span>●●● ▮</span></div>
+        <div class="scr">
+          <div class="hdr"><div class="brand"><div class="mini-seal">F&amp;F</div>Fields <em>&amp;</em> Floors</div><div class="act">SIGN IN</div></div>
+          <div style="position:relative;flex:1;display:flex;align-items:center;justify-content:center;margin-top:-4px">
+            <div style="position:absolute;inset:0;background:radial-gradient(50% 45% at 50% 45%, rgba(201,149,74,.18), transparent 70%)"></div>
+            <div class="float" style="position:relative">
+              <div class="slab">
+                <div class="label"><span>BGS 8<br>SPX TRIPLE SCRIPTS</span><b>8</b></div>
+                <div class="card">
+                  <svg viewBox="0 0 120 30" fill="none" stroke="#1a1612" stroke-width="2.2" stroke-linecap="round"><path d="M4 22c8-14 14-18 16-10s-6 12 2 6 10-14 14-8-4 12 4 8 12-10 18-6 2 8 10 4 14-8 22-6 10 4 16 0"/></svg>
+                </div>
+                <div class="sheen"></div>
+              </div>
+            </div>
+            <div style="position:absolute;bottom:6px;left:0;right:0;display:flex;justify-content:center;gap:6px;align-items:center">
+              <span class="live-dot"></span><span class="mono" style="font-size:9.5px;letter-spacing:.16em;color:var(--ink-400)">LIVE ON EBAY · LISTED 4 MIN AGO</span>
+            </div>
+          </div>
+          <div style="text-align:center;margin:14px 0 4px">
+            <div style="display:flex;justify-content:center;gap:5px;margin-bottom:10px"><span class="chip out">AUTO</span><span class="chip grail">/25</span><span class="chip out">BGS 8</span><span class="serif" style="color:var(--gold-bright);font-size:18px;margin-left:6px">$6,399</span></div>
+            <h1 class="serif" style="font-style:italic;font-size:38px;line-height:1;margin:0">Find the <span style="color:var(--gold-bright)">one.</span></h1>
+            <p style="font-size:13px;color:var(--ink-400);margin:9px 0 16px;line-height:1.5">Every print run, auto and rookie on eBay, all in one search.</p>
+          </div>
+          <div class="search"><span class="ph">Search a player…</span><span class="go">→</span></div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:12px">
+            <span class="chip out" style="font-weight:400;font-family:Geist;font-size:11px;padding:5px 10px;border-radius:999px">Luka Dončić</span>
+            <span class="chip out" style="font-weight:400;font-family:Geist;font-size:11px;padding:5px 10px;border-radius:999px">Cooper Flagg</span>
+            <span class="chip out" style="font-weight:400;font-family:Geist;font-size:11px;padding:5px 10px;border-radius:999px">Paul Skenes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- B -->
+    <div>
+      <div class="dir-head">
+        <span class="tag" style="background:linear-gradient(180deg,#e0e8f0,#98a5b3)">B</span>
+        <h3>The Ledger</h3>
+        <p>Editorial and type-led. A big serif headline with the print-run tiers as the visual, and a live ticker of new listings so the page feels active without a hero image.</p>
+      </div>
+      <div class="phone">
+        <div class="island"></div>
+        <div class="status"><span>9:41</span><span>●●● ▮</span></div>
+        <div class="scr">
+          <div class="hdr"><div class="brand"><div class="mini-seal">F&amp;F</div>Fields <em>&amp;</em> Floors</div><div class="act">SIGN IN</div></div>
+          <div style="margin-top:34px" class="eyebrow">Issue 001 · The Holy Grail search engine</div>
+          <h1 class="serif" style="font-size:58px;line-height:.92;letter-spacing:-.02em;margin:14px 0 0">Every<br><em style="color:var(--gold-bright)">/25.</em><br>Every auto.<br><em style="color:var(--ink-400)">One search.</em></h1>
+          <div style="display:flex;gap:6px;margin:22px 0 22px;flex-wrap:wrap">
+            <span class="chip grail">/1</span><span class="chip grail">/5</span><span class="chip grail">/10</span><span class="chip grail">/25</span><span class="chip ultra">/50</span><span class="chip ultra">/99</span><span class="chip rare">/199</span><span class="chip scarce">/499</span>
+          </div>
+          <div class="search"><span class="ph">Search a player…</span><span class="go">→</span></div>
+          <div style="margin-top:26px">
+            <div class="mono" style="font-size:9px;letter-spacing:.2em;color:var(--ink-600);margin-bottom:8px;display:flex;align-items:center;gap:6px"><span class="live-dot"></span>JUST LISTED</div>
+            <div class="ticker"><div class="ticker-track">
+              <span class="tick"><span class="chip grail">/10</span>Wembanyama Prizm Gold Auto <span class="p">$2,150</span></span>
+              <span class="tick"><span class="chip ultra">/50</span>Bedard Young Guns RC <span class="p">$840</span></span>
+              <span class="tick"><span class="chip grail">/5</span>Clark Optic Auto <span class="p">$4,900</span></span>
+              <span class="tick"><span class="chip rare">/199</span>Skenes Chrome Refractor <span class="p">$126</span></span>
+              <span class="tick"><span class="chip grail">/10</span>Wembanyama Prizm Gold Auto <span class="p">$2,150</span></span>
+              <span class="tick"><span class="chip ultra">/50</span>Bedard Young Guns RC <span class="p">$840</span></span>
+              <span class="tick"><span class="chip grail">/5</span>Clark Optic Auto <span class="p">$4,900</span></span>
+              <span class="tick"><span class="chip rare">/199</span>Skenes Chrome Refractor <span class="p">$126</span></span>
+            </div></div>
+          </div>
+          <div style="margin-top:auto;display:grid;grid-template-columns:repeat(3,1fr);border-top:.5px solid var(--line);padding-top:14px">
+            <div><div class="serif" style="font-size:28px;color:var(--gold-bright)">38</div><div class="mono" style="font-size:8.5px;letter-spacing:.14em;color:var(--ink-600)">GRAILS TODAY</div></div>
+            <div><div class="serif" style="font-size:28px">1,204</div><div class="mono" style="font-size:8.5px;letter-spacing:.14em;color:var(--ink-600)">NUMBERED AUTOS</div></div>
+            <div><div class="serif" style="font-size:28px">Hourly</div><div class="mono" style="font-size:8.5px;letter-spacing:.14em;color:var(--ink-600)">ALERT CHECKS</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C -->
+    <div>
+      <div class="dir-head">
+        <span class="tag" style="background:linear-gradient(180deg,#d6884a,#8e4f1f)">C</span>
+        <h3>The Feed</h3>
+        <p>App-first. Search is pinned at the top, a live feed of rare new listings sits below, and there's a tab bar at the bottom. It feels like a native app on day one, which also helps with Apple review.</p>
+      </div>
+      <div class="phone">
+        <div class="island"></div>
+        <div class="status"><span>9:41</span><span>●●● ▮</span></div>
+        <div class="scr" style="gap:10px">
+          <div class="hdr" style="padding-bottom:4px"><div class="brand"><div class="mini-seal">F&amp;F</div>Fields <em>&amp;</em> Floors</div><div class="act">SIGN IN</div></div>
+          <h1 class="serif" style="font-style:italic;font-size:30px;line-height:1.05;margin:4px 0 2px">Good evening.<br><span style="color:var(--gold-bright)">What are we hunting?</span></h1>
+          <div class="search"><span class="ph">Player, set, or card…</span><span class="go">→</span></div>
+          <div style="display:flex;gap:6px;overflow:hidden">
+            <span class="chip grail">/1–/25</span><span class="chip out">Autos</span><span class="chip out">Rookies</span><span class="chip out">Graded</span><span class="chip out">Auctions</span>
+          </div>
+          <div class="mono" style="font-size:9px;letter-spacing:.2em;color:var(--ink-600);display:flex;align-items:center;gap:6px;margin-top:6px"><span class="live-dot"></span>RARE &amp; JUST LISTED</div>
+          <div class="row"><div class="thumb"></div><div><div class="t">2024 Prizm Wembanyama Gold Auto</div><div class="m"><span class="chip grail" style="font-size:8.5px;padding:2px 5px">/10</span> &nbsp;Auto · RC</div></div><div class="pr">$2,150<small>2M AGO</small></div></div>
+          <div class="row"><div class="thumb" style="filter:hue-rotate(90deg)"></div><div><div class="t">2024 Optic Caitlin Clark Auto</div><div class="m"><span class="chip grail" style="font-size:8.5px;padding:2px 5px">/5</span> &nbsp;Auto · RC</div></div><div class="pr">$4,900<small>9M AGO</small></div></div>
+          <div class="row"><div class="thumb" style="filter:hue-rotate(200deg)"></div><div><div class="t">2023 Young Guns Bedard Exclusives</div><div class="m"><span class="chip ultra" style="font-size:8.5px;padding:2px 5px">/50</span> &nbsp;RC · PSA 10</div></div><div class="pr">$840<small>14M AGO</small></div></div>
+          <div class="row"><div class="thumb" style="filter:hue-rotate(300deg)"></div><div><div class="t">2025 Bowman Chrome Skenes Auto</div><div class="m"><span class="chip grail" style="font-size:8.5px;padding:2px 5px">/25</span> &nbsp;Auto · Auction</div></div><div class="pr">$610<small>21M AGO</small></div></div>
+          <div class="tabbar"><span class="on">SEARCH</span><span>WATCHLIST</span><span>ALERTS</span><span>ACCOUNT</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rec">
+    <div class="eyebrow">My recommendation</div>
+    <h3>A for the website, plus C's tab bar inside the app.</h3>
+    <ul>
+      <li><b>A</b> puts your strongest asset, a real grail card, on the first screen. It's the most premium-feeling option and it's built from content you already have.</li>
+      <li>Inside the iPhone app, a <b>bottom tab bar</b> (Search · Watchlist · Alerts · Account) makes it feel native rather than like a website. That's also our best defence against Apple's "this is just a website" rejection.</li>
+      <li>The new intro ships with either option. The out-of-date "join the waitlist" plans card gets fixed regardless.</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

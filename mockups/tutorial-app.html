@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>F&amp;F App Tour Mockup</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap');
+:root{--ink-100:#f7f1e1;--ink-200:#e8dfc9;--ink-400:#a99e85;--ink-600:#6b6354;--bg-base:#0a0907;--bg-elev:#14110c;--bg-elev-2:#1a160f;--line:#2a251c;--line-soft:#1f1c16;--gold:#c9954a;--gold-bright:#e6b96b;--gold-deep:#8f6a32;--ink-on-gold:#1a1612}
+*{box-sizing:border-box}
+body{margin:0;background:#050403;color:var(--ink-100);font-family:Geist,system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;gap:20px;padding:24px 16px}
+.note{max-width:760px;font:12px/1.6 'Geist Mono',monospace;color:var(--ink-400)}
+.note b{color:var(--gold)}
+.wrap{display:flex;gap:28px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+.phone{width:375px;height:780px;border-radius:48px;border:10px solid #1c1c1e;background:var(--bg-base);position:relative;overflow:hidden;box-shadow:0 30px 80px -30px #000}
+.status{height:44px;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font:600 14px Geist;color:var(--ink-100)}
+.homebar{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:130px;height:5px;border-radius:3px;background:var(--ink-100);opacity:.8;z-index:5}
+.bgpage{padding:20px;opacity:.3}
+.bgpage h1{font:italic 400 40px/1 'Instrument Serif',serif;margin:30px 0 16px}
+.bgbar{height:48px;border:1px solid var(--line);border-radius:10px}
+/* sheet */
+.dim{position:absolute;inset:44px 0 0;background:rgba(5,4,3,.72)}
+.sheet{position:absolute;left:0;right:0;top:64px;bottom:0;background:var(--bg-elev-2);border-top:.5px solid var(--gold-deep);border-radius:22px 22px 0 0;display:flex;flex-direction:column;touch-action:pan-y;user-select:none}
+.grab{width:38px;height:5px;border-radius:3px;background:var(--line);margin:8px auto 0}
+.top{display:flex;justify-content:space-between;align-items:center;padding:4px 12px 0 22px;height:52px}
+.eyebrow{font:500 10px 'Geist Mono',monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+.skip{min-width:64px;min-height:44px;background:none;border:0;color:var(--ink-400);font:500 15px Geist;cursor:pointer}
+.art{flex:1;display:flex;align-items:center;justify-content:center;padding:16px 22px;background:var(--bg-elev);margin:0 16px;border-radius:16px;border:.5px solid var(--line);min-height:220px}
+.copy{padding:22px 24px 8px}
+h2{font:italic 400 34px/1.05 'Instrument Serif',serif;margin:0 0 12px;letter-spacing:-.01em}
+p{font-size:16px;line-height:1.55;color:var(--ink-200);margin:0}
+.dots{display:flex;gap:7px;justify-content:center;padding:14px 0}.dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}.dots i.on{background:var(--gold);width:22px;border-radius:4px}
+.actions{padding:0 16px 30px;display:flex;flex-direction:column;gap:10px}
+.primary{min-height:52px;border:0;border-radius:14px;background:var(--gold);color:var(--ink-on-gold);font:600 17px Geist;cursor:pointer}
+.secondary{min-height:48px;border:.5px solid var(--gold-deep);border-radius:14px;background:none;color:var(--gold-bright);font:500 16px Geist;cursor:pointer}
+.ghost{min-height:44px;border:0;background:none;color:var(--ink-400);font:500 15px Geist;cursor:pointer}
+/* vignettes */
+.search{width:100%;height:52px;border:.5px solid var(--gold-deep);border-radius:12px;background:var(--bg-base);display:flex;align-items:center;padding:0 14px;font-size:17px}
+.search span::after{content:'|';color:var(--gold);animation:b 1s steps(1) infinite}@keyframes b{50%{opacity:0}}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chip{font:500 13px 'Geist Mono',monospace;border-radius:100px;padding:9px 13px;color:var(--gold-bright);background:rgba(201,149,74,.06);border:.5px solid var(--gold-deep)}
+/* tier colors here mirror tierChipStyle() in rarityUtils.js — the build imports it */
+.grail{color:var(--ink-on-gold);background:linear-gradient(180deg,#ffd97a,#d99c14);border:.5px solid #ffc14d;font-weight:700}
+.ultra{color:var(--ink-on-gold);background:linear-gradient(180deg,#e0e8f0,#98a5b3);border:.5px solid #c8d4e0;font-weight:700}
+.rare{color:var(--ink-on-gold);background:linear-gradient(180deg,#d6884a,#8e4f1f);border:.5px solid #d6722d;font-weight:700}
+.scarce{color:var(--ink-on-gold);background:linear-gradient(180deg,#8a96a4,#4a5360);border:.5px solid #5a6470;font-weight:600}
+.row{width:100%;display:flex;gap:12px;align-items:center;border:.5px solid var(--line);border-radius:12px;padding:12px;background:var(--bg-base)}
+.thumb{width:46px;height:64px;border-radius:4px;background:linear-gradient(145deg,var(--line),var(--gold-deep) 50%,var(--line-soft))}
+.row .t{flex:1;font-size:14px;color:var(--ink-200);line-height:1.4}.row .t small{display:block;font:12px 'Geist Mono',monospace;color:var(--gold);margin-top:4px}
+.star{width:44px;height:44px;display:grid;place-items:center;font-size:24px;color:var(--gold);animation:pop 1.6s ease-in-out infinite}@keyframes pop{50%{transform:scale(1.2)}}
+.push{width:100%;border-radius:18px;background:rgba(40,36,30,.92);padding:12px 14px;display:flex;gap:10px;box-shadow:0 10px 30px -10px #000}
+.push .ic{width:38px;height:38px;border-radius:9px;background:var(--bg-base);border:.5px solid var(--gold-deep);display:grid;place-items:center;font:italic 16px 'Instrument Serif',serif;color:var(--gold);flex:none}
+.push b{font:600 14px Geist;display:flex;justify-content:space-between}.push b span{font:400 12px Geist;color:var(--ink-400)}
+.push div div{font-size:13.5px;color:var(--ink-200);line-height:1.35;margin-top:2px}
+.done{text-align:center}.done .seal{width:84px;height:84px;border:1px solid var(--gold);border-radius:50%;display:grid;place-items:center;margin:0 auto 14px;font:italic 32px 'Instrument Serif',serif;color:var(--gold)}
+.done small{font:12px 'Geist Mono',monospace;color:var(--ink-400);letter-spacing:.1em}
+/* account menu panel */
+.menuPhone .menu{position:absolute;top:100px;right:14px;left:14px;background:var(--bg-elev-2);border:.5px solid var(--line);border-radius:16px;padding:6px 0}
+.menu div{min-height:48px;display:flex;align-items:center;padding:0 18px;font-size:16px;color:var(--ink-200);border-bottom:.5px solid var(--line-soft)}
+.menu div:last-child{border:0}.menu .hl{color:var(--gold-bright)}
+.cap{text-align:center;font:500 10px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-600);margin-top:10px}
+</style>
+</head>
+<body>
+<div class="note"><b>MOCKUP: iOS app tour.</b> It's the same component as the web tour, switched by isNativeApp(). It auto-shows once, on first launch, after the intro. It opens as a full-height sheet. Swipe left/right or tap Next. Skip stays top-right on every step, and every tap target is at least 44pt. Step 4 says alerts arrive as push notifications plus email, and "Start free trial" opens /subscribe, where Apple's purchase sheet shows the price. There's no price in the tour and no web link. The tour never asks for notification permission. On the right, "Take the tour" is in the in-app account menu.</div>
+<div class="wrap">
+  <div>
+    <div class="phone" id="phone">
+      <div class="status"><span>9:41</span><span>●●● ▮</span></div>
+      <div class="bgpage"><h1>Find the one.</h1><div class="bgbar"></div></div>
+      <div class="dim"></div>
+      <div class="sheet" id="sheet">
+        <div class="grab"></div>
+        <div class="top"><span class="eyebrow" id="eb"></span><button class="skip" id="skip">Skip</button></div>
+        <div class="art" id="art"></div>
+        <div class="copy"><h2 id="ti"></h2><p id="tx"></p></div>
+        <div class="dots" id="dots"></div>
+        <div class="actions" id="actions"></div>
+      </div>
+      <div class="homebar"></div>
+    </div>
+    <div class="cap">First launch · swipe or tap Next</div>
+  </div>
+  <div>
+    <div class="phone menuPhone">
+      <div class="status"><span>9:41</span><span>●●● ▮</span></div>
+      <div class="bgpage" style="opacity:.25"><h1>Find the one.</h1></div>
+      <div class="menu"><div style="font-size:13px;color:var(--ink-400)">Signed in as you@example.com</div><div>Plan · Free</div><div>Manage membership</div><div class="hl">Take the tour</div><div>Sign out</div></div>
+      <div class="homebar"></div>
+    </div>
+    <div class="cap">Replay · account menu</div>
+  </div>
+</div>
+<script>
+const S=[
+ {l:'Search',ti:'Start with a player.',tx:'Type any name. We only show listings where that player is actually in the title.',art:'<div class="search"><span>Cooper Flagg</span></div>'},
+ {l:'Filters',ti:'Stack what eBay won’t.',tx:'Autographed, rookie, numbered to 25 or lower, under $300, all at once. Print runs are sorted into tiers.',art:'<div class="chips"><span class="chip">Autographed</span><span class="chip">Rookie</span><span class="chip">Numbered</span><span class="chip grail">The Grail</span><span class="chip ultra">Ultra Rare</span><span class="chip rare">Rare</span><span class="chip scarce">Scarce</span></div>'},
+ {l:'Watchlist',ti:'Star the ones you like.',tx:'Tap the star on any card to save it. We keep the price and status fresh. It’s free with an account.',art:'<div class="row"><div class="thumb"></div><div class="t">2025 Bowman Chrome Cooper Flagg Auto /10<small>$1,240 · 2h 14m left</small></div><div class="star">★</div></div>'},
+ {l:'Alerts',ti:'Get a ping when it lists.',tx:'Save a search and we’ll send a notification to your phone (plus an email) when a new match lists, and remind you before auctions end. Alerts are part of Base, which has a 14-day free trial.',art:'<div class="push"><div class="ic">F</div><div style="flex:1"><b>Fields &amp; Floors <span>now</span></b><div>New match: Cooper Flagg Auto /25 · $280 · Buy It Now</div></div></div>',trial:true},
+ {l:'Buy',ti:'Checkout happens on eBay.',tx:'Every listing is a real eBay listing. Open a card, then tap through to buy it on eBay. We never take a cut.',art:'<div class="done"><div class="seal">F</div><small>YOU’RE SET</small></div>'}
+];
+let i=0;const $=id=>document.getElementById(id);
+function r(){const s=S[i];$('eb').textContent=`${i+1} of ${S.length} · ${s.l}`;$('ti').textContent=s.ti;$('tx').textContent=s.tx;$('art').innerHTML=s.art;
+$('dots').innerHTML=S.map((_,k)=>'<i class="'+(k===i?'on':'')+'"></i>').join('');
+const last=i===S.length-1;$('skip').style.visibility=last?'hidden':'visible';
+$('actions').innerHTML=(s.trial?'<button class="secondary">Start free trial</button>':'')+`<button class="primary" id="nx">${last?'Start searching':'Next'}</button>`;
+$('nx').onclick=next}
+function next(){if(i<S.length-1){i++;r()}}function prev(){if(i){i--;r()}}
+$('skip').onclick=()=>{$('sheet').style.display='none';document.querySelector('.dim').style.display='none'};
+let x0=null;$('sheet').addEventListener('pointerdown',e=>x0=e.clientX);$('sheet').addEventListener('pointerup',e=>{if(x0===null)return;const d=e.clientX-x0;if(d<-50)next();if(d>50)prev();x0=null});
+r();
+</script>
+</body>
+</html>

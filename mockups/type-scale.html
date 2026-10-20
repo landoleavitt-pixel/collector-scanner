@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Type Scale Options</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap');
+:root{
+  --ink-100:#f7f1e1;--ink-200:#e8dfc9;--ink-400:#a99e85;--ink-600:#6b6354;
+  --bg-base:#0a0907;--bg-elev:#14110c;--bg-elev-2:#1a160f;--line:#2a251c;--line-soft:#1f1c16;
+  --gold:#c9954a;--gold-bright:#e6b96b;--gold-deep:#8f6a32;
+  --ink-on-gold:#1a1612;--gold-fill-top:#ffd97a;--gold-fill-bottom:#d99c14;
+  --legacy-cream:#e8e2d5;--legacy-muted:#8a8275;--legacy-hint:#6e675b;--legacy-gold:#d4af5c;--legacy-crit:#d97757;--legacy-page:#0f0c0a;--legacy-field:#221d1a;--legacy-ink-on-gold:#1a1614;--crit:#d4684a;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg-base);color:var(--ink-100);font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.page{max-width:1180px;margin:0 auto;padding:40px 16px 80px}
+.eyebrow{font:500 11px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+h1{font:italic 400 44px/1 'Instrument Serif',serif;margin:10px 0 8px}
+.lede{color:var(--ink-400);font-size:15px;max-width:680px;line-height:1.6;margin:0 0 40px}
+.sec{border-top:1px solid var(--gold-deep);padding-top:20px;margin:56px 0 24px}
+.sec .n{font:600 12px 'Geist Mono',monospace;color:var(--gold-bright);letter-spacing:.14em}
+.sec h2{font:italic 400 34px/1.1 'Instrument Serif',serif;margin:6px 0 6px}
+.sec p{margin:0;color:var(--ink-400);font-size:14px;max-width:680px;line-height:1.55}
+
+/* ramps */
+.ramps{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px}
+.ramp{background:var(--bg-elev);border:1px solid var(--line);border-radius:12px;padding:18px}
+.ramp.pick{border-color:var(--gold-deep)}
+.ramp h3{margin:0 0 4px;font:400 22px 'Instrument Serif',serif}
+.ramp .why{font-size:13px;color:var(--ink-400);margin:0 0 14px;line-height:1.5}
+.step{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:baseline;padding:7px 0;border-bottom:1px dashed var(--line-soft)}
+.step:last-child{border-bottom:0}
+.step code{font:500 11px 'Geist Mono',monospace;color:var(--ink-600)}
+.bad{color:var(--legacy-crit)!important}
+
+/* compare */
+.cmp{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.col h4{margin:0 0 10px;font:500 11px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.phone{border:8px solid #1b1813;border-radius:36px;background:var(--bg-base);overflow:hidden;max-width:375px}
+.phone .bar{height:34px;display:flex;justify-content:space-between;align-items:center;padding:0 22px;font:600 13px Geist,sans-serif}
+.screen{padding:12px 14px 18px}
+.card{display:grid;grid-template-columns:76px 1fr;gap:12px;padding:12px 0;border-bottom:1px solid var(--line-soft)}
+.thumb{aspect-ratio:2.5/3.5;border-radius:4px;background:linear-gradient(135deg,#ff9842,#cc5e0d);padding:3px}
+.thumb i{display:block;height:100%;border-radius:2px;background:radial-gradient(ellipse at 50% 30%,#4a3524,#120d08 70%)}
+.chips{display:flex;gap:4px;flex-wrap:wrap;margin:6px 0}
+.chip{font-family:'Geist Mono',monospace;font-weight:700;border-radius:3px;color:var(--ink-on-gold);padding:2px 6px;letter-spacing:.04em}
+.chip.g{background:linear-gradient(180deg,#ffd97a,#d99c14)}
+.chip.o{color:var(--gold-bright);background:rgba(201,149,74,.06);border:.5px solid var(--gold-deep);font-weight:500}
+.lbl{font-family:'Geist Mono',monospace;text-transform:uppercase;color:var(--ink-400)}
+.filters{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.seg{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-top:6px}
+.seg span{flex:1;text-align:center;padding:8px 0;color:var(--ink-400)}
+.seg span.on{background:linear-gradient(180deg,#ffd97a,#d99c14);color:var(--ink-on-gold);font-weight:600}
+
+/* radius */
+.radii{display:flex;gap:18px;flex-wrap:wrap}
+.r{width:150px;text-align:center}
+.r div{height:84px;background:var(--bg-elev);border:1px solid var(--line);margin-bottom:8px}
+.r b{display:block;font:500 13px 'Geist Mono',monospace;color:var(--gold-bright)}
+.r span{font-size:12px;color:var(--ink-400)}
+
+/* CTA */
+.ctas{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+.cta-box{background:var(--bg-elev);border:1px solid var(--line);border-radius:12px;padding:20px}
+.cta-box h3{margin:0 0 4px;font:400 22px 'Instrument Serif',serif}
+.cta-box p{margin:0 0 16px;color:var(--ink-400);font-size:13px;line-height:1.5}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.btn{font:600 12px Geist,sans-serif;letter-spacing:.14em;text-transform:uppercase;padding:13px 18px;border-radius:8px;border:0}
+.btn.grad{background:linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom));color:var(--ink-on-gold)}
+.btn.solid{background:var(--gold);color:var(--ink-on-gold)}
+.btn.ghost{background:transparent;color:var(--ink-100);border:1px solid rgba(232,226,213,.18)}
+
+/* colours */
+.swatches{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.sw{display:flex;align-items:center;gap:10px;background:var(--bg-elev);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--ink-200)}
+.sw i{width:28px;height:28px;border-radius:6px;border:1px solid rgba(232,226,213,.15);flex:none}
+.sw .arrow{color:var(--ink-600)}
+.sw small{display:block;font:500 11px 'Geist Mono',monospace;color:var(--ink-600)}
+.decide{margin-top:48px;border:1px solid var(--gold-deep);border-radius:12px;padding:18px 20px;background:var(--bg-elev)}
+.decide h3{margin:0 0 10px;font:500 11px 'Geist Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.decide ol{margin:0;padding-left:20px;font-size:15px;line-height:1.7;color:var(--ink-200)}
+@media (max-width:900px){.cmp{grid-template-columns:1fr}.phone{margin:0 auto}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="eyebrow">Fields &amp; Floors · Design system · (b)</div>
+  <h1>Type, radius &amp; buttons</h1>
+  <p class="lede">The site uses 30+ font sizes today, about 220 of them at 9–11px, which is hard to read in the iPhone app. Below are two scales that cut that to 9 sizes, a 4-step corner radius, and an alternative for the gold button. Nothing changes until you pick.</p>
+
+  <div class="sec"><div class="n">1 · TYPE SCALE</div><h2>Two options</h2><p>They differ only at the small end. A has an 11px floor everywhere. B keeps the tiny tracked uppercase labels at 10px for the editorial look, with an 11px floor for everything else.</p></div>
+  <div class="ramps">
+    <div class="ramp">
+      <h3>Today</h3><p class="why">33 sizes. These are the most common.</p>
+      <div class="step"><code class="bad">8.5–9px</code><span class="lbl" style="font-size:9px;letter-spacing:.22em">Numbered · 31 uses</span></div>
+      <div class="step"><code class="bad">10px</code><span class="lbl" style="font-size:10px;letter-spacing:.2em">Buy it now · 83 uses</span></div>
+      <div class="step"><code>10.5–11.5px</code><span style="font-size:11px;color:var(--ink-400)">Listed 2 days ago · 75 uses</span></div>
+      <div class="step"><code>12–12.5px</code><span style="font-size:12px;color:var(--ink-200)">Add listings to your watchlist</span></div>
+      <div class="step"><code>13px</code><span style="font-size:13px;color:var(--ink-200)">Pick the print runs you want</span></div>
+      <div class="step"><code>14–19px</code><span style="font:italic 19px 'Instrument Serif',serif">Set your tier</span></div>
+      <div class="step"><code>22–44px</code><span style="font:italic 30px/1 'Instrument Serif',serif">Three steps.</span></div>
+    </div>
+    <div class="ramp">
+      <h3>Option A · 11px floor</h3><p class="why">Every label is readable at arm's length on a phone.</p>
+      <div class="step"><code>label 11</code><span class="lbl" style="font-size:11px;letter-spacing:.16em">Buy it now</span></div>
+      <div class="step"><code>caption 12</code><span style="font-size:12px;color:var(--ink-400)">Listed 2 days ago</span></div>
+      <div class="step"><code>small 13</code><span style="font-size:13px;color:var(--ink-200)">Add listings to your watchlist</span></div>
+      <div class="step"><code>body 15</code><span style="font-size:15px;color:var(--ink-200)">Pick the print runs you want</span></div>
+      <div class="step"><code>lead 17</code><span style="font-size:17px">Track cards you find.</span></div>
+      <div class="step"><code>h4 20</code><span style="font:italic 20px 'Instrument Serif',serif">Set your tier</span></div>
+      <div class="step"><code>h3 26</code><span style="font:italic 26px 'Instrument Serif',serif">Plans</span></div>
+      <div class="step"><code>h2 36</code><span style="font:italic 36px/1 'Instrument Serif',serif">Three steps.</span></div>
+      <div class="step"><code>h1 56</code><span style="font:italic 56px/1 'Instrument Serif',serif">Find the one.</span></div>
+    </div>
+    <div class="ramp pick">
+      <h3>Option B · 10px mono labels</h3><p class="why">Keeps the small tracked labels as they are. Everything else has an 11px floor. Boss's suggestion.</p>
+      <div class="step"><code>label 10</code><span class="lbl" style="font-size:10px;letter-spacing:.2em">Buy it now</span></div>
+      <div class="step"><code>caption 11</code><span style="font-size:11px;color:var(--ink-400)">Listed 2 days ago</span></div>
+      <div class="step"><code>small 13</code><span style="font-size:13px;color:var(--ink-200)">Add listings to your watchlist</span></div>
+      <div class="step"><code>body 15</code><span style="font-size:15px;color:var(--ink-200)">Pick the print runs you want</span></div>
+      <div class="step"><code>lead 17</code><span style="font-size:17px">Track cards you find.</span></div>
+      <div class="step"><code>h4 20</code><span style="font:italic 20px 'Instrument Serif',serif">Set your tier</span></div>
+      <div class="step"><code>h3 26</code><span style="font:italic 26px 'Instrument Serif',serif">Plans</span></div>
+      <div class="step"><code>h2 36</code><span style="font:italic 36px/1 'Instrument Serif',serif">Three steps.</span></div>
+      <div class="step"><code>h1 56</code><span style="font:italic 56px/1 'Instrument Serif',serif">Find the one.</span></div>
+    </div>
+  </div>
+
+  <div class="sec"><div class="n">2 · ON A REAL SCREEN</div><h2>Search results on iPhone</h2><p>The same result rows and filter control in each scale, at actual size.</p></div>
+  <div class="cmp" id="cmp"></div>
+
+  <div class="sec"><div class="n">3 · CORNERS</div><h2>Four radii instead of fifteen</h2><p>All four are in use today. The other eleven values would snap to the nearest one.</p></div>
+  <div class="radii">
+    <div class="r"><div style="border-radius:4px"></div><b>4px</b><span>Chips, small tags</span></div>
+    <div class="r"><div style="border-radius:8px"></div><b>8px</b><span>Buttons, inputs, rows</span></div>
+    <div class="r"><div style="border-radius:12px"></div><b>12px</b><span>Cards, modals, sheets</span></div>
+    <div class="r"><div style="border-radius:999px"></div><b>Full</b><span>Pills, dots, avatars</span></div>
+  </div>
+
+  <div class="sec"><div class="n">4 · THE GOLD BUTTON</div><h2>Should buttons share the grail colour?</h2><p>Today the main buttons use the same gold gradient as the Grail chip (/25 and under). On a results page, “Grail” and “click here” look alike.</p></div>
+  <div class="ctas">
+    <div class="cta-box">
+      <h3>Keep · grail gradient</h3><p>What's live now. Rich, but it matches the /25 chip exactly.</p>
+      <div class="row"><span class="chip g" style="font-size:12px;padding:3px 8px">/25</span><button class="btn grad">View on eBay ↗</button></div>
+      <div class="row"><button class="btn grad">Search</button><button class="btn ghost">☆ Watch</button></div>
+    </div>
+    <div class="cta-box" style="border-color:var(--gold-deep)">
+      <h3>Change · solid gold</h3><p>A flat --gold fill. The gradient then belongs only to the Grail chip, so rarity reads clearly.</p>
+      <div class="row"><span class="chip g" style="font-size:12px;padding:3px 8px">/25</span><button class="btn solid">View on eBay ↗</button></div>
+      <div class="row"><button class="btn solid">Search</button><button class="btn ghost">☆ Watch</button></div>
+    </div>
+  </div>
+
+  <div class="sec"><div class="n">5 · OLD COLOURS</div><h2>Folding the leftovers in</h2><p>Nine off-palette colours, mostly on the sign-in, sign-up and subscribe pages. Each would merge into the closest brand colour. The change is visible but small.</p></div>
+  <div class="swatches">
+    <div class="sw"><i style="background:var(--legacy-cream)"></i><span class="arrow">→</span><i style="background:var(--ink-200)"></i><div>Cream text<small>e8e2d5 → ink-200</small></div></div>
+    <div class="sw"><i style="background:var(--legacy-muted)"></i><span class="arrow">→</span><i style="background:var(--ink-400)"></i><div>Muted text<small>8a8275 → ink-400</small></div></div>
+    <div class="sw"><i style="background:var(--legacy-hint)"></i><span class="arrow">→</span><i style="background:var(--ink-600)"></i><div>Hint text<small>6e675b → ink-600</small></div></div>
+    <div class="sw"><i style="background:var(--legacy-gold)"></i><span class="arrow">→</span><i style="background:var(--gold-bright)"></i><div>Soft gold<small>d4af5c → gold-bright</small></div></div>
+    <div class="sw"><i style="background:var(--legacy-crit)"></i><span class="arrow">→</span><i style="background:var(--crit)"></i><div>Error text<small>d97757 → crit</small></div></div>
+    <div class="sw"><i style="background:var(--legacy-page)"></i><span class="arrow">→</span><i style="background:var(--bg-base)"></i><div>Auth page bg<small>0f0c0a → bg-base</small></div></div>
+    <div class="sw"><i style="background:var(--legacy-field)"></i><span class="arrow">→</span><i style="background:var(--bg-elev-2)"></i><div>Input fill<small>221d1a → bg-elev-2</small></div></div>
+    <div class="sw"><i style="background:var(--legacy-ink-on-gold)"></i><span class="arrow">→</span><i style="background:var(--ink-on-gold)"></i><div>Text on gold<small>1a1614 → ink-on-gold</small></div></div>
+    <div class="sw"><i style="background:var(--ink-100)"></i><span class="arrow">→</span><i style="background:var(--ink-200)"></i><div>18 “ink-300” spots (cream today)<small>proposed: ink-200, a step softer</small></div></div>
+  </div>
+
+  <div class="decide"><h3>Your picks</h3><ol>
+    <li>Type: <b>A</b> (11px floor) or <b>B</b> (10px mono labels)?</li>
+    <li>Corners: 4 / 8 / 12 / full. OK?</li>
+    <li>Gold button: keep the gradient, or switch to solid gold?</li>
+    <li>Fold the old colours into the brand palette? (small visible shift, mostly on the auth pages)</li>
+  </ol></div>
+</div>
+
+<script>
+const S = {
+  today:{lbl:9,  lblLs:'.22em', cap:10.5, small:12.5, title:16, price:24, chip:9.5, seg:10},
+  a:    {lbl:11, lblLs:'.16em', cap:12,   small:13,   title:20, price:26, chip:11,  seg:12},
+  b:    {lbl:10, lblLs:'.2em',  cap:11,   small:13,   title:20, price:26, chip:11,  seg:12},
+};
+const rows = [
+  ['2024 Topps Chrome Jackson Holliday RC Orange Wave /25','$1,240','Buy it now · 2d left'],
+  ['2023 Bowman Inception Autographs Holliday Red /5','$450','Auction · 6 bids · 14h'],
+];
+function screen(k, name){
+  const s = S[k];
+  const card = r => `<div class="card"><div class="thumb"><i></i></div><div>
+    <div style="font:italic ${s.title}px/1.15 'Instrument Serif',serif">${r[0]}</div>
+    <div class="chips"><span class="chip g" style="font-size:${s.chip}px">${r[0].includes('/25')?'/25':'/5'}</span><span class="chip o" style="font-size:${s.chip}px">RC</span><span class="chip o" style="font-size:${s.chip}px">AUTO</span></div>
+    <div style="font:500 ${s.price}px Geist,sans-serif">${r[1]}</div>
+    <div class="lbl" style="font-size:${s.lbl}px;letter-spacing:${s.lblLs};margin-top:4px">${r[2]}</div></div></div>`;
+  return `<div class="col"><h4>${name}</h4><div class="phone"><div class="bar"><span>9:41</span><span>●●●</span></div><div class="screen">
+    <div class="lbl" style="font-size:${s.lbl}px;letter-spacing:${s.lblLs};color:var(--gold)">Searching for</div>
+    <div style="font:italic 30px/1.1 'Instrument Serif',serif;margin:4px 0 6px">Jackson Holliday</div>
+    <div style="font-size:${s.cap}px;color:var(--ink-400)">128 listings · sorted by rarity</div>
+    ${rows.map(card).join('')}
+    <div class="filters"><div class="lbl" style="font-size:${s.lbl}px;letter-spacing:${s.lblLs}">Listing type</div>
+      <div class="seg" style="font-size:${s.seg}px"><span class="on">Any</span><span>Buy it now</span><span>Auction</span></div>
+      <p style="font-size:${s.small}px;color:var(--ink-400);margin:10px 0 0;line-height:1.5">All filters apply with AND logic.</p></div>
+  </div></div></div>`;
+}
+document.getElementById('cmp').innerHTML = screen('today','Today') + screen('a','Option A · 11px floor') + screen('b','Option B · 10px mono labels');
+</script>
+</body>
+</html>
