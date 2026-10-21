@@ -38,6 +38,13 @@ export async function POST(request) {
     : process.env.STRIPE_BASE_PRICE_ID;
   const siteUrl   = process.env.NEXT_PUBLIC_SITE_URL || 'https://fieldsandfloors.com';
 
+  if (plan === 'annual' && secretKey && !priceId) {
+    return NextResponse.json(
+      { error: 'Annual billing is coming soon.', code: 'ANNUAL_UNAVAILABLE' },
+      { status: 503 },
+    );
+  }
+
   if (!secretKey || !priceId) {
     return NextResponse.json({ error: 'Payment not configured' }, { status: 500 });
   }

@@ -7,7 +7,10 @@ export async function GET(request) {
   const code = searchParams.get('code');
   const tokenHash = searchParams.get('token_hash');
   const type = searchParams.get('type');
-  const next = searchParams.get('next') ?? '/';
+  // Only same-site paths. "@evil.com" or "//evil.com" would otherwise turn
+  // `${origin}${next}` into a redirect to another site after sign-in.
+  const rawNext = searchParams.get('next') ?? '/';
+  const next = rawNext.startsWith('/') && !rawNext.startsWith('//') && !rawNext.includes('\\') ? rawNext : '/';
 
   const cookieStore = cookies();
   const supabase = createServerClient(

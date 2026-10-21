@@ -241,3 +241,16 @@ Copy the exact error message and ask Claude — we'll fix it together.
 2. **Watch your eBay developer console** for API errors or rate-limit warnings.
 3. **Get the URL in front of 10 real collectors** — Reddit (r/baseballcards, r/basketballcards), Discord servers, Twitter/X. Watch what they do.
 4. **Don't build v2 features yet.** Wait for feedback. What you *think* matters and what users *actually* use are usually different.
+
+## Refreshing the player list (every quarter)
+
+The search box suggests player names as you type and offers "Did you mean…?" for typos. It runs in the browser with no API and no cost. The list has two parts:
+
+- **`lib/athletes-rosters.json`**: every current NBA, WNBA, NFL, MLB and NHL roster player. Refreshed by a script.
+- **`lib/athletes.js`**: kept by hand. Stars (shown first), legends, college players and prospects not yet on a pro roster, and nicknames like "Wemby".
+
+Once a quarter (January, April, July, October):
+
+1. In the project folder, run `node scripts/update-athletes.mjs`. It takes about 20 seconds and needs internet. It reads ESPN's free public roster pages. No account or key, and nothing about you or your users is sent. If one league fails, that league keeps last quarter's names.
+2. Open `lib/athletes.js` and update it by hand: add new draft picks and hot prospects to `PROSPECTS`, and move breakout players into `STARS`.
+3. Commit both files and deploy as usual.

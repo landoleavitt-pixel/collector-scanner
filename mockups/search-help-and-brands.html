@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spelling Help + Card Company</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap');
+:root{
+  --ink-100:#f7f1e1;--ink-200:#e8dfc9;--ink-400:#a99e85;--ink-600:#6b6354;
+  --bg-base:#0a0907;--bg-elev:#14110c;--bg-elev-2:#1a160f;--line:#2a251c;--line-soft:#1f1c16;
+  --gold:#c9954a;--gold-bright:#e6b96b;--gold-deep:#8f6a32;
+  --ink-on-gold:#1a1612;--gold-fill-top:#ffd97a;--gold-fill-bottom:#d99c14;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg-base);color:var(--ink-100);font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.page{max-width:1180px;margin:0 auto;padding:40px 16px 80px}
+.eyebrow{font:500 11px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+h1{font:italic 400 44px/1 'Instrument Serif',serif;margin:10px 0 8px}
+.lede{color:var(--ink-400);font-size:15px;max-width:720px;line-height:1.6;margin:0 0 20px}
+.sec{border-top:1px solid var(--gold-deep);padding-top:20px;margin:56px 0 26px}
+.sec .n{font:600 12px 'Geist Mono',monospace;color:var(--gold-bright);letter-spacing:.14em}
+.sec h2{font:italic 400 34px/1.1 'Instrument Serif',serif;margin:6px 0 6px}
+.sec p{margin:0;color:var(--ink-400);font-size:14px;max-width:700px;line-height:1.55}
+.row{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start;justify-content:center}
+.frame{background:var(--bg-base);border:1px solid var(--line);border-radius:12px;padding:28px;position:relative}
+.desk{width:640px;max-width:100%}
+.phone{width:375px;max-width:100%;border:10px solid var(--bg-elev-2);border-radius:44px;padding:54px 16px 30px;min-height:620px}
+.cap{text-align:center;color:var(--ink-400);font-size:13px;margin:12px auto 0;max-width:380px;line-height:1.45}
+.col{display:flex;flex-direction:column;align-items:center}
+
+/* Hero search */
+.h1s{font:italic 400 52px/0.98 'Instrument Serif',serif;margin:0 0 18px}
+.h1s em{color:var(--gold-bright)}
+.search{position:relative;display:flex;align-items:center;border:0.5px solid var(--gold);border-radius:16px;background:rgba(20,17,12,.85);box-shadow:0 0 0 4px rgba(201,149,74,.05),0 18px 40px rgba(0,0,0,.45)}
+.search .val{flex:1;padding:16px 20px;font:400 24px 'Instrument Serif',serif;color:var(--ink-100)}
+.search .val .caret{display:inline-block;width:1px;height:22px;background:var(--gold-bright);vertical-align:-3px;margin-left:1px}
+.search b{width:44px;height:44px;margin-right:8px;border-radius:12px;background:linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom));display:grid;place-items:center;color:var(--ink-on-gold);font-weight:600}
+.phone .search .val{font-size:20px;padding:13px 16px}
+.phone .search b{width:40px;height:40px}
+.phone .h1s{font-size:40px;text-align:center}
+
+/* Suggestion dropdown */
+.dd{margin-top:8px;border:0.5px solid var(--line);border-radius:12px;background:var(--bg-elev);box-shadow:0 18px 40px rgba(0,0,0,.55);overflow:hidden}
+.dd .it{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:0.5px solid var(--line-soft);font-size:15px;color:var(--ink-200)}
+.dd .it:last-child{border-bottom:0}
+.dd .it.on{background:var(--bg-elev-2);color:var(--ink-100)}
+.dd .it mark{background:none;color:var(--gold-bright);font-weight:500}
+.dd .sp{font:500 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-600);border:0.5px solid var(--line);border-radius:999px;padding:3px 8px;flex:none}
+.dd .dym{padding:12px 16px;font-size:14px;color:var(--ink-400);border-bottom:0.5px solid var(--line-soft);background:var(--bg-elev-2)}
+.dd .dym strong{color:var(--gold-bright);font-weight:500}
+.phone .dd .it{padding:14px 14px;min-height:48px}
+
+/* Results heading */
+.rh{font:italic 400 48px/1.05 'Instrument Serif',serif;color:var(--gold);margin:0}
+.phone .rh{font-size:36px}
+.meta{font:500 10px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-600);margin-bottom:8px}
+.dymline{margin-top:12px;font-size:15px;color:var(--ink-400)}
+.dymline a{color:var(--gold-bright);text-decoration:none;border-bottom:0.5px solid var(--gold-deep)}
+.dymline .x{margin-left:10px;font-size:12px;color:var(--ink-600)}
+.none{margin-top:26px;border-top:1px solid var(--line);padding-top:16px}
+.none .t{font:400 18px 'Instrument Serif',serif;display:flex;justify-content:space-between}
+.none .t span{font:10px 'Geist Mono',monospace;color:var(--ink-600)}
+.none p{font:italic 400 22px/1.3 'Instrument Serif',serif;color:var(--ink-200);margin:16px 0 14px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;background:var(--gold-bright);color:var(--ink-on-gold);font-weight:600;font-size:14px}
+
+/* Filter panel */
+.lbl{font:500 11px Geist,sans-serif;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-400);margin:0 0 12px;display:flex;justify-content:space-between;align-items:baseline}
+.lbl small{letter-spacing:.14em;color:var(--ink-600);font-size:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:40px;padding:0 16px;display:inline-flex;align-items:center;border-radius:999px;border:1px solid var(--line);background:var(--bg-elev-2);font-size:14px;color:var(--ink-200)}
+.chip.on{background:var(--gold-bright);border-color:transparent;color:var(--ink-on-gold);font-weight:600}
+.lines{margin-top:14px;padding:16px 18px;background:rgba(20,17,13,.3);border-left:2px solid var(--gold-deep)}
+.lines .hd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.lines .hd span{font:500 11px Geist,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+.lines .hd em{font-style:normal;font-size:12px;color:var(--ink-600)}
+.lchip{min-height:36px;padding:0 13px;display:inline-flex;align-items:center;border-radius:999px;border:1px solid var(--line);background:var(--bg-elev-2);font-size:13px;color:var(--ink-200)}
+.lchip.on{border-color:var(--gold);color:var(--gold-bright);background:rgba(201,149,74,.10)}
+.note{font-size:12px;color:var(--ink-600);margin-top:10px;line-height:1.45}
+.divider{height:1px;background:var(--line-soft);margin:24px 0}
+.ghost{opacity:.35}
+.seg{display:flex;border:1px solid var(--line-soft)}
+.seg span{flex:1;text-align:center;padding:11px;font-size:12px;color:var(--ink-400);border-right:1px solid var(--line-soft)}
+.seg span:last-child{border-right:0}
+.seg .on{background:linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom));color:var(--ink-on-gold);font-weight:600}
+.applied{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.applied span{font:500 11px 'Geist Mono',monospace;letter-spacing:.08em;color:var(--ink-200);border:0.5px solid var(--line);border-radius:999px;padding:5px 10px}
+
+table{border-collapse:collapse;width:100%;max-width:760px;margin:10px auto 0;font-size:14px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line-soft)}
+th{font:500 10px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-600)}
+td:first-child{color:var(--ink-200)}
+td.y{color:var(--gold-bright)}
+.q{max-width:760px;margin:24px auto 0;padding:18px 20px;border:1px solid var(--gold-deep);border-radius:12px;background:var(--bg-elev)}
+.q h3{margin:0 0 8px;font:italic 400 24px 'Instrument Serif',serif}
+.q ol{margin:0;padding-left:20px;color:var(--ink-200);line-height:1.7;font-size:14px}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="eyebrow">Mockup · for approval</div>
+  <h1>Spelling help + card company filter</h1>
+  <p class="lede">Two additions. Nothing else on the page changes. Shown on desktop and on a phone.</p>
+
+  <!-- 1 -->
+  <div class="sec"><div class="n">01</div><h2>Name suggestions while typing</h2>
+    <p>After 2 letters, a short list of matching players drops down under the landing search. Tap one to fill it in. Arrow keys and Enter work on desktop. It matches any part of the name, so "wemb" finds Wembanyama. Works offline, no extra cost.</p></div>
+  <div class="row">
+    <div class="col"><div class="frame desk">
+      <div class="h1s">Find the <em>one.</em></div>
+      <div class="search"><div class="val">wemb<span class="caret"></span></div><b>→</b></div>
+      <div class="dd">
+        <div class="it on"><span>Victor <mark>Wemb</mark>anyama</span><span class="sp">NBA</span></div>
+      </div>
+    </div><div class="cap">Desktop. Typing part of a last name.</div></div>
+
+    <div class="col"><div class="frame phone">
+      <div class="h1s">Find the <em>one.</em></div>
+      <div class="search"><div class="val">jo<span class="caret"></span></div><b>→</b></div>
+      <div class="dd">
+        <div class="it on"><span><mark>Jo</mark>sh Allen</span><span class="sp">NFL</span></div>
+        <div class="it"><span><mark>Jo</mark>sh Jung</span><span class="sp">MLB</span></div>
+        <div class="it"><span>Nikola <mark>Jo</mark>kic</span><span class="sp">NBA</span></div>
+        <div class="it"><span><mark>Jo</mark>e Burrow</span><span class="sp">NFL</span></div>
+        <div class="it"><span>Jalen <mark>Jo</mark>hnson</span><span class="sp">NBA</span></div>
+      </div>
+      <p class="note" style="text-align:center">Up to 6 rows, biggest names first. Big tap targets. Sport tag tells same-name players apart.</p>
+    </div><div class="cap">Phone, 375 wide.</div></div>
+  </div>
+
+  <!-- 2 -->
+  <div class="sec"><div class="n">02</div><h2>"Did you mean" while typing</h2>
+    <p>If the name looks misspelled, the top row offers the fix. Extra words like "prizm" or "auto" are kept.</p></div>
+  <div class="row">
+    <div class="col"><div class="frame desk">
+      <div class="search"><div class="val">wembenyama prizm<span class="caret"></span></div><b>→</b></div>
+      <div class="dd">
+        <div class="dym">Did you mean <strong>Wembanyama prizm</strong>?</div>
+        <div class="it"><span>Victor Wembanyama</span><span class="sp">NBA</span></div>
+      </div>
+    </div><div class="cap">Typo fixed, "prizm" kept.</div></div>
+    <div class="col"><div class="frame phone">
+      <div class="search"><div class="val">patrick mahommes<span class="caret"></span></div><b>→</b></div>
+      <div class="dd">
+        <div class="dym">Did you mean <strong>Patrick Mahomes</strong>?</div>
+      </div>
+    </div><div class="cap">Phone.</div></div>
+  </div>
+
+  <!-- 3 -->
+  <div class="sec"><div class="n">03</div><h2>On the results page</h2>
+    <p>One quiet line under the name if it looks misspelled. If nothing came back, the fix becomes a button. One tap reruns the search with the same filters. Clicking the name to edit it also gets the dropdown from 01.</p></div>
+  <div class="row">
+    <div class="col"><div class="frame desk">
+      <div class="meta">Results for</div>
+      <div class="rh">Wembenyama</div>
+      <div class="dymline">Did you mean <a href="#">Wembanyama</a>?<span class="x">✕</span></div>
+      <p class="note">Shown when we got some results but the name is likely a typo (sellers misspell too).</p>
+    </div><div class="cap">Some results came back.</div></div>
+    <div class="col"><div class="frame phone">
+      <div class="meta">Results for</div>
+      <div class="rh">Conor Bedord</div>
+      <div class="none">
+        <div class="t">No matches <span>00</span></div>
+        <p>Nothing found. Did you mean <span style="color:var(--gold-bright)">Connor Bedard</span>?</p>
+        <span class="btn">Search Connor Bedard →</span>
+      </div>
+    </div><div class="cap">Zero results: the fix is a button.</div></div>
+  </div>
+
+  <!-- 4 -->
+  <div class="sec"><div class="n">04</div><h2>Card company filter</h2>
+    <p>A new section in Filters, under Card Type. Pick one or more companies. After you pick one, its best-known product lines show up underneath. Lines are optional. Pick none and you get every card from that company. Off by default, so normal searches don't change.</p></div>
+  <div class="row">
+    <div class="col"><div class="frame desk">
+      <div class="lbl">Card Company <small>Any = all</small></div>
+      <div class="chips">
+        <span class="chip">Any</span><span class="chip on">Topps</span><span class="chip">Panini</span><span class="chip">Upper Deck</span><span class="chip">Leaf</span>
+      </div>
+      <div class="lines">
+        <div class="hd"><span>Topps lines</span><em>Optional</em></div>
+        <div class="chips">
+          <span class="lchip">Topps Chrome</span><span class="lchip on">Bowman</span><span class="lchip on">Bowman Chrome</span><span class="lchip">Bowman Draft</span><span class="lchip">Heritage</span><span class="lchip">Stadium Club</span><span class="lchip">Finest</span><span class="lchip">Update</span>
+        </div>
+        <p class="note">Bowman is made by Topps.</p>
+      </div>
+      <div class="divider"></div>
+      <div class="lbl">Listing Type</div>
+      <div class="seg ghost"><span class="on">Any</span><span>Buy It Now</span><span>Auction</span></div>
+    </div><div class="cap">Desktop filter panel. Topps picked, narrowed to two Bowman lines.</div></div>
+
+    <div class="col"><div class="frame phone">
+      <div class="lbl">Card Company</div>
+      <div class="chips">
+        <span class="chip">Any</span><span class="chip">Topps</span><span class="chip on">Panini</span><span class="chip">Upper Deck</span><span class="chip">Leaf</span>
+      </div>
+      <div class="lines">
+        <div class="hd"><span>Panini lines</span><em>Optional</em></div>
+        <div class="chips">
+          <span class="lchip on">Prizm</span><span class="lchip">Select</span><span class="lchip">Optic</span><span class="lchip">Mosaic</span><span class="lchip">Donruss</span><span class="lchip">National Treasures</span><span class="lchip">Contenders</span><span class="lchip">Flawless</span>
+        </div>
+        <p class="note">Prizm is made by Panini.</p>
+      </div>
+      <div class="divider"></div>
+      <div class="meta" style="margin-bottom:4px">After search, the filter shows with the others</div>
+      <div class="applied"><span>Auto</span><span>Panini · Prizm</span><span>/1–25</span></div>
+    </div><div class="cap">Phone filter drawer.</div></div>
+  </div>
+
+  <div class="sec"><div class="n">05</div><h2>Which companies and lines</h2>
+    <p>Matched on the listing title. No extra eBay calls.</p></div>
+  <table>
+    <tr><th>Company</th><th>Lines shown underneath</th></tr>
+    <tr><td>Topps</td><td>Topps Chrome, Bowman, Bowman Chrome, Bowman Draft, Heritage, Stadium Club, Finest, Update</td></tr>
+    <tr><td>Panini</td><td>Prizm, Select, Optic, Mosaic, Donruss, National Treasures, Contenders, Flawless</td></tr>
+    <tr><td>Upper Deck</td><td>Young Guns, SP Authentic, Artifacts, O-Pee-Chee, The Cup</td></tr>
+    <tr><td>Leaf</td><td>None (small catalog)</td></tr>
+  </table>
+
+  <div class="q">
+    <h3>Two choices for you</h3>
+    <ol>
+      <li>Keep <strong>Leaf</strong> as a company? It's small but shows up for prospects. (We'd keep it.)</li>
+      <li>Is the 8-line list per company right, or do you want different lines?</li>
+    </ol>
+  </div>
+</div>
+</body>
+</html>

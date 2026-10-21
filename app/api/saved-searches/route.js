@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabase } from '../../../lib/supabaseServer';
+import { brandFilterLabels } from '../../../lib/cardBrands';
 
 // Max searches that can be actively notifying at once (Base tier).
 // Must match MAX_ACTIVE_WATCHES in app/api/saved-searches/[id]/route.js.
@@ -130,6 +131,7 @@ function summarizeFilters(filters) {
   }
   if (filters.listingType === 'auction') parts.push('Auctions only');
   else if (filters.listingType === 'fixed') parts.push('Buy It Now only');
+  parts.push(...brandFilterLabels(filters.brands, filters.brandLines));
   const min = Number(filters.priceMin);
   const max = Number(filters.priceMax);
   if (Number.isFinite(min) && min > 0 && Number.isFinite(max) && max > 0) {
@@ -226,6 +228,8 @@ async function primeNotifications(request, savedSearch, filters) {
     priceMin: filters.priceMin ?? 0,
     priceMax: filters.priceMax === 5000 ? null : (filters.priceMax ?? 1000),
     sortBy: filters.sortBy ?? 'printrun-rarest',
+    brands: filters.brands ?? [],
+    brandLines: filters.brandLines ?? [],
   };
 
   const res = await fetch(`${origin}/api/search`, {

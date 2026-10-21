@@ -109,6 +109,13 @@ export default function SubscribePage() {
         });
         const data = await res.json();
 
+        if (data?.code === 'ANNUAL_UNAVAILABLE') {
+          setPlan('monthly');
+          setError('Annual billing is coming soon. Monthly is available now.');
+          setStage('choose');
+          return;
+        }
+
         if (!res.ok || !data.url) {
           throw new Error(data?.error || 'Could not open checkout');
         }
@@ -231,6 +238,9 @@ export default function SubscribePage() {
               Save unlimited searches. Get email alerts on up to 5 at a time, plus bid reminders. 14 days free, cancel anytime.
             </p>
             <PlanToggle plan={plan} setPlan={setPlan} prices={prices} />
+            {error && (
+              <p className="text-[12px] mb-4 leading-relaxed" style={{ color: '#d97757' }}>{error}</p>
+            )}
             <button
               onClick={handleWebCheckout}
               className="w-full min-h-[44px] rounded-[8px] text-[12px] font-bold uppercase tracking-[0.14em]"

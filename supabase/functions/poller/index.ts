@@ -203,7 +203,17 @@ Deno.serve(async (_req) => {
           }
         }
         if (rows.length > 0) {
-          await supabase.from("sent_notifications").insert(rows);
+          // The email is already out, so a failed log write would resend the
+          // same listings next run. Retry once; if it still fails, record it
+          // and carry on (the cadence stamp below still applies).
+          let { error: logError } = await supabase.from("sent_notifications").insert(rows);
+          if (logError) {
+            ({ error: logError } = await supabase.from("sent_notifications").insert(rows));
+          }
+          if (logError) {
+            console.error(`sent_notifications insert failed for ${digest.userId}:`, logError.message);
+            errors.push(`Log sent for ${digest.email}: ${logError.message}`);
+          }
         }
         // Stamp the send so daily/weekly cadences can measure from it.
         await supabase
@@ -550,6 +560,9 @@ async function callAppSearch(query: string, filters: Record<string, unknown>): P
     priceMin: filters.priceMin ?? 0,
     priceMax: filters.priceMax === 5000 ? null : (filters.priceMax ?? 1000),
     sortBy: filters.sortBy ?? "printrun-rarest",
+    // Card company filter (lib/cardBrands.js). Empty = off.
+    brands: (filters.brands as string[]) ?? [],
+    brandLines: (filters.brandLines as string[]) ?? [],
   };
 
   const res = await fetch(url, {

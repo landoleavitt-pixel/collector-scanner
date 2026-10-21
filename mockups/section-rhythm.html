@@ -105,7 +105,8 @@ h1.t{font:italic 400 44px/1 'Instrument Serif',serif;margin:10px 0 8px}
 .phone .how-head p{margin-top:10px;font-size:14px}
 .phone .steps{grid-template-columns:1fr}
 .phone .stp{border-right:0;margin-right:0;padding:20px 0 18px;border-bottom:1px solid var(--line-soft);display:grid;grid-template-columns:52px 1fr;column-gap:14px}
-.phone .num{font-size:44px;grid-row:span 3}
+.phone .num{font-size:44px;grid-row:1 / span 9}
+.phone .stp > *:not(.num){grid-column:2}
 .phone .stp h4{margin-top:2px;font-size:21px}
 .phone .stp p{font-size:14px;margin-bottom:12px}
 .phone .band .inner{display:block;padding-top:28px;padding-bottom:28px}

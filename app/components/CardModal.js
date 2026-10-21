@@ -22,6 +22,7 @@
 //                   loads but the listing is no longer in results)
 
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { ArrowUpRight, X, Star } from 'lucide-react';
 import RarityTree from './RarityTree';
 import CardImageCarousel from './CardImageCarousel';
@@ -39,7 +40,16 @@ function upscalePrimary(url) {
   return url.replace(/\/s-l\d+\.(\w+)/, '/s-l1600.$1');
 }
 
-export default function CardModal({ item, printRun, onClose, expired = false }) {
+// Rendered into document.body so the popup sits above the site header. Inside
+// the page's <main z-10> it could never stack over the header (z-20).
+export default function CardModal(props) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+  return createPortal(<CardModalInner {...props} />, document.body);
+}
+
+function CardModalInner({ item, printRun, onClose, expired = false }) {
   const cardRef = useRef(null);       // inner card — handles tilt (rotateX/Y)
   const flipRef = useRef(null);       // wrapper — handles flight (translate/scale)
   const overlayRef = useRef(null);

@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og';
+import { brandFilterLabels } from '../../../lib/cardBrands';
 
 // Generates the link-preview image for a shared search.
 //
@@ -51,6 +52,8 @@ export async function GET(request) {
     const type = searchParams.get('type');
     if (type === 'auction') toggles.push('Auctions');
     else if (type === 'buyItNow') toggles.push('Buy It Now');
+    const list = (k) => (searchParams.get(k) || '').split(',').filter(Boolean);
+    toggles.push(...brandFilterLabels(list('brands'), list('lines')));
 
     const min = Number(searchParams.get('min'));
     const max = Number(searchParams.get('max'));

@@ -19,6 +19,7 @@ import { tierForRun, tierChipStyle, OUTLINE_CHIP_STYLE } from './components/rari
 import ShareSearchButton from './components/ShareSearchButton';
 import { isReturningVisitor, markVisited, getRecentSearches, addRecentSearch } from '../lib/visitState';
 import { hasShareParams, parseShareParams } from '../lib/shareLink';
+import { CARD_COMPANIES, brandFilterLabels } from '../lib/cardBrands';
 import { WatchlistContext, WatchlistProvider } from '../lib/watchlistContext';
 import { useUser } from '../lib/useUser';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -311,6 +312,8 @@ function Home() {
     priceMin: 0,
     priceMax: 1000,
     sortBy: 'printrun-rarest',
+    brands: [],           // card companies, e.g. ['topps'] — lib/cardBrands.js
+    brandLines: [],       // optional product lines within them, e.g. ['bowman-chrome']
   });
 
   // Snapshot of which filter values are currently APPLIED (i.e., reflected
@@ -330,6 +333,7 @@ function Home() {
     const compareKeys = [
       'autoCards', 'numberedCards', 'selectedPrintRuns', 'customPrintRuns',
       'rookieCards', 'listingType', 'condition', 'priceMin', 'priceMax',
+      'brands', 'brandLines',
     ];
     for (const k of compareKeys) {
       if (JSON.stringify(filters[k]) !== JSON.stringify(appliedFilters[k])) return true;
@@ -536,6 +540,19 @@ function Home() {
 
   const setFilter = (key, value) => setFilters((f) => ({ ...f, [key]: value }));
 
+  // "Did you mean" for the searched name (lib/playerSuggest.js, loaded lazily).
+  // Only a suggestion: the search always runs exactly as typed.
+  const playerSuggest = usePlayerSuggest();
+  const [dismissedFix, setDismissedFix] = useState(null);
+  const nameFix = useMemo(
+    () => (playerSuggest && appStage === 'searched' ? playerSuggest.didYouMean(query) : null),
+    [playerSuggest, appStage, query],
+  );
+  function searchFix(fixed) {
+    setQuery(fixed);
+    handleSearch(fixed);
+  }
+
   // Build the tier/filter chips for the save modal.
   // Maps the in-app filter shape into the simplified tier system used in the
   // modal + watchlist. Print-run tiers are derived from which preset runs are selected.
@@ -563,6 +580,7 @@ function Home() {
     if (filters.condition === 'raw') chips.push({ label: 'Raw', tier: 'neutral' });
     if (filters.listingType === 'buyItNow') chips.push({ label: 'Buy It Now', tier: 'neutral' });
     if (filters.listingType === 'auction') chips.push({ label: 'Auction', tier: 'neutral' });
+    brandFilterLabels(filters.brands, filters.brandLines).forEach((label) => chips.push({ label, tier: 'neutral' }));
 
     const min = filters.priceMin || 0;
     const max = filters.priceMax ?? 1000;
@@ -627,6 +645,8 @@ function Home() {
           priceMin: f.priceMin,
           priceMax: f.priceMax === 5000 ? null : f.priceMax,
           sortBy: f.sortBy,
+          brands: f.brands || [],
+          brandLines: f.brandLines || [],
         }),
       });
       const data = await res.json();
@@ -856,6 +876,15 @@ function Home() {
                   handleSearch(trimmed);
                 }}
               />
+              {/* Quiet typo hint. With zero results, NoResultsState shows it
+                  as a button instead, so it's hidden here. */}
+              {nameFix && !loading && sortedResults.length > 0 && dismissedFix !== query && (
+                <DidYouMeanLine
+                  fix={nameFix.query}
+                  onPick={() => searchFix(nameFix.query)}
+                  onDismiss={() => setDismissedFix(query)}
+                />
+              )}
               <p className="text-[12px] uppercase tracking-[0.22em] mt-3" style={{ color: 'var(--ink-400)' }}>
                 <span style={{ color: 'var(--gold)' }} className="italic normal-case tracking-normal">
                   {sortedResults.length}
@@ -936,6 +965,8 @@ function Home() {
               hasPendingFilters={filtersDifferFromApplied()}
               onPendingClick={() => setPendingSearchOpen(true)}
               onCardClick={openCard}
+              nameFix={nameFix?.query || null}
+              onNameFix={searchFix}
             />
           </div>
 
@@ -1173,6 +1204,8 @@ function announceIntroDone() {
 const useLayoutEffectSafe = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSearch, user, onCardClick, isReturning, recentSearches = [] }) {
+  // Player-name dropdown under the search field. Picking fills the field.
+  const suggest = useSuggestBox(query, (v) => setQuery(v));
   return (
     <section className="relative border-b border-[var(--line-soft)] overflow-hidden">
       {/* Gold bloom behind the featured card — top-centre on mobile, right
@@ -1220,6 +1253,7 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
           {/* Search — a solid gold-edged field with a gold go button. */}
           <div className="mt-7 md:mt-9 rise" style={{ animationDelay: '380ms' }}>
             <div
+              ref={suggest.anchorRef}
               className="relative flex items-center rounded-2xl transition-colors focus-within:border-[var(--gold)]"
               style={{
                 border: '0.5px solid var(--gold-deep)',
@@ -1230,8 +1264,14 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
               <input
                 type="text"
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && !loading && onSearch()}
+                onChange={(e) => { setQuery(e.target.value); suggest.openBox(); }}
+                onKeyDown={(e) => {
+                  if (suggest.handleKey(e)) return;
+                  if (e.key === 'Enter' && !loading) { suggest.close(); onSearch(); }
+                }}
+                onFocus={suggest.openBox}
+                onBlur={suggest.close}
+                {...suggest.inputProps}
                 disabled={loading}
                 aria-label="Search a player"
                 className="relative w-full pl-5 pr-16 py-4 md:py-5 bg-transparent border-0 text-xl md:text-2xl font-display text-[var(--ink-100)] focus:outline-none"
@@ -1247,6 +1287,7 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
                 <ArrowRight className="w-5 h-5" strokeWidth={2} />
               </button>
             </div>
+            {suggest.dropdown}
             {error && <p className="mt-3 text-xs text-[var(--crit)]">{error}</p>}
           </div>
 
@@ -1847,6 +1888,8 @@ function EditableSearchHeading({ value, onSubmit }) {
   const [editing, setEditing] = useState(false);
   const [pending, setPending] = useState(value);
   const inputRef = useRef(null);
+  // Picking a suggested name runs that search straight away.
+  const suggest = useSuggestBox(pending, (v) => { setPending(v); setEditing(false); onSubmit(v); });
 
   // Keep local pending state in sync if parent's query changes externally
   // (e.g. after a chip-search from the hero or a saved-search deep link).
@@ -1871,16 +1914,19 @@ function EditableSearchHeading({ value, onSubmit }) {
 
   if (editing) {
     return (
+      <div ref={suggest.anchorRef}>
       <input
         ref={inputRef}
         type="text"
         value={pending}
-        onChange={(e) => setPending(e.target.value)}
+        onChange={(e) => { setPending(e.target.value); suggest.openBox(); }}
         onKeyDown={(e) => {
+          if (suggest.handleKey(e)) return;
           if (e.key === 'Enter') { e.preventDefault(); commit(); }
           else if (e.key === 'Escape') { e.preventDefault(); cancel(); }
         }}
-        onBlur={commit}
+        {...suggest.inputProps}
+        onBlur={() => { suggest.close(); commit(); }}
         className="font-display italic w-full bg-transparent border-0 border-b outline-none p-0 m-0"
         style={{
           fontSize: 'clamp(2rem, 5.5vw, 3.6rem)',
@@ -1890,6 +1936,8 @@ function EditableSearchHeading({ value, onSubmit }) {
           borderBottomColor: 'var(--gold)',
         }}
       />
+      {suggest.dropdown}
+      </div>
     );
   }
 
@@ -2081,6 +2129,11 @@ function FilterControls({ filters, setFilter, compact = false }) {
           </div>
         )}
       </div>
+
+      <SectionDivider />
+
+      {/* Card company — optional, off by default (title match on the server) */}
+      <CardCompanyFilter filters={filters} setFilter={setFilter} />
 
       <SectionDivider />
 
@@ -2414,6 +2467,7 @@ function countActiveFilters(f) {
   if (f.condition && f.condition !== 'any') n++;
   if (f.listingType && f.listingType !== 'any') n++;
   if ((f.priceMin ?? 0) > 0 || (f.priceMax ?? 1000) < 1000) n++;
+  if (f.brands?.length) n++;
   return n;
 }
 
@@ -3155,7 +3209,7 @@ function BackToTop() {
 
 const PAGE_DISPLAY_SIZE = 200; // how many cards to render at once
 
-function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase, onSuggested, appliedFilters, resultMeta, hasPendingFilters, onPendingClick, onCardClick }) {
+function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase, onSuggested, appliedFilters, resultMeta, hasPendingFilters, onPendingClick, onCardClick, nameFix = null, onNameFix }) {
   // How many cards are currently shown. Resets to the first page whenever a new
   // result set arrives (keyed on result count + first id below).
   const [shown, setShown] = useState(PAGE_DISPLAY_SIZE);
@@ -3169,7 +3223,7 @@ function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase
   if (loading) return <LoadingState phrase={scanPhrase} />;
   if (!hasSearched) return <ResolveState onSuggested={onSuggested} />;
   if (!loading && hasSearched && results.length === 0 && !error)
-    return <NoResultsState onSuggested={onSuggested} appliedFilters={appliedFilters} />;
+    return <NoResultsState onSuggested={onSuggested} appliedFilters={appliedFilters} nameFix={nameFix} onNameFix={onNameFix} />;
 
   const capped = resultMeta?.capped;
   const visible = results.slice(0, shown);
@@ -3661,16 +3715,366 @@ function LoadingState({ phrase }) {
   );
 }
 
-function NoResultsState({ onSuggested, appliedFilters }) {
+function NoResultsState({ onSuggested, appliedFilters, nameFix = null, onNameFix }) {
   return (
     <div className="pt-2">
       <div className="flex items-baseline justify-between pb-4 mb-8 border-b border-[var(--line)]">
         <span className="font-display text-lg">No matches</span>
         <span className="font-mono text-[10px] text-[var(--ink-600)] tracking-wider">00</span>
       </div>
-      <p className="font-display italic text-2xl text-[var(--ink-200)] leading-snug text-balance max-w-md">
-        No results found with your current filters. Adjust them and try again.
-      </p>
+      {nameFix ? (
+        <>
+          <p className="font-display italic text-2xl text-[var(--ink-200)] leading-snug text-balance max-w-md">
+            Nothing found. Did you mean <span style={{ color: 'var(--gold-bright)' }}>{nameFix}</span>?
+          </p>
+          <button
+            type="button"
+            onClick={() => onNameFix?.(nameFix)}
+            className="mt-5 inline-flex items-center gap-2 rounded-full text-[14px] font-semibold transition-opacity hover:opacity-90"
+            style={{ minHeight: 44, padding: '0 18px', background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}
+          >
+            Search {nameFix} <ArrowRight className="w-4 h-4" strokeWidth={2} />
+          </button>
+        </>
+      ) : (
+        <p className="font-display italic text-2xl text-[var(--ink-200)] leading-snug text-balance max-w-md">
+          No results found with your current filters. Adjust them and try again.
+        </p>
+      )}
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   Player-name help — autocomplete + "Did you mean".
+   The matcher and player list (lib/playerSuggest.js) load lazily after
+   first paint, so they never slow the landing page. Until they arrive the
+   search box simply works without suggestions.
+   ───────────────────────────────────────────── */
+let playerSuggestModule = null;
+function usePlayerSuggest() {
+  const [mod, setMod] = useState(null);
+  useEffect(() => {
+    let alive = true;
+    playerSuggestModule = playerSuggestModule || import('../lib/playerSuggest');
+    playerSuggestModule.then((m) => { if (alive) setMod(m); }).catch(() => {});
+    return () => { alive = false; };
+  }, []);
+  return mod;
+}
+
+/* Wires a text input to the suggestion dropdown. Returns props/handlers for
+   the input, a ref for the element the dropdown sits under, and the
+   dropdown itself (portalled to <body> so overflow-hidden parents never
+   clip it). */
+function useSuggestBox(value, onPick) {
+  const mod = usePlayerSuggest();
+  const anchorRef = useRef(null);
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(-1);
+  const [rect, setRect] = useState(null);
+
+  const rows = useMemo(() => {
+    if (!mod || !open) return [];
+    const typed = mod.normalizeName(value);
+    if (typed.length < 2) return [];
+    let players = mod.suggestPlayers(value, 6);
+    // Mid-word ("wemb") isn't a typo: skip the fix while the last word is
+    // still the start of a name we're suggesting.
+    const lastWord = typed.split(' ').pop();
+    const stillTyping = players.some((p) => mod.normalizeName(p.name).split(' ').some((t) => t !== lastWord && t.startsWith(lastWord)));
+    const fix = stillTyping ? null : mod.didYouMean(value);
+    // The fixed player's full name, if typing hasn't already surfaced it.
+    if (fix?.sport && !players.some((p) => p.name === fix.name)) players = [{ name: fix.name, sport: fix.sport }, ...players];
+    players = players.filter((p) => !fix || mod.normalizeName(p.name) !== mod.normalizeName(fix.query));
+    const list = [
+      ...(fix ? [{ kind: 'fix', value: fix.query }] : []),
+      ...players.map((p) => ({ kind: 'player', value: p.name, sport: p.sport })),
+    ].slice(0, 6);
+    // Nothing to offer if the only row is exactly what's typed.
+    if (list.length === 1 && mod.normalizeName(list[0].value) === typed) return [];
+    return list;
+  }, [mod, open, value]);
+
+  useEffect(() => { setActive(-1); }, [value]);
+
+  const visible = open && rows.length > 0;
+  useLayoutEffect(() => {
+    if (!visible) return;
+    const update = () => {
+      const r = anchorRef.current?.getBoundingClientRect();
+      if (r) setRect({ left: r.left + window.scrollX, top: r.bottom + window.scrollY, width: r.width });
+    };
+    update();
+    window.addEventListener('resize', update);
+    window.addEventListener('scroll', update, true);
+    return () => {
+      window.removeEventListener('resize', update);
+      window.removeEventListener('scroll', update, true);
+    };
+  }, [visible, rows.length]);
+
+  const pick = (v) => { setOpen(false); onPick(v); };
+
+  // Returns true when the key was used by the dropdown.
+  function handleKey(e) {
+    if (!visible) return false;
+    if (e.key === 'ArrowDown') { e.preventDefault(); setActive((i) => (i + 1) % rows.length); return true; }
+    if (e.key === 'ArrowUp') { e.preventDefault(); setActive((i) => (i <= 0 ? rows.length - 1 : i - 1)); return true; }
+    if (e.key === 'Enter' && active >= 0) { e.preventDefault(); pick(rows[active].value); return true; }
+    if (e.key === 'Escape') { e.preventDefault(); setOpen(false); return true; }
+    return false;
+  }
+
+  const listId = useMemo(() => `ff-suggest-${Math.random().toString(36).slice(2, 8)}`, []);
+  const dropdown = visible && rect && typeof document !== 'undefined'
+    ? createPortal(
+        <PlayerSuggestDropdown
+          id={listId}
+          rows={rows}
+          active={active}
+          typed={value}
+          rect={rect}
+          onHover={setActive}
+          onPick={pick}
+        />,
+        document.body,
+      )
+    : null;
+
+  return {
+    anchorRef,
+    dropdown,
+    handleKey,
+    openBox: () => setOpen(true),
+    close: () => setOpen(false),
+    inputProps: {
+      role: 'combobox',
+      'aria-autocomplete': 'list',
+      'aria-expanded': visible,
+      'aria-controls': visible ? listId : undefined,
+      'aria-activedescendant': visible && active >= 0 ? `${listId}-${active}` : undefined,
+      autoComplete: 'off',
+      spellCheck: false,
+    },
+  };
+}
+
+// Wrap the typed words where they start a word in the name.
+function highlightTyped(name, typed) {
+  const words = String(typed || '').trim().split(/\s+/).filter(Boolean)
+    .map((w) => w.replace(/[^\p{L}\p{N}'.-]/gu, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+    .filter(Boolean);
+  if (!words.length) return name;
+  const re = new RegExp(`(^|[\\s'-])(${words.join('|')})`, 'gi');
+  const out = [];
+  let last = 0;
+  name.replace(re, (m, pre, word, idx) => {
+    const start = idx + pre.length;
+    if (start > last) out.push(name.slice(last, start));
+    out.push(<mark key={start} style={{ background: 'none', color: 'var(--gold-bright)', fontWeight: 500 }}>{word}</mark>);
+    last = start + word.length;
+    return m;
+  });
+  if (last < name.length) out.push(name.slice(last));
+  return out;
+}
+
+function PlayerSuggestDropdown({ id, rows, active, typed, rect, onHover, onPick }) {
+  const width = Math.min(Math.max(rect.width, 280), 560);
+  return (
+    <ul
+      id={id}
+      role="listbox"
+      aria-label="Player suggestions"
+      className="overflow-hidden"
+      style={{
+        position: 'absolute',
+        left: rect.left,
+        top: rect.top + 8,
+        width,
+        maxWidth: 'calc(100vw - 32px)',
+        zIndex: 60,
+        margin: 0,
+        padding: 0,
+        listStyle: 'none',
+        borderRadius: 12,
+        border: '0.5px solid var(--line)',
+        background: 'var(--bg-elev)',
+        boxShadow: '0 18px 40px rgba(0,0,0,0.55)',
+        fontFamily: 'Geist, system-ui, sans-serif',
+        fontStyle: 'normal',
+      }}
+    >
+      {rows.map((row, i) => {
+        const on = i === active;
+        return (
+          <li
+            key={`${row.kind}-${row.value}-${row.sport || ''}`}
+            id={`${id}-${i}`}
+            role="option"
+            aria-selected={on}
+            // mousedown, not click: keeps focus in the input so blur doesn't
+            // close the list (or commit the heading) before the pick lands.
+            onMouseDown={(e) => { e.preventDefault(); onPick(row.value); }}
+            onMouseEnter={() => onHover(i)}
+            className="flex items-center justify-between gap-3 cursor-pointer"
+            style={{
+              minHeight: 48,
+              padding: '0 16px',
+              fontSize: row.kind === 'fix' ? 14 : 15,
+              color: row.kind === 'fix' ? 'var(--ink-400)' : on ? 'var(--ink-100)' : 'var(--ink-200)',
+              background: on || row.kind === 'fix' ? 'var(--bg-elev-2)' : 'transparent',
+              borderBottom: i < rows.length - 1 ? '0.5px solid var(--line-soft)' : 'none',
+            }}
+          >
+            {row.kind === 'fix' ? (
+              <span>
+                Did you mean <strong style={{ color: 'var(--gold-bright)', fontWeight: 500 }}>{row.value}</strong>?
+              </span>
+            ) : (
+              <>
+                <span className="truncate">{highlightTyped(row.value, typed)}</span>
+                <span
+                  className="font-mono uppercase flex-none rounded-full"
+                  style={{ fontSize: 10, letterSpacing: '0.14em', color: 'var(--ink-600)', border: '0.5px solid var(--line)', padding: '3px 8px' }}
+                >
+                  {row.sport}
+                </span>
+              </>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+/* One quiet line under the results heading when the name looks misspelled. */
+function DidYouMeanLine({ fix, onPick, onDismiss }) {
+  return (
+    <p className="mt-3 text-[15px]" style={{ color: 'var(--ink-400)' }}>
+      Did you mean{' '}
+      <button
+        type="button"
+        onClick={onPick}
+        className="transition-colors hover:text-[var(--ink-100)]"
+        style={{ color: 'var(--gold-bright)', borderBottom: '0.5px solid var(--gold-deep)' }}
+      >
+        {fix}
+      </button>
+      ?
+      <button
+        type="button"
+        onClick={onDismiss}
+        aria-label="Dismiss suggestion"
+        className="ml-2 text-[12px] px-1 transition-colors hover:text-[var(--ink-200)]"
+        style={{ color: 'var(--ink-600)' }}
+      >
+        ✕
+      </button>
+    </p>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   Card company filter — pick companies, then optionally narrow to their
+   product lines. Matching happens on the listing title (lib/cardBrands.js).
+   ───────────────────────────────────────────── */
+const COMPANY_NOTES = {
+  topps: 'Bowman is made by Topps.',
+  panini: 'Prizm is made by Panini.',
+  'upper-deck': 'Young Guns is made by Upper Deck.',
+};
+
+function CardCompanyFilter({ filters, setFilter }) {
+  const brands = Array.isArray(filters.brands) ? filters.brands : [];
+  const lines = Array.isArray(filters.brandLines) ? filters.brandLines : [];
+
+  function toggleCompany(key) {
+    if (brands.includes(key)) {
+      const company = CARD_COMPANIES.find((c) => c.key === key);
+      const own = new Set(company.lines.map((l) => l.key));
+      setFilter('brands', brands.filter((k) => k !== key));
+      setFilter('brandLines', lines.filter((k) => !own.has(k)));
+    } else {
+      setFilter('brands', [...brands, key]);
+    }
+  }
+  function toggleLine(key) {
+    setFilter('brandLines', lines.includes(key) ? lines.filter((k) => k !== key) : [...lines, key]);
+  }
+  function clearAll() {
+    setFilter('brands', []);
+    setFilter('brandLines', []);
+  }
+
+  const chip = (on) => ({
+    minHeight: 40,
+    padding: '0 16px',
+    fontSize: 14,
+    border: `1px solid ${on ? 'transparent' : 'var(--line)'}`,
+    background: on ? 'var(--gold-bright)' : 'var(--bg-elev-2)',
+    color: on ? 'var(--ink-on-gold)' : 'var(--ink-200)',
+    fontWeight: on ? 600 : 400,
+  });
+
+  return (
+    <div>
+      <SectionLabel>Card Company</SectionLabel>
+      <div className="flex flex-wrap gap-2">
+        <button type="button" onClick={clearAll} aria-pressed={brands.length === 0} className="inline-flex items-center rounded-full transition-colors" style={chip(brands.length === 0)}>
+          Any
+        </button>
+        {CARD_COMPANIES.map((c) => {
+          const on = brands.includes(c.key);
+          return (
+            <button key={c.key} type="button" onClick={() => toggleCompany(c.key)} aria-pressed={on} className="inline-flex items-center rounded-full transition-colors" style={chip(on)}>
+              {c.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {CARD_COMPANIES.filter((c) => brands.includes(c.key) && c.lines.length > 0).map((c) => (
+        <div
+          key={c.key}
+          className="mt-4 rise"
+          style={{ animationDuration: '0.4s', padding: '16px 18px', background: 'rgba(20,17,13,0.3)', borderLeft: '2px solid var(--gold-deep)' }}
+        >
+          <div className="flex items-baseline justify-between mb-3">
+            <span className="text-[11px] uppercase tracking-[0.22em] font-medium" style={{ color: 'var(--gold)' }}>{c.label} lines</span>
+            <span className="text-[12px]" style={{ color: 'var(--ink-600)' }}>Optional</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {c.lines.map((l) => {
+              const on = lines.includes(l.key);
+              return (
+                <button
+                  key={l.key}
+                  type="button"
+                  onClick={() => toggleLine(l.key)}
+                  aria-pressed={on}
+                  className="inline-flex items-center rounded-full transition-colors"
+                  style={{
+                    minHeight: 36,
+                    padding: '0 13px',
+                    fontSize: 13,
+                    border: `1px solid ${on ? 'var(--gold)' : 'var(--line)'}`,
+                    background: on ? 'rgba(201,149,74,0.10)' : 'var(--bg-elev-2)',
+                    color: on ? 'var(--gold-bright)' : 'var(--ink-200)',
+                  }}
+                >
+                  {l.label}
+                </button>
+              );
+            })}
+          </div>
+          {COMPANY_NOTES[c.key] && (
+            <p className="text-[12px] mt-3 leading-snug" style={{ color: 'var(--ink-600)' }}>{COMPANY_NOTES[c.key]}</p>
+          )}
+        </div>
+      ))}
     </div>
   );
 }

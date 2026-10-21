@@ -9,6 +9,7 @@
 //   https://developer.ebay.com/api-docs/static/oauth-client-credentials-grant.html
 
 import { NextResponse } from 'next/server';
+import { makeBrandMatcher, brandQueryTerms } from '../../../lib/cardBrands';
 
 const EBAY_OAUTH_URL = 'https://api.ebay.com/identity/v1/oauth2/token';
 const EBAY_SEARCH_URL = 'https://api.ebay.com/buy/browse/v1/item_summary/search';
@@ -227,6 +228,16 @@ function buildSearchParams(criteria) {
     } else if (runs.length > 1) {
       parts.push('(' + runs.map((r) => `"${r}"`).join(', ') + ')');
     }
+  }
+
+  // Card company filter: nudge eBay toward the chosen brands with one OR
+  // group, so broad searches don't spend the page ceiling on other brands.
+  // Same number of eBay calls. The title check after the fetch is the real
+  // filter; this is skipped if it would push q past eBay's 100-char limit.
+  const brandTerms = brandQueryTerms(criteria.brands, criteria.brandLines);
+  if (brandTerms) {
+    const withBrands = [...parts, brandTerms].filter(Boolean).join(' ');
+    if (withBrands.length <= 100) parts.push(brandTerms);
   }
 
   const q = parts.filter(Boolean).join(' ');
@@ -674,6 +685,15 @@ export async function POST(req) {
       console.log(`Condition verify (${criteria.condition}): ${before} → ${items.length}`);
     }
 
+    // Card company filter — title match only (lib/cardBrands.js). Off when
+    // no company is selected, so existing searches are untouched.
+    const brandMatch = makeBrandMatcher(criteria.brands, criteria.brandLines);
+    if (brandMatch) {
+      const before = items.length;
+      items = items.filter((it) => brandMatch(it.title));
+      console.log(`Brand verify: ${before} → ${items.length}`);
+    }
+
     // `total` = how many matched after our filters (what the user sees).
     // `ebayTotal` = how many eBay reported for the raw query before filtering.
     // `capped` = true when eBay had more raw listings than our page ceiling
@@ -690,7 +710,7 @@ export async function POST(req) {
   } catch (err) {
     console.error('Search route error:', err);
     return NextResponse.json(
-      { error: err.message || 'Unexpected server error.' },
+      { error: 'Search is temporarily unavailable. Please try again.' },
       { status: 500 },
     );
   }

@@ -1,4 +1,5 @@
 import HomePage from '../page';
+import { brandFilterLabels } from '../../lib/cardBrands';
 
 // Landing route for shared search links.
 //
@@ -28,6 +29,8 @@ function describe(searchParams) {
   else if (searchParams?.cond === 'raw') bits.push('Raw');
   if (searchParams?.type === 'auction') bits.push('Auctions');
   else if (searchParams?.type === 'buyItNow') bits.push('Buy It Now');
+  const list = (v) => String(v || '').split(',').filter(Boolean);
+  bits.push(...brandFilterLabels(list(searchParams?.brands), list(searchParams?.lines)));
   return bits.join(' · ');
 }
 
@@ -38,7 +41,7 @@ export async function generateMetadata({ searchParams }) {
   // Rebuild the exact param string for the OG image so the preview matches
   // the search the recipient will actually see.
   const ogParams = new URLSearchParams();
-  for (const key of ['q', 'runs', 'auto', 'rc', 'type', 'cond', 'min', 'max']) {
+  for (const key of ['q', 'runs', 'auto', 'rc', 'type', 'cond', 'min', 'max', 'brands', 'lines']) {
     if (sp[key]) ogParams.set(key, String(sp[key]));
   }
   const ogUrl = `https://fieldsandfloors.com/api/og?${ogParams.toString()}`;
