@@ -4,10 +4,10 @@ import { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import Link from 'next/link';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import Seal from './Seal';
-import { tierChipStyle, OUTLINE_CHIP_STYLE } from './rarityUtils';
+import { tierChipStyle, tierRowStyle, OUTLINE_CHIP_STYLE } from './rarityUtils';
 import { isNativeApp } from '../../lib/native';
 
-/* SiteTour — a five-step walkthrough for first-time visitors.
+/* SiteTour — a six-step walkthrough for first-time visitors.
  *
  * When it shows:
  *   - Automatically, once per browser (or app install), on a plain landing on
@@ -96,13 +96,6 @@ function SearchArt({ lg }) {
   );
 }
 
-const TOUR_TIERS = [
-  { tier: 'grail', label: 'The Grail' },
-  { tier: 'ultra', label: 'Ultra Rare' },
-  { tier: 'rare', label: 'Rare' },
-  { tier: 'scarce', label: 'Scarce' },
-];
-
 function FilterArt({ lg }) {
   const chip = `font-mono tracking-[0.04em] rounded-full ${lg ? 'text-[13px] px-3 py-2' : 'text-[11px] px-2.5 py-1.5'}`;
   return (
@@ -110,14 +103,60 @@ function FilterArt({ lg }) {
       {['Autographed', 'Rookie', 'Numbered'].map((label) => (
         <span key={label} className={chip} style={OUTLINE_CHIP_STYLE}>{label}</span>
       ))}
-      {TOUR_TIERS.map(({ tier, label }) => (
-        <span key={tier} className={chip} style={tierChipStyle(tier)}>{label}</span>
-      ))}
-      {!lg && (
-        <span className={chip} style={{ color: 'var(--ink-400)', border: '0.5px solid var(--line)' }}>
-          Under $300
+      {['≤ /25', 'Under $300', 'Buy It Now'].map((label) => (
+        <span key={label} className={chip} style={{ color: 'var(--ink-400)', border: '0.5px solid var(--line)' }}>
+          {label}
         </span>
+      ))}
+    </div>
+  );
+}
+
+// Mini search results: one numbered card per tier, tinted the way real
+// result rows are (tierRowStyle) with the print-run chip in tier colour.
+const TOUR_RESULTS = [
+  { tier: 'grail', run: 10, title: 'Bowman Chrome Gold Auto', price: '$1,240' },
+  { tier: 'ultra', run: 75, title: 'Topps Chrome Refractor', price: '$310' },
+  { tier: 'rare', run: 150, title: 'Bowman Draft Blue Auto', price: '$95' },
+  { tier: 'scarce', run: 499, title: 'Prizm Silver', price: '$38' },
+];
+
+function TierArt({ lg }) {
+  return (
+    <div className="w-full">
+      {lg && (
+        <div className="flex items-baseline justify-between mb-2.5 px-1">
+          <span className="font-display italic text-[20px] text-[var(--ink-100)]">Cooper Flagg</span>
+          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--ink-400)]">4 results</span>
+        </div>
       )}
+      <div
+        className={`overflow-hidden ${lg ? 'rounded-xl' : 'rounded-lg'}`}
+        style={{ background: 'var(--bg-base)', border: '0.5px solid var(--line)' }}
+      >
+        {TOUR_RESULTS.map(({ tier, run, title, price }, i) => (
+          <div
+            key={tier}
+            className={`flex items-center gap-2.5 ${lg ? 'py-2.5 pl-3 pr-2.5' : 'py-[5px] pl-2.5 pr-2'}`}
+            style={{ ...tierRowStyle(tier), borderTop: i ? '0.5px solid var(--line-soft)' : undefined }}
+          >
+            <div
+              className={`rounded-[2px] flex-none ${lg ? 'w-[30px] h-[42px]' : 'w-[18px] h-[25px]'}`}
+              style={{ background: 'linear-gradient(145deg, var(--line), var(--gold-deep) 50%, var(--line-soft))' }}
+            />
+            <div className="flex-1 min-w-0">
+              <div className={`truncate text-[var(--ink-200)] ${lg ? 'text-[13.5px]' : 'text-[11.5px]'}`}>{title}</div>
+              <div className={`font-mono text-[var(--gold)] ${lg ? 'text-[12px] mt-0.5' : 'text-[10px]'}`}>{price}</div>
+            </div>
+            <span
+              className={`font-mono rounded-full flex-none ${lg ? 'text-[12px] px-2.5 py-1' : 'text-[10px] px-2 py-0.5'}`}
+              style={tierChipStyle(tier)}
+            >
+              /{run}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -216,8 +255,15 @@ const STEPS = [
   {
     label: 'Filters',
     title: 'Stack what eBay won’t.',
-    text: 'Autographed, rookie, numbered to 25 or lower, under $300, all at once. Print runs are sorted into tiers from Scarce up to The Grail.',
+    text: 'Autographed, rookie, numbered to 25 or lower, under $300, all at once. eBay can\u2019t combine those. We can.',
     Art: FilterArt,
+  },
+  {
+    label: 'Tiers',
+    title: 'Spot the rare ones.',
+    // Ranges mirror tierForRun() in rarityUtils.js. Keep them in sync.
+    text: 'Every numbered card in your results is colour-coded by how many were made. Gold (/1\u2013/25) is rarest, then silver (/26\u2013/99), bronze (/100\u2013/249) and steel (/250+).',
+    Art: TierArt,
   },
   {
     label: 'Watchlist',
@@ -354,7 +400,8 @@ function TourDialog({ native, onClose }) {
   );
 
   const primaryLabel = last ? 'Start searching' : 'Next';
-  const primaryStyle = { background: 'var(--gold)', color: 'var(--ink-on-gold, #1a1612)' };
+  // Solid CTA per the design system: the gold gradient is reserved for the Grail chip.
+  const primaryStyle = { background: 'var(--gold-bright)', color: 'var(--ink-on-gold, #1a1612)' };
 
   const dialogProps = {
     ref: panelRef,
@@ -463,7 +510,7 @@ function TourDialog({ native, onClose }) {
         }}
       >
         <div
-          className="h-[170px] sm:h-[190px] flex items-center justify-center p-5"
+          className="h-[190px] sm:h-[200px] flex items-center justify-center px-5 py-4"
           style={{ background: 'var(--bg-elev)', borderBottom: '0.5px solid var(--line)' }}
           aria-hidden="true"
         >

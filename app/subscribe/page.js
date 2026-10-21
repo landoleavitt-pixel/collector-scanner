@@ -182,7 +182,7 @@ export default function SubscribePage() {
               Get alerted the moment a card lists.
             </h1>
             <p className="text-[13px] mb-6 leading-relaxed" style={{ color: 'var(--legacy-muted)' }}>
-              Push and email alerts on up to 5 saved searches, plus bid reminders.
+              Save unlimited searches. Get push and email alerts on up to 5 at a time, plus bid reminders.
               14 days free, then {price || 'the listed price'} per {plan === 'annual' ? 'year' : 'month'}.
             </p>
             <PlanToggle plan={plan} setPlan={setPlan} prices={prices} native />
@@ -228,7 +228,7 @@ export default function SubscribePage() {
               Get alerted the moment a card lists.
             </h1>
             <p className="text-[13px] mb-6 leading-relaxed" style={{ color: 'var(--legacy-muted)' }}>
-              Email alerts on up to 5 saved searches, plus bid reminders. 14 days free, cancel anytime.
+              Save unlimited searches. Get email alerts on up to 5 at a time, plus bid reminders. 14 days free, cancel anytime.
             </p>
             <PlanToggle plan={plan} setPlan={setPlan} prices={prices} />
             <button

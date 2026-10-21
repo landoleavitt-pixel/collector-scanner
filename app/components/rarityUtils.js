@@ -66,3 +66,21 @@ export const OUTLINE_CHIP_STYLE = {
   background: 'rgba(201,149,74,0.06)',
   border: '0.5px solid var(--gold-deep)',
 };
+
+/**
+ * Row tint for a numbered listing in search results: a tier-coloured wash
+ * from the left edge plus a 2px left border. Same values as TIER_ROW_STYLES
+ * in ResultCard (app/page.js); the site tour uses this to show what a
+ * results list looks like. Returns null for unnumbered cards.
+ * TODO: ResultCard in app/page.js should switch to this export and drop its inline copy.
+ */
+export function tierRowStyle(tier) {
+  const styles = {
+    grail:  { bg: 'linear-gradient(90deg, rgba(255,180,30,0.42) 0%, rgba(245,200,80,0.15) 22%, transparent 55%)', border: '#ffc14d' },
+    ultra:  { bg: 'linear-gradient(90deg, rgba(180,200,220,0.28) 0%, rgba(210,220,230,0.08) 18%, transparent 40%)', border: '#c8d4e0' },
+    rare:   { bg: 'linear-gradient(90deg, rgba(200,90,30,0.24) 0%, rgba(220,110,50,0.06) 16%, transparent 32%)', border: '#d6722d' },
+    scarce: { bg: 'linear-gradient(90deg, rgba(80,90,100,0.18) 0%, transparent 24%)', border: '#5a6470' },
+  };
+  const s = styles[tier];
+  return s ? { backgroundImage: s.bg, borderLeft: `2px solid ${s.border}` } : null;
+}

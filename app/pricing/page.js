@@ -118,7 +118,7 @@ export default function PricingPage() {
             fineprint="Card required · we'll remind you before it bills"
             features={[
               { node: 'Everything in Free' },
-              { node: <>Alerts on up to <b className="text-[var(--ink-100)]">5 saved searches</b> (free has 1)</> },
+              { node: <>Alerts on up to <b className="text-[var(--ink-100)]">5 saved searches</b> at a time (free has 1)</> },
               { node: 'Bid reminders' },
               { node: 'Cancel anytime' },
             ]}
@@ -134,7 +134,8 @@ export default function PricingPage() {
               { node: 'Unlimited search' },
               { node: 'All filters & print-run tiers' },
               { node: 'Watchlist & sold tracking' },
-              { node: '1 live email alert' },
+              { node: 'Unlimited saved searches' },
+              { node: 'Alerts on 1 saved search' },
             ]}
           />
           <Tier
