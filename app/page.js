@@ -78,7 +78,8 @@ function detectPrintRun(rawTitle) {
   const reBare = /(?:^|[^0-9a-z])(?!0)(\d{1,4})\s*\/\s*(\d{1,4})\b/g;
   const reOf = /\b\d+\s+of\s+(\d{1,4})\b/g;
   const reTo = /\b(?:numbered|limited|serial)\s+to\s+(\d{1,4})\b/g;
-  const reNumbered = /\b(?:numbered|limited|serial|ssp|sp)\s+(\d{1,4})\b/g;
+  // Not when a slash follows: "SSP 11/25" is serial 11 of 25, not a /11.
+  const reNumbered = /\b(?:numbered|limited|serial|ssp|sp)\s+(\d{1,4})\b(?!\s*\/)/g;
 
   let m;
   // Patterns where the captured group IS the print run (the second number in /N).
@@ -94,12 +95,17 @@ function detectPrintRun(rawTitle) {
     const firstNum = parseInt(m[1], 10);
     const secondNum = parseInt(m[2], 10);
     const isOneOfOne = firstNum === 1 && secondNum === 1;
+    // N === M is the last copy ("25/25"); rank it behind the clearer forms.
     if (firstNum < secondNum || isOneOfOne) {
-      candidates.push({ value: m[2], index: m.index, firstNum });
+      candidates.push({ value: m[2], index: m.index, firstNum, rank: isOneOfOne ? 2 : 0 });
+    } else if (firstNum === secondNum) {
+      candidates.push({ value: m[2], index: m.index, firstNum, rank: 1 });
     }
   }
 
   if (candidates.length === 0) return null;
+  // A "1/1" phrase ("eBay 1/1 color match") loses to any real serial.
+  candidates.sort((a, b) => (a.rank || 0) - (b.rank || 0));
 
   // Guards against misreading non-print-run numbers.
   const seasonAround = /(19|20)\d{2}[-/\s]\d{1,4}/;   // 4-digit season: 2023-24, 2022/23

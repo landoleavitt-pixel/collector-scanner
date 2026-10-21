@@ -44,7 +44,6 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
   const flipRef = useRef(null);       // wrapper — handles flight (translate/scale)
   const overlayRef = useRef(null);
   const flightAnim = useRef(null);    // active Web Animation instance, if any
-  const [treeOpen, setTreeOpen] = useState(false);
   const [closing, setClosing] = useState(false);
   // The mobile tap-to-tilt mechanic needs to know whether the device
   // is touch-primary. matchMedia('(hover: none)').matches is reliable
@@ -414,7 +413,6 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
     await new Promise((r) => requestAnimationFrame(r));
     await runFlight('out');
     setClosing(false);
-    setTreeOpen(false);
     onClose?.();
   }, [closing, resetTilt, runFlight, onClose]);
 
@@ -775,22 +773,15 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
                 </button>
               </div>
 
-              {/* Rarity tree toggle */}
-              <button onClick={() => setTreeOpen((v) => !v)} data-no-tilt
-                      className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] rounded px-3.5 py-2"
-                      style={{ background: 'transparent', color: 'var(--gold-bright)', border: '0.5px solid rgba(212,175,92,0.35)' }}>
-                Rarity tree <span style={{ fontSize: 9, opacity: 0.7 }}>{treeOpen ? '▴' : '▾'}</span>
-              </button>
-
-              {treeOpen && (
-                <div className="mt-4 ff-tree-reveal" data-no-tilt>
-                  <RarityTree
-                    setData={setData}
-                    parallelKey={detection?.parallelKey || null}
-                    printRun={printRun}
-                  />
-                </div>
-              )}
+              {/* Rarity ladder: always visible */}
+              <div className="mt-1" data-no-tilt>
+                <RarityTree
+                  setData={setData}
+                  parallelKey={detection?.parallelKey || null}
+                  printRun={detection?.run || printRun}
+                  imageUrl={item.image}
+                />
+              </div>
               </div>
             </div>
           </div>
@@ -800,7 +791,6 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
       {/* ── Inline styles for the modal-specific animations.
             The shimmer reuses the same easing as the grid sheen so the
             two animations feel like the same brand element.
-            ff-tree-reveal slides in slightly on expand.
             animate-in / animate-out fade + scale the overlay. */}
       <style jsx>{`
         @keyframes ffOverlayIn {
@@ -827,13 +817,6 @@ export default function CardModal({ item, printRun, onClose, expired = false }) 
           background: linear-gradient(110deg, transparent 30%, rgba(255,232,180,0.5) 50%, transparent 70%);
           animation: ffCardShimmer 3.2s cubic-bezier(0.4, 0, 0.4, 1) infinite;
           z-index: 5;
-        }
-        @keyframes ffTreeReveal {
-          from { opacity: 0; transform: translateY(-6px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        :global(.ff-tree-reveal) {
-          animation: ffTreeReveal 0.26s cubic-bezier(0.2, 0.8, 0.3, 1);
         }
       `}</style>
     </div>
