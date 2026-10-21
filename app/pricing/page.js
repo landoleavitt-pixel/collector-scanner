@@ -21,7 +21,7 @@ function Tier({ name, tagline, price, per, cta, fineprint, features, hero = fals
           className="absolute top-0 left-6 -translate-y-1/2 text-[9.5px] uppercase tracking-[0.16em] px-[11px] py-[5px] rounded-[2px]"
           style={
             hero
-              ? { background: 'linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom))', color: 'var(--ink-on-gold)', fontWeight: 700 }
+              ? { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', fontWeight: 700 }
               : { background: 'var(--bg-elev-2)', color: 'var(--ink-400)', border: '1px solid var(--line)', fontWeight: 600 }
           }
         >
@@ -55,7 +55,7 @@ function Tier({ name, tagline, price, per, cta, fineprint, features, hero = fals
           className="mt-4 w-full text-center rounded-lg uppercase tracking-[0.12em] flex items-center justify-center transition-[filter] hover:brightness-105"
           style={
             hero
-              ? { minHeight: 54, background: 'linear-gradient(180deg,var(--gold-fill-top) 0%,var(--gold-fill-bottom) 100%)', color: 'var(--ink-on-gold)', fontWeight: 700, fontSize: 13, boxShadow: '0 8px 24px -10px rgba(217,156,20,0.6)' }
+              ? { minHeight: 54, background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', fontWeight: 700, fontSize: 13, boxShadow: '0 8px 24px -10px rgba(217,156,20,0.6)' }
               : { minHeight: 48, background: 'transparent', border: '1px solid var(--line)', color: 'var(--ink-200)', fontWeight: 600, fontSize: 12 }
           }
         >

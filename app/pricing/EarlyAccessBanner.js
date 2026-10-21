@@ -99,7 +99,7 @@ export default function EarlyAccessBanner() {
               disabled={status === 'submitting' || !email}
               className="px-4 py-2.5 rounded-[4px] text-[11px] uppercase tracking-[0.14em] font-medium transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
               style={{
-                background: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)',
+                background: 'var(--gold-bright)',
                 color: 'var(--ink-on-gold)',
               }}
             >

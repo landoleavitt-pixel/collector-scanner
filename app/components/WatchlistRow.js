@@ -136,7 +136,7 @@ function PaywallModal({ onClose }) {
         </p>
 
         {error && (
-          <p className="text-[11px] mb-4" style={{ color: 'var(--legacy-crit)' }}>{error}</p>
+          <p className="text-[11px] mb-4" style={{ color: 'var(--crit)' }}>{error}</p>
         )}
 
         <div className="flex flex-col gap-3">
@@ -145,7 +145,7 @@ function PaywallModal({ onClose }) {
             disabled={loading}
             className="w-full min-h-[48px] rounded-[8px] text-[12px] font-bold uppercase tracking-[0.14em] transition-opacity disabled:opacity-60"
             style={{
-              background: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)',
+              background: 'var(--gold-bright)',
               color: 'var(--ink-on-gold)',
               border: 'none',
               cursor: loading ? 'wait' : 'pointer',
@@ -261,7 +261,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
       <div
         className="rounded-[10px] p-5 md:p-6 grid gap-5 lg:gap-6 grid-cols-1 lg:grid-cols-[1fr_auto_auto] items-start lg:items-center"
         style={{
-          background: 'var(--legacy-ink-on-gold)',
+          background: 'var(--ink-on-gold)',
           // Alerts live → gold outline + faint glow. Everything else gets
           // the neutral border at full opacity. Marking the ACTIVE state
           // rather than dimming the inactive one means free users and
@@ -279,13 +279,13 @@ export default function WatchlistRow({ search, canUseAlerts }) {
         <div className="min-w-0">
           <div
             className="font-serif italic text-[19px] mb-2 truncate"
-            style={{ color: 'var(--legacy-cream)' }}
+            style={{ color: 'var(--ink-200)' }}
           >
             {search.name}
           </div>
           <div
             className="text-[12px] font-serif italic mb-2.5 truncate"
-            style={{ color: 'var(--legacy-muted)' }}
+            style={{ color: 'var(--ink-400)' }}
           >
             "{search.query}"
           </div>
@@ -328,7 +328,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
         <div className="flex items-center gap-2.5">
           <span
             className="text-[10px] tracking-[0.18em] uppercase"
-            style={{ color: alertsLive ? 'var(--legacy-gold)' : 'var(--legacy-hint)' }}
+            style={{ color: alertsLive ? 'var(--gold-bright)' : 'var(--ink-600)' }}
           >
             {!canUseAlerts ? 'Notify' : notifyEnabled ? 'Watching' : 'Paused'}
           </span>
@@ -345,13 +345,13 @@ export default function WatchlistRow({ search, canUseAlerts }) {
             }
             className="relative w-7 h-4 rounded-full transition-colors disabled:opacity-50"
             style={{
-              background: alertsLive ? 'var(--legacy-gold)' : '#3a3530',
+              background: alertsLive ? 'var(--gold-bright)' : '#3a3530',
             }}
           >
             <div
               className="absolute top-0.5 w-3 h-3 rounded-full transition-all"
               style={{
-                background: 'var(--legacy-ink-on-gold)',
+                background: 'var(--ink-on-gold)',
                 left: alertsLive ? 'calc(100% - 14px)' : '2px',
               }}
             />
@@ -360,7 +360,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
         {limitMsg && (
           <span
             className="text-[10px] leading-tight text-left lg:text-right max-w-[220px]"
-            style={{ color: 'var(--legacy-crit)' }}
+            style={{ color: 'var(--crit)' }}
           >
             {limitMsg}
           </span>
@@ -375,7 +375,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
                 onClick={handleDelete}
                 disabled={busy}
                 className="px-3 py-1.5 rounded-full text-[10px] tracking-[0.18em] uppercase transition-opacity hover:opacity-90 disabled:opacity-50"
-                style={{ background: 'var(--legacy-crit)', color: 'var(--legacy-ink-on-gold)', border: 'none' }}
+                style={{ background: 'var(--crit)', color: 'var(--ink-on-gold)', border: 'none' }}
               >
                 Confirm
               </button>
@@ -387,7 +387,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
                 style={{
                   background: 'transparent',
                   border: '0.5px solid rgba(232,226,213,0.18)',
-                  color: 'var(--legacy-muted)',
+                  color: 'var(--ink-400)',
                 }}
               >
                 Cancel
@@ -414,7 +414,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
                 style={{
                   background: 'transparent',
                   border: '0.5px solid rgba(232,226,213,0.18)',
-                  color: 'var(--legacy-muted)',
+                  color: 'var(--ink-400)',
                 }}
               >
                 View
@@ -426,7 +426,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
                 style={{
                   background: 'transparent',
                   border: '0.5px solid rgba(232,226,213,0.18)',
-                  color: shareMsg ? 'var(--gold)' : 'var(--legacy-muted)',
+                  color: shareMsg ? 'var(--gold)' : 'var(--ink-400)',
                 }}
               >
                 {shareMsg || 'Share'}
@@ -435,8 +435,8 @@ export default function WatchlistRow({ search, canUseAlerts }) {
                 type="button"
                 onClick={() => setConfirmDelete(true)}
                 aria-label="Delete saved search"
-                className="p-1.5 rounded-full transition-colors hover:text-[var(--legacy-crit)]"
-                style={{ background: 'transparent', border: 'none', color: 'var(--legacy-hint)', cursor: 'pointer' }}
+                className="p-1.5 rounded-full transition-colors hover:text-[var(--crit)]"
+                style={{ background: 'transparent', border: 'none', color: 'var(--ink-600)', cursor: 'pointer' }}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <polyline points="3 6 5 6 21 6"/>

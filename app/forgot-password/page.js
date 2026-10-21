@@ -32,13 +32,13 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col" style={{ background: 'var(--legacy-page)' }}>
+    <main className="min-h-screen flex flex-col" style={{ background: 'var(--bg-base)' }}>
       <div className="flex items-center gap-3 px-6 pt-8 opacity-70">
         <Seal className="w-6 h-6" />
-        <span className="font-serif text-base" style={{ color: 'var(--legacy-cream)' }}>
+        <span className="font-serif text-base" style={{ color: 'var(--ink-200)' }}>
           Fields &amp; Floors
         </span>
-        <span className="ml-auto text-[10px] tracking-[0.12em] uppercase" style={{ color: 'var(--legacy-hint)' }}>
+        <span className="ml-auto text-[10px] tracking-[0.12em] uppercase" style={{ color: 'var(--ink-600)' }}>
           Issue 001 · Est 2026
         </span>
       </div>
@@ -47,18 +47,18 @@ export default function ForgotPasswordPage() {
         <div
           className="w-full max-w-[400px] rounded-2xl p-9"
           style={{
-            background: 'var(--legacy-ink-on-gold)',
+            background: 'var(--ink-on-gold)',
             border: '0.5px solid rgba(232,226,213,0.08)',
-            color: 'var(--legacy-cream)',
+            color: 'var(--ink-200)',
           }}
         >
           <h1
             className="font-serif italic text-[26px] leading-tight text-center mb-1"
-            style={{ color: 'var(--legacy-cream)' }}
+            style={{ color: 'var(--ink-200)' }}
           >
             Reset your password.
           </h1>
-          <p className="text-[13px] text-center mb-6" style={{ color: 'var(--legacy-muted)' }}>
+          <p className="text-[13px] text-center mb-6" style={{ color: 'var(--ink-400)' }}>
             Enter your email and we'll send a reset link.
           </p>
 
@@ -66,9 +66,9 @@ export default function ForgotPasswordPage() {
             <div
               className="rounded-lg p-4 text-[13px] text-center"
               style={{
-                background: 'var(--legacy-field)',
+                background: 'var(--bg-elev-2)',
                 border: '0.5px solid rgba(212,175,92,0.3)',
-                color: 'var(--legacy-gold)',
+                color: 'var(--gold-bright)',
               }}
             >
               Check your email — we sent a reset link to {email}.
@@ -79,7 +79,7 @@ export default function ForgotPasswordPage() {
                 <label
                   htmlFor="email"
                   className="block text-[11px] mb-1.5 tracking-wide"
-                  style={{ color: 'var(--legacy-muted)' }}
+                  style={{ color: 'var(--ink-400)' }}
                 >
                   Email
                 </label>
@@ -91,15 +91,15 @@ export default function ForgotPasswordPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
                   style={{
-                    background: 'var(--legacy-field)',
+                    background: 'var(--bg-elev-2)',
                     border: '0.5px solid rgba(232,226,213,0.15)',
-                    color: 'var(--legacy-cream)',
+                    color: 'var(--ink-200)',
                   }}
                 />
               </div>
 
               {error && (
-                <p className="text-[12px] mb-3 text-center" style={{ color: 'var(--legacy-crit)' }}>
+                <p className="text-[12px] mb-3 text-center" style={{ color: 'var(--crit)' }}>
                   {error}
                 </p>
               )}
@@ -108,7 +108,7 @@ export default function ForgotPasswordPage() {
                 type="submit"
                 disabled={loading}
                 className="w-full py-3 rounded-lg text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50 mb-4"
-                style={{ background: 'var(--legacy-gold)', color: 'var(--legacy-ink-on-gold)', border: 'none' }}
+                style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', border: 'none' }}
               >
                 {loading ? 'Sending…' : 'Send reset link'}
               </button>
@@ -117,9 +117,9 @@ export default function ForgotPasswordPage() {
 
           <div
             className="text-center text-[12px] pt-4"
-            style={{ color: 'var(--legacy-muted)', borderTop: '0.5px solid rgba(232,226,213,0.08)' }}
+            style={{ color: 'var(--ink-400)', borderTop: '0.5px solid rgba(232,226,213,0.08)' }}
           >
-            <Link href="/login" className="font-serif italic" style={{ color: 'var(--legacy-gold)' }}>
+            <Link href="/login" className="font-serif italic" style={{ color: 'var(--gold-bright)' }}>
               Return to sign in
             </Link>
           </div>

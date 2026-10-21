@@ -15,7 +15,7 @@ import { ArrowRight, ArrowUpRight, ArrowUp } from 'lucide-react';
 import SaveSearchModal from './components/SaveSearchModal';
 import BidCountdown from './components/BidCountdown';
 import CardModal from './components/CardModal';
-import { tierForRun, tierChipStyle, OUTLINE_CHIP_STYLE } from './components/rarityUtils';
+import { tierForRun, tierChipStyle, tierRowStyle, OUTLINE_CHIP_STYLE } from './components/rarityUtils';
 import ShareSearchButton from './components/ShareSearchButton';
 import { isReturningVisitor, markVisited, getRecentSearches, addRecentSearch } from '../lib/visitState';
 import { hasShareParams, parseShareParams } from '../lib/shareLink';
@@ -892,7 +892,7 @@ function Home() {
                 {sortedResults.length === 1 ? 'listing' : 'listings'}
               </p>
             </div>
-            <div className="flex items-center gap-6">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
               {/* Share the current criteria as a link that reproduces this
                   exact search for whoever receives it. */}
               <ShareSearchButton
@@ -1281,7 +1281,7 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
                 onClick={onSearch}
                 disabled={loading}
                 className="absolute right-2 w-11 h-11 rounded-xl flex items-center justify-center transition-opacity hover:opacity-90 disabled:opacity-40 z-10"
-                style={{ backgroundImage: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)', color: 'var(--ink-on-gold)' }}
+                style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}
                 aria-label="Search"
               >
                 <ArrowRight className="w-5 h-5" strokeWidth={2} />
@@ -1572,7 +1572,7 @@ function FreeAccountCTA() {
       </h3>
       <p
         className="text-[13px] leading-relaxed max-w-[480px] mx-auto mb-5"
-        style={{ color: 'inherit' }}
+        style={{ color: 'var(--ink-200)' }}
       >
         Save listings to your watchlist and we'll keep them updated — live price,
         bid count, sold status. No credit card.
@@ -1581,7 +1581,7 @@ function FreeAccountCTA() {
         href="/signup"
         className="inline-flex items-center gap-2 px-6 py-3 rounded text-[11px] tracking-[0.16em] uppercase font-semibold"
         style={{
-          backgroundImage: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)',
+          background: 'var(--gold-bright)',
           color: 'var(--ink-on-gold)',
         }}
       >
@@ -1667,7 +1667,7 @@ function PlansSection({ user }) {
           <li
             key={f.label}
             className="text-[13px] leading-snug pl-4 relative mb-2"
-            style={{ color: f.isNew ? 'var(--gold-bright)' : 'inherit', fontWeight: f.isNew ? 500 : 400 }}
+            style={{ color: f.isNew ? 'var(--gold-bright)' : 'var(--ink-200)', fontWeight: f.isNew ? 500 : 400 }}
           >
             <span
               className="absolute left-0 top-0.5 text-[11px]"
@@ -1683,7 +1683,7 @@ function PlansSection({ user }) {
         href={ctaHref}
         className="inline-flex items-center justify-center px-4 py-2.5 rounded font-sans text-[10.5px] tracking-[0.16em] uppercase no-underline"
         style={highlight
-          ? { backgroundImage: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)', color: 'var(--ink-on-gold)', fontWeight: 600 }
+          ? { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', fontWeight: 600 }
           : { background: 'transparent', color: 'var(--ink-200)', border: '0.5px solid var(--ink-600)' }
         }
       >
@@ -2104,7 +2104,7 @@ function FilterControls({ filters, setFilter, compact = false }) {
                               padding: '0 14px',
                               border: `1px solid ${sel ? tierColor : 'var(--line)'}`,
                               background: sel ? tierColor : 'var(--bg-elev-2)',
-                              color: sel ? 'var(--legacy-dark)' : 'var(--ink-200)',
+                              color: sel ? 'var(--ink-on-gold)' : 'var(--ink-200)',
                               fontWeight: sel ? 600 : 500,
                             }}
                           >
@@ -2261,13 +2261,13 @@ function TypeToggleCard({ label, checked, onChange }) {
       <span
         className="relative w-8 h-4 rounded-full transition-colors"
         style={{
-          background: checked ? 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)' : 'rgba(255,255,255,0.10)',
+          background: checked ? 'var(--gold-bright)' : 'rgba(255,255,255,0.10)',
         }}
       >
         <span
           className="absolute top-0.5 left-0.5 w-3 h-3 rounded-full transition-transform"
           style={{
-            background: checked ? 'var(--legacy-dark)' : '#6a6356',
+            background: checked ? 'var(--ink-on-gold)' : '#6a6356',
             transform: checked ? 'translateX(16px)' : 'translateX(0)',
           }}
         />
@@ -2328,7 +2328,7 @@ function SegmentedGroup({ value, onChange, options, vertical = false }) {
             style={
               active
                 ? {
-                    background: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)',
+                    background: 'var(--gold-bright)',
                     color: 'var(--ink-on-gold)',
                     fontWeight: 600,
                     borderRightColor: 'transparent',
@@ -2397,8 +2397,8 @@ function FilterPanel({ query, setQuery, filters, setFilter, onSubmit, onCancel, 
           onClick={onSubmit}
           className="group inline-flex items-center gap-3 px-9 py-4 transition-all text-sm font-semibold tracking-[0.12em] uppercase"
           style={{
-            background: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)',
-            color: 'var(--legacy-dark)',
+            background: 'var(--gold-bright)',
+            color: 'var(--ink-on-gold)',
           }}
         >
           {isEditing ? 'Update search criteria' : 'Search'}
@@ -2433,8 +2433,8 @@ function ResultsSidebar({ filters, setFilter, onSearch, hasPending }) {
             hasPending ? 'pending-pulse' : ''
           }`}
           style={{
-            background: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)',
-            color: 'var(--legacy-dark)',
+            background: 'var(--gold-bright)',
+            color: 'var(--ink-on-gold)',
           }}
         >
           Search →
@@ -2494,7 +2494,7 @@ function MobileFilterBar({ activeCount, onOpenFilters, onOpenSort }) {
         {activeCount > 0 && (
           <span
             className="inline-flex items-center justify-center text-[11px] font-bold rounded-full"
-            style={{ minWidth: 18, height: 18, padding: '0 5px', background: 'var(--gold)', color: 'var(--legacy-dark)', letterSpacing: 0 }}
+            style={{ minWidth: 18, height: 18, padding: '0 5px', background: 'var(--gold)', color: 'var(--ink-on-gold)', letterSpacing: 0 }}
           >
             {activeCount}
           </span>
@@ -2607,8 +2607,8 @@ function MobileFilterDrawer({ open, onClose, filters, setFilter, onSearch, onClo
           style={{
             minHeight: 52,
             borderRadius: 10,
-            background: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)',
-            color: 'var(--legacy-dark)',
+            background: 'var(--gold-bright)',
+            color: 'var(--ink-on-gold)',
           }}
         >
           Search →
@@ -3152,7 +3152,7 @@ function PendingSearchModal({ open, onSearch, onCancel, onDismiss, floating = fa
             onClick={onSearch}
             className="w-full min-h-[48px] rounded-[8px] text-[12px] font-bold uppercase tracking-[0.14em]"
             style={{
-              background: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)',
+              background: 'var(--gold-bright)',
               color: 'var(--ink-on-gold)',
               border: 'none',
               cursor: 'pointer',
@@ -3415,13 +3415,7 @@ function ResultCard({ item, formatPrice, index, hasPendingFilters, onPendingClic
   //   Rare    — deep bronze-orange
   //   Scarce  — steel-gray
   // Applied as background gradient + left border on the link element.
-  const TIER_ROW_STYLES = {
-    grail:  { bg: 'linear-gradient(90deg, rgba(255,180,30,0.42) 0%, rgba(245,200,80,0.15) 22%, transparent 55%)', border: '#ffc14d' },
-    ultra:  { bg: 'linear-gradient(90deg, rgba(180,200,220,0.28) 0%, rgba(210,220,230,0.08) 18%, transparent 40%)', border: '#c8d4e0' },
-    rare:   { bg: 'linear-gradient(90deg, rgba(200,90,30,0.24) 0%, rgba(220,110,50,0.06) 16%, transparent 32%)', border: '#d6722d' },
-    scarce: { bg: 'linear-gradient(90deg, rgba(80,90,100,0.18) 0%, transparent 24%)', border: '#5a6470' },
-  };
-  const tierStyle = tier ? TIER_ROW_STYLES[tier] : null;
+  const tierStyle = tier ? tierRowStyle(tier) : null;
 
   return (
     <a
@@ -3450,8 +3444,7 @@ function ResultCard({ item, formatPrice, index, hasPendingFilters, onPendingClic
       className="group block rise"
       style={tierStyle ? {
         animationDelay: `${Math.min(index * 40, 400)}ms`,
-        backgroundImage: tierStyle.bg,
-        borderLeft: `2px solid ${tierStyle.border}`,
+        ...tierStyle,
       } : { animationDelay: `${Math.min(index * 40, 400)}ms` }}
     >
       {/* MOBILE (<lg) — compact list row: thumbnail left, badges pinned at bottom. */}

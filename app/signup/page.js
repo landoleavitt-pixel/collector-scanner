@@ -88,13 +88,13 @@ function SignupForm() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col" style={{ background: 'var(--legacy-page)' }}>
+    <main className="min-h-screen flex flex-col" style={{ background: 'var(--bg-base)' }}>
       <div className="flex items-center gap-3 px-6 pt-8 opacity-70">
         <Seal className="w-6 h-6" />
-        <span className="font-serif text-base" style={{ color: 'var(--legacy-cream)' }}>
+        <span className="font-serif text-base" style={{ color: 'var(--ink-200)' }}>
           Fields &amp; Floors
         </span>
-        <span className="ml-auto text-[10px] tracking-[0.12em] uppercase" style={{ color: 'var(--legacy-hint)' }}>
+        <span className="ml-auto text-[10px] tracking-[0.12em] uppercase" style={{ color: 'var(--ink-600)' }}>
           Issue 001 · Est 2026
         </span>
       </div>
@@ -103,18 +103,18 @@ function SignupForm() {
         <div
           className="w-full max-w-[400px] rounded-2xl p-9"
           style={{
-            background: 'var(--legacy-ink-on-gold)',
+            background: 'var(--ink-on-gold)',
             border: '0.5px solid rgba(232,226,213,0.08)',
-            color: 'var(--legacy-cream)',
+            color: 'var(--ink-200)',
           }}
         >
           <h1
             className="font-serif italic text-[26px] leading-tight text-center mb-1"
-            style={{ color: 'var(--legacy-cream)' }}
+            style={{ color: 'var(--ink-200)' }}
           >
             Start the hunt.
           </h1>
-          <p className="text-[13px] text-center mb-6" style={{ color: 'var(--legacy-muted)' }}>
+          <p className="text-[13px] text-center mb-6" style={{ color: 'var(--ink-400)' }}>
             Save searches. Get notified. Find grails.
           </p>
 
@@ -122,9 +122,9 @@ function SignupForm() {
             <div
               className="rounded-lg p-4 text-[13px] text-center"
               style={{
-                background: 'var(--legacy-field)',
+                background: 'var(--bg-elev-2)',
                 border: '0.5px solid rgba(212,175,92,0.3)',
-                color: 'var(--legacy-gold)',
+                color: 'var(--gold-bright)',
               }}
             >
               Check your email — we sent a confirmation link to {email}.
@@ -140,7 +140,7 @@ function SignupForm() {
                 style={{
                   background: 'transparent',
                   border: '0.5px solid rgba(232,226,213,0.22)',
-                  color: 'var(--legacy-cream)',
+                  color: 'var(--ink-200)',
                 }}
               >
                 <GoogleIcon />
@@ -157,7 +157,7 @@ function SignupForm() {
                 style={{
                   background: 'transparent',
                   border: '0.5px solid rgba(232,226,213,0.22)',
-                  color: 'var(--legacy-cream)',
+                  color: 'var(--ink-200)',
                 }}
               >
                 <AppleIcon />
@@ -167,7 +167,7 @@ function SignupForm() {
 
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex-1 h-px" style={{ background: 'rgba(232,226,213,0.12)' }} />
-                <span className="text-[11px] tracking-[0.08em] uppercase" style={{ color: 'var(--legacy-muted)' }}>
+                <span className="text-[11px] tracking-[0.08em] uppercase" style={{ color: 'var(--ink-400)' }}>
                   or
                 </span>
                 <div className="flex-1 h-px" style={{ background: 'rgba(232,226,213,0.12)' }} />
@@ -178,7 +178,7 @@ function SignupForm() {
                   <label
                     htmlFor="email"
                     className="block text-[11px] mb-1.5 tracking-wide"
-                    style={{ color: 'var(--legacy-muted)' }}
+                    style={{ color: 'var(--ink-400)' }}
                   >
                     Email
                   </label>
@@ -191,9 +191,9 @@ function SignupForm() {
                     placeholder="you@example.com"
                     className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
                     style={{
-                      background: 'var(--legacy-field)',
+                      background: 'var(--bg-elev-2)',
                       border: '0.5px solid rgba(232,226,213,0.15)',
-                      color: 'var(--legacy-cream)',
+                      color: 'var(--ink-200)',
                     }}
                   />
                 </div>
@@ -202,7 +202,7 @@ function SignupForm() {
                   <label
                     htmlFor="password"
                     className="block text-[11px] mb-1.5 tracking-wide"
-                    style={{ color: 'var(--legacy-muted)' }}
+                    style={{ color: 'var(--ink-400)' }}
                   >
                     Password
                   </label>
@@ -216,9 +216,9 @@ function SignupForm() {
                       placeholder="Minimum 10 characters"
                       className="w-full px-3 py-2.5 pr-10 rounded-lg text-sm focus:outline-none"
                       style={{
-                        background: 'var(--legacy-field)',
+                        background: 'var(--bg-elev-2)',
                         border: '0.5px solid rgba(232,226,213,0.15)',
-                        color: 'var(--legacy-cream)',
+                        color: 'var(--ink-200)',
                       }}
                     />
                     <button
@@ -226,7 +226,7 @@ function SignupForm() {
                       onClick={() => setShowPassword(!showPassword)}
                       aria-label={showPassword ? 'Hide password' : 'Show password'}
                       className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors hover:opacity-100"
-                      style={{ background: 'none', border: 'none', color: 'var(--legacy-muted)', cursor: 'pointer', padding: 0, lineHeight: 0 }}
+                      style={{ background: 'none', border: 'none', color: 'var(--ink-400)', cursor: 'pointer', padding: 0, lineHeight: 0 }}
                     >
                       {showPassword ? <EyeOffIcon /> : <EyeIcon />}
                     </button>
@@ -234,7 +234,7 @@ function SignupForm() {
                 </div>
 
                 {error && (
-                  <p className="text-[12px] mb-3 text-center" style={{ color: 'var(--legacy-crit)' }}>
+                  <p className="text-[12px] mb-3 text-center" style={{ color: 'var(--crit)' }}>
                     {error}
                   </p>
                 )}
@@ -243,7 +243,7 @@ function SignupForm() {
                   type="submit"
                   disabled={loading}
                   className="w-full py-3 rounded-lg text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50 mb-3"
-                  style={{ background: 'var(--legacy-gold)', color: 'var(--legacy-ink-on-gold)', border: 'none' }}
+                  style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', border: 'none' }}
                 >
                   {loading ? 'Creating account…' : 'Create account'}
                 </button>
@@ -251,14 +251,14 @@ function SignupForm() {
 
               <p
                 className="text-[11px] leading-relaxed text-center mb-3"
-                style={{ color: 'var(--legacy-hint)' }}
+                style={{ color: 'var(--ink-600)' }}
               >
                 By continuing you agree to our{' '}
-                <Link href="/terms" className="font-serif italic" style={{ color: 'var(--legacy-muted)' }}>
+                <Link href="/terms" className="font-serif italic" style={{ color: 'var(--ink-400)' }}>
                   Terms
                 </Link>{' '}
                 and{' '}
-                <Link href="/privacy" className="font-serif italic" style={{ color: 'var(--legacy-muted)' }}>
+                <Link href="/privacy" className="font-serif italic" style={{ color: 'var(--ink-400)' }}>
                   Privacy
                 </Link>
                 .
@@ -268,10 +268,10 @@ function SignupForm() {
 
           <div
             className="text-center text-[12px] pt-4"
-            style={{ color: 'var(--legacy-muted)', borderTop: '0.5px solid rgba(232,226,213,0.08)' }}
+            style={{ color: 'var(--ink-400)', borderTop: '0.5px solid rgba(232,226,213,0.08)' }}
           >
             Already have an account?{' '}
-            <Link href="/login" className="font-serif italic" style={{ color: 'var(--legacy-gold)' }}>
+            <Link href="/login" className="font-serif italic" style={{ color: 'var(--gold-bright)' }}>
               Sign in
             </Link>
           </div>

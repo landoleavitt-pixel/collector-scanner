@@ -252,7 +252,7 @@ function EmptyState({ tab, onBrowse }) {
         <button
           onClick={onBrowse}
           className="text-[11px] uppercase tracking-[0.2em] px-5 py-2.5 rounded-full transition-opacity hover:opacity-90"
-          style={{ background: 'var(--gold)', color: 'var(--legacy-ink-on-gold)' }}
+          style={{ background: 'var(--gold)', color: 'var(--ink-on-gold)' }}
         >
           Start searching
         </button>
@@ -363,12 +363,12 @@ function WatchlistTile({ listing, onRemove, onToast, onCardClick }) {
         {/* Live status line — bid count for active auctions; last-bid summary
             once an auction has ended so the user can see how it closed. */}
         {listing.is_auction && !isSold && listing.bid_count != null && (
-          <div className="text-[10px] tracking-[0.06em] mt-1.5" style={{ color: 'inherit' }}>
+          <div className="text-[10px] tracking-[0.06em] mt-1.5" style={{ color: 'var(--ink-200)' }}>
             {listing.bid_count} BID{listing.bid_count === 1 ? '' : 'S'}
           </div>
         )}
         {isSold && listing.is_auction && (
-          <div className="text-[10px] tracking-[0.06em] mt-1.5" style={{ color: 'inherit' }}>
+          <div className="text-[10px] tracking-[0.06em] mt-1.5" style={{ color: 'var(--ink-200)' }}>
             {listing.price != null ? `LAST BID ${price}` : 'ENDED'}
             {listing.bid_count != null ? ` · ${listing.bid_count} BID${listing.bid_count === 1 ? '' : 'S'}` : ''}
           </div>

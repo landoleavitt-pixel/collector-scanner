@@ -196,7 +196,7 @@ export default function Header() {
                   >
                     <span
                       className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-display"
-                      style={{ background: 'var(--gold)', color: 'var(--legacy-ink-on-gold)' }}
+                      style={{ background: 'var(--gold)', color: 'var(--ink-on-gold)' }}
                     >
                       {(user.email?.[0] || '?').toUpperCase()}
                     </span>
@@ -207,7 +207,7 @@ export default function Header() {
                     <div
                       className="absolute right-0 mt-2 w-64 rounded-xl py-2 z-30"
                       style={{
-                        background: 'var(--legacy-ink-on-gold)',
+                        background: 'var(--ink-on-gold)',
                         border: '0.5px solid rgba(232,226,213,0.12)',
                         boxShadow: '0 10px 40px rgba(0,0,0,0.4)',
                       }}
@@ -302,7 +302,7 @@ export default function Header() {
                     className="hidden sm:inline-block text-[12px] uppercase tracking-[0.22em] px-4 py-2 rounded-full transition-colors"
                     style={{
                       background: 'var(--gold)',
-                      color: 'var(--legacy-ink-on-gold)',
+                      color: 'var(--ink-on-gold)',
                     }}
                   >
                     Join
@@ -451,7 +451,7 @@ function CloseAccountDialog({ onClose, appleBilled }) {
             onClick={handleDelete}
             disabled={typed !== CONFIRM || busy}
             className="px-4 py-2 rounded-full text-[11px] uppercase tracking-[0.16em] disabled:opacity-40"
-            style={{ background: 'var(--crit)', color: 'var(--legacy-ink-on-gold)', border: 'none' }}
+            style={{ background: 'var(--crit)', color: 'var(--ink-on-gold)', border: 'none' }}
           >
             {busy ? 'Closing…' : 'Close account'}
           </button>

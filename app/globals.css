@@ -29,17 +29,6 @@
   --gold-fill-top: #ffd97a;    /* gold fill gradient (grail chip, primary buttons) */
   --gold-fill-bottom: #d99c14;
 
-  /* Legacy one-offs: exact values kept so nothing shifts on screen.
-     Fold these into the tokens above in the type/colour pass. */
-  --legacy-ink-on-gold: #1a1614;
-  --legacy-cream: #e8e2d5;
-  --legacy-muted: #8a8275;
-  --legacy-hint: #6e675b;
-  --legacy-gold: #d4af5c;
-  --legacy-crit: #d97757;
-  --legacy-field: #221d1a;
-  --legacy-page: #0f0c0a;
-  --legacy-dark: #0e0c0a;
 }
 
 * { box-sizing: border-box; }
@@ -355,7 +344,7 @@ select option {
   height: 26px;
   width: 26px;
   border-radius: 50%;
-  background: linear-gradient(180deg, #ffd97a, #d99c14);
+  background: var(--gold-bright);
   border: 2px solid var(--bg-base);
   box-shadow: 0 0 0 1px var(--gold-deep), 0 4px 12px rgba(0,0,0,0.4);
   margin-top: -11px;
@@ -367,7 +356,7 @@ select option {
   height: 26px;
   width: 26px;
   border-radius: 50%;
-  background: linear-gradient(180deg, #ffd97a, #d99c14);
+  background: var(--gold-bright);
   border: 2px solid var(--bg-base);
   box-shadow: 0 0 0 1px var(--gold-deep), 0 4px 12px rgba(0,0,0,0.4);
   cursor: grab;

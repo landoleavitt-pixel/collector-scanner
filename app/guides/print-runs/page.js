@@ -341,7 +341,7 @@ export default function PrintRunsGuide() {
           <Link
             href="/"
             className="inline-flex items-center justify-center px-6 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase transition-opacity hover:opacity-90"
-            style={{ background: 'var(--legacy-gold)', color: 'var(--legacy-ink-on-gold)' }}
+            style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}
           >
             Try a search &rarr;
           </Link>

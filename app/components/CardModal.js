@@ -471,13 +471,13 @@ function CardModalInner({ item, printRun, onClose, expired = false }) {
           <p className="font-serif italic text-[22px] mb-2" style={{ color: 'var(--ink-100)' }}>
             This listing has ended.
           </p>
-          <p className="text-[13px] leading-relaxed mb-5" style={{ color: 'inherit' }}>
+          <p className="text-[13px] leading-relaxed mb-5" style={{ color: 'var(--ink-200)' }}>
             The card you&apos;re trying to view is no longer available on eBay —
             it may have sold, been removed by the seller, or expired.
           </p>
           <button onClick={handleClose} data-no-tilt
                   className="text-[10px] uppercase tracking-[0.18em] font-semibold px-5 py-2.5 rounded"
-                  style={{ background: 'linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom))', color: 'var(--ink-on-gold)' }}>
+                  style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
             ← Back to search
           </button>
         </div>
@@ -551,13 +551,13 @@ function CardModalInner({ item, printRun, onClose, expired = false }) {
                       left: -44, top: '50%', transform: 'translateY(-50%)',
                       width: 32, height: 64,
                       background: 'transparent',
-                      color: 'inherit',
+                      color: 'var(--ink-200)',
                       border: 'none',
                       fontSize: 28, lineHeight: 1,
                       cursor: 'pointer',
                     }}
                     onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--gold-bright)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.color = 'inherit'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ink-200)'; }}
                   >‹</button>
                   <button
                     onClick={(e) => {
@@ -571,13 +571,13 @@ function CardModalInner({ item, printRun, onClose, expired = false }) {
                       right: -44, top: '50%', transform: 'translateY(-50%)',
                       width: 32, height: 64,
                       background: 'transparent',
-                      color: 'inherit',
+                      color: 'var(--ink-200)',
                       border: 'none',
                       fontSize: 28, lineHeight: 1,
                       cursor: 'pointer',
                     }}
                     onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--gold-bright)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.color = 'inherit'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ink-200)'; }}
                   >›</button>
                 </>
               )}
@@ -716,7 +716,7 @@ function CardModalInner({ item, printRun, onClose, expired = false }) {
                 {formattedPrice}
               </p>
               {item.isAuction ? (
-                <p className="text-[11px] tracking-[0.06em] mb-4" style={{ color: 'inherit' }}>
+                <p className="text-[11px] tracking-[0.06em] mb-4" style={{ color: 'var(--ink-200)' }}>
                   {item.bidCount != null ? `${item.bidCount} BID${item.bidCount === 1 ? '' : 'S'}` : 'CURRENT BID'}
                   {(() => {
                     // Show time remaining only when meaningful. "ENDS SOON" used
@@ -738,7 +738,7 @@ function CardModalInner({ item, printRun, onClose, expired = false }) {
                   })()}
                 </p>
               ) : (
-                <p className="text-[11px] tracking-[0.06em] mb-4" style={{ color: 'inherit' }}>
+                <p className="text-[11px] tracking-[0.06em] mb-4" style={{ color: 'var(--ink-200)' }}>
                   BUY IT NOW
                 </p>
               )}
@@ -747,7 +747,7 @@ function CardModalInner({ item, printRun, onClose, expired = false }) {
               <div className="flex gap-2 mb-4">
                 <a href={item.url} target="_blank" rel="noopener noreferrer" data-no-tilt
                    className="flex-1 inline-flex items-center justify-center gap-1.5 text-[10px] uppercase tracking-[0.18em] font-semibold rounded px-4 py-2.5"
-                   style={{ background: 'linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom))', color: 'var(--ink-on-gold)' }}>
+                   style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
                   View on eBay
                   <ArrowUpRight size={12} strokeWidth={2} />
                 </a>

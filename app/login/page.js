@@ -81,14 +81,14 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col" style={{ background: 'var(--legacy-page)' }}>
+    <main className="min-h-screen flex flex-col" style={{ background: 'var(--bg-base)' }}>
       {/* Minimal header */}
       <div className="flex items-center gap-3 px-6 pt-8 opacity-70">
         <Seal className="w-6 h-6" />
-        <span className="font-serif text-base" style={{ color: 'var(--legacy-cream)' }}>
+        <span className="font-serif text-base" style={{ color: 'var(--ink-200)' }}>
           Fields &amp; Floors
         </span>
-        <span className="ml-auto text-[10px] tracking-[0.12em] uppercase" style={{ color: 'var(--legacy-hint)' }}>
+        <span className="ml-auto text-[10px] tracking-[0.12em] uppercase" style={{ color: 'var(--ink-600)' }}>
           Issue 001 · Est 2026
         </span>
       </div>
@@ -98,18 +98,18 @@ export default function LoginPage() {
         <div
           className="w-full max-w-[400px] rounded-2xl p-9"
           style={{
-            background: 'var(--legacy-ink-on-gold)',
+            background: 'var(--ink-on-gold)',
             border: '0.5px solid rgba(232,226,213,0.08)',
-            color: 'var(--legacy-cream)',
+            color: 'var(--ink-200)',
           }}
         >
           <h1
             className="font-serif italic text-[26px] leading-tight text-center mb-1"
-            style={{ color: 'var(--legacy-cream)' }}
+            style={{ color: 'var(--ink-200)' }}
           >
             Welcome back.
           </h1>
-          <p className="text-[13px] text-center mb-6" style={{ color: 'var(--legacy-muted)' }}>
+          <p className="text-[13px] text-center mb-6" style={{ color: 'var(--ink-400)' }}>
             Sign in to view your saved searches.
           </p>
 
@@ -117,9 +117,9 @@ export default function LoginPage() {
             <div
               className="rounded-lg p-4 text-[13px] text-center"
               style={{
-                background: 'var(--legacy-field)',
+                background: 'var(--bg-elev-2)',
                 border: '0.5px solid rgba(212,175,92,0.3)',
-                color: 'var(--legacy-gold)',
+                color: 'var(--gold-bright)',
               }}
             >
               Check your email — we sent a sign-in link to {email}.
@@ -136,7 +136,7 @@ export default function LoginPage() {
                 style={{
                   background: 'transparent',
                   border: '0.5px solid rgba(232,226,213,0.22)',
-                  color: 'var(--legacy-cream)',
+                  color: 'var(--ink-200)',
                 }}
               >
                 <GoogleIcon />
@@ -154,7 +154,7 @@ export default function LoginPage() {
                 style={{
                   background: 'transparent',
                   border: '0.5px solid rgba(232,226,213,0.22)',
-                  color: 'var(--legacy-cream)',
+                  color: 'var(--ink-200)',
                 }}
               >
                 <AppleIcon />
@@ -165,7 +165,7 @@ export default function LoginPage() {
               {/* Divider */}
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex-1 h-px" style={{ background: 'rgba(232,226,213,0.12)' }} />
-                <span className="text-[11px] tracking-[0.08em] uppercase" style={{ color: 'var(--legacy-muted)' }}>
+                <span className="text-[11px] tracking-[0.08em] uppercase" style={{ color: 'var(--ink-400)' }}>
                   or
                 </span>
                 <div className="flex-1 h-px" style={{ background: 'rgba(232,226,213,0.12)' }} />
@@ -177,7 +177,7 @@ export default function LoginPage() {
                   <label
                     htmlFor="email"
                     className="block text-[11px] mb-1.5 tracking-wide"
-                    style={{ color: 'var(--legacy-muted)' }}
+                    style={{ color: 'var(--ink-400)' }}
                   >
                     Email
                   </label>
@@ -189,22 +189,22 @@ export default function LoginPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
                     style={{
-                      background: 'var(--legacy-field)',
+                      background: 'var(--bg-elev-2)',
                       border: '0.5px solid rgba(232,226,213,0.15)',
-                      color: 'var(--legacy-cream)',
+                      color: 'var(--ink-200)',
                     }}
                   />
                 </div>
 
                 <div className="mb-4">
                   <div className="flex justify-between mb-1.5">
-                    <label htmlFor="password" className="text-[11px] tracking-wide" style={{ color: 'var(--legacy-muted)' }}>
+                    <label htmlFor="password" className="text-[11px] tracking-wide" style={{ color: 'var(--ink-400)' }}>
                       Password
                     </label>
                     <Link
                       href="/forgot-password"
                       className="text-[11px] font-serif italic"
-                      style={{ color: 'var(--legacy-gold)' }}
+                      style={{ color: 'var(--gold-bright)' }}
                     >
                       Forgot?
                     </Link>
@@ -218,9 +218,9 @@ export default function LoginPage() {
                       onChange={(e) => setPassword(e.target.value)}
                       className="w-full px-3 py-2.5 pr-10 rounded-lg text-sm focus:outline-none"
                       style={{
-                        background: 'var(--legacy-field)',
+                        background: 'var(--bg-elev-2)',
                         border: '0.5px solid rgba(232,226,213,0.15)',
-                        color: 'var(--legacy-cream)',
+                        color: 'var(--ink-200)',
                       }}
                     />
                     <button
@@ -228,7 +228,7 @@ export default function LoginPage() {
                       onClick={() => setShowPassword(!showPassword)}
                       aria-label={showPassword ? 'Hide password' : 'Show password'}
                       className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors hover:opacity-100"
-                      style={{ background: 'none', border: 'none', color: 'var(--legacy-muted)', cursor: 'pointer', padding: 0, lineHeight: 0 }}
+                      style={{ background: 'none', border: 'none', color: 'var(--ink-400)', cursor: 'pointer', padding: 0, lineHeight: 0 }}
                     >
                       {showPassword ? <EyeOffIcon /> : <EyeIcon />}
                     </button>
@@ -236,7 +236,7 @@ export default function LoginPage() {
                 </div>
 
                 {error && (
-                  <p className="text-[12px] mb-3 text-center" style={{ color: 'var(--legacy-crit)' }}>
+                  <p className="text-[12px] mb-3 text-center" style={{ color: 'var(--crit)' }}>
                     {error}
                   </p>
                 )}
@@ -245,7 +245,7 @@ export default function LoginPage() {
                   type="submit"
                   disabled={loading}
                   className="w-full py-3 rounded-lg text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50 mb-3"
-                  style={{ background: 'var(--legacy-gold)', color: 'var(--legacy-ink-on-gold)', border: 'none' }}
+                  style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', border: 'none' }}
                 >
                   {loading ? 'Signing in…' : 'Sign in'}
                 </button>
@@ -253,7 +253,7 @@ export default function LoginPage() {
 
               {/* Magic link option — web only; the link would open Safari, not the app. */}
               {!native && (
-              <div className="text-center text-[12px] mb-4" style={{ color: 'var(--legacy-muted)' }}>
+              <div className="text-center text-[12px] mb-4" style={{ color: 'var(--ink-400)' }}>
                 <button
                   type="button"
                   onClick={handleMagicLink}
@@ -270,10 +270,10 @@ export default function LoginPage() {
 
           <div
             className="text-center text-[12px] pt-4"
-            style={{ color: 'var(--legacy-muted)', borderTop: '0.5px solid rgba(232,226,213,0.08)' }}
+            style={{ color: 'var(--ink-400)', borderTop: '0.5px solid rgba(232,226,213,0.08)' }}
           >
             New here?{' '}
-            <Link href="/signup" className="font-serif italic" style={{ color: 'var(--legacy-gold)' }}>
+            <Link href="/signup" className="font-serif italic" style={{ color: 'var(--gold-bright)' }}>
               Create account
             </Link>
           </div>

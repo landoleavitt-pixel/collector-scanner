@@ -37,12 +37,12 @@ function PlanToggle({ plan, setPlan, prices, native }) {
           style={{
             background: plan === o.id ? 'rgba(212,175,92,0.12)' : 'transparent',
             border: plan === o.id ? '1px solid #d4af5c' : '0.5px solid rgba(232,226,213,0.15)',
-            color: 'var(--legacy-cream)',
+            color: 'var(--ink-200)',
           }}
         >
           <span className="block text-[12px] font-bold uppercase tracking-[0.12em]">{o.label}</span>
-          <span className="block text-[12px]" style={{ color: 'var(--legacy-muted)' }}>{o.sub}</span>
-          {o.note && <span className="block text-[10px] uppercase tracking-[0.12em]" style={{ color: 'var(--legacy-gold)' }}>{o.note}</span>}
+          <span className="block text-[12px]" style={{ color: 'var(--ink-400)' }}>{o.sub}</span>
+          {o.note && <span className="block text-[10px] uppercase tracking-[0.12em]" style={{ color: 'var(--gold-bright)' }}>{o.note}</span>}
         </button>
       ))}
     </div>
@@ -166,7 +166,7 @@ export default function SubscribePage() {
   return (
     <main
       className="min-h-screen flex flex-col items-center justify-center px-6"
-      style={{ background: 'var(--legacy-page)', color: 'var(--legacy-cream)' }}
+      style={{ background: 'var(--bg-base)', color: 'var(--ink-200)' }}
     >
       <div className="flex items-center gap-3 mb-10 opacity-70">
         <Seal className="w-6 h-6" />
@@ -175,33 +175,33 @@ export default function SubscribePage() {
 
       <div
         className="w-full max-w-[400px] rounded-2xl p-8 text-center"
-        style={{ background: 'var(--legacy-ink-on-gold)', border: '0.5px solid rgba(232,226,213,0.08)' }}
+        style={{ background: 'var(--ink-on-gold)', border: '0.5px solid rgba(232,226,213,0.08)' }}
       >
         {(stage === 'app' || stage === 'buying') ? (
           <>
-            <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'var(--legacy-gold)' }}>
+            <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'var(--gold-bright)' }}>
               Base Plan
             </p>
             <h1
               className="font-serif italic text-[24px] leading-tight mb-3"
-              style={{ color: 'var(--legacy-cream)' }}
+              style={{ color: 'var(--ink-200)' }}
             >
               Get alerted the moment a card lists.
             </h1>
-            <p className="text-[13px] mb-6 leading-relaxed" style={{ color: 'var(--legacy-muted)' }}>
+            <p className="text-[13px] mb-6 leading-relaxed" style={{ color: 'var(--ink-400)' }}>
               Save unlimited searches. Get push and email alerts on up to 5 at a time, plus bid reminders.
               14 days free, then {price || 'the listed price'} per {plan === 'annual' ? 'year' : 'month'}.
             </p>
             <PlanToggle plan={plan} setPlan={setPlan} prices={prices} native />
             {error && (
-              <p className="text-[12px] mb-4 leading-relaxed" style={{ color: 'var(--legacy-crit)' }}>{error}</p>
+              <p className="text-[12px] mb-4 leading-relaxed" style={{ color: 'var(--crit)' }}>{error}</p>
             )}
             <button
               onClick={handleBuy}
               disabled={stage === 'buying'}
               className="w-full min-h-[44px] rounded-[8px] text-[12px] font-bold uppercase tracking-[0.14em] disabled:opacity-60"
               style={{
-                background: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)',
+                background: 'var(--gold-bright)',
                 color: 'var(--ink-on-gold)',
                 border: 'none',
               }}
@@ -212,11 +212,11 @@ export default function SubscribePage() {
               onClick={handleRestore}
               disabled={stage === 'buying'}
               className="block w-full min-h-[40px] py-3 text-[11px] tracking-[0.14em] uppercase disabled:opacity-60"
-              style={{ color: 'var(--legacy-muted)' }}
+              style={{ color: 'var(--ink-400)' }}
             >
               Restore purchases
             </button>
-            <p className="text-[11px] mt-2 leading-relaxed" style={{ color: 'var(--legacy-hint)' }}>
+            <p className="text-[11px] mt-2 leading-relaxed" style={{ color: 'var(--ink-600)' }}>
               Payment is charged to your Apple ID when the trial ends. The subscription
               renews {plan === 'annual' ? 'yearly' : 'monthly'} unless cancelled at least 24 hours before the end of the
               current period. Manage or cancel any time in your App Store account
@@ -228,13 +228,13 @@ export default function SubscribePage() {
           </>
         ) : stage === 'choose' ? (
           <>
-            <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'var(--legacy-gold)' }}>
+            <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'var(--gold-bright)' }}>
               Base Plan
             </p>
-            <h1 className="font-serif italic text-[24px] leading-tight mb-3" style={{ color: 'var(--legacy-cream)' }}>
+            <h1 className="font-serif italic text-[24px] leading-tight mb-3" style={{ color: 'var(--ink-200)' }}>
               Get alerted the moment a card lists.
             </h1>
-            <p className="text-[13px] mb-6 leading-relaxed" style={{ color: 'var(--legacy-muted)' }}>
+            <p className="text-[13px] mb-6 leading-relaxed" style={{ color: 'var(--ink-400)' }}>
               Save unlimited searches. Get email alerts on up to 5 at a time, plus bid reminders. 14 days free, cancel anytime.
             </p>
             <PlanToggle plan={plan} setPlan={setPlan} prices={prices} />
@@ -244,45 +244,45 @@ export default function SubscribePage() {
             <button
               onClick={handleWebCheckout}
               className="w-full min-h-[44px] rounded-[8px] text-[12px] font-bold uppercase tracking-[0.14em]"
-              style={{ background: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)', color: 'var(--ink-on-gold)', border: 'none' }}
+              style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', border: 'none' }}
             >
               Start 14-day free trial
             </button>
           </>
         ) : stage === 'done' ? (
           <>
-            <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'var(--legacy-gold)' }}>
+            <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'var(--gold-bright)' }}>
               Base Plan
             </p>
             <h1
               className="font-serif italic text-[24px] leading-tight mb-3"
-              style={{ color: 'var(--legacy-cream)' }}
+              style={{ color: 'var(--ink-200)' }}
             >
               You're in.
             </h1>
-            <p className="text-[13px] mb-6 leading-relaxed" style={{ color: 'var(--legacy-muted)' }}>
+            <p className="text-[13px] mb-6 leading-relaxed" style={{ color: 'var(--ink-400)' }}>
               Turn on alerts for any saved search and we'll notify you the moment a match lists.
             </p>
             <Link
               href="/watchlist"
               className="block w-full min-h-[44px] py-3 rounded-[8px] text-[12px] font-bold uppercase tracking-[0.14em]"
-              style={{ background: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)', color: 'var(--ink-on-gold)' }}
+              style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}
             >
               Go to saved searches
             </Link>
           </>
         ) : stage === 'error' ? (
           <>
-            <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'var(--legacy-crit)' }}>
+            <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'var(--crit)' }}>
               Something went wrong
             </p>
             <h1
               className="font-serif italic text-[24px] leading-tight mb-3"
-              style={{ color: 'var(--legacy-cream)' }}
+              style={{ color: 'var(--ink-200)' }}
             >
               We couldn't open checkout.
             </h1>
-            <p className="text-[13px] mb-6 leading-relaxed" style={{ color: 'var(--legacy-muted)' }}>
+            <p className="text-[13px] mb-6 leading-relaxed" style={{ color: 'var(--ink-400)' }}>
               {error}
             </p>
             <div className="flex flex-col gap-2">
@@ -290,7 +290,7 @@ export default function SubscribePage() {
                 onClick={() => window.location.reload()}
                 className="w-full min-h-[44px] rounded-[8px] text-[12px] font-bold uppercase tracking-[0.14em]"
                 style={{
-                  background: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)',
+                  background: 'var(--gold-bright)',
                   color: 'var(--ink-on-gold)',
                   border: 'none',
                 }}
@@ -300,7 +300,7 @@ export default function SubscribePage() {
               <Link
                 href="/pricing"
                 className="block w-full min-h-[40px] py-3 text-[11px] tracking-[0.14em] uppercase"
-                style={{ color: 'var(--legacy-muted)' }}
+                style={{ color: 'var(--ink-400)' }}
               >
                 Back to pricing
               </Link>
@@ -308,16 +308,16 @@ export default function SubscribePage() {
           </>
         ) : (
           <>
-            <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'var(--legacy-gold)' }}>
+            <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'var(--gold-bright)' }}>
               Base Plan
             </p>
             <h1
               className="font-serif italic text-[24px] leading-tight mb-3"
-              style={{ color: 'var(--legacy-cream)' }}
+              style={{ color: 'var(--ink-200)' }}
             >
               Opening secure checkout…
             </h1>
-            <p className="text-[13px] leading-relaxed" style={{ color: 'var(--legacy-muted)' }}>
+            <p className="text-[13px] leading-relaxed" style={{ color: 'var(--ink-400)' }}>
               You'll be redirected to secure checkout to start your 14-day free trial.
               Hang tight — should be a second.
             </p>

@@ -91,9 +91,9 @@ function LoadingState() {
   return (
     <div
       className="rounded-[10px] p-10 text-center"
-      style={{ background: 'var(--legacy-ink-on-gold)', border: '0.5px solid rgba(232,226,213,0.08)' }}
+      style={{ background: 'var(--ink-on-gold)', border: '0.5px solid rgba(232,226,213,0.08)' }}
     >
-      <div className="font-serif italic text-[18px]" style={{ color: 'inherit' }}>
+      <div className="font-serif italic text-[18px]" style={{ color: 'var(--ink-200)' }}>
         Asking eBay…
       </div>
     </div>
@@ -107,15 +107,15 @@ function ErrorState({ error }) {
     <div
       className="rounded-[10px] p-8 text-center"
       style={{
-        background: 'var(--legacy-ink-on-gold)',
+        background: 'var(--ink-on-gold)',
         border: '0.5px solid rgba(217,119,87,0.3)',
-        color: 'var(--legacy-crit)',
+        color: 'var(--crit)',
       }}
     >
-      <div className="font-serif italic text-[18px] mb-2" style={{ color: 'var(--legacy-cream)' }}>
+      <div className="font-serif italic text-[18px] mb-2" style={{ color: 'var(--ink-200)' }}>
         {isForbidden ? 'Not authorized.' : 'Could not load usage.'}
       </div>
-      <div className="text-[12px]" style={{ color: 'var(--legacy-muted)' }}>
+      <div className="text-[12px]" style={{ color: 'var(--ink-400)' }}>
         {error}
       </div>
     </div>
@@ -129,7 +129,7 @@ function UsageTable({ data }) {
     return (
       <div
         className="rounded-[10px] p-8 text-center"
-        style={{ background: 'var(--legacy-ink-on-gold)', border: '0.5px solid rgba(232,226,213,0.08)' }}
+        style={{ background: 'var(--ink-on-gold)', border: '0.5px solid rgba(232,226,213,0.08)' }}
       >
         <div className="font-serif italic text-[18px] mb-2" style={{ color: 'var(--ink-200)' }}>
           No daily quotas to show.
@@ -164,7 +164,7 @@ function UsageTable({ data }) {
         style={{
           background: 'rgba(255,217,122,0.04)',
           border: '0.5px solid rgba(255,217,122,0.12)',
-          color: 'inherit',
+          color: 'var(--ink-200)',
           lineHeight: 1.5,
         }}
       >
@@ -185,8 +185,8 @@ function UsageRow({ row }) {
 
   // Color the bar by burn rate — green under 50%, gold under 80%, red above.
   let barColor = '#6e9a5b';
-  if (pct >= 80) barColor = 'var(--legacy-crit)';
-  else if (pct >= 50) barColor = 'var(--legacy-gold)';
+  if (pct >= 80) barColor = 'var(--crit)';
+  else if (pct >= 50) barColor = 'var(--gold-bright)';
 
   const resetDate = row.reset ? new Date(row.reset) : null;
   const resetLabel = resetDate
@@ -201,7 +201,7 @@ function UsageRow({ row }) {
   return (
     <div
       className="rounded-[8px] p-4"
-      style={{ background: 'var(--legacy-ink-on-gold)', border: '0.5px solid rgba(232,226,213,0.08)' }}
+      style={{ background: 'var(--ink-on-gold)', border: '0.5px solid rgba(232,226,213,0.08)' }}
     >
       <div className="flex items-baseline justify-between mb-2 gap-4 flex-wrap">
         <div>
