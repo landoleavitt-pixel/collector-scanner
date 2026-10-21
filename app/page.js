@@ -55,6 +55,16 @@ const SCANNING_PHRASES = [
   'Surfacing finds',
 ];
 
+const SEALED_PRODUCT = /\bsealed\s+(?:\w+\s+){0,2}(?:pack|packs|box|boxes|case|blaster|hanger|mega)\b|\b(?:mystery|repack|re-pack)\b|\bhobby\s+box\b/;
+// "1/1 possible", "chance at a 1/1", "1/1 hit": a chase, not this card's run.
+// Only words right next to the 1/1 count, so "Case hit SuperFractor 1/1" stays a 1/1.
+function chaseAround(t, index) {
+  const before = t.slice(Math.max(0, index - 14), index + 1);
+  const after = t.slice(index, index + 22);
+  return /\b(possible|chance|chances|look\s+for|odds)\b/.test(before)
+    || /1\s*\/\s*1\W*(possible|chance|chances|hits?|odds)\b/.test(after);
+}
+
 /**
  * Extract a print run number from a listing title, OR return null if no real
  * print run is present. Mirrors the server-side verifyPrintRun logic but
@@ -69,6 +79,9 @@ const SCANNING_PHRASES = [
 function detectPrintRun(rawTitle) {
   if (!rawTitle) return null;
   const t = rawTitle.toLowerCase();
+  // Sealed packs, boxes and repacks aren't one card: "1/1 possible" there
+  // is a chase, not this card's print run.
+  if (SEALED_PRODUCT.test(t)) return null;
 
   // Find all candidate print-run patterns
   const candidates = [];
@@ -132,6 +145,7 @@ function detectPrintRun(rawTitle) {
   }
 
   for (const c of candidates) {
+    if (c.value === "1" && chaseAround(t, c.index)) continue;
     const window = t.slice(Math.max(0, c.index - 14), c.index + 8);
     if (seasonAround.test(window)) continue;
     if (dateAround.test(window)) continue;

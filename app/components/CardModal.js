@@ -28,7 +28,7 @@ import RarityTree from './RarityTree';
 import CardImageCarousel from './CardImageCarousel';
 import { parseSetFromTitle } from '../../lib/parseSetFromTitle';
 import { getSet, getParallel } from '../../lib/parallelData';
-import { gradientCss } from './rarityUtils';
+import { gradientCss, tierChipStyle, tierForRun } from './rarityUtils';
 import { useWatchlist } from '../../lib/watchlistContext';
 import { useUser } from '../../lib/useUser';
 
@@ -692,7 +692,7 @@ function CardModalInner({ item, printRun, onClose, expired = false }) {
               <div className="flex gap-1.5 mb-4 flex-wrap">
                 {printRun && (
                   <span className="text-[9px] uppercase tracking-[0.16em] font-bold px-2 py-1 rounded"
-                        style={{ background: 'linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom))', color: 'var(--ink-on-gold)' }}>
+                        style={tierChipStyle(tierForRun(printRun))}>
                     /{printRun}
                   </span>
                 )}
