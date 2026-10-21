@@ -8,8 +8,7 @@ The single list of work that's finished or in progress but **not live yet**. The
 |---|---|---|---|---|---|
 | 7 | eBay Partner Network affiliate links | CFO | ⏸ Plan approved. Waiting on Landon's sign-up + Campaign ID; code held until batch ships | SiteTour.js, guides, reading-list copy + link tagging | — |
 | 8 | Poller rate limit: alerts silently skip past ~20 unique searches | Debugger | ⚪ Needs a fix plan (not urgent at today's size) | poller, api/search | `supabase functions deploy poller` |
-| 9 | Type and radius scale (step 2) | Design | 🔵 Approved; starting | many | — |
-| 10 | Home page section redesign (step 3) | Design | ⚪ After step 2 | page.js | — |
+| 10 | Home page section redesign (step 3) | Design | 🔵 Approved; building | page.js | — |
 | 11 | iOS bottom tab bar (step 4) | Design | ⚪ After step 3 | new component, Header.js, layout.js | — |
 | 12 | 2024 Topps Chrome Football rarity data | Rarity tree | ⚪ Follow-up | lib/parallelData.js, lib/parseSetFromTitle.js | — |
 
@@ -19,7 +18,8 @@ The single list of work that's finished or in progress but **not live yet**. The
 
 | When | What | Commit |
 |---|---|---|
-| 2026-10-20 | Card popup print-run chip uses tier colour; mystery packs/sealed product not read as 1/1 | (cardfix) |
+| 2026-10-20 | Step 2: 11px text floor (10px caps labels), standard corner radii | (step2) |
+| 2026-10-20 | Card popup print-run chip uses tier colour; mystery packs/sealed product not read as 1/1 | ad122b0 |
 | 2026-10-20 | Step 1: solid-gold buttons, colour clean-up, results header fits on phones | 167043a |
 | 2026-10-19 | iOS app code, new landing page and intro, web tour, colour tokens, rarity data and parser, pricing $6.99 + annual + 1 free alert | c3547d1, 507d22a, poller deployed |
 | 2026-10-20 | Rarity rungs in card modal, print-run detection fix | 78975de |

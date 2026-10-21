@@ -36,7 +36,7 @@ export function SectionHeading({ number, label, children }) {
     <div className="mb-6 mt-16 first:mt-0">
       <div className="flex items-baseline gap-3 mb-3">
         {number && (
-          <span className="font-mono text-[10px] text-[var(--ink-600)] tracking-wider">
+          <span className="font-mono text-[11px] text-[var(--ink-600)] tracking-wider">
             {number}
           </span>
         )}

@@ -308,7 +308,7 @@ function WatchlistTile({ listing, onRemove, onToast, onCardClick }) {
         )}
 
         {isSold && (
-          <span className="absolute top-2.5 left-2.5 text-[9px] uppercase tracking-[0.12em] px-2 py-1 rounded" style={{ background: 'rgba(180,60,40,0.9)', color: '#fff' }}>
+          <span className="absolute top-2.5 left-2.5 text-[10px] uppercase tracking-[0.12em] px-2 py-1 rounded" style={{ background: 'rgba(180,60,40,0.9)', color: '#fff' }}>
             {listing.status === 'sold' ? 'Sold' : 'Ended'}
           </span>
         )}
@@ -336,14 +336,14 @@ function WatchlistTile({ listing, onRemove, onToast, onCardClick }) {
         </div>
         <div className="flex flex-wrap gap-1 mb-2.5">
           {b.printRun && b.tier && (
-            <span className="text-[9px] uppercase tracking-[0.08em] px-1.5 py-0.5 rounded" style={TIER_CHIP[b.tier]}>/{b.printRun}</span>
+            <span className="text-[10px] uppercase tracking-[0.08em] px-1.5 py-0.5 rounded" style={TIER_CHIP[b.tier]}>/{b.printRun}</span>
           )}
-          {b.auto && <span className="text-[9px] uppercase tracking-[0.08em] px-1.5 py-0.5 rounded" style={outChip}>Auto</span>}
-          {b.rookie && <span className="text-[9px] uppercase tracking-[0.08em] px-1.5 py-0.5 rounded" style={outChip}>RC</span>}
-          {b.psa && <span className="text-[9px] uppercase tracking-[0.08em] px-1.5 py-0.5 rounded" style={outChip}>PSA {b.psa}</span>}
-          {b.bgs && <span className="text-[9px] uppercase tracking-[0.08em] px-1.5 py-0.5 rounded" style={outChip}>BGS {b.bgs}</span>}
-          {b.isAuction && <span className="text-[9px] uppercase tracking-[0.08em] px-1.5 py-0.5 rounded" style={{ color: '#e6a86b', background: 'rgba(201,122,58,0.10)', border: '0.5px solid #c97a3a' }}>Auction</span>}
-          {!b.isAuction && b.isBuyItNow && <span className="text-[9px] uppercase tracking-[0.08em] px-1.5 py-0.5 rounded" style={outChip}>Buy It Now</span>}
+          {b.auto && <span className="text-[10px] uppercase tracking-[0.08em] px-1.5 py-0.5 rounded" style={outChip}>Auto</span>}
+          {b.rookie && <span className="text-[10px] uppercase tracking-[0.08em] px-1.5 py-0.5 rounded" style={outChip}>RC</span>}
+          {b.psa && <span className="text-[10px] uppercase tracking-[0.08em] px-1.5 py-0.5 rounded" style={outChip}>PSA {b.psa}</span>}
+          {b.bgs && <span className="text-[10px] uppercase tracking-[0.08em] px-1.5 py-0.5 rounded" style={outChip}>BGS {b.bgs}</span>}
+          {b.isAuction && <span className="text-[10px] uppercase tracking-[0.08em] px-1.5 py-0.5 rounded" style={{ color: '#e6a86b', background: 'rgba(201,122,58,0.10)', border: '0.5px solid #c97a3a' }}>Auction</span>}
+          {!b.isAuction && b.isBuyItNow && <span className="text-[10px] uppercase tracking-[0.08em] px-1.5 py-0.5 rounded" style={outChip}>Buy It Now</span>}
         </div>
         <div className="flex items-center justify-between">
           <span className="font-display italic text-[22px]" style={{ color: 'var(--gold)' }}>{price}</span>
@@ -363,12 +363,12 @@ function WatchlistTile({ listing, onRemove, onToast, onCardClick }) {
         {/* Live status line — bid count for active auctions; last-bid summary
             once an auction has ended so the user can see how it closed. */}
         {listing.is_auction && !isSold && listing.bid_count != null && (
-          <div className="text-[10px] tracking-[0.06em] mt-1.5" style={{ color: 'var(--ink-200)' }}>
+          <div className="text-[11px] tracking-[0.06em] mt-1.5" style={{ color: 'var(--ink-200)' }}>
             {listing.bid_count} BID{listing.bid_count === 1 ? '' : 'S'}
           </div>
         )}
         {isSold && listing.is_auction && (
-          <div className="text-[10px] tracking-[0.06em] mt-1.5" style={{ color: 'var(--ink-200)' }}>
+          <div className="text-[11px] tracking-[0.06em] mt-1.5" style={{ color: 'var(--ink-200)' }}>
             {listing.price != null ? `LAST BID ${price}` : 'ENDED'}
             {listing.bid_count != null ? ` · ${listing.bid_count} BID${listing.bid_count === 1 ? '' : 'S'}` : ''}
           </div>
@@ -463,7 +463,7 @@ function BidReminderModal({ listing, initialPrice, isSet, onSubmit, onRemove, on
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[420px] rounded-2xl overflow-hidden"
+        className="w-full max-w-[420px] rounded-xl overflow-hidden"
         style={{ background: 'var(--bg-elev)', border: '0.5px solid var(--line)' }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -480,7 +480,7 @@ function BidReminderModal({ listing, initialPrice, isSet, onSubmit, onRemove, on
             reminded regardless of price.
           </p>
 
-          <div className="text-[10px] line-clamp-2 mb-4 italic" style={{ color: 'var(--ink-600)' }}>
+          <div className="text-[11px] line-clamp-2 mb-4 italic" style={{ color: 'var(--ink-600)' }}>
             {listing.title}
           </div>
 
@@ -530,7 +530,7 @@ function BidReminderModal({ listing, initialPrice, isSet, onSubmit, onRemove, on
           )}
         </div>
 
-        <p className="px-6 pb-5 text-[10px] leading-relaxed" style={{ color: 'var(--ink-600)' }}>
+        <p className="px-6 pb-5 text-[11px] leading-relaxed" style={{ color: 'var(--ink-600)' }}>
           This doesn't buy or bid on the card — Fields &amp; Floors only emails you so
           you can decide and bid yourself on eBay. Prices and availability can change.
         </p>

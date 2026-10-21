@@ -157,7 +157,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-[420px] rounded-2xl p-8"
+        className="w-full max-w-[420px] rounded-xl p-8"
         style={{
           background: 'var(--ink-on-gold)',
           border: '0.5px solid rgba(232,226,213,0.12)',
@@ -181,7 +181,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
               return (
                 <span
                   key={i}
-                  className="text-[9.5px] tracking-[0.18em] uppercase px-2.5 py-1 rounded"
+                  className="text-[10px] tracking-[0.18em] uppercase px-2.5 py-1 rounded"
                   style={{
                     background: style.bg,
                     color: style.color,
@@ -233,7 +233,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
                 </div>
               </div>
               <span
-                className="text-[9px] uppercase tracking-[0.16em] px-2 py-1 rounded flex-none"
+                className="text-[10px] uppercase tracking-[0.16em] px-2 py-1 rounded flex-none"
                 style={{ color: 'var(--ink-on-gold)', background: 'var(--gold-bright)', fontWeight: 700 }}
               >
                 Base
@@ -280,7 +280,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
         )}
 
         {error && (
-          <p className="text-[12px] mb-3 text-center" style={{ color: 'var(--crit)' }}>
+          <p className="text-[13px] mb-3 text-center" style={{ color: 'var(--crit)' }}>
             {error}
           </p>
         )}

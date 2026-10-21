@@ -14,7 +14,7 @@ export default function HowItWorksPage() {
       lede="eBay search was built for everything. Fields & Floors is built for cards. Three things make the difference."
     >
       <TourLink
-        className="inline-flex items-center gap-2 mb-12 rounded-md px-3.5 py-2 text-[12.5px] font-medium text-[var(--gold-bright)] hover:text-[var(--gold)] transition-colors"
+        className="inline-flex items-center gap-2 mb-12 rounded-lg px-3.5 py-2 text-[13px] font-medium text-[var(--gold-bright)] hover:text-[var(--gold)] transition-colors"
         style={{ border: '0.5px solid var(--gold-deep)' }}
       >
         <span aria-hidden="true">▶</span> Take the 1-minute tour

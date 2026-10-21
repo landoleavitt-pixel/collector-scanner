@@ -465,7 +465,7 @@ function CardModalInner({ item, printRun, onClose, expired = false }) {
                   style={{ background: 'rgba(20,17,12,0.7)', border: '0.5px solid rgba(232,226,213,0.18)', color: 'var(--ink-200)' }}>
             <X size={14} />
           </button>
-          <p className="text-[9px] uppercase tracking-[0.26em] mb-3" style={{ color: 'var(--gold)' }}>
+          <p className="text-[10px] uppercase tracking-[0.26em] mb-3" style={{ color: 'var(--gold)' }}>
             Listing unavailable
           </p>
           <p className="font-serif italic text-[22px] mb-2" style={{ color: 'var(--ink-100)' }}>
@@ -671,13 +671,13 @@ function CardModalInner({ item, printRun, onClose, expired = false }) {
               </div>
               <div className="relative" style={{ zIndex: 1 }}>
               {detection && parallel && (
-                <p className="text-[9px] uppercase tracking-[0.26em] mb-1.5"
+                <p className="text-[10px] uppercase tracking-[0.26em] mb-1.5"
                    style={{ color: 'var(--gold)' }}>
                   {setData.label} · {parallel.name}
                 </p>
               )}
               {!detection && (
-                <p className="text-[9px] uppercase tracking-[0.26em] mb-1.5"
+                <p className="text-[10px] uppercase tracking-[0.26em] mb-1.5"
                    style={{ color: 'var(--gold)' }}>
                   eBay listing
                 </p>
@@ -691,19 +691,19 @@ function CardModalInner({ item, printRun, onClose, expired = false }) {
               {/* Badges */}
               <div className="flex gap-1.5 mb-4 flex-wrap">
                 {printRun && (
-                  <span className="text-[9px] uppercase tracking-[0.16em] font-bold px-2 py-1 rounded"
+                  <span className="text-[10px] uppercase tracking-[0.16em] font-bold px-2 py-1 rounded"
                         style={tierChipStyle(tierForRun(printRun))}>
                     /{printRun}
                   </span>
                 )}
                 {item.isAuction && (
-                  <span className="text-[9px] uppercase tracking-[0.16em] font-medium px-2 py-1 rounded"
+                  <span className="text-[10px] uppercase tracking-[0.16em] font-medium px-2 py-1 rounded"
                         style={{ background: 'rgba(201,122,58,0.10)', color: '#e6a86b', border: '0.5px solid rgba(201,122,58,0.4)' }}>
                     Live auction
                   </span>
                 )}
                 {item.condition && item.condition !== 'Unknown' && (
-                  <span className="text-[9px] uppercase tracking-[0.16em] px-2 py-1 rounded"
+                  <span className="text-[10px] uppercase tracking-[0.16em] px-2 py-1 rounded"
                         style={{ background: 'rgba(232,226,213,0.04)', color: 'var(--ink-200)', border: '0.5px solid rgba(232,226,213,0.16)' }}>
                     {item.condition}
                   </span>
@@ -778,7 +778,7 @@ function CardModalInner({ item, printRun, onClose, expired = false }) {
                           color: shareMsg ? 'var(--gold-bright)' : 'var(--ink-100)',
                           border: `0.5px solid ${shareMsg ? 'rgba(212,175,92,0.5)' : 'rgba(232,226,213,0.18)'}`,
                         }}>
-                  <span aria-hidden="true" style={{ fontSize: 12 }}>{shareMsg ? '✓' : '↗'}</span>
+                  <span aria-hidden="true" style={{ fontSize: 13 }}>{shareMsg ? '✓' : '↗'}</span>
                   {shareMsg || 'Share'}
                 </button>
               </div>

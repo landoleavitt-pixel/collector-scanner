@@ -1192,7 +1192,7 @@ function SplashIntro() {
           </div>
           <div
             ref={subRef}
-            className="mt-4 text-[10.5px] tracking-[0.32em] uppercase text-[var(--gold)] rise"
+            className="mt-4 text-[11px] tracking-[0.32em] uppercase text-[var(--gold)] rise"
             style={{ animationDelay: '560ms', transition: 'opacity 0.25s ease', fontFamily: 'ui-monospace, monospace' }}
           >
             A Holy Grail search engine
@@ -1268,7 +1268,7 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
           <div className="mt-7 md:mt-9 rise" style={{ animationDelay: '380ms' }}>
             <div
               ref={suggest.anchorRef}
-              className="relative flex items-center rounded-2xl transition-colors focus-within:border-[var(--gold)]"
+              className="relative flex items-center rounded-xl transition-colors focus-within:border-[var(--gold)]"
               style={{
                 border: '0.5px solid var(--gold-deep)',
                 background: 'rgba(20,17,12,0.85)',
@@ -1413,7 +1413,7 @@ function WhyFields({ user }) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 mb-12">
           {/* Step 01 — multi-tier filter picker */}
           <div
-            className="rounded-[10px] p-6 flex flex-col"
+            className="rounded-xl p-6 flex flex-col"
             style={{ background: 'var(--bg-elev)', border: '0.5px solid var(--line-soft)' }}
           >
             <div className="font-mono text-[11px] tracking-[0.2em]" style={{ color: 'var(--gold)' }}>01</div>
@@ -1426,7 +1426,7 @@ function WhyFields({ user }) {
 
           {/* Step 02 — watchlist rows */}
           <div
-            className="rounded-[10px] p-6 flex flex-col"
+            className="rounded-xl p-6 flex flex-col"
             style={{ background: 'var(--bg-elev)', border: '0.5px solid var(--line-soft)' }}
           >
             <div className="font-mono text-[11px] tracking-[0.2em]" style={{ color: 'var(--gold)' }}>02</div>
@@ -1439,7 +1439,7 @@ function WhyFields({ user }) {
 
           {/* Step 03 — saved-search card */}
           <div
-            className="rounded-[10px] p-6 flex flex-col"
+            className="rounded-xl p-6 flex flex-col"
             style={{ background: 'var(--bg-elev)', border: '0.5px solid var(--line-soft)' }}
           >
             <div className="font-mono text-[11px] tracking-[0.2em]" style={{ color: 'var(--gold)' }}>03</div>
@@ -1465,14 +1465,14 @@ function WhyFields({ user }) {
    different print runs map to different rarity tiers (gold/silver/copper/gray).
    Visitors learn the color system at a glance. */
 function FilterPickerArtifact() {
-  const chipBase = 'font-mono text-[9px] px-1.5 py-[2px] rounded';
+  const chipBase = 'font-mono text-[11px] px-1.5 py-[2px] rounded';
   return (
     <div
       className="mt-4 rounded-lg p-3.5 flex-1"
       style={{ background: 'var(--bg-elev-2)', border: '0.5px solid var(--line-soft)' }}
     >
       <div
-        className="font-mono text-[8.5px] tracking-[0.18em] uppercase mb-2"
+        className="font-mono text-[10px] tracking-[0.18em] uppercase mb-2"
         style={{ color: 'var(--ink-500)' }}
       >
         Print runs
@@ -1487,7 +1487,7 @@ function FilterPickerArtifact() {
         <TierChip run="/499" />
       </div>
       <div
-        className="font-mono text-[8.5px] tracking-[0.18em] uppercase mb-2"
+        className="font-mono text-[10px] tracking-[0.18em] uppercase mb-2"
         style={{ color: 'var(--ink-500)' }}
       >
         Toggles
@@ -1522,7 +1522,7 @@ function WatchlistArtifact() {
           <TierChip run={tierRun} />
           {toggle && (
             <span
-              className="font-mono text-[9px] px-1.5 py-[2px] rounded"
+              className="font-mono text-[11px] px-1.5 py-[2px] rounded"
               style={{ ...OUTLINE_CHIP_STYLE, letterSpacing: '0.14em' }}
             >
               {toggle}
@@ -1531,7 +1531,7 @@ function WatchlistArtifact() {
         </div>
         <div className="text-[11px] leading-snug mb-1" style={{ color: 'var(--ink-200)' }}>{title}</div>
         <div
-          className="font-mono text-[8.5px] tracking-[0.14em] uppercase"
+          className="font-mono text-[10px] tracking-[0.14em] uppercase"
           style={{ color: 'var(--gold)' }}
         >
           {meta}
@@ -1554,7 +1554,7 @@ function TierChip({ run }) {
   if (!tier) return null;
   return (
     <span
-      className="font-mono text-[9px] px-1.5 py-[2px] rounded"
+      className="font-mono text-[11px] px-1.5 py-[2px] rounded"
       style={tierChipStyle(tier)}
     >
       {run.startsWith('/') ? run : `/${run}`}
@@ -1576,7 +1576,7 @@ function FreeAccountCTA() {
       }}
     >
       <div
-        className="font-mono text-[9px] tracking-[0.24em] uppercase mb-2.5"
+        className="font-mono text-[10px] tracking-[0.24em] uppercase mb-2.5"
         style={{ color: 'var(--gold)', fontFamily: 'ui-monospace, monospace' }}
       >
         Free account
@@ -1616,7 +1616,7 @@ function FreeAccountCTA() {
    real watchlist row, so the visitor sees what they'd create. Uses the
    shared TierChip helper so badge colors stay consistent with production. */
 function SavedSearchExampleCard() {
-  const toggleChip = 'font-mono text-[9px] px-1.5 py-[2px] rounded';
+  const toggleChip = 'font-mono text-[11px] px-1.5 py-[2px] rounded';
   return (
     <div
       className="rounded-lg p-3.5"
@@ -1637,7 +1637,7 @@ function SavedSearchExampleCard() {
       <div className="flex items-start gap-2">
         <span className="w-1.5 h-1.5 rounded-full mt-1.5 flex-none" style={{ background: 'var(--gold)', boxShadow: '0 0 6px var(--gold)' }} />
         <div className="text-[11px] leading-snug" style={{ color: 'var(--ink-200)' }}>
-          <span className="block font-mono text-[8.5px] tracking-[0.18em] uppercase mb-0.5" style={{ color: 'var(--gold)' }}>
+          <span className="block font-mono text-[10px] tracking-[0.18em] uppercase mb-0.5" style={{ color: 'var(--gold)' }}>
             New match · just listed
           </span>
           2024 Bowman Chrome Auto Gold Refractor /25
@@ -1655,7 +1655,7 @@ function PlansSection({ user }) {
   // Single feature-list component for consistency across all three tiers
   const Tier = ({ name, price, priceUnit, line, features, ctaLabel, ctaHref, highlight }) => (
     <div
-      className="rounded-[10px] p-6 flex flex-col"
+      className="rounded-xl p-6 flex flex-col"
       style={{
         background: highlight
           ? 'linear-gradient(180deg, rgba(201,149,74,0.06) 0%, var(--bg-elev) 100%)'
@@ -1675,7 +1675,7 @@ function PlansSection({ user }) {
       >
         {price}{priceUnit && <small className="not-italic ml-1" style={{ fontFamily: 'ui-sans-serif', fontSize: '13px', color: 'var(--ink-400)' }}>{priceUnit}</small>}
       </div>
-      <div className="text-[11.5px] mb-4 min-h-[16px]" style={{ color: 'var(--ink-400)' }}>{line}</div>
+      <div className="text-[11px] mb-4 min-h-[16px]" style={{ color: 'var(--ink-400)' }}>{line}</div>
       <ul className="list-none p-0 m-0 mb-5 flex-1">
         {features.map((f) => (
           <li
@@ -1695,7 +1695,7 @@ function PlansSection({ user }) {
       </ul>
       <Link
         href={ctaHref}
-        className="inline-flex items-center justify-center px-4 py-2.5 rounded font-sans text-[10.5px] tracking-[0.16em] uppercase no-underline"
+        className="inline-flex items-center justify-center px-4 py-2.5 rounded font-sans text-[11px] tracking-[0.16em] uppercase no-underline"
         style={highlight
           ? { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', fontWeight: 600 }
           : { background: 'transparent', color: 'var(--ink-200)', border: '0.5px solid var(--ink-600)' }
@@ -1835,14 +1835,14 @@ function HeroCard({ onCardClick }) {
       >
         <div className="ff-float">
           <div
-            className="relative rounded-[14px] p-2.5 transition-shadow duration-500"
+            className="relative rounded-xl p-2.5 transition-shadow duration-500"
             style={{
               background: 'linear-gradient(160deg, rgba(255,255,255,0.13), rgba(255,255,255,0.03))',
               border: '0.5px solid rgba(255,255,255,0.2)',
               boxShadow: '0 30px 60px rgba(0,0,0,0.7), 0 0 90px rgba(230,185,107,0.16)',
             }}
           >
-            <div className="ff-sheen-wrap ff-sheen-loop relative aspect-[3/4] rounded-[8px] overflow-hidden bg-gradient-to-br from-[var(--bg-elev-2)] via-[#1d180e] to-[#0e0b07]">
+            <div className="ff-sheen-wrap ff-sheen-loop relative aspect-[3/4] rounded-lg overflow-hidden bg-gradient-to-br from-[var(--bg-elev-2)] via-[#1d180e] to-[#0e0b07]">
               {loading && <div className="absolute inset-0 shimmer" />}
               {item && (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -1859,7 +1859,7 @@ function HeroCard({ onCardClick }) {
       </button>
 
       {/* Live line + chips + price — reads as a caption to the card. */}
-      <div className="mt-6 flex items-center gap-2 font-mono text-[9.5px] uppercase tracking-[0.18em]" style={{ color: 'var(--ink-400)' }}>
+      <div className="mt-6 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em]" style={{ color: 'var(--ink-400)' }}>
         <span className="ff-live-dot" aria-hidden="true" />
         Featured find · Live on eBay
       </div>
@@ -2074,7 +2074,7 @@ function FilterControls({ filters, setFilter, compact = false }) {
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-baseline gap-2.5">
                         <span className="font-display text-base leading-tight" style={{ color: tierColor }}>{tier.label}</span>
-                        <span className="font-mono text-[10px] tracking-[0.1em] text-[var(--ink-600)]">{tier.range.replace('–', ' – ')}</span>
+                        <span className="font-mono text-[11px] tracking-[0.1em] text-[var(--ink-600)]">{tier.range.replace('–', ' – ')}</span>
                       </div>
                       <button
                         type="button"
@@ -2304,7 +2304,7 @@ function SegmentedGroup({ value, onChange, options, vertical = false }) {
             <button
               key={v}
               onClick={() => onChange(v)}
-              className="px-3.5 py-2.5 text-[12px] tracking-[0.04em] text-left transition-all border"
+              className="px-3.5 py-2.5 text-[13px] tracking-[0.04em] text-left transition-all border"
               style={
                 active
                   ? {
@@ -2336,7 +2336,7 @@ function SegmentedGroup({ value, onChange, options, vertical = false }) {
           <button
             key={v}
             onClick={() => onChange(v)}
-            className={`flex-1 px-3 py-3 text-[12px] tracking-[0.06em] transition-colors text-center ${
+            className={`flex-1 px-3 py-3 text-[13px] tracking-[0.06em] transition-colors text-center ${
               idx !== options.length - 1 ? 'border-r border-[var(--line-soft)]' : ''
             }`}
             style={
@@ -2454,7 +2454,7 @@ function ResultsSidebar({ filters, setFilter, onSearch, hasPending }) {
           Search →
         </button>
         {hasPending && (
-          <p className="text-[10.5px] text-[var(--gold)] italic text-center mt-3 leading-tight">
+          <p className="text-[11px] text-[var(--gold)] italic text-center mt-3 leading-tight">
             Filters changed — press Search
           </p>
         )}
@@ -2620,7 +2620,7 @@ function MobileFilterDrawer({ open, onClose, filters, setFilter, onSearch, onClo
           className="w-full text-[13px] font-bold uppercase tracking-[0.14em]"
           style={{
             minHeight: 52,
-            borderRadius: 10,
+            borderRadius: 12,
             background: 'var(--gold-bright)',
             color: 'var(--ink-on-gold)',
           }}
@@ -2661,7 +2661,7 @@ function MobileSortSheet({ open, onClose, value, onChange }) {
           );
         })}
       </div>
-      <p className="text-[11.5px] italic mt-3 leading-relaxed" style={{ color: 'var(--ink-600)' }}>
+      <p className="text-[11px] italic mt-3 leading-relaxed" style={{ color: 'var(--ink-600)' }}>
         Sort is instant — it reorders the cards you already have, no new search.
       </p>
     </MobileSheet>
@@ -2744,7 +2744,7 @@ function Filters({ filters, setFilter }) {
                   const allSelected = filters.selectedPrintRuns.length === ALL_PRESET_PRINT_RUNS.length;
                   setFilter('selectedPrintRuns', allSelected ? [] : ALL_PRESET_PRINT_RUNS);
                 }}
-                className="text-[9px] uppercase tracking-[0.18em] text-[var(--ink-600)] hover:text-[var(--gold)] transition-colors"
+                className="text-[10px] uppercase tracking-[0.18em] text-[var(--ink-600)] hover:text-[var(--gold)] transition-colors"
               >
                 {filters.selectedPrintRuns.length === ALL_PRESET_PRINT_RUNS.length ? 'Clear all' : 'Select all'}
               </button>
@@ -2778,7 +2778,7 @@ function Filters({ filters, setFilter }) {
                     }`}
                   >
                     <span className="text-sm">{tier.label}</span>
-                    <span className="font-mono text-[10px] tracking-wider opacity-80">
+                    <span className="font-mono text-[11px] tracking-wider opacity-80">
                       {tier.range}
                     </span>
                   </button>
@@ -2788,7 +2788,7 @@ function Filters({ filters, setFilter }) {
 
             {/* Custom print run section */}
             <div className="mt-5 pt-4 border-t border-[var(--line-soft)]">
-              <p className="text-[9px] uppercase tracking-[0.18em] text-[var(--ink-600)] mb-2">
+              <p className="text-[10px] uppercase tracking-[0.18em] text-[var(--ink-600)] mb-2">
                 Custom
               </p>
               <CustomPrintRunInput
@@ -2930,7 +2930,7 @@ function FilterSectionHeader({ label, number }) {
   return (
     <div className="flex items-baseline justify-between border-b border-[var(--line)] pb-3 mb-2">
       <span className="font-display text-lg">{label}</span>
-      <span className="font-mono text-[10px] text-[var(--ink-600)] tracking-wider">{number}</span>
+      <span className="font-mono text-[11px] text-[var(--ink-600)] tracking-wider">{number}</span>
     </div>
   );
 }
@@ -2996,7 +2996,7 @@ function CustomPrintRunInput({ customRuns, onAdd, onRemove }) {
             <button
               key={run}
               onClick={() => onRemove(run)}
-              className="inline-flex items-center gap-1 px-2 py-1 font-mono text-[10px] text-[var(--gold)] bg-[var(--gold)]/[0.08] border border-[var(--gold-deep)] hover:bg-[var(--gold)]/[0.14] transition-colors"
+              className="inline-flex items-center gap-1 px-2 py-1 font-mono text-[11px] text-[var(--gold)] bg-[var(--gold)]/[0.08] border border-[var(--gold-deep)] hover:bg-[var(--gold)]/[0.14] transition-colors"
               title="Click to remove"
             >
               {run}
@@ -3006,7 +3006,7 @@ function CustomPrintRunInput({ customRuns, onAdd, onRemove }) {
         </div>
       )}
 
-      {err && <p className="text-[10px] text-[var(--crit)] mt-1.5">{err}</p>}
+      {err && <p className="text-[11px] text-[var(--crit)] mt-1.5">{err}</p>}
     </div>
   );
 }
@@ -3131,7 +3131,7 @@ function PendingSearchModal({ open, onSearch, onCancel, onDismiss, floating = fa
         />
       )}
       <div
-        className={`relative w-full max-w-[400px] rounded-[6px] p-7 text-center ${floating ? 'pointer-events-auto' : ''}`}
+        className={`relative w-full max-w-[400px] rounded-lg p-7 text-center ${floating ? 'pointer-events-auto' : ''}`}
         style={{
           background: 'var(--bg-elev)',
           border: '1px solid var(--gold-deep)',
@@ -3164,7 +3164,7 @@ function PendingSearchModal({ open, onSearch, onCancel, onDismiss, floating = fa
         <div className="flex flex-col gap-3">
           <button
             onClick={onSearch}
-            className="w-full min-h-[48px] rounded-[8px] text-[12px] font-bold uppercase tracking-[0.14em]"
+            className="w-full min-h-[48px] rounded-lg text-[12px] font-bold uppercase tracking-[0.14em]"
             style={{
               background: 'var(--gold-bright)',
               color: 'var(--ink-on-gold)',
@@ -3476,7 +3476,7 @@ function ResultCard({ item, formatPrice, index, hasPendingFilters, onPendingClic
             <div className="w-full h-full flex items-center justify-center text-[var(--ink-600)] font-display text-3xl italic">◇</div>
           )}
           {item.isAuction && (
-            <span className="absolute top-1.5 left-1.5 text-[8px] uppercase tracking-[0.16em] text-[var(--gold)] bg-[var(--bg-base)]/85 px-1 py-0.5 border border-[var(--gold-deep)]/30">
+            <span className="absolute top-1.5 left-1.5 text-[10px] uppercase tracking-[0.16em] text-[var(--gold)] bg-[var(--bg-base)]/85 px-1 py-0.5 border border-[var(--gold-deep)]/30">
               Live
             </span>
           )}
@@ -3590,7 +3590,7 @@ function ResultCard({ item, formatPrice, index, hasPendingFilters, onPendingClic
               </div>
             )}
             {item.isAuction && (
-              <span className="absolute top-2 left-2 text-[9px] uppercase tracking-[0.18em] text-[var(--gold)] bg-[var(--bg-base)]/85 backdrop-blur-sm px-1.5 py-0.5 border border-[var(--gold-deep)]/30">
+              <span className="absolute top-2 left-2 text-[10px] uppercase tracking-[0.18em] text-[var(--gold)] bg-[var(--bg-base)]/85 backdrop-blur-sm px-1.5 py-0.5 border border-[var(--gold-deep)]/30">
                 Live
               </span>
             )}
@@ -3673,7 +3673,7 @@ function ResolveState({ onSuggested }) {
     <div className="pt-2">
       <div className="flex items-baseline justify-between pb-4 mb-8 border-b border-[var(--line)]">
         <span className="font-display text-lg">Begin</span>
-        <span className="font-mono text-[10px] text-[var(--ink-600)] tracking-wider">02</span>
+        <span className="font-mono text-[11px] text-[var(--ink-600)] tracking-wider">02</span>
       </div>
       <p className="font-display italic text-2xl text-[var(--ink-200)] leading-relaxed text-balance max-w-md">
         The marketplace awaits. Try a search above, or one of these.
@@ -3685,7 +3685,7 @@ function ResolveState({ onSuggested }) {
             onClick={() => onSuggested(s)}
             className="group flex items-center gap-2 text-left py-1 text-sm text-[var(--ink-200)] hover:text-[var(--gold)] transition-colors"
           >
-            <span className="font-mono text-[10px] text-[var(--ink-600)] group-hover:text-[var(--gold)] transition-colors">
+            <span className="font-mono text-[11px] text-[var(--ink-600)] group-hover:text-[var(--gold)] transition-colors">
               {String(i + 1).padStart(2, '0')}
             </span>
             <span className="border-b border-transparent group-hover:border-[var(--gold)] pb-0.5">{s}</span>
@@ -3701,7 +3701,7 @@ function LoadingState({ phrase }) {
     <div className="pt-2">
       <div className="flex items-baseline justify-between pb-4 mb-8 border-b border-[var(--line)]">
         <span className="font-display text-lg">Searching</span>
-        <span className="font-mono text-[10px] text-[var(--gold)] tracking-wider shimmer">●</span>
+        <span className="font-mono text-[11px] text-[var(--gold)] tracking-wider shimmer">●</span>
       </div>
       <p key={phrase} className="font-display italic text-2xl text-[var(--ink-200)] rise" style={{ animationDuration: '0.5s' }}>
         {phrase}…
@@ -3727,7 +3727,7 @@ function NoResultsState({ onSuggested, appliedFilters, nameFix = null, onNameFix
     <div className="pt-2">
       <div className="flex items-baseline justify-between pb-4 mb-8 border-b border-[var(--line)]">
         <span className="font-display text-lg">No matches</span>
-        <span className="font-mono text-[10px] text-[var(--ink-600)] tracking-wider">00</span>
+        <span className="font-mono text-[11px] text-[var(--ink-600)] tracking-wider">00</span>
       </div>
       {nameFix ? (
         <>
@@ -3975,7 +3975,7 @@ function DidYouMeanLine({ fix, onPick, onDismiss }) {
         type="button"
         onClick={onDismiss}
         aria-label="Dismiss suggestion"
-        className="ml-2 text-[12px] px-1 transition-colors hover:text-[var(--ink-200)]"
+        className="ml-2 text-[13px] px-1 transition-colors hover:text-[var(--ink-200)]"
         style={{ color: 'var(--ink-600)' }}
       >
         ✕
@@ -4051,7 +4051,7 @@ function CardCompanyFilter({ filters, setFilter }) {
         >
           <div className="flex items-baseline justify-between mb-3">
             <span className="text-[11px] uppercase tracking-[0.22em] font-medium" style={{ color: 'var(--gold)' }}>{c.label} lines</span>
-            <span className="text-[12px]" style={{ color: 'var(--ink-600)' }}>Optional</span>
+            <span className="text-[13px]" style={{ color: 'var(--ink-600)' }}>Optional</span>
           </div>
           <div className="flex flex-wrap gap-2">
             {c.lines.map((l) => {
@@ -4078,7 +4078,7 @@ function CardCompanyFilter({ filters, setFilter }) {
             })}
           </div>
           {COMPANY_NOTES[c.key] && (
-            <p className="text-[12px] mt-3 leading-snug" style={{ color: 'var(--ink-600)' }}>{COMPANY_NOTES[c.key]}</p>
+            <p className="text-[13px] mt-3 leading-snug" style={{ color: 'var(--ink-600)' }}>{COMPANY_NOTES[c.key]}</p>
           )}
         </div>
       ))}

@@ -100,7 +100,7 @@ export default async function WatchlistPage() {
 function EmptyState() {
   return (
     <div
-      className="rounded-[14px] p-10 md:p-14 text-center"
+      className="rounded-xl p-10 md:p-14 text-center"
       style={{
         background: 'var(--ink-on-gold)',
         border: '0.5px solid rgba(232,226,213,0.08)',

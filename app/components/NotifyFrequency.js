@@ -60,7 +60,7 @@ export default function NotifyFrequency({ initialFrequency = 'hourly', canUsePro
 
   return (
     <div
-      className="rounded-[10px] p-5 md:p-6 mb-8"
+      className="rounded-xl p-5 md:p-6 mb-8"
       style={{ background: 'var(--ink-on-gold)', border: '0.5px solid rgba(232,226,213,0.08)' }}
     >
       <div
@@ -69,7 +69,7 @@ export default function NotifyFrequency({ initialFrequency = 'hourly', canUsePro
       >
         Alert frequency
       </div>
-      <p className="text-[12.5px] mb-4" style={{ color: 'var(--ink-400)' }}>
+      <p className="text-[13px] mb-4" style={{ color: 'var(--ink-400)' }}>
         How often we email you about new matches. Applies to all your watched searches.
       </p>
 
@@ -106,7 +106,7 @@ export default function NotifyFrequency({ initialFrequency = 'hourly', canUsePro
                 <div
                   className="mt-1.5 font-mono uppercase inline-block px-1.5 py-0.5 rounded"
                   style={{
-                    fontSize: 8.5,
+                    fontSize: 10,
                     letterSpacing: '0.16em',
                     color: 'var(--gold-bright)',
                     background: 'rgba(201,149,74,0.06)',
@@ -122,7 +122,7 @@ export default function NotifyFrequency({ initialFrequency = 'hourly', canUsePro
       </div>
 
       {error && (
-        <div className="mt-3 text-[11.5px]" style={{ color: 'var(--crit)' }}>
+        <div className="mt-3 text-[11px]" style={{ color: 'var(--crit)' }}>
           {error}
         </div>
       )}

@@ -33,7 +33,7 @@ function PlanToggle({ plan, setPlan, prices, native }) {
           key={o.id}
           type="button"
           onClick={() => setPlan(o.id)}
-          className="min-h-[64px] rounded-[8px] px-3 py-2 text-center"
+          className="min-h-[64px] rounded-lg px-3 py-2 text-center"
           style={{
             background: plan === o.id ? 'rgba(212,175,92,0.12)' : 'transparent',
             border: plan === o.id ? '1px solid #d4af5c' : '0.5px solid rgba(232,226,213,0.15)',
@@ -41,7 +41,7 @@ function PlanToggle({ plan, setPlan, prices, native }) {
           }}
         >
           <span className="block text-[12px] font-bold uppercase tracking-[0.12em]">{o.label}</span>
-          <span className="block text-[12px]" style={{ color: 'var(--ink-400)' }}>{o.sub}</span>
+          <span className="block text-[13px]" style={{ color: 'var(--ink-400)' }}>{o.sub}</span>
           {o.note && <span className="block text-[10px] uppercase tracking-[0.12em]" style={{ color: 'var(--gold-bright)' }}>{o.note}</span>}
         </button>
       ))}
@@ -174,7 +174,7 @@ export default function SubscribePage() {
       </div>
 
       <div
-        className="w-full max-w-[400px] rounded-2xl p-8 text-center"
+        className="w-full max-w-[400px] rounded-xl p-8 text-center"
         style={{ background: 'var(--ink-on-gold)', border: '0.5px solid rgba(232,226,213,0.08)' }}
       >
         {(stage === 'app' || stage === 'buying') ? (
@@ -194,12 +194,12 @@ export default function SubscribePage() {
             </p>
             <PlanToggle plan={plan} setPlan={setPlan} prices={prices} native />
             {error && (
-              <p className="text-[12px] mb-4 leading-relaxed" style={{ color: 'var(--crit)' }}>{error}</p>
+              <p className="text-[13px] mb-4 leading-relaxed" style={{ color: 'var(--crit)' }}>{error}</p>
             )}
             <button
               onClick={handleBuy}
               disabled={stage === 'buying'}
-              className="w-full min-h-[44px] rounded-[8px] text-[12px] font-bold uppercase tracking-[0.14em] disabled:opacity-60"
+              className="w-full min-h-[44px] rounded-lg text-[12px] font-bold uppercase tracking-[0.14em] disabled:opacity-60"
               style={{
                 background: 'var(--gold-bright)',
                 color: 'var(--ink-on-gold)',
@@ -239,11 +239,11 @@ export default function SubscribePage() {
             </p>
             <PlanToggle plan={plan} setPlan={setPlan} prices={prices} />
             {error && (
-              <p className="text-[12px] mb-4 leading-relaxed" style={{ color: '#d97757' }}>{error}</p>
+              <p className="text-[13px] mb-4 leading-relaxed" style={{ color: '#d97757' }}>{error}</p>
             )}
             <button
               onClick={handleWebCheckout}
-              className="w-full min-h-[44px] rounded-[8px] text-[12px] font-bold uppercase tracking-[0.14em]"
+              className="w-full min-h-[44px] rounded-lg text-[12px] font-bold uppercase tracking-[0.14em]"
               style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', border: 'none' }}
             >
               Start 14-day free trial
@@ -265,7 +265,7 @@ export default function SubscribePage() {
             </p>
             <Link
               href="/watchlist"
-              className="block w-full min-h-[44px] py-3 rounded-[8px] text-[12px] font-bold uppercase tracking-[0.14em]"
+              className="block w-full min-h-[44px] py-3 rounded-lg text-[12px] font-bold uppercase tracking-[0.14em]"
               style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}
             >
               Go to saved searches
@@ -288,7 +288,7 @@ export default function SubscribePage() {
             <div className="flex flex-col gap-2">
               <button
                 onClick={() => window.location.reload()}
-                className="w-full min-h-[44px] rounded-[8px] text-[12px] font-bold uppercase tracking-[0.14em]"
+                className="w-full min-h-[44px] rounded-lg text-[12px] font-bold uppercase tracking-[0.14em]"
                 style={{
                   background: 'var(--gold-bright)',
                   color: 'var(--ink-on-gold)',

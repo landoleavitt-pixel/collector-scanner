@@ -45,7 +45,7 @@ export default function ForgotPasswordPage() {
 
       <div className="flex-1 flex items-center justify-center px-6 py-12">
         <div
-          className="w-full max-w-[400px] rounded-2xl p-9"
+          className="w-full max-w-[400px] rounded-xl p-9"
           style={{
             background: 'var(--ink-on-gold)',
             border: '0.5px solid rgba(232,226,213,0.08)',
@@ -99,7 +99,7 @@ export default function ForgotPasswordPage() {
               </div>
 
               {error && (
-                <p className="text-[12px] mb-3 text-center" style={{ color: 'var(--crit)' }}>
+                <p className="text-[13px] mb-3 text-center" style={{ color: 'var(--crit)' }}>
                   {error}
                 </p>
               )}
@@ -116,7 +116,7 @@ export default function ForgotPasswordPage() {
           )}
 
           <div
-            className="text-center text-[12px] pt-4"
+            className="text-center text-[13px] pt-4"
             style={{ color: 'var(--ink-400)', borderTop: '0.5px solid rgba(232,226,213,0.08)' }}
           >
             <Link href="/login" className="font-serif italic" style={{ color: 'var(--gold-bright)' }}>

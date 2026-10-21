@@ -89,7 +89,7 @@ function PaywallModal({ onClose }) {
       />
 
       <div
-        className="relative w-full max-w-[400px] rounded-[6px] p-8 text-center"
+        className="relative w-full max-w-[400px] rounded-lg p-8 text-center"
         style={{
           background: 'var(--bg-elev)',
           border: '1px solid var(--gold-deep)',
@@ -129,7 +129,7 @@ function PaywallModal({ onClose }) {
           We check eBay every hour. eBay's own saved searches email once a day.
         </p>
         <p
-          className="text-[12px] mb-7"
+          className="text-[13px] mb-7"
           style={{ color: 'var(--gold)' }}
         >
           $6.99 / month · 14-day free trial
@@ -143,7 +143,7 @@ function PaywallModal({ onClose }) {
           <button
             onClick={handleUpgrade}
             disabled={loading}
-            className="w-full min-h-[48px] rounded-[8px] text-[12px] font-bold uppercase tracking-[0.14em] transition-opacity disabled:opacity-60"
+            className="w-full min-h-[48px] rounded-lg text-[12px] font-bold uppercase tracking-[0.14em] transition-opacity disabled:opacity-60"
             style={{
               background: 'var(--gold-bright)',
               color: 'var(--ink-on-gold)',
@@ -259,7 +259,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
       {showPaywall && <PaywallModal onClose={() => setShowPaywall(false)} />}
 
       <div
-        className="rounded-[10px] p-5 md:p-6 grid gap-5 lg:gap-6 grid-cols-1 lg:grid-cols-[1fr_auto_auto] items-start lg:items-center"
+        className="rounded-xl p-5 md:p-6 grid gap-5 lg:gap-6 grid-cols-1 lg:grid-cols-[1fr_auto_auto] items-start lg:items-center"
         style={{
           background: 'var(--ink-on-gold)',
           // Alerts live → gold outline + faint glow. Everything else gets
@@ -284,7 +284,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
             {search.name}
           </div>
           <div
-            className="text-[12px] font-serif italic mb-2.5 truncate"
+            className="text-[13px] font-serif italic mb-2.5 truncate"
             style={{ color: 'var(--ink-400)' }}
           >
             "{search.query}"
@@ -292,7 +292,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
           <div className="flex flex-wrap gap-1.5">
             {chips.length === 0 ? (
               <span
-                className="text-[9px] tracking-[0.18em] uppercase px-2 py-1 rounded"
+                className="text-[10px] tracking-[0.18em] uppercase px-2 py-1 rounded"
                 style={TIER_STYLES.neutral}
               >
                 No filters
@@ -303,7 +303,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
                 return (
                   <span
                     key={i}
-                    className="text-[9px] tracking-[0.18em] uppercase px-2 py-1 rounded"
+                    className="text-[10px] tracking-[0.18em] uppercase px-2 py-1 rounded"
                     style={{
                       background: style.bg,
                       color: style.color,
@@ -359,7 +359,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
         </div>
         {limitMsg && (
           <span
-            className="text-[10px] leading-tight text-left lg:text-right max-w-[220px]"
+            className="text-[11px] leading-tight text-left lg:text-right max-w-[220px]"
             style={{ color: 'var(--crit)' }}
           >
             {limitMsg}

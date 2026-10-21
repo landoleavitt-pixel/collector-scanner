@@ -233,7 +233,7 @@ const badgeWrapStyle = {
   bottom: 6,
   right: 6,
   padding: '4px 6px',
-  borderRadius: 5,
+  borderRadius: 4,
   background: 'rgba(10,9,7,0.85)',
   backdropFilter: 'blur(4px)',
   WebkitBackdropFilter: 'blur(4px)',
@@ -253,7 +253,7 @@ const digitBoxStyle = {
   height: CELL_H,
   background: 'var(--bg-elev)',
   border: '0.5px solid var(--line)',
-  borderRadius: 3,
+  borderRadius: 4,
   overflow: 'hidden',
   position: 'relative',
 };
@@ -268,7 +268,7 @@ const colonStyle = (urgent) => ({
 
 const endedTextStyle = {
   fontFamily: '"SF Mono", Menlo, ui-monospace, monospace',
-  fontSize: 9,
+  fontSize: 10,
   fontWeight: 500,
   textTransform: 'uppercase',
   letterSpacing: '0.16em',

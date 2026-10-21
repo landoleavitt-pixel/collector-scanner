@@ -15,10 +15,10 @@ function Tier({ name, tagline, price, per, cta, fineprint, features, hero = fals
     : { border: '1px solid var(--line)', background: soon ? '#100e0a' : 'var(--bg-elev)' };
 
   return (
-    <div className={`relative flex flex-col rounded-[4px] p-6 lg:p-7 ${hero ? 'lg:-translate-y-2' : ''}`} style={cardStyle}>
+    <div className={`relative flex flex-col rounded p-6 lg:p-7 ${hero ? 'lg:-translate-y-2' : ''}`} style={cardStyle}>
       {ribbon && (
         <span
-          className="absolute top-0 left-6 -translate-y-1/2 text-[9.5px] uppercase tracking-[0.16em] px-[11px] py-[5px] rounded-[2px]"
+          className="absolute top-0 left-6 -translate-y-1/2 text-[10px] uppercase tracking-[0.16em] px-[11px] py-[5px] rounded"
           style={
             hero
               ? { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', fontWeight: 700 }
@@ -32,7 +32,7 @@ function Tier({ name, tagline, price, per, cta, fineprint, features, hero = fals
       <div className="font-display italic text-[26px] leading-none mb-1.5" style={{ color: hero ? '#ffe6a8' : 'var(--ink-100)' }}>
         {name}
       </div>
-      <p className="text-[12.5px] leading-snug min-h-[34px]" style={{ color: hero ? '#d8c9a4' : 'var(--ink-400)' }}>
+      <p className="text-[13px] leading-snug min-h-[34px]" style={{ color: hero ? '#d8c9a4' : 'var(--ink-400)' }}>
         {tagline}
       </p>
 
@@ -56,7 +56,7 @@ function Tier({ name, tagline, price, per, cta, fineprint, features, hero = fals
           style={
             hero
               ? { minHeight: 54, background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', fontWeight: 700, fontSize: 13, boxShadow: '0 8px 24px -10px rgba(217,156,20,0.6)' }
-              : { minHeight: 48, background: 'transparent', border: '1px solid var(--line)', color: 'var(--ink-200)', fontWeight: 600, fontSize: 12 }
+              : { minHeight: 48, background: 'transparent', border: '1px solid var(--line)', color: 'var(--ink-200)', fontWeight: 600, fontSize: 13 }
           }
         >
           {cta.label}
@@ -65,7 +65,7 @@ function Tier({ name, tagline, price, per, cta, fineprint, features, hero = fals
         <div style={{ minHeight: 48 }} className="mt-4" />
       )}
 
-      <p className="text-[10.5px] text-center mt-2 mb-4 min-h-[14px]" style={{ color: hero ? 'var(--ink-400)' : 'var(--ink-600)' }}>
+      <p className="text-[11px] text-center mt-2 mb-4 min-h-[14px]" style={{ color: hero ? 'var(--ink-400)' : 'var(--ink-600)' }}>
         {fineprint || '\u00a0'}
       </p>
 

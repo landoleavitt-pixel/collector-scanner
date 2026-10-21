@@ -47,7 +47,7 @@ export default function EarlyAccessBanner() {
 
   return (
     <div
-      className="rise max-w-[680px] mx-auto mb-12 lg:mb-16 px-5 py-5 rounded-[6px]"
+      className="rise max-w-[680px] mx-auto mb-12 lg:mb-16 px-5 py-5 rounded-lg"
       style={{
         animationDelay: '220ms',
         background: 'linear-gradient(180deg, rgba(212,175,92,0.06) 0%, rgba(212,175,92,0.02) 100%)',
@@ -66,7 +66,7 @@ export default function EarlyAccessBanner() {
 
         {status === 'success' ? (
           <div
-            className="flex-none px-4 py-2.5 rounded-[4px] text-[12px] tracking-[0.06em]"
+            className="flex-none px-4 py-2.5 rounded text-[13px] tracking-[0.06em]"
             style={{
               background: 'rgba(212,175,92,0.10)',
               color: 'var(--gold-bright)',
@@ -86,7 +86,7 @@ export default function EarlyAccessBanner() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
               disabled={status === 'submitting'}
-              className="flex-1 sm:w-[220px] px-3 py-2.5 rounded-[4px] text-[13px] text-[var(--ink-100)] outline-none transition-colors"
+              className="flex-1 sm:w-[220px] px-3 py-2.5 rounded text-[13px] text-[var(--ink-100)] outline-none transition-colors"
               style={{
                 background: 'rgba(10,9,7,0.5)',
                 border: '0.5px solid rgba(232,226,213,0.12)',
@@ -97,7 +97,7 @@ export default function EarlyAccessBanner() {
             <button
               type="submit"
               disabled={status === 'submitting' || !email}
-              className="px-4 py-2.5 rounded-[4px] text-[11px] uppercase tracking-[0.14em] font-medium transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+              className="px-4 py-2.5 rounded text-[11px] uppercase tracking-[0.14em] font-medium transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
               style={{
                 background: 'var(--gold-bright)',
                 color: 'var(--ink-on-gold)',
@@ -110,7 +110,7 @@ export default function EarlyAccessBanner() {
       </div>
 
       {status === 'error' && (
-        <p className="text-[12px] mt-3" style={{ color: '#e57373' }}>
+        <p className="text-[13px] mt-3" style={{ color: '#e57373' }}>
           {errorMessage}
         </p>
       )}

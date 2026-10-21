@@ -187,7 +187,7 @@ export default function CardImageCarousel({
       {lensStyle && <div style={lensStyle} aria-hidden="true" />}
 
       {hasMultiple && (
-        <div className="absolute top-2 left-2 text-[9px] tracking-[0.16em] uppercase px-2 py-0.5 rounded"
+        <div className="absolute top-2 left-2 text-[10px] tracking-[0.16em] uppercase px-2 py-0.5 rounded"
              style={{ background: 'rgba(10,9,7,0.65)', backdropFilter: 'blur(4px)', color: 'var(--gold)', border: '0.5px solid rgba(201,149,74,0.3)' }}>
           {safeIndex + 1} / {safeImages.length}
         </div>

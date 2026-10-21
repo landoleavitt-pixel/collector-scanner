@@ -90,7 +90,7 @@ export default function AdminUsagePage() {
 function LoadingState() {
   return (
     <div
-      className="rounded-[10px] p-10 text-center"
+      className="rounded-xl p-10 text-center"
       style={{ background: 'var(--ink-on-gold)', border: '0.5px solid rgba(232,226,213,0.08)' }}
     >
       <div className="font-serif italic text-[18px]" style={{ color: 'var(--ink-200)' }}>
@@ -105,7 +105,7 @@ function ErrorState({ error }) {
   const isForbidden = /not authorized/i.test(error);
   return (
     <div
-      className="rounded-[10px] p-8 text-center"
+      className="rounded-xl p-8 text-center"
       style={{
         background: 'var(--ink-on-gold)',
         border: '0.5px solid rgba(217,119,87,0.3)',
@@ -115,7 +115,7 @@ function ErrorState({ error }) {
       <div className="font-serif italic text-[18px] mb-2" style={{ color: 'var(--ink-200)' }}>
         {isForbidden ? 'Not authorized.' : 'Could not load usage.'}
       </div>
-      <div className="text-[12px]" style={{ color: 'var(--ink-400)' }}>
+      <div className="text-[13px]" style={{ color: 'var(--ink-400)' }}>
         {error}
       </div>
     </div>
@@ -128,13 +128,13 @@ function UsageTable({ data }) {
   if (summary.length === 0) {
     return (
       <div
-        className="rounded-[10px] p-8 text-center"
+        className="rounded-xl p-8 text-center"
         style={{ background: 'var(--ink-on-gold)', border: '0.5px solid rgba(232,226,213,0.08)' }}
       >
         <div className="font-serif italic text-[18px] mb-2" style={{ color: 'var(--ink-200)' }}>
           No daily quotas to show.
         </div>
-        <div className="text-[12px]" style={{ color: 'var(--ink-500)' }}>
+        <div className="text-[13px]" style={{ color: 'var(--ink-500)' }}>
           eBay returned zero rate-limited resources for the buy context.
           {' '}This sometimes means the call worked but the data is empty.
         </div>
@@ -160,7 +160,7 @@ function UsageTable({ data }) {
 
       {/* Caveat: eBay's endpoint has a known reliability issue */}
       <div
-        className="text-[11px] mt-8 p-4 rounded-[8px]"
+        className="text-[11px] mt-8 p-4 rounded-lg"
         style={{
           background: 'rgba(255,217,122,0.04)',
           border: '0.5px solid rgba(255,217,122,0.12)',
@@ -200,7 +200,7 @@ function UsageRow({ row }) {
 
   return (
     <div
-      className="rounded-[8px] p-4"
+      className="rounded-lg p-4"
       style={{ background: 'var(--ink-on-gold)', border: '0.5px solid rgba(232,226,213,0.08)' }}
     >
       <div className="flex items-baseline justify-between mb-2 gap-4 flex-wrap">
@@ -214,9 +214,9 @@ function UsageRow({ row }) {
         </div>
         <div className="text-right">
           <div className="font-display italic text-[20px]" style={{ color: 'var(--gold)' }}>
-            {used.toLocaleString()} <span style={{ color: 'var(--ink-500)' }} className="text-[12px]">/ {limit.toLocaleString()}</span>
+            {used.toLocaleString()} <span style={{ color: 'var(--ink-500)' }} className="text-[13px]">/ {limit.toLocaleString()}</span>
           </div>
-          <div className="text-[10px]" style={{ color: 'var(--ink-500)' }}>
+          <div className="text-[11px]" style={{ color: 'var(--ink-500)' }}>
             resets {resetLabel}
           </div>
         </div>

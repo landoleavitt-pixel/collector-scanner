@@ -230,7 +230,7 @@ export default function Header() {
                         <span>Plan</span>
                         {tier && (
                           <span
-                            className="text-[9px] uppercase tracking-[0.16em] px-2 py-0.5 rounded"
+                            className="text-[10px] uppercase tracking-[0.16em] px-2 py-0.5 rounded"
                             style={{
                               color: 'var(--gold-bright)',
                               border: '0.5px solid var(--gold-deep)',
@@ -434,7 +434,7 @@ function CloseAccountDialog({ onClose, appleBilled }) {
           }}
         />
         {error && (
-          <div className="text-[12px] mb-3" style={{ color: 'var(--crit)' }}>
+          <div className="text-[13px] mb-3" style={{ color: 'var(--crit)' }}>
             {error}
           </div>
         )}
