@@ -23,6 +23,7 @@ import { CARD_COMPANIES, brandFilterLabels } from '../lib/cardBrands';
 import { WatchlistContext, WatchlistProvider } from '../lib/watchlistContext';
 import { useUser } from '../lib/useUser';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { isNativeApp } from '../lib/native';
 
 // Print run tiers — grouped visually by rarity.
 // Collectors mentally bucket these by tier, so we present them that way.
@@ -1397,67 +1398,65 @@ function RotatingPlaceholder({ align = 'center' }) {
 function WhyFields({ user }) {
   return (
     <>
-      {/* Free-account CTA strip — sits between hero and how-it-works. Only
-          shown to logged-out visitors; signed-in users already converted. */}
-      {!user && <FreeAccountCTA />}
-
-      <section id="why" className="relative max-w-[1040px] mx-auto px-6 lg:px-10 py-16 lg:py-24 scroll-mt-24">
-        <div className="text-[10px] tracking-[0.22em] uppercase mb-3.5" style={{ color: 'var(--gold)', fontFamily: 'ui-monospace, monospace' }}>
-          How it works
-        </div>
-        <h2 className="font-display italic text-[clamp(2rem,5vw,3.4rem)] leading-[1.05] tracking-[-0.02em] mb-10">
-          Three steps.
-        </h2>
-
-        {/* Three balanced columns — each gets an artifact so heights match */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 mb-12">
-          {/* Step 01 — multi-tier filter picker */}
-          <div
-            className="rounded-xl p-6 flex flex-col"
-            style={{ background: 'var(--bg-elev)', border: '0.5px solid var(--line-soft)' }}
-          >
-            <div className="font-mono text-[11px] tracking-[0.2em]" style={{ color: 'var(--gold)' }}>01</div>
-            <h4 className="font-display italic text-[19px] mt-2 mb-1.5">Set your tier</h4>
-            <p className="text-[13px] leading-relaxed" style={{ color: 'var(--ink-400)' }}>
-              Pick the print runs you want and stack on autos, rookies, condition.
-            </p>
-            <FilterPickerArtifact />
-          </div>
-
-          {/* Step 02 — watchlist rows */}
-          <div
-            className="rounded-xl p-6 flex flex-col"
-            style={{ background: 'var(--bg-elev)', border: '0.5px solid var(--line-soft)' }}
-          >
-            <div className="font-mono text-[11px] tracking-[0.2em]" style={{ color: 'var(--gold)' }}>02</div>
-            <h4 className="font-display italic text-[19px] mt-2 mb-1.5">Save what catches your eye</h4>
-            <p className="text-[13px] leading-relaxed" style={{ color: 'var(--ink-400)' }}>
-              Add listings to your watchlist. We keep price and status fresh.
-            </p>
-            <WatchlistArtifact />
-          </div>
-
-          {/* Step 03 — saved-search card */}
-          <div
-            className="rounded-xl p-6 flex flex-col"
-            style={{ background: 'var(--bg-elev)', border: '0.5px solid var(--line-soft)' }}
-          >
-            <div className="font-mono text-[11px] tracking-[0.2em]" style={{ color: 'var(--gold)' }}>03</div>
-            <h4 className="font-display italic text-[19px] mt-2 mb-1.5">Upgrade to be alerted</h4>
-            <p className="text-[13px] leading-relaxed" style={{ color: 'var(--ink-400)' }}>
-              Save your filters — we'll email you when a match lists.
-            </p>
-            <div className="mt-4 flex-1">
-              <SavedSearchExampleCard />
+      {/* How it works — open editorial columns on the page background (no
+          boxes), so it reads differently from the band and plans below. */}
+      <section id="why" className="relative max-w-[1040px] mx-auto px-6 lg:px-10 pt-16 lg:pt-24 pb-14 lg:pb-16 scroll-mt-24">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 md:gap-8 mb-6 md:mb-10">
+          <div>
+            <div className="font-mono text-[10px] tracking-[0.22em] uppercase mb-3" style={{ color: 'var(--gold)' }}>
+              How it works
             </div>
+            <h2 className="font-display italic text-[clamp(2rem,5vw,3.4rem)] leading-[1.04] tracking-[-0.02em]">
+              Three steps.
+            </h2>
           </div>
+          <p className="text-[15px] leading-relaxed max-w-[330px]" style={{ color: 'var(--ink-400)' }}>
+            Search the way collectors actually think: by print run, autograph and rookie, all at once.
+          </p>
         </div>
+
+        <ol className="list-none p-0 m-0 grid grid-cols-1 md:grid-cols-3 border-t" style={{ borderColor: 'var(--line)' }}>
+          <HowStep n="01" title="Set your tier" body="Pick the print runs you want and stack on autos, rookies, condition.">
+            <FilterPickerArtifact />
+          </HowStep>
+          <HowStep n="02" title="Save what catches your eye" body="Add listings to your watchlist. We keep price and status fresh.">
+            <WatchlistArtifact />
+          </HowStep>
+          <HowStep n="03" title="Upgrade to be alerted" body="Save your filters and we'll email you when a match lists." last>
+            <SavedSearchExampleCard />
+          </HowStep>
+        </ol>
       </section>
 
-      {/* Plans — three-tier breakdown with full feature lists in each tier
-          and gold-highlighted items showing what's NEW at each level. */}
+      {/* Free-account band — full width, only for logged-out visitors. */}
+      {!user && <FreeAccountCTA />}
+
       <PlansSection user={user} />
     </>
+  );
+}
+
+/* One how-it-works column. On phones it becomes a row: the outlined
+   numeral on the left, the copy and artifact on the right. */
+function HowStep({ n, title, body, children, last = false }) {
+  return (
+    <li
+      className={`grid grid-cols-[48px_1fr] md:block gap-x-4 py-6 md:pt-7 md:pb-2 ${last ? '' : 'border-b md:border-b-0 md:border-r md:pr-6 md:mr-6'}`}
+      style={{ borderColor: 'var(--line-soft)' }}
+    >
+      <div
+        aria-hidden="true"
+        className="font-display italic leading-none text-[44px] md:text-[64px]"
+        style={{ color: 'transparent', WebkitTextStroke: '1px var(--gold-deep)' }}
+      >
+        {n}
+      </div>
+      <div className="min-w-0">
+        <h4 className="font-display italic text-[21px] md:text-[24px] mt-0.5 md:mt-3 mb-1.5">{title}</h4>
+        <p className="text-[14px] md:text-[15px] leading-relaxed mb-4" style={{ color: 'var(--ink-400)' }}>{body}</p>
+        {children}
+      </div>
+    </li>
   );
 }
 
@@ -1467,17 +1466,8 @@ function WhyFields({ user }) {
 function FilterPickerArtifact() {
   const chipBase = 'font-mono text-[11px] px-1.5 py-[2px] rounded';
   return (
-    <div
-      className="mt-4 rounded-lg p-3.5 flex-1"
-      style={{ background: 'var(--bg-elev-2)', border: '0.5px solid var(--line-soft)' }}
-    >
-      <div
-        className="font-mono text-[10px] tracking-[0.18em] uppercase mb-2"
-        style={{ color: 'var(--ink-500)' }}
-      >
-        Print runs
-      </div>
-      <div className="flex flex-wrap gap-1 mb-3">
+    <div>
+      <div className="flex flex-wrap gap-1 mb-2">
         <TierChip run="/5" />
         <TierChip run="/10" />
         <TierChip run="/25" />
@@ -1485,12 +1475,6 @@ function FilterPickerArtifact() {
         <TierChip run="/99" />
         <TierChip run="/199" />
         <TierChip run="/499" />
-      </div>
-      <div
-        className="font-mono text-[10px] tracking-[0.18em] uppercase mb-2"
-        style={{ color: 'var(--ink-500)' }}
-      >
-        Toggles
       </div>
       <div className="flex flex-wrap gap-1">
         <span className={chipBase} style={{ ...OUTLINE_CHIP_STYLE, letterSpacing: '0.14em' }}>Auto</span>
@@ -1505,44 +1489,19 @@ function FilterPickerArtifact() {
    First row is an active /25 (grail); second is a sold /99 (ultra). Shows
    the watchlist auto-refreshes status. */
 function WatchlistArtifact() {
-  const cardImg = {
-    width: 44, height: 56, borderRadius: 4, flex: 'none',
-    background: 'radial-gradient(ellipse at 30% 30%, rgba(255,217,122,0.18) 0%, transparent 60%), linear-gradient(140deg, #3a2e1f 0%, #1a1310 100%)',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    color: 'var(--gold-deep)', fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: 18,
-  };
-  const Row = ({ tierRun, toggle, title, meta }) => (
-    <div
-      className="rounded-lg p-2.5 flex gap-2.5 items-center"
-      style={{ background: 'var(--bg-elev-2)', border: '0.5px solid var(--line-soft)' }}
-    >
-      <div style={cardImg}>◇</div>
-      <div className="flex-1 min-w-0">
-        <div className="flex gap-1 mb-1">
-          <TierChip run={tierRun} />
-          {toggle && (
-            <span
-              className="font-mono text-[11px] px-1.5 py-[2px] rounded"
-              style={{ ...OUTLINE_CHIP_STYLE, letterSpacing: '0.14em' }}
-            >
-              {toggle}
-            </span>
-          )}
-        </div>
-        <div className="text-[11px] leading-snug mb-1" style={{ color: 'var(--ink-200)' }}>{title}</div>
-        <div
-          className="font-mono text-[10px] tracking-[0.14em] uppercase"
-          style={{ color: 'var(--gold)' }}
-        >
-          {meta}
-        </div>
+  const Row = ({ tierRun, title, meta, sold }) => (
+    <div className="flex items-center justify-between gap-3 py-2 border-b border-dashed" style={{ borderColor: 'var(--line-soft)' }}>
+      <div className="flex items-center gap-2 min-w-0">
+        <TierChip run={tierRun} />
+        <span className="text-[13px] truncate" style={{ color: 'var(--ink-200)' }}>{title}</span>
       </div>
+      <span className="font-mono text-[12px] flex-none" style={{ color: sold ? 'var(--ink-400)' : 'var(--gold-bright)' }}>{meta}</span>
     </div>
   );
   return (
-    <div className="mt-4 flex flex-col gap-2.5 flex-1">
-      <Row tierRun="/25" toggle="Auto" title="2024 Bowman Chrome Auto Gold Refractor" meta="$1,840 · 3 bids · 2d left" />
-      <Row tierRun="/99" toggle="RC" title="2025 Topps Chrome Refractor — Skenes" meta="$120 · sold · yesterday" />
+    <div>
+      <Row tierRun="/25" title="Bowman Chrome Auto Gold" meta="$1,840" />
+      <Row tierRun="/99" title="Topps Chrome Skenes" meta="Sold" sold />
     </div>
   );
 }
@@ -1554,7 +1513,7 @@ function TierChip({ run }) {
   if (!tier) return null;
   return (
     <span
-      className="font-mono text-[11px] px-1.5 py-[2px] rounded"
+      className="font-mono text-[11px] px-1.5 py-[2px] rounded flex-none"
       style={tierChipStyle(tier)}
     >
       {run.startsWith('/') ? run : `/${run}`}
@@ -1562,214 +1521,189 @@ function TierChip({ run }) {
   );
 }
 
-/* Free-account CTA — sits below the hero, above how-it-works.
-   The pitch is the watchlist value (the real free-account benefit),
-   not alerts. Alerts get pitched honestly in step 3 + the Plans table. */
+/* Free-account band — a full-width contrast strip between how-it-works
+   and plans. The pitch is the watchlist (the real free-account benefit). */
 function FreeAccountCTA() {
   return (
     <section
-      className="px-6 lg:px-10 py-10 text-center"
-      style={{
-        background: 'rgba(201,149,74,0.04)',
-        borderTop: '0.5px solid var(--gold-deep)',
-        borderBottom: '0.5px solid var(--gold-deep)',
-      }}
+      className="relative overflow-hidden"
+      style={{ background: 'var(--bg-elev-2)', borderTop: '1px solid var(--gold-deep)', borderBottom: '1px solid var(--gold-deep)' }}
     >
       <div
-        className="font-mono text-[10px] tracking-[0.24em] uppercase mb-2.5"
-        style={{ color: 'var(--gold)', fontFamily: 'ui-monospace, monospace' }}
-      >
-        Free account
-      </div>
-      <h3 className="font-display italic text-[26px] leading-tight mb-2">
-        Track cards you find. <em className="not-italic" style={{ color: 'var(--gold-bright)', fontStyle: 'italic' }}>For free.</em>
-      </h3>
-      <p
-        className="text-[13px] leading-relaxed max-w-[480px] mx-auto mb-5"
-        style={{ color: 'var(--ink-200)' }}
-      >
-        Save listings to your watchlist and we'll keep them updated — live price,
-        bid count, sold status. No credit card.
-      </p>
-      <Link
-        href="/signup"
-        className="inline-flex items-center gap-2 px-6 py-3 rounded text-[11px] tracking-[0.16em] uppercase font-semibold"
-        style={{
-          background: 'var(--gold-bright)',
-          color: 'var(--ink-on-gold)',
-        }}
-      >
-        Create free account →
-      </Link>
-      <div
-        className="mt-3 text-[11px]"
-        style={{ color: 'var(--ink-500)' }}
-      >
-        Search works without an account · upgrade anytime
+        aria-hidden="true"
+        className="absolute -right-20 -top-28 w-[420px] h-[420px] rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(201,149,74,0.14), transparent 65%)' }}
+      />
+      <div className="relative max-w-[1040px] mx-auto px-6 lg:px-10 py-8 md:py-9 flex flex-col md:flex-row md:items-center md:justify-between gap-5 md:gap-8">
+        <div>
+          <h3 className="font-display italic text-[clamp(1.6rem,3.6vw,2.4rem)] leading-[1.1]">
+            Track cards you find. <em style={{ color: 'var(--gold-bright)' }}>For free.</em>
+          </h3>
+          <p className="text-[15px] leading-relaxed mt-1.5" style={{ color: 'var(--ink-400)' }}>
+            Save listings to your watchlist and we'll keep them updated. No credit card.
+          </p>
+        </div>
+        <Link
+          href="/signup"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg text-[12px] tracking-[0.14em] uppercase font-semibold whitespace-nowrap"
+          style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}
+        >
+          Create free account →
+        </Link>
       </div>
     </section>
   );
 }
 
-/* Saved-search example card — visual that lives inside step 03. Shows a
-   user's saved search with the same star + name + filter badges as the
-   real watchlist row, so the visitor sees what they'd create. Uses the
-   shared TierChip helper so badge colors stay consistent with production. */
+/* Saved-search example card — visual that lives inside step 03: the alert
+   a Base member gets when a saved search finds a match. */
 function SavedSearchExampleCard() {
-  const toggleChip = 'font-mono text-[11px] px-1.5 py-[2px] rounded';
   return (
-    <div
-      className="rounded-lg p-3.5"
-      style={{ background: 'var(--bg-elev-2)', border: '0.5px solid var(--gold-deep)' }}
-    >
-      <div className="flex items-center gap-1.5 mb-2" style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: '13px', color: 'var(--ink-100)' }}>
-        <span style={{ color: 'var(--gold)', fontSize: '11px' }}>★</span>
-        <span>Caitlin Clark</span>
-      </div>
-      <div className="flex flex-wrap gap-1 mb-2.5">
-        <TierChip run="/5" />
-        <TierChip run="/10" />
-        <TierChip run="/25" />
-        <span className={toggleChip} style={{ ...OUTLINE_CHIP_STYLE, letterSpacing: '0.14em' }}>Auto</span>
-        <span className={toggleChip} style={{ ...OUTLINE_CHIP_STYLE, letterSpacing: '0.14em' }}>RC</span>
-      </div>
-      <div className="h-px -mx-3.5 mb-2.5" style={{ background: 'var(--line)' }} />
-      <div className="flex items-start gap-2">
-        <span className="w-1.5 h-1.5 rounded-full mt-1.5 flex-none" style={{ background: 'var(--gold)', boxShadow: '0 0 6px var(--gold)' }} />
-        <div className="text-[11px] leading-snug" style={{ color: 'var(--ink-200)' }}>
-          <span className="block font-mono text-[10px] tracking-[0.18em] uppercase mb-0.5" style={{ color: 'var(--gold)' }}>
-            New match · just listed
-          </span>
-          2024 Bowman Chrome Auto Gold Refractor /25
-        </div>
-      </div>
+    <div className="text-[13px] leading-snug pl-3 py-1" style={{ borderLeft: '2px solid var(--gold)', color: 'var(--ink-200)' }}>
+      <span className="block font-mono text-[10px] tracking-[0.18em] uppercase mb-1" style={{ color: 'var(--gold-bright)' }}>
+        New match · just listed
+      </span>
+      Caitlin Clark Auto <TierChip run="/25" /> listed 4 min ago
     </div>
   );
 }
 
-/* PlansSection — three columns showing Anonymous / Free / Base.
-   Each tier lists its FULL feature set rather than referring back to
-   the previous one. Items NEW at that tier are highlighted in gold
-   so the upgrade value scans at a glance. */
-function PlansSection({ user }) {
-  // Single feature-list component for consistency across all three tiers
-  const Tier = ({ name, price, priceUnit, line, features, ctaLabel, ctaHref, highlight }) => (
+/* One plan in PlansSection. `featured` raises it (Base). `summary` is the
+   one-line version phones show for the non-featured plans. */
+function PlanTier({ name, price, priceUnit, line, summary, features, ctaLabel, ctaShort, ctaHref, featured = false, ribbon }) {
+  return (
     <div
-      className="rounded-xl p-6 flex flex-col"
-      style={{
-        background: highlight
-          ? 'linear-gradient(180deg, rgba(201,149,74,0.06) 0%, var(--bg-elev) 100%)'
-          : 'var(--bg-elev)',
-        border: highlight ? '0.5px solid var(--gold-deep)' : '0.5px solid var(--line)',
-      }}
+      className={`relative flex flex-col p-6 md:p-7 rounded-xl ${featured
+        ? 'order-first md:order-none md:-my-3'
+        : 'border md:border-0 md:rounded-none'}`}
+      style={featured
+        ? { background: 'var(--bg-elev)', border: '1px solid var(--gold-bright)', boxShadow: '0 24px 60px rgba(0,0,0,0.5), 0 0 0 6px rgba(230,185,107,0.05)' }
+        : { borderColor: 'var(--line)' }}
     >
-      <div
-        className="font-mono uppercase tracking-[0.22em] text-[10px] mb-2"
-        style={{ color: highlight ? 'var(--gold)' : 'var(--ink-400)' }}
-      >
-        {name}
+      {ribbon && (
+        <span
+          className="absolute -top-3 left-1/2 -translate-x-1/2 font-mono text-[10px] tracking-[0.16em] uppercase px-2.5 py-1 rounded-full whitespace-nowrap"
+          style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', fontWeight: 600 }}
+        >
+          {ribbon}
+        </span>
+      )}
+      <div className={featured ? '' : 'flex items-center justify-between gap-4 md:block'}>
+        <div>
+          <div className="font-mono uppercase tracking-[0.22em] text-[10px] mb-2" style={{ color: featured ? 'var(--gold)' : 'var(--ink-400)' }}>
+            {name}
+          </div>
+          <div className="font-display italic leading-none text-[30px] md:text-[44px]" style={{ color: 'var(--ink-100)' }}>
+            {price}
+            {priceUnit && <small className="not-italic ml-1 font-sans text-[14px]" style={{ color: 'var(--ink-400)' }}>{priceUnit}</small>}
+          </div>
+          {line && <div className={`text-[13px] mt-2 ${featured ? '' : 'hidden md:block'}`} style={{ color: 'var(--ink-400)' }}>{line}</div>}
+        </div>
+        {!featured && (
+          <Link
+            href={ctaHref}
+            className="md:hidden flex-none inline-flex items-center justify-center px-3.5 py-2.5 rounded-lg text-[11px] tracking-[0.14em] uppercase no-underline whitespace-nowrap"
+            style={{ color: 'var(--ink-100)', border: '1px solid var(--ink-600)' }}
+          >
+            {ctaShort || ctaLabel}
+          </Link>
+        )}
       </div>
-      <div
-        className="font-display italic leading-none mb-1"
-        style={{ fontSize: '28px', color: 'var(--ink-100)' }}
-      >
-        {price}{priceUnit && <small className="not-italic ml-1" style={{ fontFamily: 'ui-sans-serif', fontSize: '13px', color: 'var(--ink-400)' }}>{priceUnit}</small>}
-      </div>
-      <div className="text-[11px] mb-4 min-h-[16px]" style={{ color: 'var(--ink-400)' }}>{line}</div>
-      <ul className="list-none p-0 m-0 mb-5 flex-1">
+      {summary && !featured && <div className="text-[13px] mt-2 md:hidden" style={{ color: 'var(--ink-200)' }}>{summary}</div>}
+      <ul className={`list-none p-0 m-0 mt-5 mb-6 flex-1 ${featured ? '' : 'hidden md:block'}`}>
         {features.map((f) => (
           <li
             key={f.label}
-            className="text-[13px] leading-snug pl-4 relative mb-2"
-            style={{ color: f.isNew ? 'var(--gold-bright)' : 'var(--ink-200)', fontWeight: f.isNew ? 500 : 400 }}
+            className="text-[14px] leading-snug pl-5 relative mb-2.5"
+            style={{ color: f.isNew ? 'var(--ink-100)' : 'var(--ink-200)' }}
           >
-            <span
-              className="absolute left-0 top-0.5 text-[11px]"
-              style={{ color: f.isNew ? 'var(--gold)' : 'var(--ink-500)', fontWeight: f.isNew ? 700 : 400 }}
-            >
-              ✓
-            </span>
+            <span className="absolute left-0 top-0 text-[13px]" style={{ color: f.isNew ? 'var(--gold-bright)' : 'var(--ink-600)' }}>✓</span>
             {f.label}
           </li>
         ))}
       </ul>
       <Link
         href={ctaHref}
-        className="inline-flex items-center justify-center px-4 py-2.5 rounded font-sans text-[11px] tracking-[0.16em] uppercase no-underline"
-        style={highlight
+        className={`items-center justify-center px-4 py-3.5 rounded-lg text-[12px] tracking-[0.14em] uppercase no-underline ${featured ? 'inline-flex' : 'hidden md:inline-flex'}`}
+        style={featured
           ? { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', fontWeight: 600 }
-          : { background: 'transparent', color: 'var(--ink-200)', border: '0.5px solid var(--ink-600)' }
-        }
+          : { color: 'var(--ink-100)', border: '1px solid var(--ink-600)' }}
       >
         {ctaLabel}
       </Link>
     </div>
   );
+}
+
+/* PlansSection — one framed group with Base raised in the middle (first on
+   phones). Inside the iOS app no web price is shown: Apple bills the trial,
+   and the App Store price appears on the purchase screen (/subscribe). */
+function PlansSection({ user }) {
+  const [native, setNative] = useState(false);
+  useEffect(() => { setNative(isNativeApp()); }, []);
 
   return (
-    <section className="max-w-[980px] mx-auto px-6 lg:px-10 pb-16">
-      <div className="text-center">
-        <div
-          className="font-mono uppercase tracking-[0.22em] text-[10px] mb-3"
-          style={{ color: 'var(--gold)' }}
-        >
+    <section className="max-w-[1040px] mx-auto px-6 lg:px-10 pt-16 lg:pt-20 pb-20">
+      <div className="text-center mb-10 md:mb-12">
+        <div className="font-mono uppercase tracking-[0.22em] text-[10px] mb-3" style={{ color: 'var(--gold)' }}>
           Plans
         </div>
-        <h3 className="font-display italic text-[clamp(1.8rem,4vw,2rem)] leading-tight mb-9">
-          What you get.
+        <h3 className="font-display italic text-[clamp(2rem,4.6vw,3.2rem)] leading-[1.05] tracking-[-0.02em]">
+          Start free. Upgrade for alerts.
         </h3>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-        <Tier
+      <div className="flex flex-col gap-3 md:gap-0 md:grid md:grid-cols-[1fr_1.15fr_1fr] md:items-stretch md:border md:rounded-xl" style={{ borderColor: 'var(--line)' }}>
+        <PlanTier
           name="Anonymous"
           price="$0"
           line="No account"
+          summary="Search and filters"
           features={[
             { label: 'Unlimited search', isNew: true },
             { label: 'Improved search filters', isNew: true },
           ]}
           ctaLabel="Start hunting"
           ctaHref="/"
-          highlight={false}
         />
-        <Tier
+        <PlanTier
+          featured
+          ribbon="Most popular"
+          name="Base"
+          price={native ? '14 days free' : '$6.99'}
+          priceUnit={native ? null : '/mo'}
+          line={native ? 'Then billed by Apple · monthly or annual' : 'or $59/year (save 30%) · 14-day free trial'}
+          features={[
+            { label: 'Everything in Free account', isNew: false },
+            { label: 'Alerts on up to 5 saved searches', isNew: true },
+            { label: 'Bid reminders below price cap', isNew: true },
+          ]}
+          ctaLabel="Start free trial"
+          ctaHref={user ? '/subscribe' : '/signup?next=/subscribe'}
+        />
+        <PlanTier
           name="Free account"
           price="$0"
           line="No credit card"
+          summary="Watchlist, unlimited saved searches, 1 alert"
           features={[
-            { label: 'Unlimited search', isNew: false },
-            { label: 'Improved search filters', isNew: false },
+            { label: 'Everything in Anonymous', isNew: false },
             { label: 'Watchlist of saved cards', isNew: true },
             { label: 'Live price & sold status', isNew: true },
             { label: 'Saved listings across devices', isNew: true },
             { label: 'Unlimited saved searches', isNew: true },
             { label: 'Alerts on 1 saved search', isNew: true },
           ]}
-          ctaLabel={user ? 'You\u2019re signed in' : 'Create free account'}
+          ctaLabel={user ? 'You’re signed in' : 'Create free account'}
+          ctaShort={user ? 'Signed in' : 'Sign up free'}
           ctaHref={user ? '/watchlist-cards' : '/signup'}
-          highlight={true}
-        />
-        <Tier
-          name="Base"
-          price="$6.99"
-          priceUnit="/mo"
-          line="14-day free trial"
-          features={[
-            { label: 'Unlimited search', isNew: false },
-            { label: 'Improved search filters', isNew: false },
-            { label: 'Watchlist of saved cards', isNew: false },
-            { label: 'Live price & sold status', isNew: false },
-            { label: 'Saved listings across devices', isNew: false },
-            { label: 'Unlimited saved searches', isNew: false },
-            { label: 'Alerts on up to 5 saved searches', isNew: true },
-            { label: 'Bid reminders below price cap', isNew: true },
-          ]}
-          ctaLabel="Start free trial"
-          ctaHref={user ? '/subscribe' : '/signup?next=/subscribe'}
-          highlight={false}
         />
       </div>
+      {!native && (
+        <p className="text-center text-[13px] mt-8" style={{ color: 'var(--ink-600)' }}>
+          Prices in CAD. Cancel anytime.
+        </p>
+      )}
     </section>
   );
 }
