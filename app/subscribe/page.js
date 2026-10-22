@@ -1,6 +1,6 @@
 'use client';
 
-// /subscribe — a thin landing page that opens the Lemon Squeezy checkout for the
+// /subscribe — a thin landing page that opens the Stripe checkout for the
 // authenticated user. The pricing CTA routes here after signup so the path from
 // "I want to subscribe" to "checkout open" is one redirect, not four manual steps.
 //

@@ -37,12 +37,12 @@ Supabase → Authentication → Providers → Apple → enable. Under **Client I
 1. appstoreconnect.apple.com → **Apps → +** → New App. Platform iOS, name "Fields & Floors", bundle ID `com.fieldsandfloors.app`.
 2. **Agreements, Tax and Banking**: accept the Paid Apps agreement and add your bank and tax info. Purchases won't work until this is done.
 3. Join the **App Store Small Business Program**, which cuts Apple's fee from 30% to 15%.
-4. In the app's **Subscriptions** section, create a group "Base" with one subscription:
-   - Product ID: `ff_base_monthly`
-   - Duration: 1 month
-   - Price: $4.99 USD (Apple sets each country's price from that)
-   - Introductory offer: Free, 14 days
-   - Add a second subscription in the same group: `ff_base_annual`, 1 year, $39.99 USD, same 14-day free intro offer.
+4. In the app's **Subscriptions** section, create a group "Base". It must match the website's plans: Base monthly $6.99 CAD and Base yearly $59 CAD, both with a 14-day free trial.
+   - **Monthly:** Product ID `ff_base_monthly`, duration 1 month.
+   - **Yearly:** Product ID `ff_base_annual`, duration 1 year.
+   - **Prices:** when setting each price, choose **Canada** as the base country. Pick **CA$6.99** for monthly and the price point closest to **CA$59** for yearly (Apple's list may only offer CA$58.99 or CA$59.99). Apple then sets matching prices in other countries; leave those as they are.
+   - **Introductory offer** on both: Free, 14 days. The Terms page promises this trial, so don't skip it.
+   - Premium is "coming soon" on the website. Don't create it in the App Store until it launches on the website too.
 5. Under **Users and Access → Integrations → In-App Purchase**, generate a key for RevenueCat.
 
 ## 5. RevenueCat (free until $2.5k/mo revenue)
@@ -87,7 +87,7 @@ supabase secrets set APNS_PRIVATE_KEY="$(cat ~/Downloads/AuthKey_XXXXXXXXXX.p8)"
 ## 8. Submit
 
 1. In Xcode, choose **Product → Archive → Distribute App → App Store Connect**. The build appears in TestFlight in about 15 minutes.
-2. In App Store Connect, fill in screenshots (6.9" iPhone), description, keywords, privacy policy URL (`https://fieldsandfloors.com/privacy`), support URL, and the **App Privacy** questionnaire (email, purchases, device ID for push).
+2. In App Store Connect, fill in screenshots (6.9" iPhone), description, keywords, privacy policy URL (`https://fieldsandfloors.com/privacy`), support URL, and the **App Privacy** questionnaire (email, purchases, device ID for push, and **Product Interaction**).
 3. **App Review notes**: give a demo account (email + password) that already has Base, so the reviewer can see alerts. Describe the app as "subscription software using eBay's official Browse API."
 4. Submit. Review usually takes 1–3 days.
 
@@ -98,3 +98,13 @@ supabase secrets set APNS_PRIVATE_KEY="$(cat ~/Downloads/AuthKey_XXXXXXXXXX.p8)"
 - **Guideline 4.2 (minimum functionality).** Apple sometimes rejects apps that are "just a website." Native push alerts, in-app purchase and native Apple sign-in are the usual answer. If Apple pushes back anyway, more native features come next.
 - **Stripe subscribers in the app.** They keep Base, but the app never shows the Stripe billing portal (Apple rule). They manage billing on the website.
 - **Account deletion with an Apple subscription.** Apple subscriptions can't be cancelled by us. The delete dialog tells them to cancel in Settings.
+
+---
+
+## App Privacy: Product Interaction
+
+The site records anonymous funnel events (visited, searched, opened a card, starred, signed up, started a trial) in our own Supabase table `funnel_events`, under a random ID kept on the device. In the App Store Connect **App Privacy** questionnaire declare:
+
+- **Product Interaction** (Usage Data): collected, **not linked to the user's identity**, **not used for tracking**, purpose **Analytics**.
+- Do not enable the App Tracking Transparency prompt: nothing is shared with third parties or used for ads.
+- Server-side `signed_up` / `trial_started` rows carry the account id internally. If Apple's reviewer asks, the honest answer is "linked to account for analytics only"; mark Product Interaction as **linked** if you prefer to be conservative.

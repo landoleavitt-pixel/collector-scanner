@@ -408,3 +408,17 @@ html.ff-deep-link [data-ff-idle] {
 @media (prefers-reduced-motion: reduce) {
   .ff-float, .ff-sheen-loop::after, .ff-live-dot, .ff-bloom { animation: none; }
 }
+
+/* Deep links, and tabs where the intro already played this session, skip
+   the splash intro. An inline script
+   in app/page.js sets this class before first paint, so the server-rendered
+   overlay never flashes. */
+html.ff-no-intro [data-ff-splash] { display: none; }
+
+/* Home wayfinding links (How it works · Pricing) only make sense on the
+   landing view. The search results also live at "/", so hide them once the
+   idle landing block is gone, or when a deep link skips it. */
+body:not(:has([data-ff-idle])) [data-ff-home-nav],
+html.ff-deep-link [data-ff-home-nav] {
+  display: none !important;
+}

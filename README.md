@@ -246,7 +246,8 @@ Copy the exact error message and ask Claude — we'll fix it together.
 
 The search box suggests player names as you type and offers "Did you mean…?" for typos. It runs in the browser with no API and no cost. The list has two parts:
 
-- **`lib/athletes-rosters.json`**: every current NBA, WNBA, NFL, MLB and NHL roster player. Refreshed by a script.
+- **`lib/athletes-rosters.json`**: every current NBA, WNBA, NFL, MLB and NHL roster player, plus college football and basketball players in the ACC, Big 12, Big East, Big Ten and SEC. Refreshed by a script.
+- **`lib/teams.json`**: every NBA, WNBA, NFL, MLB and NHL team plus about 80 major-conference colleges, for team search. Refreshed by the same script. Nicknames and old city names ("Sixers", "Oakland Raiders") are kept by hand in `lib/teams.js`.
 - **`lib/athletes.js`**: kept by hand. Stars (shown first), legends, college players and prospects not yet on a pro roster, and nicknames like "Wemby".
 
 Once a quarter (January, April, July, October):

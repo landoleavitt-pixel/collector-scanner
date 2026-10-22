@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Team Search</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap');
+:root{
+  --ink-100:#f7f1e1;--ink-200:#e8dfc9;--ink-400:#a99e85;--ink-600:#6b6354;
+  --bg-base:#0a0907;--bg-elev:#14110c;--bg-elev-2:#1a160f;--line:#2a251c;--line-soft:#1f1c16;
+  --gold:#c9954a;--gold-bright:#e6b96b;--gold-deep:#8f6a32;--ink-on-gold:#1a1612;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg-base);color:var(--ink-100);font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.page{max-width:1180px;margin:0 auto;padding:40px 16px 80px}
+.eyebrow{font:500 11px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+h1{font:italic 400 44px/1 'Instrument Serif',serif;margin:10px 0 8px}
+.lede{color:var(--ink-400);font-size:15px;max-width:720px;line-height:1.6;margin:0 0 20px}
+.sec{border-top:1px solid var(--gold-deep);padding-top:20px;margin:56px 0 26px}
+.sec .n{font:600 12px 'Geist Mono',monospace;color:var(--gold-bright);letter-spacing:.14em}
+.sec h2{font:italic 400 34px/1.1 'Instrument Serif',serif;margin:6px 0 6px}
+.sec p{margin:0;color:var(--ink-400);font-size:14px;max-width:700px;line-height:1.55}
+.row{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start;justify-content:center}
+.frame{background:var(--bg-base);border:1px solid var(--line);border-radius:12px;padding:28px}
+.desk{width:640px;max-width:100%}
+.phone{width:375px;max-width:100%;border:10px solid var(--bg-elev-2);border-radius:44px;padding:54px 16px 30px;min-height:560px}
+.cap{text-align:center;color:var(--ink-400);font-size:13px;margin:12px auto 0;max-width:380px;line-height:1.45}
+.col{display:flex;flex-direction:column;align-items:center}
+.search{display:flex;align-items:center;border:0.5px solid var(--gold);border-radius:12px;background:var(--bg-elev)}
+.search .val{flex:1;padding:15px 18px;font:400 22px 'Instrument Serif',serif}
+.search .val i{display:inline-block;width:1px;height:20px;background:var(--gold-bright);vertical-align:-3px}
+.search b{width:42px;height:42px;margin-right:7px;border-radius:8px;background:var(--gold-bright);display:grid;place-items:center;color:var(--ink-on-gold)}
+.dd{margin-top:8px;border:0.5px solid var(--line);border-radius:12px;background:var(--bg-elev);box-shadow:0 18px 40px rgba(0,0,0,.55);overflow:hidden}
+.it{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;padding:0 16px;border-bottom:0.5px solid var(--line-soft);font-size:15px;color:var(--ink-200)}
+.it:last-child{border-bottom:0}
+.it.on{background:var(--bg-elev-2);color:var(--ink-100)}
+.it mark{background:none;color:var(--gold-bright);font-weight:500}
+.tag{font:500 10px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-600);border:0.5px solid var(--line);border-radius:999px;padding:3px 8px;flex:none}
+.tag.team{color:var(--gold);border-color:var(--gold-deep)}
+.grp{font:500 10px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-600);padding:10px 16px 6px;background:var(--bg-base)}
+.meta{font:500 10px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-600);margin-bottom:8px}
+.rh{font:italic 400 44px/1.05 'Instrument Serif',serif;color:var(--gold);margin:0}
+.phone .rh{font-size:34px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.oc{font:500 11px 'Geist Mono',monospace;letter-spacing:.06em;color:var(--gold-bright);background:rgba(201,149,74,.06);border:0.5px solid var(--gold-deep);border-radius:999px;padding:5px 10px}
+.edit{font-size:13px;color:var(--ink-200);border-bottom:0.5px solid var(--gold-deep)}
+.card{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line-soft);font-size:13px;color:var(--ink-200)}
+.card .t{width:44px;aspect-ratio:2.5/3.5;border-radius:4px;background:var(--bg-elev-2);border:1px solid var(--line)}
+.card b{font:500 15px Geist,sans-serif;color:var(--ink-100)}
+.lbl{font:500 11px Geist,sans-serif;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-400);margin:0 0 12px}
+.chip{min-height:40px;padding:0 14px;display:inline-flex;align-items:center;gap:8px;border-radius:999px;border:1px solid var(--line);background:var(--bg-elev-2);font-size:14px;color:var(--ink-200)}
+.chip.on{background:var(--gold-bright);border-color:transparent;color:var(--ink-on-gold);font-weight:600}
+.chip small{font:500 11px 'Geist Mono',monospace;color:var(--ink-600)}
+.chip.on small{color:var(--ink-on-gold);opacity:.7}
+.lines{margin-top:14px;padding:16px 18px;background:rgba(20,17,13,.3);border-left:2px solid var(--gold-deep)}
+.lines .hd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.lines .hd span{font:500 11px Geist,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+.lines .hd em{font-style:normal;font-size:12px;color:var(--ink-600)}
+.lchip{min-height:36px;padding:0 13px;display:inline-flex;align-items:center;gap:6px;border-radius:999px;border:1px solid var(--line);background:var(--bg-elev-2);font-size:13px;color:var(--ink-200)}
+.lchip.on{border-color:var(--gold);color:var(--gold-bright);background:rgba(201,149,74,.10)}
+.lchip small{font:500 11px 'Geist Mono',monospace;color:var(--ink-600)}
+.lchip.more{border-style:dashed;color:var(--ink-400)}
+.note{font-size:12px;color:var(--ink-600);margin-top:10px;line-height:1.45}
+.divider{height:1px;background:var(--line-soft);margin:22px 0}
+.q{max-width:760px;margin:24px auto 0;padding:18px 20px;border:1px solid var(--gold-deep);border-radius:12px;background:var(--bg-elev)}
+.q h3{margin:0 0 8px;font:italic 400 24px 'Instrument Serif',serif}
+.q ol{margin:0;padding-left:20px;color:var(--ink-200);line-height:1.7;font-size:14px}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="eyebrow">Mockup · for approval</div>
+  <h1>Search by team</h1>
+  <p class="lede">Two parts. Search a whole team from the search box, or narrow a player's cards to one team. Both run on the listing title: no extra eBay cost.</p>
+
+  <div class="sec"><div class="n">01</div><h2>Teams in the search dropdown</h2>
+    <p>Type part of a team name and the team shows up with the players. It has a gold "Team" tag so it stands out. Works for the city or the nickname ("pitt" or "pirates"), and for college teams.</p></div>
+  <div class="row">
+    <div class="col"><div class="frame desk">
+      <div class="search"><div class="val">pira<i></i></div><b>→</b></div>
+      <div class="dd">
+        <div class="grp">Teams</div>
+        <div class="it on"><span>Pittsburgh <mark>Pira</mark>tes</span><span class="tag team">MLB team</span></div>
+      </div>
+    </div><div class="cap">Desktop. Teams listed first, then players.</div></div>
+    <div class="col"><div class="frame phone">
+      <div class="search"><div class="val">fever<i></i></div><b>→</b></div>
+      <div class="dd">
+        <div class="grp">Teams</div>
+        <div class="it on"><span>Indiana <mark>Fever</mark></span><span class="tag team">WNBA team</span></div>
+      </div>
+      <p class="note" style="text-align:center">College teams too: "duke" → Duke Blue Devils (College team).</p>
+    </div><div class="cap">Phone.</div></div>
+  </div>
+
+  <div class="sec"><div class="n">02</div><h2>A whole team's cards</h2>
+    <p>Same results page as a player search: rarest numbered cards first, filters on the side. The team shows as a chip like the other filters.</p></div>
+  <div class="row">
+    <div class="col"><div class="frame desk">
+      <div class="meta">Searching for</div>
+      <div class="rh">Pittsburgh Pirates</div>
+      <div class="chips"><span class="oc">MLB team</span><span class="oc">Numbered</span><span class="edit">Edit filters</span></div>
+      <div style="margin-top:16px">
+        <div class="card"><span class="t"></span><span>2024 Topps Chrome Paul Skenes Superfractor 1/1</span><b>$9,500</b></div>
+        <div class="card"><span class="t"></span><span>2025 Bowman Chrome Konnor Griffin Gold /50 Auto</span><b>$1,200</b></div>
+        <div class="card"><span class="t"></span><span>2023 Topps Chrome Oneil Cruz Orange Wave /25</span><b>$145</b></div>
+      </div>
+    </div><div class="cap">Every player on the team, rarest first. Prices are examples.</div></div>
+  </div>
+
+  <div class="sec"><div class="n">03</div><h2>Team filter: league first, then team</h2>
+    <p>A new Team section in Filters. Pick a league first, and only that league's teams appear. College adds one step: pick the conference, then the school. Teams that show up in your current results move to the front with a count, so the likely pick is first. One tap on "Any" clears it. It saves with the search and works for alerts.</p></div>
+  <div class="row">
+    <div class="col"><div class="frame desk">
+      <div class="lbl">Team</div>
+      <div class="chips" style="margin-top:0">
+        <span class="chip">Any</span><span class="chip on">NBA</span><span class="chip">WNBA</span><span class="chip">NFL</span><span class="chip">MLB</span><span class="chip">NHL</span><span class="chip">College</span>
+      </div>
+      <div class="lines">
+        <div class="hd"><span>NBA teams</span><em>In your results first</em></div>
+        <div class="chips" style="margin-top:0">
+          <span class="lchip on">Mavericks <small>212</small></span><span class="lchip">Lakers <small>140</small></span>
+          <span class="lchip">76ers</span><span class="lchip">Bucks</span><span class="lchip">Bulls</span><span class="lchip">Cavaliers</span><span class="lchip">Celtics</span><span class="lchip">Clippers</span><span class="lchip more">+ 22 more</span>
+        </div>
+        <p class="note">Search Luka Doncic → NBA → Mavericks shows only his Mavs cards.</p>
+      </div>
+    </div><div class="cap">Desktop. Only the NBA's 30 teams show, results-matches first.</div></div>
+
+    <div class="col"><div class="frame phone">
+      <div class="lbl">Team</div>
+      <div class="chips" style="margin-top:0">
+        <span class="chip">Any</span><span class="chip">NBA</span><span class="chip">WNBA</span><span class="chip">NFL</span><span class="chip">MLB</span><span class="chip">NHL</span><span class="chip on">College</span>
+      </div>
+      <div class="lines">
+        <div class="hd"><span>Conference</span></div>
+        <div class="chips" style="margin-top:0">
+          <span class="lchip">ACC</span><span class="lchip">Big 12</span><span class="lchip">Big East</span><span class="lchip">Big Ten</span><span class="lchip on">SEC</span>
+        </div>
+        <div class="hd" style="margin-top:16px"><span>SEC schools</span></div>
+        <div class="chips" style="margin-top:0">
+          <span class="lchip on">Alabama</span><span class="lchip">Auburn</span><span class="lchip">Florida</span><span class="lchip">Georgia</span><span class="lchip">LSU</span><span class="lchip">Texas</span><span class="lchip more">+ 10 more</span>
+        </div>
+      </div>
+    </div><div class="cap">Phone drawer. College: conference, then school.</div></div>
+  </div>
+
+  <div class="row" style="margin-top:28px">
+    <div class="col"><div class="frame phone" style="min-height:0">
+      <div class="meta">Searching for</div>
+      <div class="rh">Luka Doncic</div>
+      <div class="chips"><span class="oc">Numbered</span><span class="oc">Mavericks</span><span class="edit">Edit filters</span></div>
+    </div><div class="cap">After searching, the team shows in the results header like the other filters.</div></div>
+  </div>
+
+  <div class="q">
+    <h3>Three choices for you</h3>
+    <ol>
+      <li>Include <strong>college teams</strong> (about 80 major programs: Duke, Alabama, UConn…), under College → conference → school? (We'd include them.)</li>
+      <li>Show <strong>8 teams</strong> at first with "+ more" to open the rest, or all of a league's teams at once? (We'd show 8, since results-matches come first.)</li>
+      <li>Same-name teams (Rangers, Kings, Giants, Cardinals, Panthers, Jets): we tell them apart by the city or sport in the title. A title that says only "Rangers" with no city or sport gets <strong>left out</strong> rather than guessed. OK?</li>
+    </ol>
+  </div>
+</div>
+</body>
+</html>

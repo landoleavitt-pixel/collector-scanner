@@ -10,6 +10,7 @@
 
 import { NextResponse } from 'next/server';
 import { makeBrandMatcher, brandQueryTerms } from '../../../lib/cardBrands';
+import { teamFromQuery, teamQueryKeywords, titleMatchesTeam, makeTeamMatcher } from '../../../lib/teams';
 
 const EBAY_OAUTH_URL = 'https://api.ebay.com/identity/v1/oauth2/token';
 const EBAY_SEARCH_URL = 'https://api.ebay.com/buy/browse/v1/item_summary/search';
@@ -496,6 +497,26 @@ function verifyPrintRun(title, numberedLimit) {
 }
 
 /**
+ * Lots, repacks, breaks and sealed product — not a single card. Excluded by
+ * default so a hunt like "Caitlin Clark autos /1–25" opens on real cards,
+ * not "10 card lot 1/1 auto" listings. Title words only, word-bounded so
+ * "Lotus" or "Packers" never match.
+ *
+ * Phrases that look like these words but describe a single card are
+ * removed first: "Fast Break" (a Prizm parallel), "pack fresh" / "pulled
+ * from pack", "box topper", and "hobby/mega/blaster box exclusive".
+ */
+const SINGLE_CARD_PHRASES = /\bfast\s+break\b|\bpack[\s-]*fresh\b|\b(?:fresh\s+)?(?:from|out\s+of|of)\s+(?:a\s+|the\s+)?(?:pack|box)\b|\bpulled\b[^,]{0,20}\b(?:pack|box)\b|\bbox\s+toppers?\b|\b(?:hobby|mega|blaster|retail|value|hanger|cello|jumbo|fotl|choice|first\s+day|h2|breaker'?s?)\s+(?:box\s+)?(?:exclusive|excl?\.?|only)\b|\b(?:hobby|mega|blaster|hanger|cello|jumbo|retail|value)\s+box\s+(?:exclusive|excl?\.?|only|parallel|refractor|mojo|wave|prizm)\b/gi;
+const LOT_OR_SEALED = /\blots?\b|(?<![\/#\d])(?:[2-9]|[1-9]\d{1,2})(?!\d)\s*-?\s*(?:card|cards|ct|count)\b|\brepacks?\b|\bmystery\b|\bbreaks?\b|\bsealed\b|\bboxe?s?\b|\bpacks?\b/i;
+
+const NOT_AUTO = /\b(?:non|no|not)[\s-]*autos?\b/i;
+
+function isLotOrSealed(title) {
+  if (!title) return false;
+  return LOT_OR_SEALED.test(title.replace(SINGLE_CARD_PHRASES, ' '));
+}
+
+/**
  * Paginated eBay fetch — loops through up to MAX_PAGES pages of 200, with
  * early-exit when eBay reports no more results. Returns { items, total }
  * where total is eBay's reported match count for the query (so callers can
@@ -579,6 +600,12 @@ export async function POST(req) {
       );
     }
 
+    // Whole-team search ("Pittsburgh Pirates", "Lakers"): ask eBay for the
+    // team's name and keep only titles that match the team (below), instead
+    // of requiring every typed word in the title.
+    const teamSearch = teamFromQuery(criteria.keywords);
+    if (teamSearch) criteria.keywords = teamQueryKeywords(teamSearch);
+
     const token = await getAppToken();
 
     // For "Any listing", eBay's API doesn't return a true union — its
@@ -610,6 +637,22 @@ export async function POST(req) {
       ebayTotal = result.total;
     }
 
+    // Single cards only: drop lots, repacks, breaks and sealed product unless
+    // the caller explicitly asks for them (includeLots: true).
+    if (criteria.includeLots !== true) {
+      const before = items.length;
+      items = items.filter((it) => !isLotOrSealed(it.title));
+      console.log(`Lot/sealed filter: ${before} → ${items.length}`);
+    }
+
+    // Auto on: drop listings that say they aren't autographed
+    // ("Non-Auto", "no auto", "not auto").
+    if (criteria.autoCards) {
+      const before = items.length;
+      items = items.filter((it) => !NOT_AUTO.test(it.title || ''));
+      console.log(`Non-auto filter: ${before} → ${items.length}`);
+    }
+
     // Player name verification — eBay often returns loose matches that ignore
     // our quoted phrases. Filter to listings whose title contains all the user's
     // search words. Runs first so we don't waste time on other verifiers.
@@ -620,7 +663,7 @@ export async function POST(req) {
     // title and over-filter valid cards. The auto/rookie/print-run verifiers
     // below handle those attributes separately.
     const verifyKeywords = dedupeKeywords(criteria.keywords, criteria);
-    if (verifyKeywords && /\s/.test(verifyKeywords.trim())) {
+    if (!teamSearch && verifyKeywords && /\s/.test(verifyKeywords.trim())) {
       const before = items.length;
       const droppedTitles = [];
       items = items.filter((it) => {
@@ -683,6 +726,20 @@ export async function POST(req) {
         return criteria.condition === 'graded' ? isGraded : !isGraded;
       });
       console.log(`Condition verify (${criteria.condition}): ${before} → ${items.length}`);
+    }
+
+    // Team: a whole-team search keeps that team's cards; the Team filter
+    // keeps any of the chosen teams. Title match only (lib/teams.js).
+    if (teamSearch) {
+      const before = items.length;
+      items = items.filter((it) => titleMatchesTeam(teamSearch, it.title));
+      console.log(`Team search (${teamSearch.key}): ${before} → ${items.length}`);
+    }
+    const teamMatch = makeTeamMatcher(criteria.teams);
+    if (teamMatch) {
+      const before = items.length;
+      items = items.filter((it) => teamMatch(it.title));
+      console.log(`Team filter: ${before} → ${items.length}`);
     }
 
     // Card company filter — title match only (lib/cardBrands.js). Off when

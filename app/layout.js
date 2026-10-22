@@ -4,6 +4,7 @@ import Footer from './components/Footer';
 import { Analytics } from '@vercel/analytics/react';
 import ImageBlockNotice from './components/ImageBlockNotice';
 import NativeBridge from './components/NativeBridge';
+import FunnelTracker from './components/FunnelTracker';
 import SiteTour from './components/SiteTour';
 
 export const metadata = {
@@ -113,7 +114,7 @@ export default function RootLayout({ children }) {
   };
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script
           type="application/ld+json"
@@ -130,6 +131,8 @@ export default function RootLayout({ children }) {
         <ImageBlockNotice />
         {/* iOS app only: push registration, in-app purchase identity. */}
         <NativeBridge />
+        {/* Anonymous funnel events (landed). See lib/track.js. */}
+        <FunnelTracker />
         {/* First-visit walkthrough (web + iOS app variants); replay at /?tour=1. */}
         <SiteTour />
         <Analytics />

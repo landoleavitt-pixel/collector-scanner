@@ -6,6 +6,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { createClient } from '../../lib/supabaseClient';
 import Seal from '../components/Seal';
 import { isNativeApp, signInWithAppleNative } from '../../lib/native';
+import { track } from '../../lib/track';
 
 function SignupForm() {
   const supabase = createClient();
@@ -14,6 +15,8 @@ function SignupForm() {
   // Where to send the user after they finish signing up.
   // /pricing's CTA passes ?next=/subscribe so post-confirmation lands at checkout.
   const next = searchParams.get('next') || '/';
+  // Which button sent them here (star | alert | banner | direct), for funnel tracking.
+  const src = ['star', 'alert', 'banner'].includes(searchParams.get('src')) ? searchParams.get('src') : 'direct';
 
   // If the user is already logged in (e.g. they hit /signup?next=/subscribe
   // while already authenticated), skip the form and go straight to next.
@@ -44,7 +47,7 @@ function SignupForm() {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}&src=${src}`,
       },
     });
     setLoading(false);
@@ -68,6 +71,7 @@ function SignupForm() {
       setLoading(true);
       try {
         await signInWithAppleNative(supabase);
+        track('signed_up', undefined, src); // server only counts brand-new accounts
         router.push(next);
         router.refresh();
       } catch (e) {
@@ -81,7 +85,7 @@ function SignupForm() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}&src=${src}`,
       },
     });
     if (error) setError(error.message);

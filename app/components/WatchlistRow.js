@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { buildShareUrl } from '../../lib/shareLink';
 import { brandFilterLabels } from '../../lib/cardBrands';
+import { teamFilterLabels } from '../../lib/teams';
 import { isNativeApp } from '../../lib/native';
 
 const TIER_STYLES = {
@@ -40,6 +41,7 @@ function buildChips(filters) {
   if (filters.listingType === 'buyItNow') chips.push({ label: 'Buy It Now', tier: 'neutral' });
   if (filters.listingType === 'auction')  chips.push({ label: 'Auction',    tier: 'neutral' });
   brandFilterLabels(filters.brands, filters.brandLines).forEach((label) => chips.push({ label, tier: 'neutral' }));
+  teamFilterLabels(filters.teams).forEach((label) => chips.push({ label, tier: 'neutral' }));
 
   const min = filters.priceMin || 0;
   const max = filters.priceMax ?? 1000;

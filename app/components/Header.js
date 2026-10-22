@@ -169,11 +169,24 @@ export default function Header() {
               })}
             </nav>
           ) : isHome ? (
-            <div className="hidden md:flex items-center gap-8 text-[12px] uppercase tracking-[0.22em] text-[var(--ink-400)]">
-              <span>Issue №&nbsp;001</span>
-              <span className="text-[var(--ink-600)]">·</span>
-              <span>Est. 2026</span>
-            </div>
+            // Plain wayfinding for first-time visitors. Hidden in the iOS
+            // app, which keeps its header free of nav links.
+            !native && (
+              <nav data-ff-home-nav className="hidden md:flex items-center gap-7 text-[11px] uppercase tracking-[0.2em]">
+                {[
+                  { href: '#why', label: 'How it works' },
+                  { href: '/pricing', label: 'Pricing' },
+                ].map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="py-1 text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
+            )
           ) : (
             <Link
               href="/"
@@ -299,13 +312,13 @@ export default function Header() {
                   </Link>
                   <Link
                     href="/signup"
-                    className="hidden sm:inline-block text-[12px] uppercase tracking-[0.22em] px-4 py-2 rounded-full transition-colors"
+                    className="hidden sm:inline-block text-[11px] uppercase tracking-[0.2em] font-semibold px-4 py-2 rounded-full transition-opacity hover:opacity-90"
                     style={{
-                      background: 'var(--gold)',
+                      background: 'var(--gold-bright)',
                       color: 'var(--ink-on-gold)',
                     }}
                   >
-                    Join
+                    Get alerts
                   </Link>
                 </div>
               )}

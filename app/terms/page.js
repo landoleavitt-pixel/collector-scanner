@@ -10,7 +10,7 @@ export default function TermsPage() {
     <PageShell
       eyebrow="Legal"
       title="Terms of Service."
-      lede="The agreement between you and Fields & Floors. Last updated June 2026."
+      lede="The agreement between you and Fields & Floors. Last updated October 2026."
     >
       <Prose>
         <p>
@@ -151,34 +151,47 @@ export default function TermsPage() {
           data itself, which belongs to eBay and its sellers.
         </p>
         <p>
-          <strong>Free trial.</strong> Paid plans may include a free trial period
-          (currently 14 days). A valid payment method is required to start the
-          trial. Unless you cancel before the trial ends, your subscription will
-          automatically convert to a paid subscription and your payment method
-          will be charged the then-current rate. You can cancel at any time
+          <strong>Prices.</strong> Prices are in Canadian dollars (CAD) and are
+          shown before applicable taxes. Applicable taxes are added at checkout.
+        </p>
+        <p>
+          <strong>Free trial.</strong> New subscribers get a 14-day free trial.
+          A valid payment method is required to start the trial. Unless you cancel
+          before the trial ends, your subscription will automatically convert to
+          a paid subscription and your payment method will be charged the
+          then-current rate plus applicable taxes. You can cancel at any time
           before the trial ends to avoid being charged.
         </p>
         <p>
           <strong>Recurring billing.</strong> Paid subscriptions renew automatically
-          at the end of each billing period (monthly unless otherwise stated)
-          until cancelled. You authorize our payment processor to charge your
-          payment method on each renewal. You can cancel at any time; access
-          continues through the end of the period you've already paid for, and
-          you won't be billed again.
+          at the end of each billing period (monthly or annual, depending on the
+          plan you chose) until cancelled. You authorize our payment processor
+          to charge your payment method on each renewal. You can cancel at any
+          time; access continues through the end of the period you've already
+          paid for, and you won't be billed again.
+        </p>
+        <p>
+          <strong>How to cancel.</strong> If you subscribed on our website, cancel
+          from the account menu (&ldquo;Manage membership&rdquo;), which opens
+          Stripe's billing portal. If you subscribed in the iOS app, cancel in
+          your Apple ID subscription settings. Deleting your account cancels a
+          website subscription but does not cancel an App Store subscription.
         </p>
         <p>
           <strong>Refunds.</strong> Except where required by law, subscription
           fees are non-refundable, including for partially used periods. If you
           believe you were charged in error, please contact us and we'll
-          investigate in good faith.
+          investigate in good faith. Refunds for App Store purchases are handled
+          by Apple under Apple's terms, not by us.
         </p>
         <p>
-          <strong>Payment processor.</strong> Payments are processed by Lemon
-          Squeezy, which acts as our merchant of record. Lemon Squeezy handles
-          billing, your payment card details, applicable sales tax, and invoicing
-          on our behalf. We never see or store your full payment card information.
-          Your purchase is also subject to Lemon Squeezy's terms of service and
-          privacy policy.
+          <strong>Payment processors.</strong> Payments made on our website are
+          processed by Stripe, which handles your payment card details, billing,
+          and invoices. Payments made in the iOS app are processed by Apple
+          through the App Store, and Apple's terms apply to those purchases. We
+          never see or store your full payment card information. Your purchase is
+          also subject to the terms and privacy policy of the processor you pay
+          through.
         </p>
         <p>
           <strong>Price changes.</strong> We may change subscription pricing in

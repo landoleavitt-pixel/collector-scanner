@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useLayoutEffect, useMemo, useRef, Suspense, createContext, useContext } from 'react';
+import { useState, useEffect, useLayoutEffect, useMemo, useRef, Suspense, Fragment, createContext, useContext } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 
@@ -18,8 +18,10 @@ import CardModal from './components/CardModal';
 import { tierForRun, tierChipStyle, tierRowStyle, OUTLINE_CHIP_STYLE } from './components/rarityUtils';
 import ShareSearchButton from './components/ShareSearchButton';
 import { isReturningVisitor, markVisited, getRecentSearches, addRecentSearch } from '../lib/visitState';
-import { hasShareParams, parseShareParams } from '../lib/shareLink';
+import { hasShareParams, parseShareParams, buildShareParams } from '../lib/shareLink';
+import { track } from '../lib/track';
 import { CARD_COMPANIES, brandFilterLabels } from '../lib/cardBrands';
+import { TEAMS, TEAM_LEAGUES, suggestTeams, teamFromQuery, teamFilterLabels, titleMatchesTeam, getTeam } from '../lib/teams';
 import { WatchlistContext, WatchlistProvider } from '../lib/watchlistContext';
 import { useUser } from '../lib/useUser';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -36,6 +38,37 @@ const PRINT_RUN_TIERS = [
 
 // Flat list of all preset print runs — used for "select all" default state.
 const ALL_PRESET_PRINT_RUNS = PRINT_RUN_TIERS.flatMap((t) => t.runs);
+
+// Filters a fresh search starts with. Numbered is on so a first search goes
+// straight to the cards this site is for, rarest first; everything else is
+// adjustable from the results sidebar / phone drawer.
+const DEFAULT_FILTERS = {
+  autoCards: false,
+  numberedCards: true,
+  selectedPrintRuns: ALL_PRESET_PRINT_RUNS, // array — multi-select
+  customPrintRuns: [],                       // user-added runs like "/73"
+  rookieCards: false,
+  listingType: 'any',   // 'any' | 'buyItNow' | 'auction'
+  condition: 'any',     // 'any' | 'raw' | 'graded' — title-parsed for PSA/BGS/SGC/CGC
+  priceMin: 0,
+  priceMax: 1000,
+  sortBy: 'printrun-rarest',
+  brands: [],           // card companies, e.g. ['topps'] — lib/cardBrands.js
+  brandLines: [],       // optional product lines within them, e.g. ['bowman-chrome']
+  teams: [],            // Team filter, e.g. ['nba-dal'] — lib/teams.js
+};
+
+// Saved searches and share links written before numbered-by-default meant
+// "numbered off" when the key was missing, so they decode against this.
+const LEGACY_BASE_FILTERS = { ...DEFAULT_FILTERS, numberedCards: false };
+
+// Ready-made hunts for the landing page: one tap to real results. Hero
+// renders them and calls onChipSearch(query, filters).
+const PRESET_HUNTS = [
+  { label: 'Caitlin Clark autos /1–25', query: 'Caitlin Clark', filters: { autoCards: true, numberedCards: true, selectedPrintRuns: PRINT_RUN_TIERS[0].runs } },
+  { label: 'Paul Skenes rookies /26–99', query: 'Paul Skenes', filters: { rookieCards: true, numberedCards: true, selectedPrintRuns: PRINT_RUN_TIERS[1].runs } },
+  { label: 'Connor Bedard graded', query: 'Connor Bedard', filters: { condition: 'graded', numberedCards: false } },
+];
 
 const SUGGESTED_SEARCHES = [
   'Patrick Mahomes',
@@ -316,20 +349,7 @@ function Home() {
     }
   }
 
-  const [filters, setFilters] = useState({
-    autoCards: false,
-    numberedCards: false,
-    selectedPrintRuns: ALL_PRESET_PRINT_RUNS, // array — multi-select
-    customPrintRuns: [],                       // user-added runs like "/73"
-    rookieCards: false,
-    listingType: 'any',   // 'any' | 'buyItNow' | 'auction'
-    condition: 'any',     // 'any' | 'raw' | 'graded' — title-parsed for PSA/BGS/SGC/CGC
-    priceMin: 0,
-    priceMax: 1000,
-    sortBy: 'printrun-rarest',
-    brands: [],           // card companies, e.g. ['topps'] — lib/cardBrands.js
-    brandLines: [],       // optional product lines within them, e.g. ['bowman-chrome']
-  });
+  const [filters, setFilters] = useState(DEFAULT_FILTERS);
 
   // Snapshot of which filter values are currently APPLIED (i.e., reflected
   // in the result set). Differs from `filters` when the user has changed a
@@ -348,7 +368,7 @@ function Home() {
     const compareKeys = [
       'autoCards', 'numberedCards', 'selectedPrintRuns', 'customPrintRuns',
       'rookieCards', 'listingType', 'condition', 'priceMin', 'priceMax',
-      'brands', 'brandLines',
+      'brands', 'brandLines', 'teams',
     ];
     for (const k of compareKeys) {
       if (JSON.stringify(filters[k]) !== JSON.stringify(appliedFilters[k])) return true;
@@ -416,7 +436,7 @@ function Home() {
         if (!search) return;
 
         // Merge saved filters over defaults so any missing keys keep sane values
-        const restored = { ...filters, ...(search.filters || {}) };
+        const restored = { ...LEGACY_BASE_FILTERS, ...(search.filters || {}) };
         setFilters(restored);
         setQuery(search.query);
 
@@ -460,7 +480,7 @@ function Home() {
     if (!hasShareParams(searchParams)) return;
 
     const { query: sharedQuery, filters: sharedFilters } =
-      parseShareParams(searchParams, filters, ALL_PRESET_PRINT_RUNS);
+      parseShareParams(searchParams, LEGACY_BASE_FILTERS, ALL_PRESET_PRINT_RUNS);
     if (!sharedQuery) return;
 
     sharedSearchRan.current = true;
@@ -554,13 +574,21 @@ function Home() {
   }, []);
 
   const setFilter = (key, value) => setFilters((f) => ({ ...f, [key]: value }));
+  const sidebarRef = useRef(null);
 
   // "Did you mean" for the searched name (lib/playerSuggest.js, loaded lazily).
   // Only a suggestion: the search always runs exactly as typed.
   const playerSuggest = usePlayerSuggest();
+
+  // Recent searches with proper capitals and near-duplicates merged. Shows
+  // the raw list until the matcher has loaded.
+  const tidyRecents = useMemo(
+    () => (playerSuggest ? playerSuggest.tidyRecentSearches(recentSearches, 5) : recentSearches.slice(0, 5)),
+    [playerSuggest, recentSearches],
+  );
   const [dismissedFix, setDismissedFix] = useState(null);
   const nameFix = useMemo(
-    () => (playerSuggest && appStage === 'searched' ? playerSuggest.didYouMean(query) : null),
+    () => (playerSuggest && appStage === 'searched' && !teamFromQuery(query) ? playerSuggest.didYouMean(query) : null),
     [playerSuggest, appStage, query],
   );
   function searchFix(fixed) {
@@ -596,6 +624,7 @@ function Home() {
     if (filters.listingType === 'buyItNow') chips.push({ label: 'Buy It Now', tier: 'neutral' });
     if (filters.listingType === 'auction') chips.push({ label: 'Auction', tier: 'neutral' });
     brandFilterLabels(filters.brands, filters.brandLines).forEach((label) => chips.push({ label, tier: 'neutral' }));
+    teamFilterLabels(filters.teams).forEach((label) => chips.push({ label, tier: 'neutral' }));
 
     const min = filters.priceMin || 0;
     const max = filters.priceMax ?? 1000;
@@ -615,18 +644,12 @@ function Home() {
     setSaveModalOpen(true);
   }
 
-  // Called when user submits the query from the landing hero search bar.
-  // Advances to the 'configuring' stage where filters are chosen. Does NOT
-  // execute the search yet — that happens when the user submits the filter panel.
+  // Called from the landing hero (Enter, go button, a name chip). Runs the
+  // search straight away with the current filters (numbered, rarest first by
+  // default); filters are adjusted from the results page. The 'configuring'
+  // stage (FilterPanel) is now only used to edit a saved search.
   function handleQuerySubmit(overrideQuery) {
-    const q = (overrideQuery ?? query).trim();
-    if (!q) {
-      setError('Enter a card name to begin.');
-      return;
-    }
-    if (overrideQuery) setQuery(overrideQuery);
-    setError(null);
-    setAppStage('configuring');
+    handleSearch(overrideQuery);
   }
 
   async function handleSearch(overrideQuery, overrideFilters) {
@@ -662,6 +685,7 @@ function Home() {
           sortBy: f.sortBy,
           brands: f.brands || [],
           brandLines: f.brandLines || [],
+          teams: f.teams || [],
         }),
       });
       const data = await res.json();
@@ -669,6 +693,8 @@ function Home() {
         setError(data.error || 'Search failed.');
         setResults([]);
       } else {
+        // Funnel tracking: filter types only, never the search text.
+        track('searched', { listing: f.listingType || 'any', graded: f.condition === 'graded', auto: !!f.autoCards });
         // Store raw results; sorting happens via useMemo so changing the sort
         // option instantly re-orders without re-fetching from eBay.
         setResults(data.items || []);
@@ -806,7 +832,7 @@ function Home() {
           transitions to the correct stage. Runs in <5ms, safe to inline. */}
       <script
         dangerouslySetInnerHTML={{
-          __html: `try{var s=new URLSearchParams(window.location.search);if(s.get('savedSearch')||s.get('editSearch'))document.documentElement.classList.add('ff-deep-link');}catch(e){}`,
+          __html: `try{var s=new URLSearchParams(window.location.search),c=document.documentElement.classList;if(s.get('savedSearch')||s.get('editSearch'))c.add('ff-deep-link');if(s.get('savedSearch')||s.get('editSearch')||s.get('card')||s.get('q')||s.get('tour')||sessionStorage.getItem('ffIntroPlayed')==='1')c.add('ff-no-intro');}catch(e){}`,
         }}
       />
       {/* Stage 1: idle landing — hero with search bar, then the why-section.
@@ -823,13 +849,15 @@ function Home() {
             user={user}
             onCardClick={openCard}
             isReturning={isReturning}
-            recentSearches={recentSearches}
+            recentSearches={tidyRecents}
+            presetHunts={PRESET_HUNTS}
             onChipSearch={(chipQuery, partialFilters) => {
               // Apply the matching filters and run the search immediately. The
               // selected filters remain visible in the Stage 3 results sidebar,
               // so the visitor sees BOTH which toggles produced the example and
-              // the resulting cards — no extra click needed.
-              const merged = { ...filters, ...partialFilters };
+              // the resulting cards — no extra click needed. Starts from the
+              // defaults so leftovers from an earlier search don't leak in.
+              const merged = { ...DEFAULT_FILTERS, sortBy: filters.sortBy, ...partialFilters };
               setFilters(merged);
               handleSearch(chipQuery, merged);
             }}
@@ -872,6 +900,7 @@ function Home() {
 
       {/* Stage 3: searched — results page with sidebar filters */}
       {appStage === 'searched' && (
+        <ResultsContext.Provider value={results}>
         <section className="max-w-[1200px] mx-auto px-6 lg:px-10 pt-10 pb-16 relative z-10 stage-in">
           {/* Header bar — full width above both columns.
               The searched player name is the big editable headline; click it
@@ -900,6 +929,19 @@ function Home() {
                   onDismiss={() => setDismissedFix(query)}
                 />
               )}
+              {/* What this result set was filtered by, one tap from changing it. */}
+              <ActiveFilterChips
+                query={query}
+                filters={appliedFilters || filters}
+                onEdit={() => {
+                  if (isDesktopViewport) {
+                    sidebarRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    sidebarRef.current?.querySelector('button')?.focus({ preventScroll: true });
+                  } else {
+                    setMobileFiltersOpen(true);
+                  }
+                }}
+              />
               <p className="text-[12px] uppercase tracking-[0.22em] mt-3" style={{ color: 'var(--ink-400)' }}>
                 <span style={{ color: 'var(--gold)' }} className="italic normal-case tracking-normal">
                   {sortedResults.length}
@@ -959,7 +1001,7 @@ function Home() {
 
           {/* Two-column layout: 280px sidebar + flexible results */}
           <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-x-12 gap-y-8 items-start">
-            <div className="hidden lg:block">
+            <div ref={sidebarRef} className="hidden lg:block scroll-mt-6">
               <ResultsSidebar
                 filters={filters}
                 setFilter={setFilter}
@@ -982,6 +1024,8 @@ function Home() {
               onCardClick={openCard}
               nameFix={nameFix?.query || null}
               onNameFix={searchFix}
+              query={query}
+              onAlert={handleOpenSave}
             />
           </div>
 
@@ -1015,6 +1059,7 @@ function Home() {
             onDismiss={() => { setPendingSearchOpen(false); }}
           />
         </section>
+        </ResultsContext.Provider>
       )}
 
       <SaveSearchModal
@@ -1050,16 +1095,25 @@ function Home() {
 /* ─────────────────────────────────────────────
    Hero — featured find, oversized type, refined search
    ───────────────────────────────────────────── */
-/* Splash intro — one continuous motion from the seal to the header.
+/* Splash intro — one continuous motion from the seal to the header, played
+   once each time someone opens the site (once per browser tab session, so
+   it doesn't replay on every return to the home page) and finished in under
+   a second. Landon wants it on every visit, not just the first. In the iOS
+   app every launch is a new session, so it plays on every launch.
    The iOS app's launch screen shows this exact seal (same image, same size,
    same centre), so the app hands off from the native launch screen with no
    visible jump. Then: a gold bloom, the wordmark rises beneath the seal, and
    both fly up to dock into the header's seal and brand while the hero rises
    in underneath. "Collectors" fades in once the brand has landed.
-   Portalled to <body> so it covers the header too. The played flag isn't
-   stored — it plays every visit, as before. Skipped for deep links and
-   reduced-motion users. */
+   Portalled to <body> so it covers the header too. The "already played this
+   session" flag is sessionStorage ffIntroPlayed. An inline script further
+   down hides the server-rendered overlay before first paint when it has
+   already played, so there's no flash of the seal. Skipped for deep links
+   and reduced-motion users. */
+const INTRO_PLAYED_KEY = 'ffIntroPlayed';
 const SPLASH_SEAL = 150; // px — matches SplashSeal in the iOS launch screen
+const SPLASH_DOCK_AT = 430; // ms — wordmark is up; start the flight
+const SPLASH_FLIGHT = 460;  // ms — flight into the header; total ≈ 0.9s
 
 function SplashIntro() {
   const [phase, setPhase] = useState('boot'); // 'boot' | 'in' | 'dock' | 'skip'
@@ -1080,10 +1134,14 @@ function SplashIntro() {
       const sp = new URLSearchParams(window.location.search);
       if (sp.get('savedSearch') || sp.get('editSearch') || sp.get('card') || sp.get('q') || sp.get('tour')) skip = true;
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) skip = true;
+      if (window.sessionStorage.getItem(INTRO_PLAYED_KEY) === '1') skip = true;
     } catch {
       skip = true;
     }
     if (skip) { setPhase('skip'); announceIntroDone(); return; }
+    // NativeBridge reads this to hand off from the iOS launch screen with no
+    // fade (the seal is in the same place on both).
+    window.__ffIntroPlaying = true;
 
     if (window.Capacitor?.isNativePlatform?.()) {
       const insets = Math.max(0, window.screen.height - window.innerHeight);
@@ -1107,7 +1165,7 @@ function SplashIntro() {
     const fly = (el, target, scale) => {
       const from = el.getBoundingClientRect();
       const to = target.getBoundingClientRect();
-      el.style.transition = 'transform 0.8s cubic-bezier(0.65, 0, 0.25, 1)';
+      el.style.transition = `transform ${SPLASH_FLIGHT}ms cubic-bezier(0.65, 0, 0.25, 1)`;
       el.style.transform = `translate(${to.left + to.width / 2 - (from.left + from.width / 2)}px, ${to.top + to.height / 2 - (from.top + from.height / 2)}px) scale(${scale})`;
     };
 
@@ -1124,15 +1182,19 @@ function SplashIntro() {
       }
       if (subRef.current) subRef.current.style.opacity = '0';
       setPhase('dock');
-    }, 1150);
+    }, SPLASH_DOCK_AT);
 
     const t2 = setTimeout(() => {
       if (headerSeal) { headerSeal.style.transition = 'opacity 0.15s'; headerSeal.style.opacity = '1'; }
       if (core) { core.style.transition = 'opacity 0.15s'; core.style.opacity = '1'; }
       if (coll) { coll.style.transition = 'opacity 0.5s ease 0.15s'; coll.style.opacity = '1'; }
       setPhase('skip');
+      window.__ffIntroPlaying = false;
+      // Set on completion, not start: React's dev double-run would otherwise
+      // see its own flag and skip the intro.
+      try { window.sessionStorage.setItem(INTRO_PLAYED_KEY, '1'); } catch { /* plays again next time */ }
       announceIntroDone();
-    }, 1150 + 820);
+    }, SPLASH_DOCK_AT + SPLASH_FLIGHT + 20);
 
     return () => {
       clearTimeout(t1);
@@ -1154,13 +1216,13 @@ function SplashIntro() {
   };
 
   const overlay = (
-    <div className="fixed inset-0 z-[200]" style={{ pointerEvents: phase === 'dock' ? 'none' : 'auto' }}>
+    <div data-ff-splash className="fixed inset-0 z-[200]" style={{ pointerEvents: phase === 'dock' ? 'none' : 'auto' }}>
       {/* Base layer fades during the flight, revealing the page beneath. */}
       <div
         className="absolute inset-0"
         style={{
           background: 'var(--bg-base)',
-          transition: 'opacity 0.55s ease 0.15s',
+          transition: 'opacity 0.35s ease 0.1s',
           opacity: phase === 'dock' ? 0 : 1,
         }}
       />
@@ -1187,14 +1249,14 @@ function SplashIntro() {
           <div
             ref={brandRef}
             className="font-display text-[clamp(2.2rem,8.5vw,3.4rem)] tracking-tight leading-none rise"
-            style={{ animationDelay: '320ms' }}
+            style={{ animationDelay: '60ms', animationDuration: '380ms' }}
           >
             Fields <em className="text-[var(--gold)] not-italic">&amp;</em> Floors
           </div>
           <div
             ref={subRef}
             className="mt-4 text-[11px] tracking-[0.32em] uppercase text-[var(--gold)] rise"
-            style={{ animationDelay: '560ms', transition: 'opacity 0.25s ease', fontFamily: 'ui-monospace, monospace' }}
+            style={{ animationDelay: '160ms', animationDuration: '320ms', transition: 'opacity 0.2s ease', fontFamily: 'ui-monospace, monospace' }}
           >
             A Holy Grail search engine
           </div>
@@ -1218,17 +1280,30 @@ function announceIntroDone() {
 // useLayoutEffect warns during SSR; fall back to useEffect on the server.
 const useLayoutEffectSafe = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
-function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSearch, user, onCardClick, isReturning, recentSearches = [] }) {
+function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSearch, user, onCardClick, isReturning, recentSearches = [], presetHunts = [] }) {
   // Player-name dropdown under the search field. Picking fills the field.
   const suggest = useSuggestBox(query, (v) => setQuery(v));
+  // One fetch feeds both the desktop floating card and the phone's small
+  // "Live right now" row.
+  const featured = useFeatured();
+  const recent = recentSearches;
+  // Signed in after starring a card from the sign-up prompt? Save it now.
+  usePendingStarSave();
+  // "Caitlin Clark autos /1–25" → text plus a tier-coloured range chip.
+  const hunts = presetHunts.map((h) => {
+    const m = h.label.match(/^(.*?)\s+(\/\d+[–-]\d+)$/);
+    const firstRun = h.filters?.selectedPrintRuns?.[0];
+    return m
+      ? { ...h, text: m[1], chip: m[2], tier: (firstRun && tierForRun(firstRun)) || null }
+      : { ...h, text: h.label, chip: null, tier: null };
+  });
   return (
     <section className="relative border-b border-[var(--line-soft)] overflow-hidden">
-      {/* Gold bloom behind the featured card — top-centre on mobile, right
-          column on desktop where the card sits. */}
+      {/* Gold bloom — behind the headline on phones, behind the card on desktop. */}
       <div
         aria-hidden="true"
         className="absolute inset-0 pointer-events-none md:hidden"
-        style={{ background: 'radial-gradient(70% 34% at 50% 24%, rgba(201,149,74,0.16), transparent 72%)' }}
+        style={{ background: 'radial-gradient(80% 30% at 50% 18%, rgba(201,149,74,0.12), transparent 72%)' }}
       />
       <div
         aria-hidden="true"
@@ -1236,37 +1311,36 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
         style={{ background: 'radial-gradient(38% 55% at 72% 48%, rgba(201,149,74,0.14), transparent 72%)' }}
       />
 
-      {/* Direction A — "The Card". The live featured grail leads as a
-          floating object; headline and search follow. Desktop splits into
-          two columns (copy left, card right); mobile stacks card-first. */}
-      <div className="relative max-w-[1120px] mx-auto px-6 lg:px-10 pt-6 pb-16 md:pt-20 md:pb-28 grid md:grid-cols-[1.05fr_0.95fr] gap-9 md:gap-16 items-center">
-        <div className="md:order-2 flex flex-col items-center rise" style={{ animationDelay: '120ms' }}>
-          <HeroCard onCardClick={onCardClick} />
-        </div>
-
-        <div className="md:order-1 text-center md:text-left">
-          <h1
-            className="font-display italic text-[clamp(2.6rem,9vw,4.6rem)] leading-[0.98] tracking-[-0.015em] rise"
-            style={{ animationDelay: '220ms' }}
+      {/* Say what it is, then the search. Desktop: copy left, the live
+          featured card floating right. Phones: copy and search first so the
+          search box is on screen without scrolling; the card shrinks to a
+          "Live right now" row underneath. */}
+      <div className="relative max-w-[1120px] mx-auto px-6 lg:px-10 pt-8 pb-14 md:pt-20 md:pb-28 grid md:grid-cols-[1.05fr_0.95fr] gap-9 md:gap-16 items-center">
+        <div className="text-left">
+          <div
+            className="font-mono text-[10px] uppercase tracking-[0.24em] rise"
+            style={{ color: 'var(--gold)', animationDelay: '160ms' }}
           >
-            Find the <em className="text-[var(--gold-bright)]">one.</em>
-            <span className="sr-only"> A search engine for rare sports cards on eBay.</span>
+            Find the one
+          </div>
+          <h1
+            className="mt-3 font-display text-[clamp(2.25rem,7.5vw,3.5rem)] leading-[1.02] tracking-[-0.015em] rise"
+            style={{ animationDelay: '220ms', textWrap: 'balance' }}
+          >
+            Every <em className="text-[var(--gold-bright)]">numbered card</em> on eBay, on one page.
           </h1>
 
-          {/* The differentiator, in plain language. */}
           <p
-            className="mt-4 text-[15px] md:text-[17px] leading-relaxed max-w-[460px] mx-auto md:mx-0 rise"
+            className="mt-4 text-[15px] md:text-[17px] leading-relaxed max-w-[480px] rise"
             style={{ color: 'var(--ink-400)', animationDelay: '300ms' }}
           >
-            Search eBay by{' '}
-            <strong className="font-medium" style={{ color: 'var(--ink-100)' }}>
-              multiple print runs at once
-            </strong>
-            {' '}— plus autograph, rookie, and grade.
+            Pick the print runs you collect{' '}
+            <span className="font-mono text-[13px] md:text-[15px]" style={{ color: 'var(--ink-200)' }}>(/5, /10, /25)</span>{' '}
+            and see the live eBay listings together, rarest first.
           </p>
 
-          {/* Search — a solid gold-edged field with a gold go button. */}
-          <div className="mt-7 md:mt-9 rise" style={{ animationDelay: '380ms' }}>
+          {/* Search — a solid gold-edged field with a labelled gold button. */}
+          <div className="mt-6 md:mt-8 rise" style={{ animationDelay: '380ms' }}>
             <div
               ref={suggest.anchorRef}
               className="relative flex items-center rounded-xl transition-colors focus-within:border-[var(--gold)]"
@@ -1289,55 +1363,94 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
                 {...suggest.inputProps}
                 disabled={loading}
                 aria-label="Search a player"
-                className="relative w-full pl-5 pr-16 py-4 md:py-5 bg-transparent border-0 text-xl md:text-2xl font-display text-[var(--ink-100)] focus:outline-none"
+                className="relative w-full pl-5 pr-[128px] py-4 md:py-5 bg-transparent border-0 text-xl md:text-2xl font-display text-[var(--ink-100)] focus:outline-none"
               />
-              {!query && !loading && <RotatingPlaceholder align="left" />}
+              {!query && !loading && <RotatingPlaceholder align="left" padRight="128px" />}
               <button
                 onClick={onSearch}
                 disabled={loading}
-                className="absolute right-2 w-11 h-11 rounded-xl flex items-center justify-center transition-opacity hover:opacity-90 disabled:opacity-40 z-10"
+                className="absolute right-2 h-11 px-4 rounded-lg flex items-center gap-1.5 text-[13px] font-semibold whitespace-nowrap transition-opacity hover:opacity-90 disabled:opacity-40 z-10"
                 style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}
-                aria-label="Search"
               >
-                <ArrowRight className="w-5 h-5" strokeWidth={2} />
+                Show cards
+                <ArrowRight className="w-4 h-4" strokeWidth={2} aria-hidden="true" />
               </button>
             </div>
             {suggest.dropdown}
-            {error && <p className="mt-3 text-xs text-[var(--crit)]">{error}</p>}
+            {error && <p className="mt-3 text-[13px] text-[var(--crit)]">{error}</p>}
+
+            {/* Reassurance before anyone has to ask. */}
+            <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px]" style={{ color: 'var(--ink-400)' }}>
+              {['Free', 'No account needed', 'Real eBay listings'].map((t) => (
+                <span key={t} className="inline-flex items-center gap-1.5">
+                  <span aria-hidden="true" style={{ color: 'var(--gold)' }}>✓</span>{t}
+                </span>
+              ))}
+              <span style={{ color: 'var(--ink-600)' }}>Not affiliated with eBay</span>
+            </div>
           </div>
 
-          {/* Recent searches for returning visitors, examples otherwise. */}
-          <div className="mt-5 rise" style={{ animationDelay: '460ms' }}>
+          {/* Returning visitors get their own searches back; everyone else
+              gets ready-made hunts that land straight on results. */}
+          <div className="mt-7 rise" style={{ animationDelay: '460ms' }}>
             <div
               className="text-[10px] uppercase tracking-[0.24em] mb-3 font-mono"
               style={{ color: 'var(--ink-600)' }}
             >
-              {recentSearches.length > 0 ? 'Pick up where you left off' : 'Or try'}
+              {recent.length > 0 ? 'Pick up where you left off' : 'Popular hunts'}
             </div>
-            <div className="flex flex-wrap justify-center md:justify-start items-center gap-2">
-              {(recentSearches.length > 0
-                ? recentSearches
-                : ['Caitlin Clark', 'Victor Wembanyama', 'Connor Bedard', 'Cooper Flagg', 'Paul Skenes']
-              ).map((name) => (
-                <button
-                  key={name}
-                  type="button"
-                  onClick={() => onSuggested(name)}
-                  disabled={loading}
-                  className="text-[13px] px-4 py-2 rounded-full transition-colors disabled:opacity-40"
-                  style={{ border: '0.5px solid var(--line)', color: 'var(--ink-200)', background: 'var(--bg-elev)' }}
-                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--gold-deep)'; e.currentTarget.style.color = 'var(--gold-bright)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--line)'; e.currentTarget.style.color = 'var(--ink-200)'; }}
-                >
-                  {name}
-                </button>
-              ))}
-            </div>
+            {recent.length > 0 || hunts.length === 0 ? (
+              <div className="flex flex-wrap items-center gap-2">
+                {(recent.length > 0
+                  ? recent
+                  : ['Caitlin Clark', 'Victor Wembanyama', 'Connor Bedard', 'Cooper Flagg', 'Paul Skenes']
+                ).map((name) => (
+                  <button
+                    key={name}
+                    type="button"
+                    onClick={() => onSuggested(name)}
+                    disabled={loading}
+                    className="text-[13px] px-4 py-2 rounded-full transition-colors disabled:opacity-40 hover:border-[var(--gold-deep)] hover:text-[var(--gold-bright)]"
+                    style={{ border: '0.5px solid var(--line)', color: 'var(--ink-200)', background: 'var(--bg-elev)' }}
+                  >
+                    {name}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="grid gap-2 max-w-[480px]">
+                {hunts.map((h) => (
+                  <button
+                    key={h.label}
+                    type="button"
+                    onClick={() => onChipSearch(h.query, h.filters)}
+                    disabled={loading}
+                    className="group flex items-center justify-between gap-3 px-4 py-3 rounded-lg text-left transition-colors disabled:opacity-40 hover:border-[var(--gold-deep)]"
+                    style={{ border: '0.5px solid var(--line)', background: 'var(--bg-elev)' }}
+                  >
+                    <span className="text-[15px] text-[var(--ink-200)] group-hover:text-[var(--gold-bright)] transition-colors">{h.text}</span>
+                    <span className="flex items-center gap-2 flex-none">
+                      {h.chip && (
+                        h.tier
+                          ? <Badge mono tier={h.tier}>{h.chip}</Badge>
+                          : <Badge>{h.chip}</Badge>
+                      )}
+                      <ArrowRight className="w-4 h-4 text-[var(--ink-600)] group-hover:text-[var(--gold-bright)] transition-colors" strokeWidth={1.75} aria-hidden="true" />
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Phones only: the featured card as a compact live row. */}
+          <div className="md:hidden mt-8 rise" style={{ animationDelay: '540ms' }}>
+            <HeroLiveRow featured={featured} onCardClick={onCardClick} />
           </div>
 
           {/* Returning-user shortcuts only show to logged-in users. */}
           {user && (
-            <div className="mt-8 flex justify-center md:justify-start gap-8 rise" style={{ animationDelay: '560ms' }}>
+            <div className="mt-8 flex gap-8 rise" style={{ animationDelay: '560ms' }}>
               <Link
                 href="/watchlist"
                 className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
@@ -1353,6 +1466,11 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
             </div>
           )}
         </div>
+
+        {/* Desktop: the floating featured card. */}
+        <div className="hidden md:flex flex-col items-center rise" style={{ animationDelay: '120ms' }}>
+          <HeroCard featured={featured} onCardClick={onCardClick} />
+        </div>
       </div>
     </section>
   );
@@ -1361,7 +1479,7 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
 /* Rotating animated placeholder for the search bar.
    Cycles through SUGGESTED_SEARCHES with a slide-up fade transition.
    Each entry sits for ~3 seconds before animating in the next one. */
-function RotatingPlaceholder({ align = 'center' }) {
+function RotatingPlaceholder({ align = 'center', padRight = '4rem' }) {
   const [idx, setIdx] = useState(0);
   const [animKey, setAnimKey] = useState(0);
 
@@ -1375,8 +1493,8 @@ function RotatingPlaceholder({ align = 'center' }) {
 
   return (
     <span
-      className={`absolute left-0 right-0 top-1/2 -translate-y-1/2 pointer-events-none overflow-hidden flex items-center ${align === 'left' ? 'justify-start pl-5 pr-16' : 'justify-center text-center'}`}
-      style={{ height: '2.4em' }}
+      className={`absolute left-0 right-0 top-1/2 -translate-y-1/2 pointer-events-none overflow-hidden flex items-center ${align === 'left' ? 'justify-start pl-5' : 'justify-center text-center'}`}
+      style={{ height: '2.4em', paddingRight: align === 'left' ? padRight : undefined }}
     >
       <span
         key={animKey}
@@ -1407,7 +1525,7 @@ function WhyFields({ user }) {
               How it works
             </div>
             <h2 className="font-display italic text-[clamp(2rem,5vw,3.4rem)] leading-[1.04] tracking-[-0.02em]">
-              Three steps.
+              Search. Save. Get told when it lists.
             </h2>
           </div>
           <p className="text-[15px] leading-relaxed max-w-[330px]" style={{ color: 'var(--ink-400)' }}>
@@ -1422,14 +1540,11 @@ function WhyFields({ user }) {
           <HowStep n="02" title="Save what catches your eye" body="Add listings to your watchlist. We keep price and status fresh.">
             <WatchlistArtifact />
           </HowStep>
-          <HowStep n="03" title="Upgrade to be alerted" body="Save your filters and we'll email you when a match lists." last>
+          <HowStep n="03" title="Get an email when it lists" body="Save your filters and we'll email you when a match lists." last>
             <SavedSearchExampleCard />
           </HowStep>
         </ol>
       </section>
-
-      {/* Free-account band — full width, only for logged-out visitors. */}
-      {!user && <FreeAccountCTA />}
 
       <PlansSection user={user} />
     </>
@@ -1521,40 +1636,6 @@ function TierChip({ run }) {
   );
 }
 
-/* Free-account band — a full-width contrast strip between how-it-works
-   and plans. The pitch is the watchlist (the real free-account benefit). */
-function FreeAccountCTA() {
-  return (
-    <section
-      className="relative overflow-hidden"
-      style={{ background: 'var(--bg-elev-2)', borderTop: '1px solid var(--gold-deep)', borderBottom: '1px solid var(--gold-deep)' }}
-    >
-      <div
-        aria-hidden="true"
-        className="absolute -right-20 -top-28 w-[420px] h-[420px] rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(201,149,74,0.14), transparent 65%)' }}
-      />
-      <div className="relative max-w-[1040px] mx-auto px-6 lg:px-10 py-8 md:py-9 flex flex-col md:flex-row md:items-center md:justify-between gap-5 md:gap-8">
-        <div>
-          <h3 className="font-display italic text-[clamp(1.6rem,3.6vw,2.4rem)] leading-[1.1]">
-            Track cards you find. <em style={{ color: 'var(--gold-bright)' }}>For free.</em>
-          </h3>
-          <p className="text-[15px] leading-relaxed mt-1.5" style={{ color: 'var(--ink-400)' }}>
-            Save listings to your watchlist and we'll keep them updated. No credit card.
-          </p>
-        </div>
-        <Link
-          href="/signup"
-          className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg text-[12px] tracking-[0.14em] uppercase font-semibold whitespace-nowrap"
-          style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}
-        >
-          Create free account →
-        </Link>
-      </div>
-    </section>
-  );
-}
-
 /* Saved-search example card — visual that lives inside step 03: the alert
    a Base member gets when a saved search finds a match. */
 function SavedSearchExampleCard() {
@@ -1570,7 +1651,7 @@ function SavedSearchExampleCard() {
 
 /* One plan in PlansSection. `featured` raises it (Base). `summary` is the
    one-line version phones show for the non-featured plans. */
-function PlanTier({ name, price, priceUnit, line, summary, features, ctaLabel, ctaShort, ctaHref, featured = false, ribbon }) {
+function PlanTier({ name, price, priceUnit, line, summary, listLead, features, ctaLabel, ctaShort, ctaHref, featured = false, ribbon, muted = false }) {
   return (
     <div
       className={`relative flex flex-col p-6 md:p-7 rounded-xl ${featured
@@ -1593,7 +1674,7 @@ function PlanTier({ name, price, priceUnit, line, summary, features, ctaLabel, c
           <div className="font-mono uppercase tracking-[0.22em] text-[10px] mb-2" style={{ color: featured ? 'var(--gold)' : 'var(--ink-400)' }}>
             {name}
           </div>
-          <div className="font-display italic leading-none text-[30px] md:text-[44px]" style={{ color: 'var(--ink-100)' }}>
+          <div className="font-display italic leading-none text-[30px] md:text-[44px]" style={{ color: muted ? 'var(--ink-400)' : 'var(--ink-100)' }}>
             {price}
             {priceUnit && <small className="not-italic ml-1 font-sans text-[14px]" style={{ color: 'var(--ink-400)' }}>{priceUnit}</small>}
           </div>
@@ -1611,6 +1692,9 @@ function PlanTier({ name, price, priceUnit, line, summary, features, ctaLabel, c
       </div>
       {summary && !featured && <div className="text-[13px] mt-2 md:hidden" style={{ color: 'var(--ink-200)' }}>{summary}</div>}
       <ul className={`list-none p-0 m-0 mt-5 mb-6 flex-1 ${featured ? '' : 'hidden md:block'}`}>
+        {listLead && (
+          <li className="font-mono text-[10px] tracking-[0.18em] uppercase mb-3" style={{ color: 'var(--ink-400)' }}>{listLead}</li>
+        )}
         {features.map((f) => (
           <li
             key={f.label}
@@ -1649,22 +1733,25 @@ function PlansSection({ user }) {
           Plans
         </div>
         <h3 className="font-display italic text-[clamp(2rem,4.6vw,3.2rem)] leading-[1.05] tracking-[-0.02em]">
-          Start free. Upgrade for alerts.
+          Searching is free. Alerts start at $6.99.
         </h3>
       </div>
 
       <div className="flex flex-col gap-3 md:gap-0 md:grid md:grid-cols-[1fr_1.15fr_1fr] md:items-stretch md:border md:rounded-xl" style={{ borderColor: 'var(--line)' }}>
         <PlanTier
-          name="Anonymous"
+          name="Free"
           price="$0"
-          line="No account"
-          summary="Search and filters"
+          line="No credit card"
+          summary="Search, watchlist, unlimited saved searches, 1 email alert"
           features={[
-            { label: 'Unlimited search', isNew: true },
-            { label: 'Improved search filters', isNew: true },
+            { label: 'Unlimited search', isNew: false },
+            { label: 'Watchlist with live prices', isNew: false },
+            { label: 'Unlimited saved searches', isNew: false },
+            { label: '1 email alert', isNew: false },
           ]}
-          ctaLabel="Start hunting"
-          ctaHref="/"
+          ctaLabel={user ? 'You\u2019re signed in' : 'Create account'}
+          ctaShort={user ? 'Signed in' : 'Sign up free'}
+          ctaHref={user ? '/watchlist-cards' : '/signup?src=banner'}
         />
         <PlanTier
           featured
@@ -1672,31 +1759,28 @@ function PlansSection({ user }) {
           name="Base"
           price={native ? '14 days free' : '$6.99'}
           priceUnit={native ? null : '/mo'}
-          line={native ? 'Then billed by Apple · monthly or annual' : 'or $59/year (save 30%) · 14-day free trial'}
+          line={native ? 'Then billed by Apple · monthly or yearly' : 'or $59/yr, over 3 months free · 14-day free trial'}
+          listLead="Everything in Free, plus"
           features={[
-            { label: 'Everything in Free account', isNew: false },
-            { label: 'Alerts on up to 5 saved searches', isNew: true },
-            { label: 'Bid reminders below price cap', isNew: true },
+            { label: 'Email alerts on up to 5 saved searches', isNew: true },
+            { label: 'Bid reminders under your price', isNew: true },
           ]}
-          ctaLabel="Start free trial"
+          ctaLabel="Start 14-day free trial"
           ctaHref={user ? '/subscribe' : '/signup?next=/subscribe'}
         />
         <PlanTier
-          name="Free account"
-          price="$0"
-          line="No credit card"
-          summary="Watchlist, unlimited saved searches, 1 alert"
+          name="Premium"
+          price="Soon"
+          line="Join the waitlist"
+          summary="More alerts and faster checks, coming soon"
+          listLead="Everything in Base, plus"
           features={[
-            { label: 'Everything in Anonymous', isNew: false },
-            { label: 'Watchlist of saved cards', isNew: true },
-            { label: 'Live price & sold status', isNew: true },
-            { label: 'Saved listings across devices', isNew: true },
-            { label: 'Unlimited saved searches', isNew: true },
-            { label: 'Alerts on 1 saved search', isNew: true },
+            { label: 'More alerts', isNew: false },
+            { label: 'Faster checks', isNew: false },
           ]}
-          ctaLabel={user ? 'You’re signed in' : 'Create free account'}
-          ctaShort={user ? 'Signed in' : 'Sign up free'}
-          ctaHref={user ? '/watchlist-cards' : '/signup'}
+          ctaLabel="Notify me"
+          ctaHref="/pricing"
+          muted
         />
       </div>
       {!native && (
@@ -1708,18 +1792,12 @@ function PlansSection({ user }) {
   );
 }
 
-/* HeroCard — the live featured grail from /api/featured, presented as a
-   floating, slabbed object with a slow foil sweep. /api/featured is cached
-   server-side (1-hour TTL, rotating athletes), so this costs no extra eBay
-   quota per visit. Tapping opens the same CardModal search results use.
-
-   Loading shows the empty frame at full size (no layout shift); if the
-   fetch fails, the brand seal stands in so the hero never looks broken. */
-function HeroCard({ onCardClick }) {
-  const [item, setItem] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [failed, setFailed] = useState(false);
-
+/* useFeatured — the live featured grail from /api/featured. The route is
+   cached server-side (1-hour TTL, rotating athletes), so this costs no extra
+   eBay quota per visit. Fetched once in Hero and shared by HeroCard (desktop)
+   and HeroLiveRow (phones). */
+function useFeatured() {
+  const [state, setState] = useState({ item: null, loading: true, failed: false });
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -1728,35 +1806,51 @@ function HeroCard({ onCardClick }) {
         if (!res.ok) throw new Error('featured fetch failed');
         const data = await res.json();
         if (cancelled) return;
-        if (data.featured) setItem(data.featured);
-        else setFailed(true);
+        setState(data.featured
+          ? { item: data.featured, loading: false, failed: false }
+          : { item: null, loading: false, failed: true });
       } catch {
-        if (!cancelled) setFailed(true);
-      } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) setState({ item: null, loading: false, failed: true });
       }
     })();
     return () => { cancelled = true; };
   }, []);
+  return state;
+}
+
+function featuredPrice(item) {
+  return item?.price != null
+    ? `$${Number(item.price).toLocaleString('en-US', { maximumFractionDigits: 0 })}`
+    : null;
+}
+
+function featuredGrade(item) {
+  return item && (
+    (item.psaGrade && `PSA ${item.psaGrade}`) ||
+    (item.bgsGrade && `BGS ${item.bgsGrade}`) ||
+    (item.sgcGrade && `SGC ${item.sgcGrade}`) ||
+    (item.cgcGrade && `CGC ${item.cgcGrade}`)
+  );
+}
+
+/* HeroCard — the featured find as a floating, slabbed object with a slow
+   foil sweep (desktop). Tapping opens the same CardModal search results use.
+   Loading shows the empty frame at full size (no layout shift); if the
+   fetch fails, the brand seal stands in so the hero never looks broken. */
+function HeroCard({ featured, onCardClick }) {
+  const { item, loading, failed } = featured;
 
   if (failed) {
     return (
-      <div className="flex items-center justify-center w-[min(52vw,230px)] md:w-[300px] aspect-[3/4]">
+      <div className="flex items-center justify-center w-[300px] aspect-[3/4]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/brand/seal.png" alt="" className="w-[70%] opacity-90" />
       </div>
     );
   }
 
-  const price = item?.price != null
-    ? `$${Number(item.price).toLocaleString('en-US', { maximumFractionDigits: 0 })}`
-    : null;
-  const grade = item && (
-    (item.psaGrade && `PSA ${item.psaGrade}`) ||
-    (item.bgsGrade && `BGS ${item.bgsGrade}`) ||
-    (item.sgcGrade && `SGC ${item.sgcGrade}`) ||
-    (item.cgcGrade && `CGC ${item.cgcGrade}`)
-  );
+  const price = featuredPrice(item);
+  const grade = featuredGrade(item);
 
   return (
     <>
@@ -1765,7 +1859,7 @@ function HeroCard({ onCardClick }) {
         onClick={() => item && onCardClick?.(item)}
         disabled={!item}
         aria-label={item ? `Featured find: ${item.title}` : 'Loading featured find'}
-        className="block w-[min(52vw,230px)] md:w-[300px] group"
+        className="block w-[300px] group"
       >
         <div className="ff-float">
           <div
@@ -1809,6 +1903,53 @@ function HeroCard({ onCardClick }) {
           </>
         )}
       </div>
+    </>
+  );
+}
+
+/* HeroLiveRow — phones only. The featured find as one compact tappable row
+   under the search, so the search box stays above the fold. Hidden entirely
+   if the fetch fails; a placeholder row would just be noise. */
+function HeroLiveRow({ featured, onCardClick }) {
+  const { item, loading, failed } = featured;
+  if (failed) return null;
+  const price = featuredPrice(item);
+  const grade = featuredGrade(item);
+  return (
+    <>
+      <div className="mb-3 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em]" style={{ color: 'var(--ink-400)' }}>
+        <span className="ff-live-dot" aria-hidden="true" />
+        Live right now
+      </div>
+      <button
+        type="button"
+        onClick={() => item && onCardClick?.(item)}
+        disabled={!item}
+        aria-label={item ? `Featured find: ${item.title}` : 'Loading featured find'}
+        className="w-full flex items-center gap-3 p-2.5 rounded-xl text-left"
+        style={{ background: 'var(--bg-elev)', border: '0.5px solid var(--line)' }}
+      >
+        <div className="relative w-14 aspect-[3/4] flex-none rounded overflow-hidden bg-[var(--bg-elev-2)]">
+          {loading && <div className="absolute inset-0 shimmer" />}
+          {item && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={upscaleEbayImage(item.image)} alt="" className="w-full h-full object-cover" />
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-wrap gap-1 mb-1 min-h-[20px]">
+            {item?.printRun && <Badge mono tier={tierForRun(item.printRun) || 'grail'}>/{item.printRun}</Badge>}
+            {item?.hasAuto && <Badge>Auto</Badge>}
+            {grade && <Badge>{grade}</Badge>}
+          </div>
+          <div className="text-[13px] leading-snug line-clamp-2" style={{ color: 'var(--ink-200)' }}>
+            {item ? item.title : ' '}
+          </div>
+        </div>
+        {price && (
+          <span className="flex-none font-display text-[20px] leading-none text-[var(--gold-bright)]">{price}</span>
+        )}
+      </button>
     </>
   );
 }
@@ -2082,6 +2223,11 @@ function FilterControls({ filters, setFilter, compact = false }) {
 
       {/* Card company — optional, off by default (title match on the server) */}
       <CardCompanyFilter filters={filters} setFilter={setFilter} />
+
+      <SectionDivider />
+
+      {/* Team — league first, then team (College: conference, then school) */}
+      <TeamFilter filters={filters} setFilter={setFilter} />
 
       <SectionDivider />
 
@@ -2416,6 +2562,7 @@ function countActiveFilters(f) {
   if (f.listingType && f.listingType !== 'any') n++;
   if ((f.priceMin ?? 0) > 0 || (f.priceMax ?? 1000) < 1000) n++;
   if (f.brands?.length) n++;
+  if (f.teams?.length) n++;
   return n;
 }
 
@@ -3157,7 +3304,7 @@ function BackToTop() {
 
 const PAGE_DISPLAY_SIZE = 200; // how many cards to render at once
 
-function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase, onSuggested, appliedFilters, resultMeta, hasPendingFilters, onPendingClick, onCardClick, nameFix = null, onNameFix }) {
+function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase, onSuggested, appliedFilters, resultMeta, hasPendingFilters, onPendingClick, onCardClick, nameFix = null, onNameFix, query = '', onAlert }) {
   // How many cards are currently shown. Resets to the first page whenever a new
   // result set arrives (keyed on result count + first id below).
   const [shown, setShown] = useState(PAGE_DISPLAY_SIZE);
@@ -3171,7 +3318,12 @@ function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase
   if (loading) return <LoadingState phrase={scanPhrase} />;
   if (!hasSearched) return <ResolveState onSuggested={onSuggested} />;
   if (!loading && hasSearched && results.length === 0 && !error)
-    return <NoResultsState onSuggested={onSuggested} appliedFilters={appliedFilters} nameFix={nameFix} onNameFix={onNameFix} />;
+    return (
+      <>
+        <NoResultsState onSuggested={onSuggested} appliedFilters={appliedFilters} nameFix={nameFix} onNameFix={onNameFix} />
+        <AlertBand query={query} filters={appliedFilters} onAlert={onAlert} />
+      </>
+    );
 
   const capped = resultMeta?.capped;
   const visible = results.slice(0, shown);
@@ -3206,6 +3358,8 @@ function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase
           </button>
         </div>
       )}
+
+      <AlertBand query={query} filters={appliedFilters} onAlert={onAlert} />
     </div>
   );
 }
@@ -3243,11 +3397,27 @@ const WATCHLIST_PROVIDER_MOVED_TO_LIB = true; // placeholder removed below
 // Lives inside the result card's <a>, so clicks must not trigger the link.
 function WatchStar({ item }) {
   const { user } = useUser();
-  const router = useRouter();
   const ctx = useContext(WatchlistContext);
   const [busy, setBusy] = useState(false);
 
   const saved = ctx ? ctx.isSaved(item.id) : false;
+  const [promptOpen, setPromptOpen] = useState(false);
+  usePendingStarSave();
+
+  async function saveNow() {
+    ctx?.markSaved(item.id);
+    try {
+      const res = await fetch('/api/watchlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(watchlistPayload(item)),
+      });
+      if (!res.ok) throw new Error(`Watchlist request failed (${res.status})`);
+    } catch (err) {
+      console.error('Watchlist save failed:', err?.message || err);
+      ctx?.markUnsaved(item.id);
+    }
+  }
 
   async function toggle(e) {
     // Critical: stop the parent <a> from navigating to eBay.
@@ -3255,9 +3425,9 @@ function WatchStar({ item }) {
     e.stopPropagation();
     if (busy) return;
 
-    // Logged-out users get sent to login.
+    // Logged-out visitors get the "Keep this card" sign-up prompt.
     if (!user) {
-      router.push('/login');
+      setPromptOpen(true);
       return;
     }
 
@@ -3293,19 +3463,7 @@ function WatchStar({ item }) {
         res = await fetch('/api/watchlist', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            listing_id: item.id,
-            title: item.title,
-            price: item.price,
-            currency: item.currency || 'USD',
-            image_url: item.image,
-            listing_url: item.url,
-            badges: buildBadgePayload(item),
-            is_auction: !!item.isAuction,
-            end_time: item.endTime || null,
-            bid_count: item.bidCount ?? null,
-            condition: item.condition || null,
-          }),
+          body: JSON.stringify(watchlistPayload(item)),
         });
       }
       // fetch() only rejects on NETWORK failure — a 401/500 resolves
@@ -3326,6 +3484,7 @@ function WatchStar({ item }) {
   }
 
   return (
+    <>
     <button
       onClick={toggle}
       aria-label={saved ? 'Remove from watchlist' : 'Save to watchlist'}
@@ -3339,6 +3498,239 @@ function WatchStar({ item }) {
     >
       <span style={{ fontSize: '15px', lineHeight: 1 }}>{saved ? '★' : '☆'}</span>
     </button>
+    {promptOpen && (
+      <KeepCardPrompt item={item} onClose={() => setPromptOpen(false)} onSaved={saveNow} />
+    )}
+    </>
+  );
+}
+
+/* ── Keep-this-card + alert band (signed-out sign-up moments) ───────────
+   Two places where a visitor actually wants an account: starring a card,
+   and wanting to hear when a new match lists. Both send them through
+   sign-up and back to the same search.
+
+   Return trip: the results page doesn't keep the search in its URL, so the
+   AlertBand (which knows the query and applied filters) records the current
+   search here; WatchStar turns it into a share link to come back to. The
+   starred card itself waits in localStorage (public eBay listing data only,
+   nothing personal) and is saved once the visitor is signed in. */
+let lastResultsSearch = null;
+
+function resultsReturnPath(fallbackCardId) {
+  if (lastResultsSearch?.query) {
+    // Straight back to "/" (not the /share preview route) so the search re-runs.
+    const qs = buildShareParams(lastResultsSearch.query, lastResultsSearch.filters || {}, ALL_PRESET_PRINT_RUNS);
+    if (qs) return `/?${qs}`;
+  }
+  return fallbackCardId ? `/?card=${encodeURIComponent(fallbackCardId)}` : '/';
+}
+
+function watchlistPayload(item) {
+  return {
+    listing_id: item.id,
+    title: item.title,
+    price: item.price,
+    currency: item.currency || 'USD',
+    image_url: item.image,
+    listing_url: item.url,
+    badges: buildBadgePayload(item),
+    is_auction: !!item.isAuction,
+    end_time: item.endTime || null,
+    bid_count: item.bidCount ?? null,
+    condition: item.condition || null,
+  };
+}
+
+const PENDING_STAR_KEY = 'ffPendingStar';
+const PENDING_STAR_TTL = 60 * 60 * 1000; // an hour is plenty for a sign-up round trip
+
+function stashPendingStar(item) {
+  try {
+    localStorage.setItem(PENDING_STAR_KEY, JSON.stringify({ at: Date.now(), payload: watchlistPayload(item) }));
+  } catch { /* storage blocked: they'll just star it again */ }
+}
+
+function takePendingStar() {
+  try {
+    const raw = localStorage.getItem(PENDING_STAR_KEY);
+    if (!raw) return null;
+    localStorage.removeItem(PENDING_STAR_KEY);
+    const { at, payload } = JSON.parse(raw);
+    if (!payload?.listing_id || Date.now() - at > PENDING_STAR_TTL) return null;
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+/* Once signed in, save the card they starred before signing up. Runs from
+   Hero and every WatchStar; the module flag keeps it to one save. */
+let pendingStarHandled = false;
+function usePendingStarSave() {
+  const { user } = useUser();
+  const ctx = useContext(WatchlistContext);
+  useEffect(() => {
+    if (!user || pendingStarHandled) return;
+    pendingStarHandled = true;
+    const payload = takePendingStar();
+    if (!payload) return;
+    ctx?.markSaved(payload.listing_id);
+    fetch('/api/watchlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    }).then((res) => { if (!res.ok) ctx?.markUnsaved(payload.listing_id); })
+      .catch(() => ctx?.markUnsaved(payload.listing_id));
+  }, [user, ctx]);
+}
+
+/* KeepCardPrompt — the sign-up ask when a signed-out visitor stars a card.
+   Web: Apple + Google + email. iOS app: Google blocks sign-in inside app web
+   views, so native Apple + email only; native Apple signs in without leaving
+   the page, so the card is saved on the spot. */
+function KeepCardPrompt({ item, onClose, onSaved }) {
+  const [native, setNative] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const closeRef = useRef(null);
+  useEffect(() => {
+    setNative(isNativeApp());
+    closeRef.current?.focus();
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  const next = resultsReturnPath(item.id);
+  const emailHref = `/signup?next=${encodeURIComponent(next)}&src=star`;
+
+  async function continueWith(provider) {
+    if (busy) return;
+    setError('');
+    setBusy(true);
+    try {
+      const { createClient } = await import('../lib/supabaseClient');
+      const supabase = createClient();
+      if (native && provider === 'apple') {
+        const { signInWithAppleNative } = await import('../lib/native');
+        await signInWithAppleNative(supabase);
+        track('signed_up', undefined, 'star'); // server only counts brand-new accounts
+        await onSaved();
+        onClose();
+        return;
+      }
+      stashPendingStar(item);
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: { redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}&src=star` },
+      });
+      if (oauthError) throw oauthError;
+    } catch (e) {
+      // Closing Apple's sheet isn't an error worth showing.
+      if (!/cancel/i.test(e?.message || '')) setError('Sign-in didn’t go through. Try again, or use email.');
+      setBusy(false);
+    }
+  }
+
+  const btn = 'w-full h-11 rounded-lg flex items-center justify-center gap-2 text-[13px] font-semibold transition-opacity hover:opacity-90 disabled:opacity-50';
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-4"
+      style={{ background: 'rgba(0,0,0,0.7)' }}
+      onClick={(e) => { e.stopPropagation(); onClose(); }}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="keep-card-title"
+        className="relative w-full max-w-[400px] rounded-xl p-6"
+        style={{ background: 'var(--bg-elev-2)', border: '0.5px solid var(--gold-deep)', boxShadow: '0 30px 60px rgba(0,0,0,0.6)' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          ref={closeRef}
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center text-[18px] text-[var(--ink-400)] hover:text-[var(--ink-100)]"
+        >
+          ×
+        </button>
+        <div className="font-mono text-[10px] uppercase tracking-[0.22em]" style={{ color: 'var(--gold)' }}>Free account</div>
+        <h2 id="keep-card-title" className="font-display italic text-[26px] leading-tight mt-2">Keep this card</h2>
+        {item.title && (
+          <p className="mt-2 text-[13px] leading-snug line-clamp-2" style={{ color: 'var(--ink-200)' }}>{item.title}</p>
+        )}
+        <p className="mt-2 text-[13px] leading-relaxed" style={{ color: 'var(--ink-400)' }}>
+          We’ll keep its price up to date and tell you if it sells. No credit card.
+        </p>
+        <div className="mt-5 grid gap-2">
+          <button type="button" disabled={busy} onClick={() => continueWith('apple')} className={btn} style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
+            <span aria-hidden="true"></span> Continue with Apple
+          </button>
+          {!native && (
+            <button type="button" disabled={busy} onClick={() => continueWith('google')} className={btn} style={{ background: 'transparent', color: 'var(--ink-100)', border: '0.5px solid var(--ink-600)' }}>
+              Continue with Google
+            </button>
+          )}
+          <Link
+            href={emailHref}
+            onClick={() => stashPendingStar(item)}
+            className={btn}
+            style={{ background: 'transparent', color: 'var(--ink-200)', border: '0.5px solid var(--line)' }}
+          >
+            Use email instead
+          </Link>
+        </div>
+        {error && <p className="mt-3 text-[13px] text-[var(--crit)]">{error}</p>}
+        <p className="mt-4 text-[11px] text-center" style={{ color: 'var(--ink-600)' }}>
+          Already have an account?{' '}
+          <Link href="/login" onClick={() => stashPendingStar(item)} className="underline underline-offset-2 hover:text-[var(--gold-bright)]">Sign in</Link>
+        </p>
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
+/* AlertBand — under results (or under "no results"): the moment the alert
+   plan sells itself. Signed-in visitors open the save-search flow; signed-out
+   ones go through sign-up and come back to this search. Hidden until the
+   results call site passes the query. */
+function AlertBand({ query, filters, onAlert }) {
+  const { user } = useUser();
+  useEffect(() => {
+    if (query) lastResultsSearch = { query, filters };
+  }, [query, filters]);
+  if (!query) return null;
+
+  const next = resultsReturnPath(null);
+  const ctaClass = 'inline-flex items-center gap-2 h-11 px-5 rounded-full text-[13px] font-semibold whitespace-nowrap transition-opacity hover:opacity-90';
+  const ctaStyle = { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' };
+  return (
+    <div
+      className="mt-10 rounded-xl px-5 py-5 md:px-6 flex flex-wrap items-center justify-between gap-4"
+      style={{ border: '0.5px solid var(--gold-deep)', background: 'linear-gradient(90deg, rgba(201,149,74,0.09), transparent)' }}
+    >
+      <div className="min-w-0 max-w-[520px]">
+        <p className="font-display text-[20px] md:text-[22px] leading-snug">
+          Get an email when a new <em className="text-[var(--gold-bright)]">{query}</em> card lists.
+        </p>
+        <p className="mt-1 text-[13px]" style={{ color: 'var(--ink-400)' }}>
+          We check eBay every hour with these filters. Your first alert is free.
+        </p>
+      </div>
+      {user ? (
+        <button type="button" onClick={onAlert} className={ctaClass} style={ctaStyle}>
+          Turn on alert <ArrowRight className="w-4 h-4" strokeWidth={2} aria-hidden="true" />
+        </button>
+      ) : (
+        <Link href={`/signup?next=${encodeURIComponent(next)}&src=alert`} className={ctaClass} style={ctaStyle}>
+          Turn on alert <ArrowRight className="w-4 h-4" strokeWidth={2} aria-hidden="true" />
+        </Link>
+      )}
+    </div>
   );
 }
 
@@ -3716,7 +4108,10 @@ function useSuggestBox(value, onPick) {
   const [rect, setRect] = useState(null);
 
   const rows = useMemo(() => {
-    if (!mod || !open) return [];
+    if (!open) return [];
+    // Teams come first ("pira" → Pittsburgh Pirates); they need no loading.
+    const teams = suggestTeams(value, 5).map((t) => ({ kind: 'team', value: t.label, sport: `${t.league} team` }));
+    if (!mod) return teams;
     const typed = mod.normalizeName(value);
     if (typed.length < 2) return [];
     let players = mod.suggestPlayers(value, 6);
@@ -3724,14 +4119,21 @@ function useSuggestBox(value, onPick) {
     // still the start of a name we're suggesting.
     const lastWord = typed.split(' ').pop();
     const stillTyping = players.some((p) => mod.normalizeName(p.name).split(' ').some((t) => t !== lastWord && t.startsWith(lastWord)));
-    const fix = stillTyping ? null : mod.didYouMean(value);
+    const fix = stillTyping || teamFromQuery(value) ? null : mod.didYouMean(value);
     // The fixed player's full name, if typing hasn't already surfaced it.
     if (fix?.sport && !players.some((p) => p.name === fix.name)) players = [{ name: fix.name, sport: fix.sport }, ...players];
     players = players.filter((p) => !fix || mod.normalizeName(p.name) !== mod.normalizeName(fix.query));
+    // With a team on the list, keep only players whose name really starts
+    // with what's typed ("duke" → Duke Clark), not near-misses.
+    if (teams.length) {
+      const words = typed.split(' ');
+      players = players.filter((p) => words.every((w) => mod.normalizeName(p.name).split(' ').some((t) => t.startsWith(w))));
+    }
     const list = [
+      ...teams,
       ...(fix ? [{ kind: 'fix', value: fix.query }] : []),
       ...players.map((p) => ({ kind: 'player', value: p.name, sport: p.sport })),
-    ].slice(0, 6);
+    ].slice(0, 7);
     // Nothing to offer if the only row is exactly what's typed.
     if (list.length === 1 && mod.normalizeName(list[0].value) === typed) return [];
     return list;
@@ -3827,7 +4229,7 @@ function PlayerSuggestDropdown({ id, rows, active, typed, rect, onHover, onPick 
     <ul
       id={id}
       role="listbox"
-      aria-label="Player suggestions"
+      aria-label="Player and team suggestions"
       className="overflow-hidden"
       style={{
         position: 'absolute',
@@ -3849,9 +4251,18 @@ function PlayerSuggestDropdown({ id, rows, active, typed, rect, onHover, onPick 
     >
       {rows.map((row, i) => {
         const on = i === active;
+        // "Teams" / "Players" labels, only when the list has teams in it.
+        const group = row.kind === 'team' ? 'Teams' : 'Players';
+        const prevGroup = i > 0 ? (rows[i - 1].kind === 'team' ? 'Teams' : 'Players') : null;
+        const showGroup = rows.some((r) => r.kind === 'team') && group !== prevGroup;
         return (
+          <Fragment key={`${row.kind}-${row.value}-${row.sport || ''}`}>
+          {showGroup && (
+            <li role="presentation" className="font-mono uppercase" style={{ fontSize: 10, letterSpacing: '0.2em', color: 'var(--ink-600)', padding: '10px 16px 6px', background: 'var(--bg-base)' }}>
+              {group}
+            </li>
+          )}
           <li
-            key={`${row.kind}-${row.value}-${row.sport || ''}`}
             id={`${id}-${i}`}
             role="option"
             aria-selected={on}
@@ -3878,13 +4289,20 @@ function PlayerSuggestDropdown({ id, rows, active, typed, rect, onHover, onPick 
                 <span className="truncate">{highlightTyped(row.value, typed)}</span>
                 <span
                   className="font-mono uppercase flex-none rounded-full"
-                  style={{ fontSize: 10, letterSpacing: '0.14em', color: 'var(--ink-600)', border: '0.5px solid var(--line)', padding: '3px 8px' }}
+                  style={{
+                    fontSize: 10,
+                    letterSpacing: '0.14em',
+                    color: row.kind === 'team' ? 'var(--gold)' : 'var(--ink-600)',
+                    border: `0.5px solid ${row.kind === 'team' ? 'var(--gold-deep)' : 'var(--line)'}`,
+                    padding: '3px 8px',
+                  }}
                 >
                   {row.sport}
                 </span>
               </>
             )}
           </li>
+          </Fragment>
         );
       })}
     </ul>
@@ -4016,6 +4434,200 @@ function CardCompanyFilter({ filters, setFilter }) {
           )}
         </div>
       ))}
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   Active filter chips under the results heading, plus "Edit filters"
+   (desktop: jumps to the sidebar; phone: opens the filter drawer).
+   ───────────────────────────────────────────── */
+function activeFilterChips(f) {
+  const chips = [];
+  if (f.numberedCards) {
+    const runs = new Set([...(f.selectedPrintRuns || []), ...(f.customPrintRuns || [])]);
+    const allPresets = ALL_PRESET_PRINT_RUNS.every((r) => runs.has(r)) && !(f.customPrintRuns || []).length;
+    if (allPresets || runs.size === 0) {
+      chips.push({ label: 'Numbered' });
+    } else {
+      PRINT_RUN_TIERS.forEach((t) => {
+        if (t.runs.some((r) => runs.has(r))) chips.push({ label: `/${t.range}`, tier: tierForRun(t.runs[t.runs.length - 1]) });
+      });
+      if ((f.customPrintRuns || []).length) chips.push({ label: f.customPrintRuns.join(' ') });
+    }
+  }
+  if (f.autoCards) chips.push({ label: 'Auto' });
+  if (f.rookieCards) chips.push({ label: 'Rookie' });
+  if (f.condition === 'graded') chips.push({ label: 'Graded' });
+  if (f.condition === 'raw') chips.push({ label: 'Raw' });
+  if (f.listingType === 'buyItNow') chips.push({ label: 'Buy It Now' });
+  if (f.listingType === 'auction') chips.push({ label: 'Auction' });
+  brandFilterLabels(f.brands, f.brandLines).forEach((label) => chips.push({ label }));
+  teamFilterLabels(f.teams).forEach((label) => chips.push({ label }));
+  const min = f.priceMin || 0;
+  const max = f.priceMax ?? 1000;
+  if (min > 0 || max < 1000) chips.push({ label: max >= 5000 ? `$${min}+` : `$${min}–$${max}` });
+  return chips;
+}
+
+function ActiveFilterChips({ filters, onEdit, query = '' }) {
+  // A whole-team search shows which league's team it is first.
+  const team = teamFromQuery(query);
+  const chips = [...(team ? [{ label: `${team.league} team` }] : []), ...activeFilterChips(filters)];
+  return (
+    <div className="mt-3 flex flex-wrap items-center gap-2">
+      {chips.map((c) => (
+        <span
+          key={c.label}
+          className="inline-flex items-center rounded-full font-mono text-[11px] tracking-[0.06em]"
+          style={{ minHeight: 26, padding: '0 10px', ...(c.tier ? tierChipStyle(c.tier) : OUTLINE_CHIP_STYLE) }}
+        >
+          {c.label}
+        </span>
+      ))}
+      {chips.length === 0 && (
+        <span className="text-[13px]" style={{ color: 'var(--ink-400)' }}>All cards</span>
+      )}
+      <button
+        type="button"
+        onClick={onEdit}
+        className="text-[13px] px-1 transition-colors hover:text-[var(--gold-bright)]"
+        style={{ minHeight: 32, color: 'var(--ink-200)', borderBottom: '0.5px solid var(--gold-deep)' }}
+      >
+        Edit filters
+      </button>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   Team filter — pick a league, then the team. College adds a conference
+   step. Teams that appear in the current results come first with a count;
+   the rest are behind "+ N more". Title matching: lib/teams.js.
+   ───────────────────────────────────────────── */
+// Current results, so filter UIs can count what's in them.
+const ResultsContext = createContext([]);
+const TEAMS_SHOWN = 8;
+
+function TeamFilter({ filters, setFilter }) {
+  const results = useContext(ResultsContext);
+  const selected = Array.isArray(filters.teams) ? filters.teams : [];
+  const firstTeam = selected.length ? getTeam(selected[0]) : null;
+  const [league, setLeague] = useState(firstTeam?.league || null);
+  const [conference, setConference] = useState(firstTeam?.conference || null);
+  const [showAll, setShowAll] = useState(false);
+
+  // How many current listings mention each team in the open league.
+  const counts = useMemo(() => {
+    const m = new Map();
+    if (!league || !results?.length) return m;
+    for (const t of TEAMS) {
+      if (t.league !== league) continue;
+      const n = results.reduce((acc, it) => acc + (titleMatchesTeam(t, it.title) ? 1 : 0), 0);
+      if (n) m.set(t.key, n);
+    }
+    return m;
+  }, [league, results]);
+
+  const conferences = useMemo(
+    () => [...new Set(TEAMS.filter((t) => t.league === 'College').map((t) => t.conference))].sort(),
+    [],
+  );
+  const pool = TEAMS.filter((t) => t.league === league && (league !== 'College' || !conference || t.conference === conference));
+  // Selected first, then teams in the results (most first), then A–Z.
+  const ordered = [...pool].sort((a, b) =>
+    (selected.includes(b.key) - selected.includes(a.key))
+    || ((counts.get(b.key) || 0) - (counts.get(a.key) || 0))
+    || a.short.localeCompare(b.short));
+  const visibleTeams = showAll ? ordered : ordered.slice(0, TEAMS_SHOWN);
+  const hidden = ordered.length - visibleTeams.length;
+
+  function pickLeague(next) {
+    setShowAll(false);
+    setConference(null);
+    if (next === null) { setLeague(null); setFilter('teams', []); return; }
+    setLeague(next);
+  }
+  function toggleTeam(key) {
+    setFilter('teams', selected.includes(key) ? selected.filter((k) => k !== key) : [...selected, key]);
+  }
+
+  const chip = (on) => ({
+    minHeight: 40,
+    padding: '0 16px',
+    fontSize: 14,
+    border: `1px solid ${on ? 'transparent' : 'var(--line)'}`,
+    background: on ? 'var(--gold-bright)' : 'var(--bg-elev-2)',
+    color: on ? 'var(--ink-on-gold)' : 'var(--ink-200)',
+    fontWeight: on ? 600 : 400,
+  });
+  const subChip = (on, dashed = false) => ({
+    minHeight: 36,
+    padding: '0 13px',
+    fontSize: 13,
+    border: `1px ${dashed ? 'dashed' : 'solid'} ${on ? 'var(--gold)' : 'var(--line)'}`,
+    background: on ? 'rgba(201,149,74,0.10)' : 'var(--bg-elev-2)',
+    color: on ? 'var(--gold-bright)' : dashed ? 'var(--ink-400)' : 'var(--ink-200)',
+  });
+  const subLabel = (text, hint) => (
+    <div className="flex items-baseline justify-between mb-3">
+      <span className="text-[11px] uppercase tracking-[0.22em] font-medium" style={{ color: 'var(--gold)' }}>{text}</span>
+      {hint && <span className="text-[12px]" style={{ color: 'var(--ink-600)' }}>{hint}</span>}
+    </div>
+  );
+
+  return (
+    <div>
+      <SectionLabel>Team</SectionLabel>
+      <div className="flex flex-wrap gap-2">
+        <button type="button" onClick={() => pickLeague(null)} aria-pressed={!league && !selected.length} className="inline-flex items-center rounded-full transition-colors" style={chip(!league && !selected.length)}>
+          Any
+        </button>
+        {TEAM_LEAGUES.map((l) => (
+          <button key={l} type="button" onClick={() => pickLeague(l)} aria-pressed={league === l} className="inline-flex items-center rounded-full transition-colors" style={chip(league === l)}>
+            {l}
+          </button>
+        ))}
+      </div>
+
+      {league && (
+        <div className="mt-4 rise" style={{ animationDuration: '0.4s', padding: '16px 18px', background: 'rgba(20,17,13,0.3)', borderLeft: '2px solid var(--gold-deep)' }}>
+          {league === 'College' && (
+            <div className="mb-4">
+              {subLabel('Conference')}
+              <div className="flex flex-wrap gap-2">
+                {conferences.map((c) => (
+                  <button key={c} type="button" onClick={() => { setConference(conference === c ? null : c); setShowAll(false); }} aria-pressed={conference === c} className="inline-flex items-center rounded-full transition-colors" style={subChip(conference === c)}>
+                    {c}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          {(league !== 'College' || conference) && (
+            <>
+              {subLabel(league === 'College' ? `${conference} schools` : `${league} teams`, counts.size ? 'In your results first' : null)}
+              <div className="flex flex-wrap gap-2">
+                {visibleTeams.map((t) => {
+                  const on = selected.includes(t.key);
+                  const n = counts.get(t.key);
+                  return (
+                    <button key={t.key} type="button" onClick={() => toggleTeam(t.key)} aria-pressed={on} title={t.label} className="inline-flex items-center gap-1.5 rounded-full transition-colors" style={subChip(on)}>
+                      {t.short}
+                      {n ? <span className="font-mono text-[11px]" style={{ color: on ? 'var(--gold-bright)' : 'var(--ink-600)' }}>{n}</span> : null}
+                    </button>
+                  );
+                })}
+                {hidden > 0 && (
+                  <button type="button" onClick={() => setShowAll(true)} className="inline-flex items-center rounded-full transition-colors" style={subChip(false, true)}>
+                    + {hidden} more
+                  </button>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }

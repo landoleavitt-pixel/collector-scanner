@@ -1,0 +1,618 @@
+<title>Landing Page Teardown</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a long consultant memo in the brand's own dark-gold system; each finding pairs a short diagnosis with a built mockup. Single dark look on purpose (it is the brand). */
+:root {
+  --bg: #0a0907;
+  --surface: #14110c;
+  --surface-2: #1a160f;
+  --line: #2a251c;
+  --line-soft: #1f1c16;
+  --ink: #f7f1e1;
+  --ink-2: #e8dfc9;
+  --ink-3: #a99e85;
+  --ink-4: #6b6354;
+  --gold: #c9954a;
+  --gold-bright: #e6b96b;
+  --gold-deep: #8f6a32;
+  --on-gold: #1a1612;
+  --good: #7fb48a;
+  --bad: #d4684a;
+  --tier-grail-a: #ffd97a; --tier-grail-b: #d99c14;
+  --tier-ultra: #cfd6de; --tier-rare: #c98a5c;
+  --display: "Instrument Serif", Georgia, "Times New Roman", serif;
+  --body: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap {
+  max-width: 1080px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 56px 96px;
+}
+h1, h2, h3 { font-family: var(--display); font-weight: 400; text-wrap: balance; margin: 0; }
+p { margin: 0; }
+.label { font-family: var(--mono); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); }
+.muted { color: var(--ink-3); }
+.prose { max-width: 62ch; }
+
+/* Cover */
+.cover { display: grid; gap: 20px; padding-bottom: 48px; border-bottom: .5px solid var(--line); }
+.cover h1 { font-size: clamp(40px, 7vw, 64px); line-height: 1; font-style: italic; letter-spacing: -.015em; }
+.cover h1 em { color: var(--gold-bright); }
+.cover .lead { font-size: 17px; color: var(--ink-2); max-width: 60ch; }
+
+/* Verdict */
+.verdict { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 40px; }
+.verdict > div { background: var(--surface); border: .5px solid var(--line); border-radius: 12px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.verdict h3 { font-size: 22px; }
+.verdict ul { margin: 0; padding-left: 18px; color: var(--ink-2); font-size: 14px; display: grid; gap: 6px; }
+.keep .label { color: var(--good); }
+.fix .label { color: var(--bad); }
+
+/* Priority table */
+section { padding-top: 72px; }
+.sec-head { display: grid; gap: 10px; margin-bottom: 28px; }
+.sec-head h2 { font-size: clamp(30px, 4.6vw, 42px); line-height: 1.05; font-style: italic; }
+.table-wrap { overflow-x: auto; border: .5px solid var(--line); border-radius: 12px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 620px; }
+th, td { text-align: left; padding: 12px 16px; border-bottom: .5px solid var(--line-soft); vertical-align: top; }
+th { font-family: var(--mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-3); font-weight: 400; background: var(--surface); }
+tr:last-child td { border-bottom: 0; }
+td.n { font-family: var(--mono); color: var(--gold); width: 44px; }
+.pill { display: inline-block; font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; border: .5px solid var(--line); color: var(--ink-2); white-space: nowrap; }
+.pill.hi { border-color: var(--gold-deep); color: var(--gold-bright); }
+.pill.lo { color: var(--ink-3); }
+
+/* Finding */
+.finding { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); gap: 40px; align-items: start; padding-top: 72px; }
+.finding .copy { display: grid; gap: 14px; }
+.finding h2 { font-size: clamp(28px, 4vw, 38px); line-height: 1.08; font-style: italic; }
+.finding .num { font-family: var(--mono); font-size: 11px; color: var(--gold); letter-spacing: .2em; }
+.why { font-size: 14px; color: var(--ink-2); }
+.do { border-left: 1px solid var(--gold-deep); padding-left: 14px; display: grid; gap: 6px; font-size: 14px; }
+.do b { font-weight: 500; color: var(--gold-bright); font-family: var(--mono); font-size: 10px; letter-spacing: .2em; text-transform: uppercase; }
+.do ul { margin: 0; padding-left: 16px; display: grid; gap: 4px; color: var(--ink-2); }
+@media (max-width: 860px) { .finding { grid-template-columns: minmax(0,1fr); gap: 24px; } }
+
+/* Mockup frames */
+.frame { border: .5px solid var(--line); border-radius: 12px; background: var(--bg); overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,.5); }
+.frame-bar { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: var(--surface); border-bottom: .5px solid var(--line-soft); }
+.frame-bar i { width: 7px; height: 7px; border-radius: 50%; background: var(--line); }
+.frame-bar span { margin-left: 8px; font-family: var(--mono); font-size: 10px; color: var(--ink-4); letter-spacing: .08em; }
+.cap { margin-top: 10px; font-family: var(--mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-4); }
+.cap.new { color: var(--gold); }
+.stack { display: grid; gap: 22px; }
+
+/* Shared mock atoms */
+.m-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 18px; border-bottom: .5px solid var(--line-soft); }
+.m-brand { display: flex; align-items: center; gap: 8px; font-family: var(--display); font-size: 16px; white-space: nowrap; }
+.m-brand em { color: var(--gold); font-style: normal; }
+.seal { width: 20px; height: 20px; border-radius: 50%; border: .5px solid var(--gold-deep); display: grid; place-items: center; font-family: var(--display); font-size: 8px; color: var(--gold); font-style: italic; flex: none; }
+.m-nav { display: flex; gap: 14px; align-items: center; font-family: var(--mono); font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); white-space: nowrap; }
+.m-btn { background: var(--gold-bright); color: var(--on-gold); border-radius: 999px; padding: 5px 12px; font-weight: 600; }
+.chip { font-family: var(--mono); font-size: 10px; padding: 2px 6px; border-radius: 4px; border: .5px solid var(--gold-deep); color: var(--gold-bright); white-space: nowrap; }
+.chip.grail { background: linear-gradient(var(--tier-grail-a), var(--tier-grail-b)); color: var(--on-gold); border: 0; }
+.chip.ultra { background: var(--tier-ultra); color: var(--on-gold); border: 0; }
+.chip.rare { background: var(--tier-rare); color: var(--on-gold); border: 0; }
+.chip.out { border-color: var(--line); color: var(--ink-2); }
+
+/* The stylised card (no eBay images allowed here, so it's drawn) */
+.slab { width: 100%; max-width: 100%; aspect-ratio: 3/4; border-radius: 10px; padding: 7%; background: linear-gradient(160deg, rgba(255,255,255,.14), rgba(255,255,255,.03)); border: .5px solid rgba(255,255,255,.2); box-shadow: 0 24px 48px rgba(0,0,0,.6), 0 0 70px rgba(230,185,107,.14); display: grid; grid-template-rows: auto 1fr; gap: 6%; }
+.slab .lbl { background: #e9e4d8; border-radius: 3px; padding: 4px 6px; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 7px; color: #3a2e1f; letter-spacing: .04em; }
+.slab .lbl b { color: #b2241b; font-weight: 600; }
+.slab .art { border-radius: 4px; background:
+  radial-gradient(60% 40% at 50% 30%, rgba(255,217,122,.55), transparent 70%),
+  conic-gradient(from 200deg at 50% 60%, #6b1d1d, #c9954a, #2b3f6b, #7a5bb0, #c9954a, #6b1d1d);
+  position: relative; overflow: hidden; }
+.slab .art::after { content: "/25"; position: absolute; right: 8%; bottom: 6%; font-family: var(--mono); font-size: 11px; color: #fff; background: rgba(0,0,0,.45); padding: 1px 5px; border-radius: 3px; }
+
+/* Hero mocks */
+.hero-old, .hero-new { display: grid; grid-template-columns: 1.1fr .9fr; gap: 22px; padding: 26px 22px 28px; align-items: center; background: radial-gradient(40% 60% at 75% 50%, rgba(201,149,74,.12), transparent 70%); }
+.hero-old h3 { font-size: 40px; font-style: italic; line-height: 1; }
+.hero-old h3 em { color: var(--gold-bright); }
+.hero-old p, .hero-new p.sub { font-size: 12px; color: var(--ink-3); margin-top: 10px; }
+.search { margin-top: 14px; display: flex; align-items: center; justify-content: space-between; border: .5px solid var(--gold-deep); border-radius: 8px; padding: 8px 8px 8px 12px; background: rgba(20,17,12,.85); font-family: var(--display); font-style: italic; color: var(--ink-4); font-size: 16px; gap: 8px; }
+.search .go { background: var(--gold-bright); color: var(--on-gold); border-radius: 6px; padding: 6px 10px; font-family: var(--body); font-style: normal; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.chips span { font-size: 10px; padding: 4px 9px; border-radius: 999px; border: .5px solid var(--line); color: var(--ink-2); background: var(--surface); white-space: nowrap; }
+.hero-new .kicker { font-family: var(--mono); font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); }
+.hero-new h3 { font-size: 34px; line-height: 1.02; margin-top: 8px; }
+.hero-new h3 em { color: var(--gold-bright); font-style: italic; }
+.hunt { display: grid; gap: 6px; margin-top: 14px; }
+.hunt div { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 10px; border-radius: 8px; border: .5px solid var(--line); background: var(--surface); font-size: 11px; color: var(--ink-2); }
+.hunt div span:last-child { display: flex; gap: 4px; }
+.trust { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 12px; font-family: var(--mono); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+.trust span::before { content: "✓ "; color: var(--good); }
+.cardcol { display: grid; justify-items: center; gap: 8px; }
+.cardcol .slab { width: 72%; }
+.live { font-family: var(--mono); font-size: 8px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); display: flex; align-items: center; gap: 6px; }
+.live::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--good); box-shadow: 0 0 6px var(--good); }
+.price { font-family: var(--display); font-size: 18px; color: var(--gold-bright); }
+.proof { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); border-top: .5px solid var(--line-soft); }
+.proof div { padding: 12px 16px; border-right: .5px solid var(--line-soft); display: grid; gap: 2px; }
+.proof div:last-child { border-right: 0; }
+.proof b { font-family: var(--display); font-weight: 400; font-size: 22px; color: var(--ink); font-variant-numeric: tabular-nums; line-height: 1.1; }
+.proof span { font-size: 10px; color: var(--ink-3); }
+@media (max-width: 560px) {
+  .hero-old, .hero-new { grid-template-columns: minmax(0,1fr); }
+  .cardcol .slab { width: 46%; }
+  .m-nav .hide-s { display: none; }
+}
+
+/* Flow diagram */
+.flow { display: grid; gap: 18px; }
+.flow-row { display: grid; gap: 8px; }
+.steps { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.step { font-size: 12px; padding: 8px 12px; border-radius: 8px; border: .5px solid var(--line); background: var(--surface); color: var(--ink-2); }
+.step.pain { border-color: rgba(212,104,74,.5); color: #f0b7a6; }
+.step.win { border-color: var(--gold-deep); color: var(--gold-bright); background: rgba(201,149,74,.08); }
+.arrow { color: var(--ink-4); font-size: 12px; }
+.flow-row .tag { font-family: var(--mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; }
+
+/* Phone mock */
+.phones { display: grid; grid-template-columns: repeat(2, minmax(0, 260px)); gap: 24px; justify-content: center; }
+@media (max-width: 600px) { .phones { grid-template-columns: minmax(0, 260px); } }
+.phone { border: .5px solid var(--line); border-radius: 30px; padding: 10px; background: #050403; box-shadow: 0 30px 60px rgba(0,0,0,.55); }
+.screen { border-radius: 22px; overflow: hidden; background: var(--bg); aspect-ratio: 9/19.5; display: flex; flex-direction: column; position: relative; }
+.fold { position: absolute; left: 0; right: 0; top: 76%; border-top: 1px dashed var(--bad); }
+.fold span { position: absolute; right: 8px; top: -16px; font-family: var(--mono); font-size: 8px; letter-spacing: .14em; color: var(--bad); text-transform: uppercase; }
+.screen .m-head { padding: 10px 12px; }
+.screen .m-brand { font-size: 13px; }
+.sbody { padding: 14px 14px 0; display: grid; gap: 10px; align-content: start; flex: 1; min-height: 0; }
+.sbody h3 { font-size: 26px; line-height: 1; }
+.sbody h3 em { color: var(--gold-bright); font-style: italic; }
+.sbody .search { margin-top: 0; font-size: 13px; }
+.sbody .chips { margin-top: 0; }
+.mini-card { display: flex; gap: 10px; align-items: center; padding: 8px; border-radius: 10px; border: .5px solid var(--line); background: var(--surface); }
+.mini-card .slab { width: 46px; flex: none; padding: 4px; gap: 3px; border-radius: 6px; box-shadow: none; }
+.mini-card .slab .lbl { padding: 1px 2px; font-size: 0; height: 6px; }
+.mini-card .slab .art::after { display: none; }
+.mini-card .t { font-size: 11px; color: var(--ink-2); line-height: 1.35; min-width: 0; }
+.mini-card .t .row { display: flex; gap: 4px; margin-bottom: 3px; }
+.mini-card .p { margin-left: auto; font-family: var(--display); font-size: 15px; color: var(--gold-bright); }
+
+/* Results + contextual ask */
+.results { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; padding: 16px; }
+@media (max-width: 560px) { .results { grid-template-columns: repeat(2, minmax(0,1fr)); } .results .rc:nth-child(n+3) { display: none; } }
+.rc { border: .5px solid var(--line); border-radius: 10px; background: var(--surface); padding: 8px; display: grid; gap: 6px; position: relative; }
+.rc .slab { box-shadow: none; padding: 5%; }
+.rc .slab .lbl { font-size: 6px; }
+.rc .t { font-size: 10px; color: var(--ink-2); line-height: 1.35; }
+.rc .row { display: flex; justify-content: space-between; align-items: center; }
+.rc .p { font-family: var(--display); font-size: 16px; color: var(--gold-bright); }
+.star { position: absolute; top: 12px; right: 12px; width: 24px; height: 24px; border-radius: 50%; background: rgba(10,9,7,.8); border: .5px solid var(--gold); color: var(--gold-bright); display: grid; place-items: center; font-size: 12px; }
+.pop { position: absolute; top: 40px; right: 8px; left: 8px; background: var(--surface-2); border: .5px solid var(--gold-deep); border-radius: 10px; padding: 10px; display: grid; gap: 6px; box-shadow: 0 16px 30px rgba(0,0,0,.6); z-index: 2; }
+.pop b { font-family: var(--display); font-weight: 400; font-size: 15px; }
+.pop p { font-size: 10px; color: var(--ink-3); }
+.pop .go { background: var(--gold-bright); color: var(--on-gold); border-radius: 6px; padding: 6px; text-align: center; font-size: 10px; font-weight: 600; }
+.alert-band { margin: 0 16px 16px; border: .5px solid var(--gold-deep); border-radius: 10px; padding: 14px 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; background: linear-gradient(90deg, rgba(201,149,74,.09), transparent); }
+.alert-band b { font-family: var(--display); font-weight: 400; font-size: 19px; display: block; }
+.alert-band span { font-size: 11px; color: var(--ink-3); }
+.alert-band .go { background: var(--gold-bright); color: var(--on-gold); border-radius: 999px; padding: 8px 14px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+
+/* Copy table */
+.copy-grid { display: grid; gap: 0; border: .5px solid var(--line); border-radius: 12px; overflow: hidden; }
+.copy-grid > div { display: grid; grid-template-columns: 130px minmax(0,1fr) minmax(0,1fr); gap: 16px; padding: 14px 16px; border-bottom: .5px solid var(--line-soft); font-size: 14px; }
+.copy-grid > div:last-child { border-bottom: 0; }
+.copy-grid .where { font-family: var(--mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); padding-top: 3px; }
+.copy-grid .old { color: var(--ink-4); text-decoration: line-through; text-decoration-color: rgba(212,104,74,.6); }
+.copy-grid .new { color: var(--ink); }
+.copy-grid .head { background: var(--surface); font-family: var(--mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-3); }
+@media (max-width: 640px) { .copy-grid > div { grid-template-columns: minmax(0,1fr); gap: 4px; } .copy-grid .head { display: none !important; } }
+
+/* Plans mock */
+.plans { display: grid; grid-template-columns: 1fr 1.1fr 1fr; gap: 0; padding: 18px; align-items: center; }
+.plan { border: .5px solid var(--line); background: var(--surface); padding: 16px; display: grid; gap: 6px; }
+.plan:first-child { border-radius: 10px 0 0 10px; border-right: 0; }
+.plan:last-child { border-radius: 0 10px 10px 0; border-left: 0; }
+.plan.mid { border-radius: 10px; border-color: var(--gold-deep); background: linear-gradient(180deg, rgba(201,149,74,.1), var(--surface)); padding: 22px 16px; box-shadow: 0 18px 40px rgba(0,0,0,.5); position: relative; z-index: 1; }
+.plan .nm { font-family: var(--mono); font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-3); }
+.plan.mid .nm { color: var(--gold); }
+.plan .pr { font-family: var(--display); font-size: 26px; line-height: 1; }
+.plan .pr small { font-family: var(--body); font-size: 11px; color: var(--ink-3); }
+.plan .ln { font-size: 10px; color: var(--ink-3); }
+.plan ul { margin: 4px 0 6px; padding: 0; list-style: none; display: grid; gap: 4px; font-size: 11px; color: var(--ink-2); }
+.plan ul li::before { content: "✓  "; color: var(--gold); }
+.plan .cta { text-align: center; border-radius: 6px; padding: 7px; font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; border: .5px solid var(--ink-4); color: var(--ink-2); }
+.plan.mid .cta { background: var(--gold-bright); color: var(--on-gold); border: 0; }
+.badge { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); background: var(--gold-bright); color: var(--on-gold); font-family: var(--mono); font-size: 8px; letter-spacing: .16em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+@media (max-width: 600px) {
+  .plans { grid-template-columns: minmax(0,1fr); gap: 10px; }
+  .plan, .plan:first-child, .plan:last-child { border-radius: 10px; border: .5px solid var(--line); }
+  .plan.mid { order: -1; border-color: var(--gold-deep); }
+}
+
+/* Metrics */
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.metric { border: .5px solid var(--line); border-radius: 10px; padding: 16px; background: var(--surface); display: grid; gap: 4px; }
+.metric b { font-family: var(--display); font-weight: 400; font-size: 20px; }
+.metric span { font-size: 13px; color: var(--ink-3); }
+.metric code { font-family: var(--mono); font-size: 11px; color: var(--gold); }
+
+.plan-list { display: grid; gap: 12px; counter-reset: wk; }
+.wk { display: grid; grid-template-columns: 110px minmax(0,1fr); gap: 16px; padding: 16px 0; border-top: .5px solid var(--line); }
+.wk .label { padding-top: 4px; }
+.wk ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; color: var(--ink-2); font-size: 14px; }
+@media (max-width: 560px) { .wk { grid-template-columns: minmax(0,1fr); gap: 6px; } }
+
+.foot { margin-top: 72px; padding-top: 24px; border-top: .5px solid var(--line); font-size: 13px; color: var(--ink-3); display: grid; gap: 6px; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .cardcol .slab { animation: float 6s ease-in-out infinite; }
+  @keyframes float { 50% { transform: translateY(-6px); } }
+}
+</style>
+
+<div class="wrap">
+
+  <header class="cover">
+    <div class="label">Brand &amp; conversion review · Fields &amp; Floors · 21 Oct 2026</div>
+    <h1>The look is right. The first <em>ten seconds</em> are not.</h1>
+    <p class="lead">Fields &amp; Floors already looks like a premium collector brand. Very few hobby tools do. The problem is what happens after someone lands: they wait through an intro, guess what the product is, and then face a form before they see a single card. Everything below is about getting a new visitor to a real result in one tap, and then asking for the account at the moment they actually want one.</p>
+  </header>
+
+  <div class="verdict">
+    <div class="keep">
+      <div class="label">Keep</div>
+      <h3>The brand is an asset</h3>
+      <ul>
+        <li>Dark, warm, gold palette reads like an auction house, not a coupon site.</li>
+        <li>The live featured card in the hero is the best thing on the page.</li>
+        <li>The rarity colours (gold, silver, copper) teach rarity at a glance.</li>
+        <li>"Pick up where you left off" for returning visitors.</li>
+      </ul>
+    </div>
+    <div class="fix">
+      <div class="label">Fix</div>
+      <h3>Where visitors drop off</h3>
+      <ul>
+        <li>About two seconds of splash animation on every visit.</li>
+        <li>The headline sounds nice but doesn't say what the site is.</li>
+        <li>Tapping a suggested name opens a filter form instead of results.</li>
+        <li>We ask for an account before we've shown any value.</li>
+        <li>No proof that it works, and no tracking of where people quit.</li>
+      </ul>
+    </div>
+  </div>
+
+  <section>
+    <div class="sec-head">
+      <div class="label">The short list</div>
+      <h2>Seven changes, ranked by payoff.</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Change</th><th>Why it matters</th><th>Impact</th><th>Effort</th></tr></thead>
+        <tbody>
+          <tr><td class="n">01</td><td>Search goes straight to results</td><td>Removes the filter form that sits between a visitor and their first card.</td><td><span class="pill hi">High</span></td><td><span class="pill lo">Small</span></td></tr>
+          <tr><td class="n">02</td><td>Splash plays once, not every visit</td><td>Two seconds of waiting is when phone visitors leave.</td><td><span class="pill hi">High</span></td><td><span class="pill lo">Tiny</span></td></tr>
+          <tr><td class="n">03</td><td>Say what it is in the headline</td><td>"Find the one." is a brand line, not an explanation.</td><td><span class="pill hi">High</span></td><td><span class="pill lo">Tiny</span></td></tr>
+          <tr><td class="n">04</td><td>Ask for the account when they star a card</td><td>People sign up to keep something they found, not because a banner told them to.</td><td><span class="pill hi">High</span></td><td><span class="pill">Medium</span></td></tr>
+          <tr><td class="n">05</td><td>Add a proof strip with real numbers</td><td>New visitors need a reason to trust a tool they've never heard of.</td><td><span class="pill">Medium</span></td><td><span class="pill">Medium</span></td></tr>
+          <tr><td class="n">06</td><td>Clean up the header and plans</td><td>"Issue № 001" and an "Anonymous" plan add noise and sell nothing.</td><td><span class="pill">Medium</span></td><td><span class="pill lo">Small</span></td></tr>
+          <tr><td class="n">07</td><td>Track the steps between landing and signing up</td><td>Right now we can't see where people quit, so we can't tell if any of this worked.</td><td><span class="pill">Enables all</span></td><td><span class="pill lo">Small</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 01 -->
+  <div class="finding">
+    <div class="copy">
+      <div class="num">01 · The biggest leak</div>
+      <h2>A new visitor should see cards after one tap.</h2>
+      <p class="why">Today, typing a name or tapping "Paul Skenes" opens <b>Step 02 · Refine</b>: a long page of switches for autograph, rookie, company, listing type, condition and price. A first-time visitor doesn't know what they want yet. They want to see what the site does. Every extra screen before the first result loses people.</p>
+      <div class="do"><b>Do this</b>
+        <ul>
+          <li>Search runs immediately with sensible defaults: numbered cards, rarest first.</li>
+          <li>The filters already live in the results sidebar and the phone filter drawer. Let people adjust there.</li>
+          <li>Keep the Refine screen only for editing a saved search.</li>
+          <li>Turn the name chips into ready-made hunts: "Caitlin Clark · autos numbered to 25 or less".</li>
+        </ul>
+      </div>
+    </div>
+    <div class="flow">
+      <div class="flow-row">
+        <div class="tag" style="color:var(--bad)">Today · 4 screens to the first card</div>
+        <div class="steps">
+          <span class="step pain">Splash, about 2s</span><span class="arrow">→</span>
+          <span class="step">Type or tap a name</span><span class="arrow">→</span>
+          <span class="step pain">Filter form (scroll, choose, scroll)</span><span class="arrow">→</span>
+          <span class="step">Press search</span><span class="arrow">→</span>
+          <span class="step">Results</span>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="tag" style="color:var(--gold)">Proposed · 1 tap to the first card</div>
+        <div class="steps">
+          <span class="step win">Tap a ready-made hunt</span><span class="arrow">→</span>
+          <span class="step win">Results, filters on the side</span>
+        </div>
+      </div>
+      <div class="frame" style="margin-top:6px">
+        <div class="frame-bar"><i></i><i></i><i></i><span>fieldsandfloors · results</span></div>
+        <div class="m-head">
+          <div style="display:grid;gap:2px">
+            <span class="label" style="color:var(--ink-3);font-size:8px">Searching for</span>
+            <span style="font-family:var(--display);font-style:italic;font-size:22px;line-height:1">Caitlin Clark</span>
+          </div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end"><span class="chip grail">/1–25</span><span class="chip out">Auto</span><span class="chip out">Edit filters</span></div>
+        </div>
+        <div class="results">
+          <div class="rc"><div class="slab"><div class="lbl"><span>PSA 10</span><b>GEM MT</b></div><div class="art"></div></div><div class="t">2024 Panini Prizm Gold Auto</div><div class="row"><span class="chip grail">/10</span><span class="p">$2,450</span></div></div>
+          <div class="rc"><div class="slab"><div class="lbl"><span>RAW</span><b></b></div><div class="art"></div></div><div class="t">2024 Select Tie-Dye Auto</div><div class="row"><span class="chip grail">/25</span><span class="p">$610</span></div></div>
+          <div class="rc"><div class="slab"><div class="lbl"><span>BGS 9.5</span><b>GEM</b></div><div class="art"></div></div><div class="t">2024 Bowman Chrome Orange</div><div class="row"><span class="chip grail">/25</span><span class="p">$880</span></div></div>
+        </div>
+      </div>
+      <div class="cap new">Mockup · results first, filters one tap away. Prices are examples.</div>
+    </div>
+  </div>
+
+  <!-- 02 + 03 hero -->
+  <div class="finding">
+    <div class="copy">
+      <div class="num">02 + 03 · The hero</div>
+      <h2>Say what it is, then get out of the way.</h2>
+      <p class="why">"Find the one." is a good brand line, but a stranger can't tell from it whether this is a shop, a price guide or a grading service. The plain explanation sits in small grey text underneath. Lead with what it does and keep "Find the one" as the small line above it.</p>
+      <p class="why">The splash intro is beautiful the first time. By the third visit it's a two-second wait. On the phone test, the hero was still blank four seconds after the page started loading.</p>
+      <div class="do"><b>Do this</b>
+        <ul>
+          <li>Headline: "Every numbered card on eBay, on one page."</li>
+          <li>Play the splash on the first visit only, and cut it to under a second.</li>
+          <li>Swap the generic name chips for three ready-made hunts.</li>
+          <li>Add a line of reassurance under the search: free, no account, real eBay listings.</li>
+          <li>Add a strip of live numbers under the hero (see 05).</li>
+        </ul>
+      </div>
+    </div>
+    <div class="stack">
+      <div>
+        <div class="frame">
+          <div class="frame-bar"><i></i><i></i><i></i><span>today</span></div>
+          <div class="m-head">
+            <div class="m-brand"><span class="seal">F&amp;F</span>Fields <em>&amp;</em> Floors</div>
+            <div class="m-nav"><span class="hide-s">Issue № 001</span><span class="hide-s">Est. 2026</span><span>Sign in</span><span class="m-btn">Join</span></div>
+          </div>
+          <div class="hero-old">
+            <div>
+              <h3>Find the <em>one.</em></h3>
+              <p>Search eBay by <b style="color:var(--ink);font-weight:500">multiple print runs at once</b>, plus autograph, rookie, and grade.</p>
+              <div class="search">AJ Dybantsa <span class="go">→</span></div>
+              <div class="chips"><span>Caitlin Clark</span><span>Victor Wembanyama</span><span>Connor Bedard</span></div>
+            </div>
+            <div class="cardcol"><div class="slab"><div class="lbl"><span>2025 BLACK DIAMOND</span><b>NM 7</b></div><div class="art"></div></div><div class="live">Featured find · Live on eBay</div></div>
+          </div>
+        </div>
+        <div class="cap">Current hero</div>
+      </div>
+      <div>
+        <div class="frame">
+          <div class="frame-bar"><i></i><i></i><i></i><span>proposed</span></div>
+          <div class="m-head">
+            <div class="m-brand"><span class="seal">F&amp;F</span>Fields <em>&amp;</em> Floors</div>
+            <div class="m-nav"><span class="hide-s">How it works</span><span class="hide-s">Pricing</span><span>Sign in</span><span class="m-btn">Get alerts</span></div>
+          </div>
+          <div class="hero-new">
+            <div>
+              <div class="kicker">Find the one</div>
+              <h3>Every <em>numbered card</em> on eBay, on one page.</h3>
+              <p class="sub">Pick the print runs you collect (/5, /10, /25) and see every live listing at once, rarest first.</p>
+              <div class="search">Search a player <span class="go">Show cards</span></div>
+              <div class="hunt">
+                <div><span>Caitlin Clark autos</span><span><span class="chip grail">/1–25</span></span></div>
+                <div><span>Paul Skenes rookies</span><span><span class="chip ultra">/26–99</span></span></div>
+                <div><span>Connor Bedard, graded</span><span><span class="chip out">PSA · BGS</span></span></div>
+              </div>
+              <div class="trust"><span>Free</span><span>No account needed</span><span>Real eBay listings</span></div>
+            </div>
+            <div class="cardcol"><div class="slab"><div class="lbl"><span>2025 BLACK DIAMOND</span><b>NM 7</b></div><div class="art"></div></div><div class="live">Featured find · Live on eBay</div><div class="price">$315</div></div>
+          </div>
+          <div class="proof">
+            <div><b>18,240</b><span>numbered listings checked today</span></div>
+            <div><b>/1 to /999</b><span>print runs we can read in a title</span></div>
+            <div><b>Hourly</b><span>alert checks for saved searches</span></div>
+          </div>
+        </div>
+        <div class="cap new">Proposed hero · the 18,240 figure is a placeholder; use the real daily count</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- phone -->
+  <div class="finding">
+    <div class="copy">
+      <div class="num">03b · Phones</div>
+      <h2>On a phone, the search box should be visible without scrolling.</h2>
+      <p class="why">Most hobby traffic comes from phones, and much of it from links shared in Discord, X and Facebook groups. On a phone the featured card comes first and the search box sits near the bottom of the screen. On smaller iPhones it falls below the edge of the screen.</p>
+      <div class="do"><b>Do this</b>
+        <ul>
+          <li>Phones: headline, search, then ready-made hunts. The card moves into a smaller "Live right now" row.</li>
+          <li>Keep the big floating card on desktop, where there's room for it.</li>
+          <li>Clean up recent searches: proper capitals, no near-duplicates ("Paul Skenes" and "Paul Skeenes").</li>
+        </ul>
+      </div>
+    </div>
+    <div class="phones">
+      <div>
+        <div class="phone"><div class="screen">
+          <div class="m-head"><div class="m-brand"><span class="seal">F&amp;F</span>Fields <em>&amp;</em> Floors</div><div class="m-nav">Sign in</div></div>
+          <div class="sbody" style="justify-items:center;text-align:center">
+            <div style="width:62%"><div class="slab"><div class="lbl"><span>BLACK DIAMOND</span><b>7</b></div><div class="art"></div></div></div>
+            <div class="live">Featured · live on eBay</div>
+            <h3>Find the <em>one.</em></h3>
+            <p style="font-size:10px;color:var(--ink-3)">Search eBay by multiple print runs at once.</p>
+            <div class="search" style="width:100%">Luka Doncic <span class="go">→</span></div>
+          </div>
+          <div class="fold"><span>Small-phone screen edge</span></div>
+        </div></div>
+        <div class="cap">Today</div>
+      </div>
+      <div>
+        <div class="phone"><div class="screen">
+          <div class="m-head"><div class="m-brand"><span class="seal">F&amp;F</span>Fields <em>&amp;</em> Floors</div><div class="m-nav"><span class="m-btn">Alerts</span></div></div>
+          <div class="sbody">
+            <div class="kicker" style="font-family:var(--mono);font-size:8px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase">Find the one</div>
+            <h3>Every <em>numbered card</em> on eBay, on one page.</h3>
+            <div class="search">Search a player <span class="go">Show</span></div>
+            <div class="hunt" style="margin-top:0">
+              <div><span>Caitlin Clark autos</span><span class="chip grail">/1–25</span></div>
+              <div><span>Paul Skenes rookies</span><span class="chip ultra">/26–99</span></div>
+            </div>
+            <div class="live" style="margin-top:4px">Live right now</div>
+            <div class="mini-card"><div class="slab"><div class="lbl"></div><div class="art"></div></div><div class="t"><div class="row"><span class="chip grail">/15</span><span class="chip out">Auto</span></div>Bedard Black Diamond, PSA 7</div><div class="p">$315</div></div>
+          </div>
+          <div class="fold"><span>Small-phone screen edge</span></div>
+        </div></div>
+        <div class="cap new">Proposed</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 -->
+  <div class="finding">
+    <div class="copy">
+      <div class="num">04 · Asking for the account</div>
+      <h2>Ask for the sign-up at the moment they want it.</h2>
+      <p class="why">The "Create free account" band sits right under the hero, before the visitor has seen a single card. It's asking for a commitment before we've earned one. The two moments where people actually want an account are when they star a card they like, and when a search has nothing new and they want to be told when something lists.</p>
+      <div class="do"><b>Do this</b>
+        <ul>
+          <li>Starring a card while signed out opens a small popup: "Keep this card", with Apple and Google sign-in.</li>
+          <li>Under results: "Get an email when a new one lists." This is where the alert plan sells itself.</li>
+          <li>Move the free-account band below "How it works", or drop it.</li>
+          <li>Rename step 3 from "Upgrade to be alerted" to "Get an email when it lists". Lead with the benefit, not the price.</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="frame">
+        <div class="frame-bar"><i></i><i></i><i></i><span>results · signed out</span></div>
+        <div class="results">
+          <div class="rc">
+            <div class="slab"><div class="lbl"><span>PSA 10</span><b>GEM MT</b></div><div class="art"></div></div>
+            <span class="star">★</span>
+            <div class="pop">
+              <b>Keep this card</b>
+              <p>We'll track its price and tell you if it sells. Free, no credit card.</p>
+              <div class="go"> Continue with Apple</div>
+              <div class="go" style="background:transparent;border:.5px solid var(--ink-4);color:var(--ink-2)">Continue with Google</div>
+            </div>
+            <div class="t">2024 Prizm Gold Auto</div><div class="row"><span class="chip grail">/10</span><span class="p">$2,450</span></div>
+          </div>
+          <div class="rc"><div class="slab"><div class="lbl"><span>RAW</span><b></b></div><div class="art"></div></div><span class="star" style="color:var(--ink-4);border-color:var(--line)">☆</span><div class="t">2024 Select Tie-Dye Auto</div><div class="row"><span class="chip grail">/25</span><span class="p">$610</span></div></div>
+          <div class="rc"><div class="slab"><div class="lbl"><span>BGS 9.5</span><b>GEM</b></div><div class="art"></div></div><span class="star" style="color:var(--ink-4);border-color:var(--line)">☆</span><div class="t">2024 Bowman Orange</div><div class="row"><span class="chip grail">/25</span><span class="p">$880</span></div></div>
+        </div>
+        <div class="alert-band">
+          <div><b>Get an email when a new Caitlin Clark /25 lists.</b><span>We check eBay every hour. Your first alert is free.</span></div>
+          <span class="go">Turn on alert</span>
+        </div>
+      </div>
+      <div class="cap new">Mockup · two sign-up moments tied to something the visitor already wants</div>
+    </div>
+  </div>
+
+  <!-- 05 copy -->
+  <section>
+    <div class="sec-head">
+      <div class="label">05 + 06 · Words and trust</div>
+      <h2>Small copy edits, big clarity gains.</h2>
+      <p class="muted prose">The brand voice is strong, but it sometimes chooses style over clarity. Keep the poetry for one line per section and make everything else plain.</p>
+    </div>
+    <div class="copy-grid">
+      <div class="head"><span>Where</span><span>Today</span><span>Proposed</span></div>
+      <div><span class="where">Header</span><span class="old">Issue № 001 · Est. 2026 · Join</span><span class="new">How it works · Pricing · Sign in · Get alerts</span></div>
+      <div><span class="where">Headline</span><span class="old">Find the one.</span><span class="new">Every numbered card on eBay, on one page. ("Find the one" moves to the small line above.)</span></div>
+      <div><span class="where">Search button</span><span class="old">→</span><span class="new">Show cards</span></div>
+      <div><span class="where">Chip label</span><span class="old">Or try</span><span class="new">Popular hunts</span></div>
+      <div><span class="where">Steps title</span><span class="old">Three steps.</span><span class="new">Search. Save. Get told when it lists.</span></div>
+      <div><span class="where">Step 3</span><span class="old">Upgrade to be alerted</span><span class="new">Get an email when it lists</span></div>
+      <div><span class="where">Plans title</span><span class="old">What you get.</span><span class="new">Searching is free. Alerts start at $6.99.</span></div>
+      <div><span class="where">Footer line</span><span class="old">Listing data via eBay. Not affiliated with eBay Inc.</span><span class="new">Keep it, and also show it once near the search box. It answers "is this a scam?" before anyone asks.</span></div>
+    </div>
+    <p class="muted prose" style="margin-top:18px;font-size:14px">On trust: one real quote from a collector, plus a live count of listings checked, beats any amount of design polish. Ask your first ten active users for a sentence each. Only show numbers we actually measure.</p>
+  </section>
+
+  <!-- plans -->
+  <div class="finding">
+    <div class="copy">
+      <div class="num">06b · Plans</div>
+      <h2>Three plans that each sell something.</h2>
+      <p class="why">The "Anonymous" column lists two features and a button that reloads the page. It takes a third of the space and sells nothing. Each column also repeats the full list, so the difference between plans is hard to spot.</p>
+      <p class="why">This matches the layout you picked on 20 Oct (Base raised in the middle and shown first on phones, the annual price, and 1 free alert). It just hasn't been built yet.</p>
+      <div class="do"><b>Do this</b>
+        <ul>
+          <li>Free · Base · Premium (coming soon), with Base raised and marked "Most popular".</li>
+          <li>Each column lists only what it adds: "Everything in Free, plus…"</li>
+          <li>Show the yearly price as a saving: "$59/yr, about 2 months free".</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="frame">
+        <div class="frame-bar"><i></i><i></i><i></i><span>plans · proposed</span></div>
+        <div class="plans">
+          <div class="plan">
+            <span class="nm">Free</span><span class="pr">$0</span><span class="ln">No credit card</span>
+            <ul><li>Unlimited search</li><li>Watchlist with live prices</li><li>1 email alert</li></ul>
+            <span class="cta">Create account</span>
+          </div>
+          <div class="plan mid">
+            <span class="badge">Most popular</span>
+            <span class="nm">Base</span><span class="pr">$6.99<small> /mo CAD</small></span><span class="ln">or $59/yr, about 2 months free</span>
+            <ul><li>Everything in Free, plus</li><li>5 email alerts</li><li>Bid reminders under your price</li></ul>
+            <span class="cta">Start 14-day free trial</span>
+          </div>
+          <div class="plan">
+            <span class="nm">Premium</span><span class="pr" style="color:var(--ink-3)">Soon</span><span class="ln">Join the waitlist</span>
+            <ul><li>Everything in Base, plus</li><li>More alerts</li><li>Faster checks</li></ul>
+            <span class="cta">Notify me</span>
+          </div>
+        </div>
+      </div>
+      <div class="cap new">Mockup · Premium features shown are placeholders until you decide them</div>
+    </div>
+  </div>
+
+  <!-- 07 -->
+  <section>
+    <div class="sec-head">
+      <div class="label">07 · Measure it</div>
+      <h2>You can't improve what you can't see.</h2>
+      <p class="muted prose">The site counts page views but nothing after that. We can't see how many visitors search, open a card, or start signing up. Track these six moments, then judge every change above by whether the numbers move. Vercel's custom events may need a paid plan; logging the same events to Supabase is free. That's a cost call for Landon.</p>
+    </div>
+    <div class="metrics">
+      <div class="metric"><code>landed</code><b>Visited the home page</b><span>The top of the funnel.</span></div>
+      <div class="metric"><code>searched</code><b>Ran a search</b><span>Target: over half of visitors.</span></div>
+      <div class="metric"><code>card_opened</code><b>Opened a card</b><span>Shows the results are interesting.</span></div>
+      <div class="metric"><code>starred</code><b>Starred a card</b><span>The best sign someone will sign up.</span></div>
+      <div class="metric"><code>signed_up</code><b>Created an account</b><span>Note what prompted it: star, alert or banner.</span></div>
+      <div class="metric"><code>trial_started</code><b>Started the Base trial</b><span>The money moment.</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="label">Rollout</div>
+      <h2>Three weeks, smallest changes first.</h2>
+    </div>
+    <div class="plan-list">
+      <div class="wk"><span class="label">Week 1</span><ul><li>Turn on tracking (07) so there's a before-and-after.</li><li>Splash on the first visit only (02).</li><li>New headline, header and copy edits (03, 06).</li></ul></div>
+      <div class="wk"><span class="label">Week 2</span><ul><li>Search goes straight to results; ready-made hunts replace name chips (01).</li><li>Phone hero reorder (03b).</li></ul></div>
+      <div class="wk"><span class="label">Week 3</span><ul><li>Sign-up popup on star, alert band under results (04).</li><li>Plans rebuild (06b) and proof strip with real numbers (05).</li></ul></div>
+    </div>
+  </section>
+
+  <div class="foot">
+    <span>Reviewed on the live local build (desktop and 375px phone), 21 Oct 2026. Listing prices, the 18,240 figure and Premium features in the mockups are placeholders.</span>
+    <span>Nothing here changes the brand's colours, type or logo. It changes the order, the words and when we ask.</span>
+  </div>
+</div>

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '../../lib/supabaseClient';
 import Seal from '../components/Seal';
 import { isNativeApp, signInWithAppleNative } from '../../lib/native';
+import { track } from '../../lib/track';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -41,7 +42,7 @@ export default function LoginPage() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback?src=direct` },
     });
     setLoading(false);
     if (error) {
@@ -63,6 +64,7 @@ export default function LoginPage() {
       setLoading(true);
       try {
         await signInWithAppleNative(supabase);
+        track('signed_up', undefined, 'direct'); // server only counts brand-new accounts
         router.push('/');
         router.refresh();
       } catch (e) {
@@ -75,7 +77,7 @@ export default function LoginPage() {
     }
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: { redirectTo: `${window.location.origin}/auth/callback?src=direct` },
     });
     if (error) setError(error.message);
   }

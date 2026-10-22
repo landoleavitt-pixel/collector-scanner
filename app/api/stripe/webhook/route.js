@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
+import { recordOnce } from '../../../../lib/trackServer';
 
 // Stripe webhook → Supabase tier sync.
 //
@@ -167,6 +168,9 @@ export async function POST(request) {
             ? new Date(sub.trial_end * 1000).toISOString()
             : null,
         }, { onConflict: 'id' });
+        if (sub.status === 'trialing') {
+          await recordOnce({ event: 'trial_started', userId: uid, source: 'stripe' });
+        }
         console.log(`Stripe webhook: ${uid} → tier=${tier} status=${sub.status} (${event.type})`);
         break;
       }

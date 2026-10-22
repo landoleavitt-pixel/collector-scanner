@@ -31,6 +31,7 @@ import { getSet, getParallel } from '../../lib/parallelData';
 import { gradientCss, tierChipStyle, tierForRun } from './rarityUtils';
 import { useWatchlist } from '../../lib/watchlistContext';
 import { useUser } from '../../lib/useUser';
+import { track } from '../../lib/track';
 
 // Upscale an eBay thumbnail URL to a higher-resolution variant so the
 // magnifier reveals real detail. eBay encodes the size as `s-l\d+`
@@ -45,6 +46,12 @@ function upscalePrimary(url) {
 export default function CardModal(props) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+  // Funnel: one anonymous "card_opened" per card shown (no title, no player).
+  const openedId = props.item && !props.expired ? props.item.id : null;
+  useEffect(() => {
+    if (openedId) track('card_opened', { auction: !!props.item?.isAuction });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openedId]);
   if (!mounted) return null;
   return createPortal(<CardModalInner {...props} />, document.body);
 }

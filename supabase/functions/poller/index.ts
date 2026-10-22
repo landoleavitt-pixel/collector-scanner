@@ -563,6 +563,8 @@ async function callAppSearch(query: string, filters: Record<string, unknown>): P
     // Card company filter (lib/cardBrands.js). Empty = off.
     brands: (filters.brands as string[]) ?? [],
     brandLines: (filters.brandLines as string[]) ?? [],
+    // Team filter (lib/teams.js). Empty = off.
+    teams: (filters.teams as string[]) ?? [],
   };
 
   const res = await fetch(url, {

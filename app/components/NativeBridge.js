@@ -18,12 +18,12 @@ export default function NativeBridge() {
   useEffect(() => {
     if (!isNativeApp()) return;
     document.documentElement.classList.add('native-app');
-    // Hand off from the native launch screen. On the home page the web intro
-    // is already showing the identical seal in the identical spot, so the
-    // swap is instant; elsewhere a short fade. Two frames in, so the page
-    // has definitely painted underneath.
-    const instant = window.location.pathname === '/';
+    // Hand off from the native launch screen. When the web intro is playing
+    // (first visit only) it shows the identical seal in the identical spot,
+    // so the swap is instant; otherwise a short fade. Two frames in, so the
+    // page has definitely painted underneath and SplashIntro has decided.
     requestAnimationFrame(() => requestAnimationFrame(() => {
+      const instant = window.__ffIntroPlaying === true;
       import('@capacitor/splash-screen')
         .then(({ SplashScreen }) => SplashScreen.hide({ fadeOutDuration: instant ? 0 : 200 }))
         .catch(() => {});
