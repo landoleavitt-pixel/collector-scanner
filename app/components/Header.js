@@ -24,8 +24,13 @@ export default function Header() {
         setMenuOpen(false);
       }
     }
+    const openFromTabBar = () => setMenuOpen(true);
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    window.addEventListener('ff:open-account', openFromTabBar);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('ff:open-account', openFromTabBar);
+    };
   }, []);
 
   // Tier for the Plan row. Fetched once per mount; the header is the only
@@ -143,7 +148,7 @@ export default function Header() {
               menu — one click from any page. Hidden for anonymous visitors
               because every destination would just bounce them to login. */}
           {user ? (
-            <nav className="hidden md:flex items-center gap-7">
+            !native && <nav className="hidden md:flex items-center gap-7">
               {[
                 { href: '/watchlist-cards', label: 'Watchlist' },
                 { href: '/watchlist', label: 'Saved searches' },
@@ -229,7 +234,7 @@ export default function Header() {
                         className="px-4 py-3 border-b"
                         style={{ borderColor: 'rgba(232,226,213,0.08)' }}
                       >
-                        <div className="text-[10px] uppercase tracking-[0.18em] text-[var(--ink-500)] mb-0.5">
+                        <div className="text-[10px] uppercase tracking-[0.18em] text-[var(--ink-400)] mb-0.5">
                           Signed in as
                         </div>
                         <div className="text-[13px] text-[var(--ink-200)] truncate">
@@ -329,7 +334,7 @@ export default function Header() {
 
       {/* Mobile nav — a scrollable pill row rather than a hamburger. Three
           destinations don't justify hiding them behind an extra tap. */}
-      {user && (
+      {user && !native && (
         <div className="md:hidden flex gap-2 overflow-x-auto px-6 pb-3 -mt-2">
           {[
             { href: '/watchlist-cards', label: 'Watchlist' },

@@ -39,7 +39,7 @@ export default async function WatchlistPage() {
         <div className="mb-10 md:mb-12">
           <div
             className="text-[10px] tracking-[0.22em] uppercase mb-3"
-            style={{ color: 'var(--ink-500)' }}
+            style={{ color: 'var(--ink-400)' }}
           >
             Your Searches
           </div>

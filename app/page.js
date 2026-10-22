@@ -1334,9 +1334,9 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
             className="mt-4 text-[15px] md:text-[17px] leading-relaxed max-w-[480px] rise"
             style={{ color: 'var(--ink-400)', animationDelay: '300ms' }}
           >
-            Pick the print runs you collect{' '}
-            <span className="font-mono text-[13px] md:text-[15px]" style={{ color: 'var(--ink-200)' }}>(/5, /10, /25)</span>{' '}
-            and see the live eBay listings together, rarest first.
+            One search for every card of a player numbered{' '}
+            <span style={{ color: 'var(--ink-100)' }}>50 or less</span>, rarest first.
+            Then get an email within the hour when a new one lists.
           </p>
 
           {/* Search — a solid gold-edged field with a labelled gold button. */}
@@ -1472,7 +1472,75 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
           <HeroCard featured={featured} onCardClick={onCardClick} />
         </div>
       </div>
+
+      <EbayComparison />
     </section>
+  );
+}
+
+/* EbayComparison — the answer to "why not just search eBay?", in the
+   visitor's own terms. Sits at the foot of the hero so it's the first thing
+   read after the search box. The eBay column is stated plainly and fairly;
+   ours carries the gold. Keep both sides true: alerts are hourly because the
+   poller runs hourly (supabase/functions/poller). */
+const EBAY_COMPARISON = [
+  {
+    topic: 'Rare cards in one search',
+    ebay: 'One print run per search. Looking for /10, /25 and /49 means three searches.',
+    ours: 'Pick every print run you want (say, everything numbered 50 or less) and see them together.',
+  },
+  {
+    topic: 'Rarest first',
+    ebay: 'Sorts by price, newest or "best match". Rarity isn’t an option.',
+    ours: 'Sorts by print run, so the /1s and /5s are at the top.',
+  },
+  {
+    topic: 'New-listing alerts',
+    ebay: 'Saved-search emails come once a day, and can’t filter by print run.',
+    ours: 'Checked every hour with your exact print-run filters. We email you as soon as a match turns up.',
+  },
+];
+
+function EbayComparison() {
+  return (
+    <div className="relative max-w-[1120px] mx-auto px-6 lg:px-10 pb-14 md:pb-20">
+      <div className="font-mono text-[10px] uppercase tracking-[0.24em]" style={{ color: 'var(--gold)' }}>
+        Why not just search eBay?
+      </div>
+      <h2 className="mt-2 font-display text-[clamp(1.6rem,4vw,2.25rem)] leading-tight" style={{ textWrap: 'balance' }}>
+        Same listings. <em className="text-[var(--gold-bright)]">Better search, smarter alerts.</em>
+      </h2>
+
+      <div className="mt-6 rounded-xl overflow-hidden" style={{ border: '0.5px solid var(--line)' }}>
+        {/* Column labels — desktop only; phones label each line instead. */}
+        <div
+          className="hidden md:grid grid-cols-[200px_1fr_1fr] gap-6 px-6 py-3 font-mono text-[10px] uppercase tracking-[0.2em]"
+          style={{ background: 'var(--bg-elev)', color: 'var(--ink-400)', borderBottom: '0.5px solid var(--line)' }}
+        >
+          <span />
+          <span>On eBay</span>
+          <span style={{ color: 'var(--gold)' }}>On Fields &amp; Floors</span>
+        </div>
+        {EBAY_COMPARISON.map((row, i) => (
+          <div
+            key={row.topic}
+            className="grid md:grid-cols-[200px_1fr_1fr] gap-2 md:gap-6 px-5 md:px-6 py-4"
+            style={{ borderTop: i ? '0.5px solid var(--line-soft)' : undefined }}
+          >
+            <div className="font-display text-[19px] md:text-[20px] leading-snug">{row.topic}</div>
+            <p className="text-[13px] md:text-[15px] leading-relaxed" style={{ color: 'var(--ink-400)' }}>
+              <span className="md:hidden font-mono text-[10px] uppercase tracking-[0.2em] mr-2" style={{ color: 'var(--ink-600)' }}>eBay</span>
+              {row.ebay}
+            </p>
+            <p className="text-[13px] md:text-[15px] leading-relaxed" style={{ color: 'var(--ink-100)' }}>
+              <span className="md:hidden font-mono text-[10px] uppercase tracking-[0.2em] mr-2" style={{ color: 'var(--gold)' }}>Us</span>
+              <span aria-hidden="true" className="hidden md:inline mr-2" style={{ color: 'var(--gold)' }}>✓</span>
+              {row.ours}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -3332,7 +3400,7 @@ function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase
   return (
     <div>
       {capped && (
-        <p className="text-[11px] text-[var(--ink-500)] mb-4 leading-relaxed">
+        <p className="text-[11px] text-[var(--ink-400)] mb-4 leading-relaxed">
           Showing the first {results.length} matches. This is a broad search —
           narrow with filters like print run, auto, or condition to surface the
           rarest cards.

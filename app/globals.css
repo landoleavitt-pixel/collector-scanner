@@ -422,3 +422,9 @@ body:not(:has([data-ff-idle])) [data-ff-home-nav],
 html.ff-deep-link [data-ff-home-nav] {
   display: none !important;
 }
+
+/* iOS app tab bar (TabBar.js sets html.ff-tabbar). Leave room so the last
+   content isn't hidden under the floating bar, and lift the back-to-top
+   button above it. */
+html.ff-tabbar body { padding-bottom: 88px; }
+html.ff-tabbar button[aria-label="Back to top"] { bottom: 88px !important; }

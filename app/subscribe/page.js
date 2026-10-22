@@ -23,7 +23,7 @@ import Seal from '../components/Seal';
 
 function PlanToggle({ plan, setPlan, prices, native }) {
   const opts = [
-    { id: 'annual', label: 'Annual', sub: native ? (prices.annual || '') : '$59 CAD / year', note: 'Save 30%' },
+    { id: 'annual', label: 'Annual', sub: native ? (prices.annual || '') : '$59 CAD / year', note: 'Over 3 months free' },
     { id: 'monthly', label: 'Monthly', sub: native ? (prices.monthly || '') : '$6.99 CAD / month' },
   ];
   return (
@@ -238,6 +238,7 @@ export default function SubscribePage() {
               Save unlimited searches. Get email alerts on up to 5 at a time, plus bid reminders. 14 days free, cancel anytime.
             </p>
             <PlanToggle plan={plan} setPlan={setPlan} prices={prices} />
+            <p className="text-[11px] -mt-4 mb-6" style={{ color: 'var(--ink-600)' }}>Plus applicable taxes.</p>
             {error && (
               <p className="text-[13px] mb-4 leading-relaxed" style={{ color: '#d97757' }}>{error}</p>
             )}

@@ -146,7 +146,7 @@ export default function WatchlistCardsPage() {
 
         {/* Page header */}
         <div className="mb-8">
-          <div className="text-[10px] tracking-[0.22em] uppercase mb-3" style={{ color: 'var(--ink-500)' }}>
+          <div className="text-[10px] tracking-[0.22em] uppercase mb-3" style={{ color: 'var(--ink-400)' }}>
             Your Watchlist
           </div>
           <h1 className="font-display italic text-[36px] md:text-[44px] leading-[1.05] mb-3" style={{ color: 'var(--ink-100)' }}>
@@ -515,7 +515,7 @@ function BidReminderModal({ listing, initialPrice, isSet, onSubmit, onRemove, on
             <button
               onClick={onRemove}
               className="text-[11px] uppercase tracking-[0.14em] px-4 py-3 transition-colors"
-              style={{ color: 'var(--ink-500)' }}
+              style={{ color: 'var(--ink-400)' }}
             >
               Remove
             </button>
@@ -523,7 +523,7 @@ function BidReminderModal({ listing, initialPrice, isSet, onSubmit, onRemove, on
             <button
               onClick={onClose}
               className="text-[11px] uppercase tracking-[0.14em] px-4 py-3 transition-colors"
-              style={{ color: 'var(--ink-500)' }}
+              style={{ color: 'var(--ink-400)' }}
             >
               Cancel
             </button>

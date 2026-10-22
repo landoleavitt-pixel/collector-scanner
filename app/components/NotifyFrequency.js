@@ -99,7 +99,7 @@ export default function NotifyFrequency({ initialFrequency = 'hourly', canUsePro
               >
                 {opt.label}
               </div>
-              <div className="text-[11px] leading-snug" style={{ color: 'var(--ink-500)' }}>
+              <div className="text-[11px] leading-snug" style={{ color: 'var(--ink-400)' }}>
                 {opt.hint}
               </div>
               {showProNote && (

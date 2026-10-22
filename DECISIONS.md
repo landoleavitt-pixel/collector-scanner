@@ -26,6 +26,9 @@ Everything Landon has decided, so no agent ever asks him the same thing twice. O
 - All 7 items from the landing conversion review are approved, and done in parallel rather than week by week. (2026-10-21)
 - The proof strip only ever shows **real numbers**. With no honest number, ship no strip. (2026-10-21)
 
+- The site and app must look **professionally made, not AI-generated**: real data and photos, consistent icons, restrained effects, specific (not template) copy. (2026-10-21)
+- Comparing ourselves to eBay is fine, but only with claims we can back up (e.g. eBay's saved-search emails are once a day). No overstated claims. (2026-10-21)
+
 ## Search
 - Spelling suggestions cover pro players **and college players**. The roster refresh is run by hand once a quarter. (2026-10-20, 2026-10-21)
 - Card company filter, including Leaf and the listed product lines. (2026-10-20)

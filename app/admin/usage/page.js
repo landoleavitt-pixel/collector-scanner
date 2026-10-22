@@ -134,7 +134,7 @@ function UsageTable({ data }) {
         <div className="font-serif italic text-[18px] mb-2" style={{ color: 'var(--ink-200)' }}>
           No daily quotas to show.
         </div>
-        <div className="text-[13px]" style={{ color: 'var(--ink-500)' }}>
+        <div className="text-[13px]" style={{ color: 'var(--ink-400)' }}>
           eBay returned zero rate-limited resources for the buy context.
           {' '}This sometimes means the call worked but the data is empty.
         </div>
@@ -147,7 +147,7 @@ function UsageTable({ data }) {
       {/* Last refreshed */}
       <div
         className="text-[10px] uppercase tracking-[0.18em] mb-4"
-        style={{ color: 'var(--ink-500)' }}
+        style={{ color: 'var(--ink-400)' }}
       >
         Fetched {new Date(data.fetchedAt).toLocaleString()}
       </div>
@@ -205,7 +205,7 @@ function UsageRow({ row }) {
     >
       <div className="flex items-baseline justify-between mb-2 gap-4 flex-wrap">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.16em]" style={{ color: 'var(--ink-500)' }}>
+          <div className="text-[10px] uppercase tracking-[0.16em]" style={{ color: 'var(--ink-400)' }}>
             {row.apiName}
           </div>
           <div className="font-serif italic text-[15px]" style={{ color: 'var(--ink-100)' }}>
@@ -214,9 +214,9 @@ function UsageRow({ row }) {
         </div>
         <div className="text-right">
           <div className="font-display italic text-[20px]" style={{ color: 'var(--gold)' }}>
-            {used.toLocaleString()} <span style={{ color: 'var(--ink-500)' }} className="text-[13px]">/ {limit.toLocaleString()}</span>
+            {used.toLocaleString()} <span style={{ color: 'var(--ink-400)' }} className="text-[13px]">/ {limit.toLocaleString()}</span>
           </div>
-          <div className="text-[11px]" style={{ color: 'var(--ink-500)' }}>
+          <div className="text-[11px]" style={{ color: 'var(--ink-400)' }}>
             resets {resetLabel}
           </div>
         </div>
