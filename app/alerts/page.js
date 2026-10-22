@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import PageShell, { SectionHeading, Prose } from '../components/PageShell';
+import { ArrowRight } from 'lucide-react';
 
 export const metadata = {
-  title: 'Alerts — Fields & Floors Collectors',
+  title: 'Alerts',
   description: 'Save a search. Get an email the moment a new listing matches. Part of Base.',
 };
 
@@ -11,7 +12,7 @@ export default function AlertsPage() {
     <PageShell
       eyebrow="Now live · Base plan"
       title="Alerts."
-      lede="Save a search. We watch eBay. The moment a new listing matches your filters, you get an email — usually within the hour."
+      lede="Save a search. We watch eBay. The moment a new listing matches your filters, you get an email, usually within the hour."
     >
       <SectionHeading number="01" label="What it does">
         A search you save, that watches the marketplace for you.
@@ -19,8 +20,8 @@ export default function AlertsPage() {
       <Prose>
         <p>
           Find a card you'd buy if the price were right? Save the search.
-          When a listing lands that matches every filter you set &mdash; the right
-          player, the right print run, under your ceiling &mdash; we email you
+          When a listing lands that matches every filter you set (the right
+          player, the right print run, under your ceiling), we email you
           immediately.
         </p>
         <p>
@@ -58,7 +59,7 @@ export default function AlertsPage() {
           email you a reminder before it converts. Cancel anytime.
         </p>
         <p>
-          Free-tier users still get the full search experience and watchlist &mdash;
+          Free-tier users still get the full search experience and watchlist,
           plus one live email alert. Base adds up to five alerts and bid reminders.
         </p>
       </Prose>
@@ -80,7 +81,7 @@ export default function AlertsPage() {
             color: 'var(--ink-200)',
           }}
         >
-          Start free trial &rarr;
+          Start free trial <ArrowRight className="inline-block w-3.5 h-3.5 ml-1 -mt-0.5" strokeWidth={2} aria-hidden="true" />
         </Link>
       </div>
     </PageShell>

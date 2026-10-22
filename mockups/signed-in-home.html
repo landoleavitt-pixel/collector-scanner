@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home, Less Words</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap');
+:root{
+  --ink-100:#f7f1e1;--ink-200:#e8dfc9;--ink-400:#a99e85;--ink-600:#6b6354;
+  --bg-base:#0a0907;--bg-elev:#14110c;--bg-elev-2:#1a160f;--line:#2a251c;--line-soft:#1f1c16;
+  --gold:#c9954a;--gold-bright:#e6b96b;--gold-deep:#8f6a32;--ink-on-gold:#1a1612;--crit:#d4684a;
+}
+*{box-sizing:border-box}
+body{margin:0;background:#050403;color:var(--ink-100);font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.page{max-width:1240px;margin:0 auto;padding:40px 16px 80px}
+.eyebrow{font:500 11px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+h1.t{font:italic 400 44px/1.02 'Instrument Serif',serif;margin:10px 0 10px}
+.lede{color:var(--ink-400);font-size:15px;max-width:720px;line-height:1.6;margin:0 0 36px}
+.sec{border-top:1px solid var(--gold-deep);padding-top:20px;margin:56px 0 22px}
+.sec .n{font:600 12px 'Geist Mono',monospace;color:var(--gold-bright);letter-spacing:.14em}
+.sec h2{font:italic 400 32px/1.1 'Instrument Serif',serif;margin:6px 0 6px}
+.sec p{margin:0;color:var(--ink-400);font-size:14px;max-width:720px;line-height:1.55}
+
+/* ── shared app UI ── */
+.app{background:var(--bg-base);color:var(--ink-100)}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;border-bottom:1px solid var(--line-soft)}
+.brand{display:flex;align-items:center;gap:10px;font:400 22px 'Instrument Serif',serif}
+.seal{width:26px;height:26px;border-radius:50%;border:1px solid var(--gold-deep);display:grid;place-items:center;font:italic 11px 'Instrument Serif',serif;color:var(--gold)}
+.brand em{color:var(--gold);font-style:normal}
+.nav{display:flex;gap:26px;font:500 11px Geist,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-400)}
+.avatar{width:28px;height:28px;border-radius:50%;background:var(--gold);color:var(--ink-on-gold);display:grid;place-items:center;font:italic 14px 'Instrument Serif',serif}
+.wrap{max-width:1040px;margin:0 auto;padding:32px 28px 48px}
+.search{display:flex;align-items:center;gap:10px;border:1px solid var(--gold-deep);border-radius:12px;padding:7px 7px 7px 16px;background:var(--bg-elev)}
+.search .ic{width:18px;height:18px;stroke:var(--ink-400)}
+.search span{flex:1;color:var(--ink-600);font-size:16px}
+.search b{width:42px;height:42px;border-radius:8px;background:var(--gold-bright);display:grid;place-items:center}
+.search b .ic{stroke:var(--ink-on-gold)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-200);border:1px solid var(--line);border-radius:999px;padding:6px 12px;background:transparent;white-space:nowrap}
+.chip .ic{width:13px;height:13px;stroke:var(--ink-400)}
+.chip.hunt{border-color:var(--gold-deep)}
+.chip.hunt .ic{stroke:var(--gold)}
+.ic{fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.h{display:flex;align-items:baseline;justify-content:space-between;margin:34px 0 12px}
+.h h3{margin:0;font:400 22px 'Instrument Serif',serif;font-style:italic}
+.h a{font-size:13px;color:var(--ink-400);text-decoration:none}
+.since{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.panel{border:1px solid var(--line);border-radius:12px;background:var(--bg-elev);padding:14px 16px}
+.panel .k{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-400);margin-bottom:10px}
+.panel .k b{font:500 13px Geist,sans-serif;color:var(--ink-100)}
+.panel .k .ic{width:15px;height:15px;stroke:var(--gold)}
+.item{display:grid;grid-template-columns:38px 1fr auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line-soft)}
+.th{width:38px;aspect-ratio:3/4;border-radius:3px;padding:2px}
+.th i{display:block;height:100%;border-radius:2px;background:radial-gradient(ellipse at 50% 30%,#4a3524,#120d08 70%)}
+.item .tt{font-size:13px;color:var(--ink-200);line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.item .m{font-size:12px;color:var(--ink-400);margin-top:2px}
+.item .p{font:500 14px Geist,sans-serif;text-align:right;white-space:nowrap}
+.item .p small{display:block;font-size:12px;font-weight:400;color:var(--ink-400)}
+.down{color:#7fd49a!important}
+.end{color:var(--gold-bright)!important}
+.tchip{font:700 10px 'Geist Mono',monospace;padding:1px 5px;border-radius:4px;color:var(--ink-on-gold);margin-right:4px;vertical-align:1px}
+.g{background:linear-gradient(180deg,#ffd97a,#d99c14)} .u{background:linear-gradient(180deg,#e0e8f0,#98a5b3)} .r{background:linear-gradient(180deg,#d6884a,#8e4f1f)}
+.live{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.lc{border:1px solid var(--line-soft);border-radius:8px;padding:8px;background:var(--bg-elev)}
+.lc .im{aspect-ratio:3/4;border-radius:4px;padding:3px;margin-bottom:8px}
+.lc .im i{display:block;height:100%;border-radius:2px;background:radial-gradient(ellipse at 50% 30%,#4a3524,#120d08 70%)}
+.lc .tt{font-size:12px;color:var(--ink-200);line-height:1.3;height:31px;overflow:hidden}
+.lc .p{font:500 14px Geist,sans-serif;margin-top:6px}
+.upg{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:28px;padding:12px 16px;border:1px solid var(--line);border-radius:12px;font-size:14px;color:var(--ink-200)}
+.upg a{color:var(--gold-bright);text-decoration:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.upg .ic{width:14px;height:14px;stroke:var(--gold-bright)}
+.empty{font-size:13px;color:var(--ink-600);padding:10px 0 2px;border-top:1px solid var(--line-soft)}
+
+/* frames */
+.desk{border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.phones{display:flex;gap:28px;flex-wrap:wrap;justify-content:center}
+.phone{width:375px;max-width:100%;height:812px;border:10px solid #1b1813;border-radius:50px;overflow:hidden;position:relative;background:var(--bg-base);box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.phone .status{height:44px;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font:600 14px Geist,sans-serif}
+.phone .hdr{padding:12px 18px}
+.phone .brand{font-size:18px}
+.phone .wrap{padding:18px 16px 110px;height:calc(100% - 44px - 57px);overflow:hidden}
+.phone.app .wrap{height:calc(100% - 44px - 49px)}
+.phone .since{grid-template-columns:1fr}
+.phone .panel{padding:12px 14px}
+.phone .live{display:flex;overflow:hidden;gap:10px}
+.phone .lc{width:120px;flex:none}
+.phone .h{margin:24px 0 10px}
+.phone .chips{flex-wrap:nowrap;overflow:hidden}
+.tabbar{position:absolute;left:14px;right:14px;bottom:14px;height:62px;display:grid;grid-template-columns:repeat(4,1fr);background:rgba(26,22,15,.85);backdrop-filter:blur(18px);border:1px solid var(--line);border-radius:22px;box-shadow:0 16px 40px rgba(0,0,0,.6)}
+.tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--ink-400);font:500 11px Geist,sans-serif}
+.tab .w{width:48px;height:30px;border-radius:999px;display:grid;place-items:center}
+.tab.on{color:var(--gold-bright)} .tab.on .w{background:rgba(201,149,74,.16)}
+.tab .ic{width:22px;height:22px;stroke:currentColor;stroke-width:1.6}
+.caption{text-align:center;color:var(--ink-400);font-size:13px;margin:12px auto 0;max-width:370px;line-height:1.45}
+
+table.data{width:100%;border-collapse:collapse;font-size:14px;background:var(--bg-elev);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.data th{text-align:left;font:500 11px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-400);padding:10px 14px;border-bottom:1px solid var(--line)}
+.data td{padding:11px 14px;border-bottom:1px solid var(--line-soft);vertical-align:top;line-height:1.45;color:var(--ink-200)}
+.data td:first-child{color:var(--ink-100);width:190px}
+.tag{display:inline-block;font:600 10px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;padding:2px 6px;border-radius:4px}
+.ok{background:rgba(127,212,154,.14);color:#7fd49a} .new{background:rgba(230,185,107,.16);color:var(--gold-bright)}
+@media (max-width:900px){.since,.live{grid-template-columns:1fr 1fr}.nav{display:none}}
+
+/* signed-out parts */
+.how3{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.how3 div{display:flex;align-items:center;gap:12px;padding:20px 22px;font:500 16px Geist,sans-serif;color:var(--ink-100)}
+.how3 div + div{border-left:1px solid var(--line-soft)}
+.how3 .ic{width:22px;height:22px;stroke:var(--gold-bright)}
+.plans3{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:12px;align-items:stretch;margin-top:20px}
+.pl{border:1px solid var(--line);border-radius:12px;padding:18px 18px 16px;display:flex;flex-direction:column;gap:6px}
+.pl.f{border-color:var(--gold-bright);background:var(--bg-elev)}
+.pl .nm{font:500 13px Geist,sans-serif;color:var(--ink-400)}
+.pl.f .nm{color:var(--gold)}
+.pl .pr{font:italic 400 34px/1 'Instrument Serif',serif}
+.pl .pr small{font:400 13px Geist,sans-serif;font-style:normal;color:var(--ink-400)}
+.pl .ln{font-size:14px;color:var(--ink-200)}
+.pl a{margin-top:10px;text-align:center;font:600 12px Geist,sans-serif;letter-spacing:.12em;text-transform:uppercase;padding:11px;border-radius:8px;color:var(--ink-100);border:1px solid var(--ink-600);text-decoration:none}
+.pl.f a{background:var(--gold-bright);color:var(--ink-on-gold);border:0}
+.pl.m{opacity:.75}
+.ph-stub{border:1px dashed var(--line);border-radius:12px;padding:22px;text-align:center;color:var(--ink-600);font-size:13px;margin-bottom:22px}
+.wc{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 0}
+.wc span{font:500 12px Geist,sans-serif;padding:6px 10px;border-radius:999px;border:1px solid var(--line);color:var(--ink-200)}
+.wc b{color:var(--gold-bright);font-weight:600}
+.oldbox{border:1px solid var(--line-soft);border-radius:12px;padding:16px;color:var(--ink-400);font-size:12px;line-height:1.5;max-height:260px;overflow:hidden;position:relative}
+.oldbox::after{content:'';position:absolute;left:0;right:0;bottom:0;height:60px;background:linear-gradient(transparent,#050403)}
+.pair2{display:grid;grid-template-columns:1fr 1.6fr;gap:18px;align-items:start}
+.lbl2{font:500 11px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase;margin:0 0 8px;color:var(--ink-600)}
+.lbl2.a{color:var(--gold-bright)}
+.phone .how3{grid-template-columns:1fr;border-bottom:0}
+.phone .how3 div{padding:14px 4px;border-left:0!important;border-bottom:1px solid var(--line-soft)}
+.phone .plans3{grid-template-columns:1fr}
+.phone .pl:not(.f){flex-direction:row;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px}
+.phone .pl:not(.f) .pr{font-size:24px}
+.phone .pl:not(.f) a{margin:0;padding:9px 12px}
+.phone .pl.f{order:-1}
+@media (max-width:900px){.pair2{grid-template-columns:1fr}.how3{grid-template-columns:1fr}.how3 div + div{border-left:0;border-top:1px solid var(--line-soft)}.plans3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="eyebrow">Fields &amp; Floors · Home review</div>
+  <h1 class="t">Fewer words, more cards</h1>
+  <p class="lede">Members already know what the site does, so their home drops the pitch: the search bar comes first, with their own searches as one-tap chips, then what changed since their last visit, then a small row of live cards. No headline, comparison, how-it-works, trust line or plans. Free members see one upgrade line. Signed-out visitors keep today's landing page and hero, unchanged.</p>
+
+  <div class="sec"><div class="n">A</div><h2>Website, desktop</h2></div>
+  <div class="desk app" id="desk"></div>
+
+  <div class="sec"><div class="n">B</div><h2>Phone and iOS app</h2><p>The app version drops the header menu (the tab bar handles that) and the upgrade line moves into Account. The "Since you were last here" panels stack; live cards scroll sideways.</p></div>
+  <div class="phones">
+    <div><div class="phone app" id="webphone"></div><p class="caption">Website on a phone, free member</p></div>
+    <div><div class="phone app" id="appphone"></div><p class="caption">iOS app, Base member</p></div>
+    <div><div class="phone app" id="firstphone"></div><p class="caption">New member, nothing saved yet</p></div>
+  </div>
+
+
+  <div class="sec"><div class="n">C1</div><h2>Signed-out home: hero and card strip (Landing session)</h2><p>Two options from the Landing session, updated with Landon's "The Grail Hunter. Just try it." idea; its pick is A. This section sits right under the hero and replaces the eBay comparison table. My How it works and Plans (C2) follow it. Opens on its own at mockups/signed-out-home.html.</p></div>
+  <iframe srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+&lt;title&gt;Signed-out Home&lt;/title&gt;
+&lt;style&gt;
+@import url(&#x27;https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap&#x27;);
+:root{
+  --ink-100:#f7f1e1;--ink-200:#e8dfc9;--ink-400:#a99e85;--ink-600:#6b6354;
+  --bg-base:#0a0907;--bg-elev:#14110c;--bg-elev-2:#1a160f;--line:#2a251c;--line-soft:#1f1c16;
+  --gold:#c9954a;--gold-bright:#e6b96b;--gold-deep:#8f6a32;--ink-on-gold:#1a1612;
+}
+*{box-sizing:border-box}
+body{margin:0;background:#050403;color:var(--ink-100);font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.page{max-width:1240px;margin:0 auto;padding:40px 16px 80px}
+.eyebrow{font:500 11px &#x27;Geist Mono&#x27;,monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+h1.t{font:italic 400 44px/1.02 &#x27;Instrument Serif&#x27;,serif;margin:10px 0 10px}
+.lede{color:var(--ink-400);font-size:15px;max-width:720px;line-height:1.6;margin:0 0 12px}
+.sec{border-top:1px solid var(--gold-deep);padding-top:20px;margin:56px 0 22px}
+.sec .n{font:600 12px &#x27;Geist Mono&#x27;,monospace;color:var(--gold-bright);letter-spacing:.14em}
+.sec h2{font:italic 400 32px/1.1 &#x27;Instrument Serif&#x27;,serif;margin:6px 0 6px}
+.sec p{margin:0;color:var(--ink-400);font-size:14px;max-width:720px;line-height:1.55}
+.count{display:inline-block;margin-top:10px;font:500 11px &#x27;Geist Mono&#x27;,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-200);border:1px solid var(--line);border-radius:999px;padding:4px 10px}
+
+/* frames */
+.row{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;align-items:start}
+@media(max-width:980px){.row{grid-template-columns:minmax(0,1fr)}}
+.desk{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--bg-base)}
+.phone{border:1px solid var(--line);border-radius:32px;padding:10px;background:#000;max-width:300px}
+.phone .app{border-radius:24px;overflow:hidden}
+.cap{margin-top:8px;font:500 11px &#x27;Geist Mono&#x27;,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-600)}
+
+/* app */
+.app{background:var(--bg-base)}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;border-bottom:1px solid var(--line-soft)}
+.brand{display:flex;align-items:center;gap:10px;font:400 22px &#x27;Instrument Serif&#x27;,serif;white-space:nowrap}
+.brand em{color:var(--gold);font-style:normal}
+.seal{width:26px;height:26px;border-radius:50%;border:1px solid var(--gold-deep);display:grid;place-items:center;font:italic 11px &#x27;Instrument Serif&#x27;,serif;color:var(--gold)}
+.nav{display:flex;gap:22px;align-items:center;font:500 11px Geist,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-400);white-space:nowrap}
+.btn{background:var(--gold-bright);color:var(--ink-on-gold);border-radius:999px;padding:8px 14px;font-weight:600}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;padding:56px 48px 52px;background:radial-gradient(38% 55% at 75% 50%,rgba(201,149,74,.14),transparent 72%)}
+.kick{font:500 10px &#x27;Geist Mono&#x27;,monospace;letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
+.h1{font:400 56px/1 &#x27;Instrument Serif&#x27;,serif;margin:12px 0 0;letter-spacing:-.015em}
+.h1 em{color:var(--gold-bright)}
+.search{margin-top:28px;display:flex;align-items:center;justify-content:space-between;border:1px solid var(--gold-deep);border-radius:12px;padding:8px 8px 8px 20px;background:rgba(20,17,12,.85);box-shadow:0 18px 40px rgba(0,0,0,.45)}
+.search span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:italic 24px &#x27;Instrument Serif&#x27;,serif;color:var(--ink-600)}
+.search b{background:var(--gold-bright);color:var(--ink-on-gold);border-radius:8px;padding:12px 16px;font-size:13px;font-weight:600;white-space:nowrap}
+.try{margin-top:22px;font:italic 22px &#x27;Instrument Serif&#x27;,serif;color:var(--gold-bright)}
+.try + .search{margin-top:8px}
+.fine{margin-top:8px;font-size:11px;color:var(--ink-600)}
+.lbl{margin-top:22px;font:500 10px &#x27;Geist Mono&#x27;,monospace;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-600)}
+.hunts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.hunt{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-200);border:1px solid var(--line);border-radius:999px;padding:7px 12px;background:var(--bg-elev);white-space:nowrap}
+.feat{display:grid;justify-items:center;gap:12px}
+.slab{width:260px;padding:10px;border-radius:12px;background:linear-gradient(160deg,rgba(255,255,255,.13),rgba(255,255,255,.03));border:.5px solid rgba(255,255,255,.2);box-shadow:0 30px 60px rgba(0,0,0,.7),0 0 90px rgba(230,185,107,.16)}
+.slab img{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:8px}
+.live{font:500 10px &#x27;Geist Mono&#x27;,monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-400);display:flex;align-items:center;gap:8px}
+.live:before{content:&quot;&quot;;width:7px;height:7px;border-radius:50%;background:#7fb48a;box-shadow:0 0 6px #7fb48a}
+.fprice{font:400 22px &#x27;Instrument Serif&#x27;,serif;color:var(--gold-bright)}
+
+.tc{display:inline-block;font:500 11px &#x27;Geist Mono&#x27;,monospace;padding:2px 7px;border-radius:4px;color:var(--ink-on-gold)}
+.tc.g{background:linear-gradient(#ffd97a,#d99c14)}
+.tc.u{background:#cfd6de}
+.tc.o{background:transparent;color:var(--ink-200);border:1px solid var(--line)}
+
+/* visual 1: strip */
+.v{border-top:1px solid var(--line-soft);padding:40px 48px 48px}
+.vcap{font:400 30px/1.1 &#x27;Instrument Serif&#x27;,serif;margin:0 0 6px}
+.vcap em{color:var(--gold-bright)}
+.q{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px;margin:6px 0 20px;font-size:13px;color:var(--ink-200)}
+.strip{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:12px}
+.rc{display:grid;gap:6px;align-content:start}
+.rc .im{border-radius:8px;overflow:hidden;background:var(--bg-elev-2);aspect-ratio:3/4}
+.rc img,.mc img{width:100%;height:100%;object-fit:cover;display:block}
+.rc .tt,.mc .tt{font-size:11px;line-height:1.35;color:var(--ink-400)}
+.rc .pr,.mc .pr{font:400 17px &#x27;Instrument Serif&#x27;,serif;color:var(--gold-bright)}
+.rc .tc{justify-self:start}
+
+/* visual 2: tiers */
+.tiers{display:grid;grid-template-columns:1.6fr 1fr;gap:16px}
+.tier{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--bg-elev)}
+.tier h4{margin:0 0 12px;display:flex;align-items:center;gap:8px;font:500 11px &#x27;Geist Mono&#x27;,monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-200)}
+.tier .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tier.u .grid{grid-template-columns:minmax(0,1fr)}
+.mc{display:grid;grid-template-columns:56px minmax(0,1fr);gap:10px;align-items:center;padding:8px;border:1px solid var(--line-soft);border-radius:8px;background:var(--bg-base)}
+.mc .im{aspect-ratio:3/4;border-radius:4px;overflow:hidden;background:var(--bg-elev-2)}
+.mc .tt{margin-top:4px}
+
+/* phone overrides */
+.phone .hdr{padding:14px 16px}.phone .brand{font-size:17px}.phone .seal{width:22px;height:22px}
+.phone .hero{grid-template-columns:1fr;padding:24px 16px 20px;gap:18px}
+.phone .h1{font-size:38px}
+.phone .search{margin-top:18px;padding-left:14px}.phone .search span{font-size:18px}.phone .search b{padding:10px 12px}
+.phone .feat{display:none}
+.phone .livebar{display:grid;grid-template-columns:48px 1fr auto;gap:10px;align-items:center;margin-top:18px;padding:8px;border:1px solid var(--line);border-radius:12px;background:var(--bg-elev)}
+.phone .livebar img{width:48px;aspect-ratio:3/4;object-fit:cover;border-radius:4px}
+.phone .v{padding:24px 16px 28px}.phone .vcap{font-size:24px}
+.phone .strip{grid-template-columns:repeat(8,120px);overflow-x:auto;padding-bottom:6px}
+.phone .tiers{grid-template-columns:1fr}.phone .tier .grid{grid-template-columns:1fr}
+.livebar{display:none}
+.note{margin-top:16px;padding:14px 16px;border:1px solid var(--gold-deep);border-radius:8px;background:rgba(201,149,74,.06);font-size:13px;line-height:1.55;color:var(--ink-200);max-width:820px}
+.note b{color:var(--gold-bright);font-weight:500}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class=&quot;page&quot;&gt;
+  &lt;div class=&quot;eyebrow&quot;&gt;Signed-out home · show, don&#x27;t tell&lt;/div&gt;
+  &lt;h1 class=&quot;t&quot;&gt;Fewer words. Real cards do the talking.&lt;/h1&gt;
+  &lt;p class=&quot;lede&quot;&gt;Two options for the first screen a new visitor sees. Both keep the search, the popular hunts, and the floating featured card with its motion. The paragraph, the tick-mark line and the eBay table are gone. The table is replaced by real listings sorted by print run.&lt;/p&gt;
+  &lt;p class=&quot;lede&quot;&gt;Every card below is a real, live eBay listing pulled from our own search for &quot;Paul Skenes autos numbered 50 or less&quot; on 21 Oct. On the site this strip would come from a cached search that refreshes hourly, the same way the featured card does.&lt;/p&gt;
+
+  &lt;!-- OPTION A --&gt;
+  &lt;div class=&quot;sec&quot;&gt;
+    &lt;div class=&quot;n&quot;&gt;OPTION A&lt;/div&gt;
+    &lt;h2&gt;&quot;The Grail Hunter. Just try it.&quot; + a rarest-first strip&lt;/h2&gt;
+    &lt;p&gt;The headline names what makes us different. Below the fold, one row of real cards from /5 to /50, left to right, so the sort order explains itself.&lt;/p&gt;
+    &lt;span class=&quot;count&quot;&gt;Hero: 27 words, not counting the header&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;row&quot;&gt;
+    &lt;div&gt;
+      &lt;div class=&quot;desk app&quot;&gt;
+        &lt;div class=&quot;hdr&quot;&gt;&lt;div class=&quot;brand&quot;&gt;&lt;span class=&quot;seal&quot;&gt;F&amp;amp;F&lt;/span&gt;Fields &lt;em&gt;&amp;amp;&lt;/em&gt; Floors&lt;/div&gt;&lt;div class=&quot;nav&quot;&gt;&lt;span&gt;How it works&lt;/span&gt;&lt;span&gt;Pricing&lt;/span&gt;&lt;span&gt;Sign in&lt;/span&gt;&lt;span class=&quot;btn&quot;&gt;Get alerts&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;div class=&quot;hero&quot;&gt;
+          &lt;div&gt;
+                        &lt;div class=&quot;h1&quot;&gt;The &lt;em&gt;Grail&lt;/em&gt; Hunter.&lt;/div&gt;
+            &lt;div class=&quot;try&quot;&gt;Just try it.&lt;/div&gt;
+            &lt;div class=&quot;search&quot;&gt;&lt;span&gt;Paul Skenes&lt;/span&gt;&lt;b&gt;Show cards&lt;/b&gt;&lt;/div&gt;
+            &lt;div class=&quot;fine&quot;&gt;Not affiliated with eBay&lt;/div&gt;
+            &lt;div class=&quot;lbl&quot;&gt;Popular hunts&lt;/div&gt;
+            &lt;div class=&quot;hunts&quot;&gt;&lt;span class=&quot;hunt&quot;&gt;Caitlin Clark autos &lt;span class=&quot;tc g&quot;&gt;/1–25&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;hunt&quot;&gt;Paul Skenes rookies &lt;span class=&quot;tc u&quot;&gt;/26–99&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;hunt&quot;&gt;Connor Bedard graded&lt;/span&gt;&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;feat&quot;&gt;&lt;div class=&quot;slab&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/Eq0AAeSwIbNq2PbC/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;div class=&quot;live&quot;&gt;Live on eBay&lt;/div&gt;&lt;div style=&quot;display:flex;gap:6px;align-items:center&quot;&gt;&lt;span class=&quot;tc o&quot;&gt;Auto&lt;/span&gt;&lt;span class=&quot;tc g&quot;&gt;/25&lt;/span&gt;&lt;span class=&quot;fprice&quot;&gt;$37,106&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;v&quot;&gt;
+          &lt;div class=&quot;vcap&quot;&gt;One search. &lt;em&gt;Rarest first.&lt;/em&gt;&lt;/div&gt;
+          &lt;div class=&quot;q&quot;&gt;&lt;span class=&quot;tc o&quot;&gt;Paul Skenes&lt;/span&gt;&lt;span class=&quot;tc o&quot;&gt;Auto&lt;/span&gt;&lt;span class=&quot;tc g&quot;&gt;/1–25&lt;/span&gt;&lt;span class=&quot;tc u&quot;&gt;/26–50&lt;/span&gt;&lt;/div&gt;
+          &lt;div class=&quot;strip&quot;&gt;&lt;div class=&quot;rc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/mkQAAeSwdONqpFrr/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;span class=&quot;tc g&quot;&gt;/5&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;Paul Skenes Auto Red Foil /5 Team USA #USA07-A 2026 Case…&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$4,500&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;rc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/11kAAeSwKqFq2T57/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;span class=&quot;tc g&quot;&gt;/5&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;Topps Paul Skenes Auto 2/5 2026 Topps All-Stars Insert…&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$2,000&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;rc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/M-YAAeSwlQ1q2SY-/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;span class=&quot;tc g&quot;&gt;/10&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;2024 Impeccable Paul Skenes Rookie Auto Gold /10&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$500&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;rc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/qR8AAeSw9HBqvs3B/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;span class=&quot;tc g&quot;&gt;/10&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;2026 Tier One PAUL SKENES Retro 2011 Auto R11A-PS…&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$400&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;rc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/pSkAAeSwpItq1SQ1/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;span class=&quot;tc g&quot;&gt;/15&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;2025 Topps Chrome Black Auto Rose Gold Wave Paul Skenes…&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$1,350&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;rc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/bfYAAeSwJidq1~y4/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;span class=&quot;tc g&quot;&gt;/25&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;2025 Topps Inception Signings - Paul Skenes #IS-PS Gold…&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$650&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;rc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/5ywAAeSw6XlqcL5a/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;span class=&quot;tc u&quot;&gt;/49&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;2025 Panini Prizm Paul Skenes PRIZMATRIX BLUE AUTO /49…&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$650&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;rc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/yEYAAeSwAhlq0l3l/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;span class=&quot;tc u&quot;&gt;/50&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;2025 Topps Chrome Platinum Paul Skenes Auto True Gold…&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$400&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;cap&quot;&gt;Desktop · fold sits under the hunts&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+      &lt;div class=&quot;phone&quot;&gt;&lt;div class=&quot;app&quot;&gt;
+        &lt;div class=&quot;hdr&quot;&gt;&lt;div class=&quot;brand&quot;&gt;&lt;span class=&quot;seal&quot;&gt;F&amp;amp;F&lt;/span&gt;Fields &lt;em&gt;&amp;amp;&lt;/em&gt; Floors&lt;/div&gt;&lt;div class=&quot;nav&quot;&gt;&lt;span&gt;Sign in&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;div class=&quot;hero&quot;&gt;
+          &lt;div&gt;
+            &lt;div class=&quot;h1&quot;&gt;The &lt;em&gt;Grail&lt;/em&gt; Hunter.&lt;/div&gt;
+            &lt;div class=&quot;try&quot;&gt;Just try it.&lt;/div&gt;
+            &lt;div class=&quot;search&quot;&gt;&lt;span&gt;Paul Skenes&lt;/span&gt;&lt;b&gt;Show cards&lt;/b&gt;&lt;/div&gt;
+            &lt;div class=&quot;fine&quot;&gt;Not affiliated with eBay&lt;/div&gt;
+            &lt;div class=&quot;lbl&quot;&gt;Popular hunts&lt;/div&gt;
+            &lt;div class=&quot;hunts&quot;&gt;&lt;span class=&quot;hunt&quot;&gt;Caitlin Clark autos &lt;span class=&quot;tc g&quot;&gt;/1–25&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;hunt&quot;&gt;Paul Skenes rookies &lt;span class=&quot;tc u&quot;&gt;/26–99&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;
+            &lt;div class=&quot;livebar&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/Eq0AAeSwIbNq2PbC/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;div&gt;&lt;div class=&quot;live&quot;&gt;Live right now&lt;/div&gt;&lt;div style=&quot;font-size:11px;color:var(--ink-200);margin-top:4px&quot;&gt;Ohtani Cosmic Chrome Auto&lt;/div&gt;&lt;/div&gt;&lt;span class=&quot;fprice&quot; style=&quot;font-size:17px&quot;&gt;$37,106&lt;/span&gt;&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;v&quot;&gt;
+          &lt;div class=&quot;vcap&quot;&gt;One search. &lt;em&gt;Rarest first.&lt;/em&gt;&lt;/div&gt;
+          &lt;div class=&quot;strip&quot;&gt;&lt;div class=&quot;rc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/mkQAAeSwdONqpFrr/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;span class=&quot;tc g&quot;&gt;/5&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;Paul Skenes Auto Red Foil /5 Team USA #USA07-A 2026 Case…&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$4,500&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;rc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/11kAAeSwKqFq2T57/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;span class=&quot;tc g&quot;&gt;/5&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;Topps Paul Skenes Auto 2/5 2026 Topps All-Stars Insert…&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$2,000&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;rc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/M-YAAeSwlQ1q2SY-/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;span class=&quot;tc g&quot;&gt;/10&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;2024 Impeccable Paul Skenes Rookie Auto Gold /10&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$500&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;rc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/qR8AAeSw9HBqvs3B/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;span class=&quot;tc g&quot;&gt;/10&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;2026 Tier One PAUL SKENES Retro 2011 Auto R11A-PS…&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$400&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;rc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/pSkAAeSwpItq1SQ1/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;span class=&quot;tc g&quot;&gt;/15&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;2025 Topps Chrome Black Auto Rose Gold Wave Paul Skenes…&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$1,350&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;rc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/bfYAAeSwJidq1~y4/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;span class=&quot;tc g&quot;&gt;/25&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;2025 Topps Inception Signings - Paul Skenes #IS-PS Gold…&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$650&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;rc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/5ywAAeSw6XlqcL5a/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;span class=&quot;tc u&quot;&gt;/49&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;2025 Panini Prizm Paul Skenes PRIZMATRIX BLUE AUTO /49…&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$650&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;rc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/yEYAAeSwAhlq0l3l/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;span class=&quot;tc u&quot;&gt;/50&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;2025 Topps Chrome Platinum Paul Skenes Auto True Gold…&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$400&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;&lt;/div&gt;
+      &lt;div class=&quot;cap&quot;&gt;Phone · strip scrolls sideways&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- OPTION B --&gt;
+  &lt;div class=&quot;sec&quot;&gt;
+    &lt;div class=&quot;n&quot;&gt;OPTION B&lt;/div&gt;
+    &lt;h2&gt;&quot;Hunt your grail. Just try it.&quot; + cards grouped by rarity&lt;/h2&gt;
+    &lt;p&gt;A plainer headline that says exactly what the tool does. Below the fold, the same real cards sorted into their rarity colours, so visitors learn gold and platinum before they search.&lt;/p&gt;
+    &lt;span class=&quot;count&quot;&gt;Hero: 27 words, not counting the header&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;row&quot;&gt;
+    &lt;div&gt;
+      &lt;div class=&quot;desk app&quot;&gt;
+        &lt;div class=&quot;hdr&quot;&gt;&lt;div class=&quot;brand&quot;&gt;&lt;span class=&quot;seal&quot;&gt;F&amp;amp;F&lt;/span&gt;Fields &lt;em&gt;&amp;amp;&lt;/em&gt; Floors&lt;/div&gt;&lt;div class=&quot;nav&quot;&gt;&lt;span&gt;How it works&lt;/span&gt;&lt;span&gt;Pricing&lt;/span&gt;&lt;span&gt;Sign in&lt;/span&gt;&lt;span class=&quot;btn&quot;&gt;Get alerts&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;div class=&quot;hero&quot;&gt;
+          &lt;div&gt;
+            &lt;div class=&quot;h1&quot;&gt;Hunt your &lt;em&gt;grail.&lt;/em&gt;&lt;/div&gt;
+            &lt;div class=&quot;try&quot;&gt;Just try it.&lt;/div&gt;
+            &lt;div class=&quot;search&quot;&gt;&lt;span&gt;Caitlin Clark&lt;/span&gt;&lt;b&gt;Show cards&lt;/b&gt;&lt;/div&gt;
+            &lt;div class=&quot;fine&quot;&gt;Not affiliated with eBay&lt;/div&gt;
+            &lt;div class=&quot;lbl&quot;&gt;Popular hunts&lt;/div&gt;
+            &lt;div class=&quot;hunts&quot;&gt;&lt;span class=&quot;hunt&quot;&gt;Caitlin Clark autos &lt;span class=&quot;tc g&quot;&gt;/1–25&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;hunt&quot;&gt;Paul Skenes rookies &lt;span class=&quot;tc u&quot;&gt;/26–99&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;hunt&quot;&gt;Connor Bedard graded&lt;/span&gt;&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;feat&quot;&gt;&lt;div class=&quot;slab&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/Eq0AAeSwIbNq2PbC/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;div class=&quot;live&quot;&gt;Live on eBay&lt;/div&gt;&lt;div style=&quot;display:flex;gap:6px;align-items:center&quot;&gt;&lt;span class=&quot;tc o&quot;&gt;Auto&lt;/span&gt;&lt;span class=&quot;tc g&quot;&gt;/25&lt;/span&gt;&lt;span class=&quot;fprice&quot;&gt;$37,106&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;v&quot;&gt;
+          &lt;div class=&quot;vcap&quot;&gt;Every print run. &lt;em&gt;Sorted by rarity.&lt;/em&gt;&lt;/div&gt;
+          &lt;div class=&quot;q&quot;&gt;&lt;span class=&quot;tc o&quot;&gt;Paul Skenes&lt;/span&gt;&lt;span class=&quot;tc o&quot;&gt;Auto&lt;/span&gt;&lt;span class=&quot;tc o&quot;&gt;Numbered 50 or less&lt;/span&gt;&lt;/div&gt;
+          &lt;div class=&quot;tiers&quot;&gt;
+            &lt;div class=&quot;tier&quot;&gt;&lt;h4&gt;&lt;span class=&quot;tc g&quot;&gt;Grail&lt;/span&gt; /1 to /25&lt;/h4&gt;&lt;div class=&quot;grid&quot;&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/mkQAAeSwdONqpFrr/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;span class=&quot;tc g&quot;&gt;/5&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;Paul Skenes Auto Red Foil /5 Team USA #USA07-A 2026 Case…&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$4,500&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/11kAAeSwKqFq2T57/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;span class=&quot;tc g&quot;&gt;/5&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;Topps Paul Skenes Auto 2/5 2026 Topps All-Stars Insert…&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$2,000&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/M-YAAeSwlQ1q2SY-/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;span class=&quot;tc g&quot;&gt;/10&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;2024 Impeccable Paul Skenes Rookie Auto Gold /10&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$500&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/qR8AAeSw9HBqvs3B/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;span class=&quot;tc g&quot;&gt;/10&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;2026 Tier One PAUL SKENES Retro 2011 Auto R11A-PS…&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$400&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+            &lt;div class=&quot;tier u&quot;&gt;&lt;h4&gt;&lt;span class=&quot;tc u&quot;&gt;Ultra rare&lt;/span&gt; /26 to /99&lt;/h4&gt;&lt;div class=&quot;grid&quot;&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/5ywAAeSw6XlqcL5a/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;span class=&quot;tc u&quot;&gt;/49&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;2025 Panini Prizm Paul Skenes PRIZMATRIX BLUE AUTO /49…&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$650&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/yEYAAeSwAhlq0l3l/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;span class=&quot;tc u&quot;&gt;/50&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;2025 Topps Chrome Platinum Paul Skenes Auto True Gold…&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$400&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;cap&quot;&gt;Desktop&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+      &lt;div class=&quot;phone&quot;&gt;&lt;div class=&quot;app&quot;&gt;
+        &lt;div class=&quot;hdr&quot;&gt;&lt;div class=&quot;brand&quot;&gt;&lt;span class=&quot;seal&quot;&gt;F&amp;amp;F&lt;/span&gt;Fields &lt;em&gt;&amp;amp;&lt;/em&gt; Floors&lt;/div&gt;&lt;div class=&quot;nav&quot;&gt;&lt;span&gt;Sign in&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;div class=&quot;hero&quot;&gt;
+          &lt;div&gt;
+            &lt;div class=&quot;h1&quot;&gt;Hunt your &lt;em&gt;grail.&lt;/em&gt;&lt;/div&gt;
+            &lt;div class=&quot;try&quot;&gt;Just try it.&lt;/div&gt;
+            &lt;div class=&quot;search&quot;&gt;&lt;span&gt;Caitlin Clark&lt;/span&gt;&lt;b&gt;Show cards&lt;/b&gt;&lt;/div&gt;
+            &lt;div class=&quot;fine&quot;&gt;Not affiliated with eBay&lt;/div&gt;
+            &lt;div class=&quot;lbl&quot;&gt;Popular hunts&lt;/div&gt;
+            &lt;div class=&quot;hunts&quot;&gt;&lt;span class=&quot;hunt&quot;&gt;Caitlin Clark autos &lt;span class=&quot;tc g&quot;&gt;/1–25&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;hunt&quot;&gt;Paul Skenes rookies &lt;span class=&quot;tc u&quot;&gt;/26–99&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;
+            &lt;div class=&quot;livebar&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/Eq0AAeSwIbNq2PbC/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;div&gt;&lt;div class=&quot;live&quot;&gt;Live right now&lt;/div&gt;&lt;div style=&quot;font-size:11px;color:var(--ink-200);margin-top:4px&quot;&gt;Ohtani Cosmic Chrome Auto&lt;/div&gt;&lt;/div&gt;&lt;span class=&quot;fprice&quot; style=&quot;font-size:17px&quot;&gt;$37,106&lt;/span&gt;&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;v&quot;&gt;
+          &lt;div class=&quot;vcap&quot;&gt;Every print run. &lt;em&gt;Sorted by rarity.&lt;/em&gt;&lt;/div&gt;
+          &lt;div class=&quot;tiers&quot;&gt;
+            &lt;div class=&quot;tier&quot;&gt;&lt;h4&gt;&lt;span class=&quot;tc g&quot;&gt;Grail&lt;/span&gt; /1 to /25&lt;/h4&gt;&lt;div class=&quot;grid&quot;&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/mkQAAeSwdONqpFrr/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;span class=&quot;tc g&quot;&gt;/5&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;Paul Skenes Auto Red Foil /5 Team USA #USA07-A 2026 Case…&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$4,500&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/11kAAeSwKqFq2T57/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;span class=&quot;tc g&quot;&gt;/5&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;Topps Paul Skenes Auto 2/5 2026 Topps All-Stars Insert…&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$2,000&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/M-YAAeSwlQ1q2SY-/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;span class=&quot;tc g&quot;&gt;/10&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;2024 Impeccable Paul Skenes Rookie Auto Gold /10&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$500&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/qR8AAeSw9HBqvs3B/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;span class=&quot;tc g&quot;&gt;/10&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;2026 Tier One PAUL SKENES Retro 2011 Auto R11A-PS…&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$400&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+            &lt;div class=&quot;tier u&quot;&gt;&lt;h4&gt;&lt;span class=&quot;tc u&quot;&gt;Ultra rare&lt;/span&gt; /26 to /99&lt;/h4&gt;&lt;div class=&quot;grid&quot;&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/5ywAAeSw6XlqcL5a/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;span class=&quot;tc u&quot;&gt;/49&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;2025 Panini Prizm Paul Skenes PRIZMATRIX BLUE AUTO /49…&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$650&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;im&quot;&gt;&lt;img src=&quot;https://i.ebayimg.com/images/g/yEYAAeSwAhlq0l3l/s-l500.jpg&quot; alt=&quot;&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;span class=&quot;tc u&quot;&gt;/50&lt;/span&gt;&lt;div class=&quot;tt&quot;&gt;2025 Topps Chrome Platinum Paul Skenes Auto True Gold…&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;$400&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;&lt;/div&gt;
+      &lt;div class=&quot;cap&quot;&gt;Phone&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;sec&quot;&gt;
+    &lt;div class=&quot;n&quot;&gt;NOTES&lt;/div&gt;
+    &lt;h2&gt;What changes and what to watch&lt;/h2&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;note&quot;&gt;&lt;b&gt;Headline per Landon: &quot;The Grail Hunter, just try it.&quot;&lt;/b&gt; The name leads; &quot;Just try it.&quot; sits right on top of the search box so the invitation and the action are one thing. The headline no longer explains the product, so the card strip directly below does that job: &quot;One search. Rarest first.&quot; &lt;b&gt;My pick: Option A&lt;/b&gt;, because &quot;The Grail Hunter.&quot; reads as a name you remember, and the strip proves the claim. Option B is the verb version if a name feels too grand.&lt;/div&gt;
+  &lt;div class=&quot;note&quot;&gt;&lt;b&gt;Accuracy fix for the live site (done).&lt;/b&gt; eBay can search several print runs at once, but only with a boolean search like (/10, /25, /49), which most collectors won&#x27;t type. Per Landon, we say we make it &lt;b&gt;easy&lt;/b&gt;. The live table row now reads: eBay &quot;Searching several print runs at once means typing a boolean search, like (/10, /25, /49).&quot; Us: &quot;Easily pick every print run you want and see them together.&quot; Both options here fit that claim.&lt;/div&gt;
+  &lt;div class=&quot;note&quot;&gt;&lt;b&gt;Real data rule.&lt;/b&gt; If the cached search ever comes back with fewer than six cards, the strip hides rather than showing placeholders. Lots and repacks are already filtered out of search.&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+" title="Signed-out hero options" style="width:100%;height:1900px;border:1px solid var(--line);border-radius:14px;background:var(--bg-base)" onload="try{this.style.height=(this.contentDocument.documentElement.scrollHeight+20)+'px'}catch(e){}"></iframe>
+  <div class="sec"><div class="n">C2</div><h2>Signed-out home: my sections</h2><p>Landon: "Too many words describing what's happening." The Landing session is redoing the hero and swapping the eBay comparison table for a strip of real cards sorted by print run. Below is my part: How it works becomes three icons, and Plans becomes a price and one line each.</p>
+    <div class="wc"><span>How it works: <b>110 → 7 words</b></span><span>Plans: <b>79 → 32 words, buttons included</b></span><span>Whole page today: 381 words</span><span>Target above the fold: ~25</span></div></div>
+  <div class="pair2">
+    <div><p class="lbl2">Today</p><div class="oldbox"><div style="font:italic 22px 'Instrument Serif',serif;color:var(--ink-200)">Search. Save. Get told when it lists.</div><p>Search the way collectors actually think: by print run, autograph and rookie, all at once.</p><p><b style="color:var(--ink-200)">01 Set your tier.</b> Pick the print runs you want and stack on autos, rookies, condition. [chips]</p><p><b style="color:var(--ink-200)">02 Save what catches your eye.</b> Add listings to your watchlist. We keep price and status fresh. [rows]</p><p><b style="color:var(--ink-200)">03 Get an email when it lists.</b> Save your filters and we'll email you when a match lists. [alert]</p><p><b style="color:var(--ink-200)">Searching is free. Alerts start at $6.99.</b> Free: Unlimited search, Watchlist with live prices, Unlimited saved searches, 1 email alert… Base: Everything in Free, plus… Premium…</p></div></div>
+    <div><p class="lbl2 a">Proposed</p><div class="desk app" style="padding:26px 28px">
+      <div class="ph-stub">Hero + real-card strip (see C1 above)</div>
+      <div class="how3"><div>__I_filter__Pick print runs</div><div>__I_star__Star cards</div><div>__I_bell__Get alerted</div></div>
+      <div class="plans3">
+        <div class="pl"><span class="nm">Free</span><span class="pr">$0</span><span class="ln">Search, watchlist and 1 alert.</span><a href="#">Sign up</a></div>
+        <div class="pl f"><span class="nm">Base</span><span class="pr">$6.99<small> /mo</small></span><span class="ln">Alerts on 5 searches. 14 days free.</span><a href="#">Start free trial</a></div>
+        <div class="pl m"><span class="nm">Premium</span><span class="pr">Soon</span><span class="ln">Tell us what you'd want.</span><a href="#">Tell us</a></div>
+      </div>
+    </div></div>
+  </div>
+  <div class="phones" style="margin-top:28px">
+    <div><div class="phone app" id="outphone"></div><p class="caption">Signed out, phone. Same two sections, stacked</p></div>
+  </div>
+  <div class="sec"><div class="n">D</div><h2>What each block needs</h2><p>Most of the data already exists. Two small additions, both in one migration Landon would paste into Supabase.</p></div>
+  <table class="data">
+    <tr><th>Block</th><th>Source</th><th>Status</th></tr>
+    <tr><td>Recent searches</td><td>Already kept on the device (the hero's recent chips).</td><td><span class="tag ok">Exists</span></td></tr>
+    <tr><td>Saved searches as chips</td><td>saved_searches table.</td><td><span class="tag ok">Exists</span></td></tr>
+    <tr><td>New matches since last visit</td><td>sent_notifications (alerts the poller already sent), newer than the member's last visit. Only covers searches with alerts on; for others we'd show "Run it" rather than spend eBay calls on every visit.</td><td><span class="tag new">Needs profiles.last_seen_at</span></td></tr>
+    <tr><td>Price drops</td><td>watched_listings price is refreshed in place, so the old price is lost. Store the price when the card was saved, then compare.</td><td><span class="tag new">Needs watched_listings.price_when_saved</span></td></tr>
+    <tr><td>Ending soon</td><td>watched_listings.end_time (auctions), within 24 hours.</td><td><span class="tag ok">Exists</span></td></tr>
+    <tr><td>Live right now</td><td>/api/featured, extended to return 5 cards instead of 1 (cached hourly, so no extra eBay quota per visit).</td><td><span class="tag ok">Small API change</span></td></tr>
+    <tr><td>Upgrade line</td><td>profiles.tier. Hidden for Base and in the iOS app.</td><td><span class="tag ok">Exists</span></td></tr>
+  </table>
+</div>
+
+<script>
+const I = {
+  search:'<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>',
+  arrow:'<path d="M5 12h14M12 5l7 7-7 7"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  bell:'<path d="M6 16.5V11a6 6 0 0112 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 004 0"/>',
+  down:'<path d="M12 5v14M19 12l-7 7-7-7"/>',
+  hourglass:'<path d="M6 3h12M6 21h12M7 3c0 5 10 5 10 9s-10 4-10 9M17 3c0 5-10 5-10 9"/>',
+  star:'<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.6l1-5.8L3.5 9.7l5.9-.9z"/>',
+  user:'<circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.3-3.6 4.2-5.5 7.5-5.5s6.2 1.9 7.5 5.5"/>',
+  crosshair:'<circle cx="12" cy="12" r="9"/><path d="M22 12h-4M6 12H2M12 6V2M12 22v-4"/>',
+};
+const ic = (n, cls='') => `<svg class="ic ${cls}" viewBox="0 0 24 24">${I[n]}</svg>`;
+const T = [['#ff9842','#cc5e0d'],['#e6c14d','#a8851e'],['#cc3340','#8a1c25'],['#5694ff','#2a5db8'],['#86d957','#3fa61c'],['#8a4dd9','#5d2da3']];
+const th = (k, cls='th') => `<div class="${cls}" style="background:linear-gradient(135deg,${T[k][0]},${T[k][1]})"><i></i></div>`;
+
+const searchBar = (chips) => `<div class="search">${ic('search')}<span>Search a player or team</span><b>${ic('arrow')}</b></div>
+  <div class="chips">${chips}</div>`;
+const chipsFull = `<span class="chip hunt">${ic('crosshair')}Holliday orange /25 or lower</span><span class="chip hunt">${ic('crosshair')}Clark autos under $500</span><span class="chip">${ic('clock')}Paul Skenes</span><span class="chip">${ic('clock')}Cooper Flagg</span><span class="chip">${ic('clock')}Pittsburgh Pirates</span>`;
+
+const since = () => `<div class="h"><h3>Since you were last here</h3><a href="#">2 days ago</a></div>
+<div class="since">
+  <div class="panel"><div class="k">${ic('bell')}<b>3 new matches</b></div>
+    <div class="item">${th(0)}<div><div class="tt">2024 Topps Chrome Holliday Orange Wave /25</div><div class="m">Holliday orange /25 or lower</div></div><div class="p">$1,240</div></div>
+    <div class="item">${th(2)}<div><div class="tt">2024 Prizm Caitlin Clark Red Auto /5</div><div class="m">Clark autos under $500</div></div><div class="p">$480</div></div>
+  </div>
+  <div class="panel"><div class="k">${ic('down')}<b>2 price drops</b></div>
+    <div class="item">${th(1)}<div><div class="tt">2023 Bowman Chrome Skenes Gold /50</div><div class="m">Was $1,020</div></div><div class="p down">$880<small>−14%</small></div></div>
+    <div class="item">${th(3)}<div><div class="tt">2025 Topps Flagg Blue /150</div><div class="m">Was $360</div></div><div class="p down">$310<small>−14%</small></div></div>
+  </div>
+  <div class="panel"><div class="k">${ic('hourglass')}<b>2 auctions ending soon</b></div>
+    <div class="item">${th(4)}<div><div class="tt">2024 Select Wemby Green Auto /99</div><div class="m">7 bids</div></div><div class="p">$640<small class="end">3h 12m</small></div></div>
+    <div class="item">${th(5)}<div><div class="tt">2023 Chrome Elly De La Cruz Purple /250</div><div class="m">2 bids</div></div><div class="p">$95<small class="end">9h 40m</small></div></div>
+  </div>
+</div>`;
+
+const live = (n=5) => `<div class="h"><h3>Live right now</h3><a href="#">Updated hourly</a></div>
+<div class="live">${[
+  ['2024 Prizm Gold Auto /10','$2,450',1,'g','/10'],['2024 Select Tie-Dye Auto /25','$610',0,'g','/25'],
+  ['2024 Bowman Orange /25','$880',0,'g','/25'],['2025 Chrome Green /99','$210',4,'u','/99'],['2024 Topps Blue /150','$85',3,'r','/150']
+].slice(0,n).map(c=>`<div class="lc"><div class="im" style="background:linear-gradient(135deg,${T[c[2]][0]},${T[c[2]][1]})"><i></i></div><div class="tt"><span class="tchip ${c[3]}">${c[4]}</span>${c[0]}</div><div class="p">${c[1]}</div></div>`).join('')}</div>`;
+
+const upg = `<div class="upg"><span>You have 1 alert on the free plan.</span><a href="#">Get alerts on 5 searches ${ic('arrow')}</a></div>`;
+
+document.getElementById('desk').innerHTML = `
+  <div class="hdr"><div class="brand"><span class="seal">F</span>Fields <em>&amp;</em> Floors</div>
+    <div style="display:flex;align-items:center;gap:26px"><div class="nav"><span>Watchlist</span><span>Saved searches</span><span>Alerts</span></div><span class="avatar">L</span></div></div>
+  <div class="wrap">${searchBar(chipsFull)}${since()}${live()}${upg}</div>`;
+
+const phoneHdr = `<div class="status"><span>9:41</span><span>●●●</span></div><div class="hdr"><div class="brand"><span class="seal">F</span>Fields <em>&amp;</em> Floors</div><span class="avatar">L</span></div>`;
+const tabbar = `<div class="tabbar">${[['search','Search',1],['star','Watchlist'],['bell','Alerts'],['user','Account']].map(t=>`<div class="tab${t[2]?' on':''}"><span class="w">${ic(t[0])}</span>${t[1]}</div>`).join('')}</div>`;
+const appHdr = `<div class="status"><span>9:41</span><span>●●●</span></div><div class="hdr" style="justify-content:center"><div class="brand"><span class="seal">F</span>Fields <em>&amp;</em> Floors</div></div>`;
+
+document.getElementById('webphone').innerHTML = phoneHdr + `<div class="wrap">${searchBar(chipsFull)}${since()}${upg}${live()}</div>`;
+document.getElementById('appphone').innerHTML = appHdr + `<div class="wrap">${searchBar(chipsFull)}${since()}${live()}</div>` + tabbar;
+document.getElementById('firstphone').innerHTML = appHdr + `<div class="wrap">${searchBar(`<span class="chip">${ic('clock')}Paul Skenes</span><span class="chip">${ic('clock')}Caitlin Clark</span>`)}
+  <div class="h"><h3>Since you were last here</h3></div>
+  <div class="panel"><div class="k">${ic('bell')}Nothing to catch up on yet</div><div class="empty">Save a search or star a card and changes will show up here.</div></div>
+  ${live()}</div>` + tabbar;
+
+const ICON_FILTER = '<path d="M3 6h18M7 12h10M10 18h4"/>';
+I.filter = ICON_FILTER;
+document.querySelectorAll('.how3 div').forEach(d=>{ d.innerHTML = d.innerHTML.replace(/__I_(\w+)__/, (m,n)=>ic(n)); });
+document.getElementById('outphone').innerHTML = `<div class="status"><span>9:41</span><span>●●●</span></div><div class="hdr"><div class="brand"><span class="seal">F</span>Fields <em>&amp;</em> Floors</div><span style="font:600 11px Geist,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-bright)">Get alerts</span></div>
+  <div class="wrap"><div class="ph-stub" style="height:250px;display:grid;place-items:center">Hero + real-card strip<br>(Landing session)</div>
+  <div class="how3">${['filter|Pick print runs','star|Star cards','bell|Get alerted'].map(x=>{const [i,t]=x.split('|');return `<div>${ic(i)}${t}</div>`}).join('')}</div>
+  <div class="plans3" style="margin-top:16px">
+    <div class="pl"><div><span class="nm">Free · 1 alert</span><div class="pr">$0</div></div><a href="#">Sign up</a></div>
+    <div class="pl f"><span class="nm">Base</span><span class="pr">$6.99<small> /mo</small></span><span class="ln">Alerts on 5 searches. 14 days free.</span><a href="#">Start free trial</a></div>
+  </div></div>`;
+</script>
+</body>
+</html>

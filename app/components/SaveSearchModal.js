@@ -229,7 +229,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
                   Email me new matches
                 </div>
                 <div className="text-[11px]" style={{ color: 'var(--ink-400)' }}>
-                  Alerts are part of Base — saving searches is always free
+                  Alerts are part of Base. Saving searches is always free.
                 </div>
               </div>
               <span
@@ -256,7 +256,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
               </div>
               <div className="text-[11px]" style={{ color: atWatchLimit ? 'var(--crit)' : 'var(--ink-400)' }}>
                 {atWatchLimit
-                  ? `Watching ${watchLimit} of ${watchLimit} — pause one to alert on this`
+                  ? `Watching ${watchLimit} of ${watchLimit}. Pause one to turn on alerts here.`
                   : 'Quiet mode pauses notifications'}
               </div>
             </div>

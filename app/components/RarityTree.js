@@ -22,6 +22,7 @@
 import { useState } from 'react';
 import { getRungs } from '../../lib/parallelData';
 import { gradientCss, universalTierForRun } from './rarityUtils';
+import { ArrowRight, ChevronUp, ChevronDown } from 'lucide-react';
 
 const TIERS = [
   { key: '1of1',   label: '1 of 1', lo: 1,   hi: 1,        made: '1 made' },
@@ -129,7 +130,7 @@ function KnownSet({ setData, parallelKey, printRun, imageUrl }) {
       <div className="rt-ladder">
         {lo > 0 && (
           <button type="button" className="rt-fold" onClick={() => setShowRarer(true)}>
-            ▲ Show {lo} rarer
+            <ChevronUp className="inline-block w-3.5 h-3.5 -mt-0.5" strokeWidth={2} aria-hidden="true" /> Show {lo} rarer
           </button>
         )}
 
@@ -171,7 +172,7 @@ function KnownSet({ setData, parallelKey, printRun, imageUrl }) {
 
         {hi < rungs.length - 1 && (
           <button type="button" className="rt-fold" onClick={() => setShowCommoner(true)}>
-            ▼ Show {rungs.length - 1 - hi} more common
+            <ChevronDown className="inline-block w-3.5 h-3.5 -mt-0.5" strokeWidth={2} aria-hidden="true" /> Show {rungs.length - 1 - hi} more common
           </button>
         )}
 
@@ -273,7 +274,7 @@ function UnknownSet({ printRun }) {
       </div>
       <div className="rt-source">
         Know this card&apos;s colours?{' '}
-        <a href="mailto:contribute@fieldsandfloors.com">Send us the list →</a>
+        <a href="mailto:contribute@fieldsandfloors.com">Send us the list <ArrowRight className="inline-block w-3.5 h-3.5 ml-1 -mt-0.5" strokeWidth={2} aria-hidden="true" /></a>
       </div>
       <TreeStyles />
     </div>

@@ -7,6 +7,7 @@ import { createClient } from '../../lib/supabaseClient';
 import Seal from '../components/Seal';
 import { isNativeApp, signInWithAppleNative } from '../../lib/native';
 import { track } from '../../lib/track';
+import {  } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -90,9 +91,6 @@ export default function LoginPage() {
         <span className="font-serif text-base" style={{ color: 'var(--ink-200)' }}>
           Fields &amp; Floors
         </span>
-        <span className="ml-auto text-[10px] tracking-[0.12em] uppercase" style={{ color: 'var(--ink-600)' }}>
-          Issue 001 · Est 2026
-        </span>
       </div>
 
       {/* Centered card */}
@@ -124,7 +122,7 @@ export default function LoginPage() {
                 color: 'var(--gold-bright)',
               }}
             >
-              Check your email — we sent a sign-in link to {email}.
+              Check your email. We sent a sign-in link to {email}.
             </div>
           ) : (
             <>
@@ -263,7 +261,7 @@ export default function LoginPage() {
                   className="font-serif italic transition-opacity hover:opacity-80 disabled:opacity-50"
                   style={{ color: '#c4a558', background: 'none', border: 'none', cursor: 'pointer' }}
                 >
-                  Email me a sign-in link instead →
+                  Email me a sign-in link instead
                 </button>
               </div>
               )}

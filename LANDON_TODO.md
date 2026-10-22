@@ -13,6 +13,7 @@ Full steps: [CFO_LAUNCH_CHECKLIST.md](CFO_LAUNCH_CHECKLIST.md), section 1.
 - [ ] Finish the Stripe business profile (SIN, bank account).
 - [ ] Create Base in Stripe live mode: **$6.99 CAD monthly** and **$59 CAD yearly**.
 - [ ] Add the live keys and both price IDs to Vercel (`STRIPE_SECRET_KEY`, `STRIPE_BASE_PRICE_ID`, `STRIPE_BASE_ANNUAL_PRICE_ID`, webhook secret).
+- [ ] In Stripe → Settings → Billing → Subscriptions and emails, turn on **email customers before their free trial ends**. Then tell the boss, so the pricing page can say "We'll remind you before the trial ends" again.
 - [ ] Do one real $6.99 purchase with your own card, check you became Base, then refund it.
 
 ## iPhone app
@@ -44,5 +45,5 @@ Full steps: [IOS_APP_SETUP.md](IOS_APP_SETUP.md).
 
 - [ ] Ask eBay for a higher API limit, once daily usage regularly passes about 3,000 of 5,000 (check /admin/usage weekly). The draft is in CFO_LAUNCH_CHECKLIST.md.
 - [ ] Before passing $30k a year in sales, talk to an accountant about registering for GST/HST. Prices are shown "plus applicable taxes".
-- [ ] Have a lawyer look over the Terms and Privacy pages before a big launch. They're plain-language and haven't been legally reviewed.
+- [ ] Have a lawyer look over the Terms and Privacy pages before a big launch. They haven't been legally reviewed. Start with Terms section 2 (the "search tool, not a seller" disclaimer), especially clause 2.7 (the release), which Alberta consumer law may limit.
 - [ ] Record the "Watch how it works" YouTube video, then send the boss the link.

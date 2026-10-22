@@ -11,7 +11,7 @@ function upscaleEbayImage(url) {
   if (!url) return url;
   return url.replace(/\/s-l\d+\.(\w+)/, '/s-l640.$1');
 }
-import { ArrowRight, ArrowUpRight, ArrowUp } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, ArrowUp, Star, Check, X, Crosshair, ArrowLeft, ImageOff } from 'lucide-react';
 import SaveSearchModal from './components/SaveSearchModal';
 import BidCountdown from './components/BidCountdown';
 import CardModal from './components/CardModal';
@@ -83,10 +83,7 @@ const SUGGESTED_SEARCHES = [
 
 // Editorial taglines that rotate during loading
 const SCANNING_PHRASES = [
-  'Scanning the marketplace',
-  'Sifting the rare',
-  'Hunting print runs',
-  'Surfacing finds',
+  'Searching eBay',
 ];
 
 const SEALED_PRODUCT = /\bsealed\s+(?:\w+\s+){0,2}(?:pack|packs|box|boxes|case|blaster|hanger|mega)\b|\b(?:mystery|repack|re-pack)\b|\bhobby\s+box\b/;
@@ -608,10 +605,10 @@ function Home() {
     const hasScarce = ['/250', '/299', '/399', '/499', '/599', '/699', '/799', '/899', '/999'].some((r) => selected.has(r));
 
     if (filters.numberedCards) {
-      if (hasGrail) chips.push({ label: 'Grail · /1—25', tier: 'grail' });
-      if (hasUltra) chips.push({ label: 'Ultra · /26—99', tier: 'ultra' });
-      if (hasRare) chips.push({ label: 'Rare · /100—249', tier: 'rare' });
-      if (hasScarce) chips.push({ label: 'Scarce · /250—999', tier: 'scarce' });
+      if (hasGrail) chips.push({ label: 'Grail · /1–25', tier: 'grail' });
+      if (hasUltra) chips.push({ label: 'Ultra · /26–99', tier: 'ultra' });
+      if (hasRare) chips.push({ label: 'Rare · /100–249', tier: 'rare' });
+      if (hasScarce) chips.push({ label: 'Scarce · /250–999', tier: 'scarce' });
       if (filters.customPrintRuns?.length) {
         chips.push({ label: `+${filters.customPrintRuns.length} custom`, tier: 'neutral' });
       }
@@ -629,7 +626,7 @@ function Home() {
     const min = filters.priceMin || 0;
     const max = filters.priceMax ?? 1000;
     if (min > 0 || max < 1000) {
-      chips.push({ label: `$${min}—$${max}`, tier: 'neutral' });
+      chips.push({ label: `$${min}–$${max}`, tier: 'neutral' });
     }
 
     return chips;
@@ -776,7 +773,7 @@ function Home() {
                 name: 'What is Fields & Floors Collectors?',
                 acceptedAnswer: {
                   '@type': 'Answer',
-                  text: 'Fields & Floors Collectors is a search tool for sports card collectors. It filters eBay listings by autograph, print run, rookie status, condition, and price — features eBay\'s native search does not offer. Users can save searches and get email alerts when new matching cards list.',
+                  text: 'Fields & Floors Collectors is a search tool for sports card collectors. It filters eBay listings by autograph, print run, rookie status, condition and price at the same time, which eBay\'s own search does not offer. Users can save searches and get email alerts when new matching cards list.',
                 },
               },
               {
@@ -792,7 +789,7 @@ function Home() {
                 name: 'What does Fields & Floors cost?',
                 acceptedAnswer: {
                   '@type': 'Answer',
-                  text: 'Searching is free, including the watchlist. Free accounts include 1 live email alert. Up to 5 alerts and bid reminders require the Base plan at $6.99 CAD per month ($59 CAD per year), with a 14-day free trial. Premium and Pro tiers are planned but not yet available.',
+                  text: 'Searching is free, including the watchlist. Free accounts include 1 live email alert. Up to 5 alerts and bid reminders require the Base plan at $6.99 CAD per month ($59 CAD per year), with a 14-day free trial. A Premium tier is planned but not yet available.',
                 },
               },
               {
@@ -808,7 +805,7 @@ function Home() {
                 name: 'How do alerts work?',
                 acceptedAnswer: {
                   '@type': 'Answer',
-                  text: 'After saving a search with your filters, Fields & Floors polls eBay once per hour for matching listings. The moment a new listing matches every filter — player, print run, condition, price ceiling — you get an email. This applies on up to 5 saved searches with the Base plan.',
+                  text: 'After saving a search with your filters, Fields & Floors polls eBay once per hour for matching listings. The moment a new listing matches every filter (player, print run, condition, price ceiling), you get an email. This applies on up to 5 saved searches with the Base plan.',
                 },
               },
               {
@@ -942,10 +939,8 @@ function Home() {
                   }
                 }}
               />
-              <p className="text-[12px] uppercase tracking-[0.22em] mt-3" style={{ color: 'var(--ink-400)' }}>
-                <span style={{ color: 'var(--gold)' }} className="italic normal-case tracking-normal">
-                  {sortedResults.length}
-                </span>{' '}
+              <p className="text-[13px] mt-3" style={{ color: 'var(--ink-400)' }}>
+                <span style={{ color: 'var(--gold)' }}>{sortedResults.length}</span>{' '}
                 {sortedResults.length === 1 ? 'listing' : 'listings'}
               </p>
             </div>
@@ -1383,7 +1378,7 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
             <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px]" style={{ color: 'var(--ink-400)' }}>
               {['Free', 'No account needed', 'Real eBay listings'].map((t) => (
                 <span key={t} className="inline-flex items-center gap-1.5">
-                  <span aria-hidden="true" style={{ color: 'var(--gold)' }}>✓</span>{t}
+                  <Check className="w-3.5 h-3.5" strokeWidth={1.75} style={{ color: 'var(--gold)' }} aria-hidden="true" />{t}
                 </span>
               ))}
               <span style={{ color: 'var(--ink-600)' }}>Not affiliated with eBay</span>
@@ -1455,13 +1450,13 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
                 href="/watchlist"
                 className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
               >
-                <span className="text-[var(--gold)]">◎</span> My hunts
+                <Crosshair className="w-3.5 h-3.5 text-[var(--gold)]" strokeWidth={1.6} aria-hidden="true" /> My hunts
               </Link>
               <Link
                 href="/watchlist-cards"
                 className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
               >
-                <span className="text-[var(--gold)]">★</span> Watchlist
+                <Star className="w-3.5 h-3.5 text-[var(--gold)]" strokeWidth={1.6} aria-hidden="true" /> Watchlist
               </Link>
             </div>
           )}
@@ -1486,8 +1481,8 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
 const EBAY_COMPARISON = [
   {
     topic: 'Rare cards in one search',
-    ebay: 'One print run per search. Looking for /10, /25 and /49 means three searches.',
-    ours: 'Pick every print run you want (say, everything numbered 50 or less) and see them together.',
+    ebay: 'Searching several print runs at once means typing a boolean search, like (/10, /25, /49).',
+    ours: 'Easily pick every print run you want (say, everything numbered 50 or less) and see them together.',
   },
   {
     topic: 'Rarest first',
@@ -1505,7 +1500,7 @@ function EbayComparison() {
   return (
     <div className="relative max-w-[1120px] mx-auto px-6 lg:px-10 pb-14 md:pb-20">
       <div className="font-mono text-[10px] uppercase tracking-[0.24em]" style={{ color: 'var(--gold)' }}>
-        Why not just search eBay?
+        What eBay’s search can’t do
       </div>
       <h2 className="mt-2 font-display text-[clamp(1.6rem,4vw,2.25rem)] leading-tight" style={{ textWrap: 'balance' }}>
         Same listings. <em className="text-[var(--gold-bright)]">Better search, smarter alerts.</em>
@@ -1534,7 +1529,7 @@ function EbayComparison() {
             </p>
             <p className="text-[13px] md:text-[15px] leading-relaxed" style={{ color: 'var(--ink-100)' }}>
               <span className="md:hidden font-mono text-[10px] uppercase tracking-[0.2em] mr-2" style={{ color: 'var(--gold)' }}>Us</span>
-              <span aria-hidden="true" className="hidden md:inline mr-2" style={{ color: 'var(--gold)' }}>✓</span>
+              <Check className="hidden md:inline-block w-4 h-4 mr-2 -mt-0.5 align-middle" strokeWidth={1.75} style={{ color: 'var(--gold)' }} aria-hidden="true" />
               {row.ours}
             </p>
           </div>
@@ -1761,7 +1756,7 @@ function PlanTier({ name, price, priceUnit, line, summary, listLead, features, c
       {summary && !featured && <div className="text-[13px] mt-2 md:hidden" style={{ color: 'var(--ink-200)' }}>{summary}</div>}
       <ul className={`list-none p-0 m-0 mt-5 mb-6 flex-1 ${featured ? '' : 'hidden md:block'}`}>
         {listLead && (
-          <li className="font-mono text-[10px] tracking-[0.18em] uppercase mb-3" style={{ color: 'var(--ink-400)' }}>{listLead}</li>
+          <li className="text-[13px] mb-3" style={{ color: 'var(--ink-400)' }}>{listLead}:</li>
         )}
         {features.map((f) => (
           <li
@@ -1769,7 +1764,7 @@ function PlanTier({ name, price, priceUnit, line, summary, listLead, features, c
             className="text-[14px] leading-snug pl-5 relative mb-2.5"
             style={{ color: f.isNew ? 'var(--ink-100)' : 'var(--ink-200)' }}
           >
-            <span className="absolute left-0 top-0 text-[13px]" style={{ color: f.isNew ? 'var(--gold-bright)' : 'var(--ink-600)' }}>✓</span>
+            <span className="absolute left-0 top-0 text-[13px]" style={{ color: f.isNew ? 'var(--gold-bright)' : 'var(--ink-600)' }}><Check className="w-3.5 h-3.5 mt-[3px]" strokeWidth={2} aria-hidden="true" /></span>
             {f.label}
           </li>
         ))}
@@ -1839,15 +1834,11 @@ function PlansSection({ user }) {
         <PlanTier
           name="Premium"
           price="Soon"
-          line="Join the waitlist"
-          summary="More alerts and faster checks, coming soon"
-          listLead="Everything in Base, plus"
-          features={[
-            { label: 'More alerts', isNew: false },
-            { label: 'Faster checks', isNew: false },
-          ]}
-          ctaLabel="Notify me"
-          ctaHref="/pricing"
+          line="Coming soon. Tell us what you'd want in it."
+          summary="Coming soon. Tell us what you'd want in it."
+          features={[]}
+          ctaLabel="Tell us"
+          ctaHref="/contact"
           muted
         />
       </div>
@@ -2376,7 +2367,7 @@ function PriceRangeSlider({ min, max, onChange }) {
             <span className="text-sm text-[var(--ink-600)] mr-1">$</span>{min}
           </span>
         </div>
-        <span className="text-[var(--ink-600)] mx-2">—</span>
+        <span className="text-[var(--ink-600)] mx-2">–</span>
         <div className="text-right">
           <span className="text-2xl text-[var(--ink-100)]">
             <span className="text-sm text-[var(--ink-600)] mr-1">$</span>{max === 5000 ? '5000+' : max}
@@ -2520,14 +2511,14 @@ function FilterPanel({ query, setQuery, filters, setFilter, onSubmit, onCancel, 
           {isEditing ? (
             <>Editing · <span className="normal-case tracking-normal italic font-serif text-[var(--ink-100)] ml-1">{editingSearch.name}</span></>
           ) : (
-            <>Step 02 · Refine</>
+            <>Refine</>
           )}
         </p>
         <button
           onClick={onCancel}
           className="text-[11px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
         >
-          {isEditing ? 'Cancel' : '← Back'}
+          {isEditing ? 'Cancel' : <><ArrowLeft className="inline-block w-3.5 h-3.5 mr-1 -mt-0.5" strokeWidth={2} aria-hidden="true" />Back</>}
         </button>
       </div>
 
@@ -2599,11 +2590,11 @@ function ResultsSidebar({ filters, setFilter, onSearch, hasPending }) {
             color: 'var(--ink-on-gold)',
           }}
         >
-          Search →
+          Search <ArrowRight className="inline-block w-3.5 h-3.5 ml-1 -mt-0.5" strokeWidth={2} aria-hidden="true" />
         </button>
         {hasPending && (
           <p className="text-[11px] text-[var(--gold)] italic text-center mt-3 leading-tight">
-            Filters changed — press Search
+            Filters changed. Press Search to update.
           </p>
         )}
       </div>
@@ -2723,7 +2714,7 @@ function MobileSheet({ open, onClose, title, children, footer, full = false }) {
             className="w-9 h-9 flex items-center justify-center rounded-full text-[var(--ink-400)]"
             style={{ border: '1px solid var(--line-soft)' }}
           >
-            ✕
+            <X className="w-4 h-4" strokeWidth={1.75} aria-hidden="true" />
           </button>
         </div>
         <div className="overflow-y-auto px-6 py-5" style={{ WebkitOverflowScrolling: 'touch', minHeight: 0 }}>
@@ -2774,7 +2765,7 @@ function MobileFilterDrawer({ open, onClose, filters, setFilter, onSearch, onClo
             color: 'var(--ink-on-gold)',
           }}
         >
-          Search →
+          Search <ArrowRight className="inline-block w-3.5 h-3.5 ml-1 -mt-0.5" strokeWidth={2} aria-hidden="true" />
         </button>
       }
     >
@@ -2787,8 +2778,8 @@ function MobileSortSheet({ open, onClose, value, onChange }) {
   const options = [
     ['printrun-rarest', 'Rarest first'],
     ['printrun-common', 'Most common first'],
-    ['price-low', 'Price: Low → High'],
-    ['price-high', 'Price: High → Low'],
+    ['price-low', 'Price: low to high'],
+    ['price-high', 'Price: high to low'],
     ['ending-soon', 'Ending soonest'],
     ['newest', 'Newest first'],
   ];
@@ -2805,13 +2796,13 @@ function MobileSortSheet({ open, onClose, value, onChange }) {
               style={{ minHeight: 50, borderBottom: '1px solid var(--line-soft)', color: sel ? 'var(--gold-bright)' : 'var(--ink-200)' }}
             >
               <span>{l}</span>
-              {sel && <span style={{ color: 'var(--gold-bright)' }}>✓</span>}
+              {sel && <span style={{ color: 'var(--gold-bright)' }}><Check className="inline-block w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" /></span>}
             </button>
           );
         })}
       </div>
       <p className="text-[11px] italic mt-3 leading-relaxed" style={{ color: 'var(--ink-600)' }}>
-        Sort is instant — it reorders the cards you already have, no new search.
+        Sort is instant. It reorders the cards you already have without a new search.
       </p>
     </MobileSheet>
   );
@@ -2825,8 +2816,8 @@ function SortDropdown({ value, onChange }) {
   const options = [
     ['printrun-rarest', 'Rarest first'],
     ['printrun-common', 'Most common first'],
-    ['price-low', 'Price: Low → High'],
-    ['price-high', 'Price: High → Low'],
+    ['price-low', 'Price: low to high'],
+    ['price-high', 'Price: high to low'],
     ['ending-soon', 'Ending soonest'],
     ['newest', 'Newest first'],
   ];
@@ -3149,7 +3140,7 @@ function CustomPrintRunInput({ customRuns, onAdd, onRemove }) {
               title="Click to remove"
             >
               {run}
-              <span className="text-[var(--ink-400)] text-xs leading-none">×</span>
+              <span className="text-[var(--ink-400)] leading-none"><X className="w-3 h-3" strokeWidth={2} aria-hidden="true" /></span>
             </button>
           ))}
         </div>
@@ -3298,7 +3289,7 @@ function PendingSearchModal({ open, onSearch, onCancel, onDismiss, floating = fa
             className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
             style={{ border: '1px solid var(--line-soft)', background: 'var(--bg-base)' }}
           >
-            ✕
+            <X className="w-4 h-4" strokeWidth={1.75} aria-hidden="true" />
           </button>
         )}
         <p className="text-[10px] tracking-[0.3em] uppercase mb-4" style={{ color: 'var(--gold)' }}>
@@ -3321,7 +3312,7 @@ function PendingSearchModal({ open, onSearch, onCancel, onDismiss, floating = fa
               cursor: 'pointer',
             }}
           >
-            Search →
+            Search <ArrowRight className="inline-block w-3.5 h-3.5 ml-1 -mt-0.5" strokeWidth={2} aria-hidden="true" />
           </button>
           <button
             onClick={onCancel}
@@ -3400,9 +3391,9 @@ function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase
   return (
     <div>
       {capped && (
-        <p className="text-[11px] text-[var(--ink-400)] mb-4 leading-relaxed">
-          Showing the first {results.length} matches. This is a broad search —
-          narrow with filters like print run, auto, or condition to surface the
+        <p className="text-[12px] text-[var(--ink-400)] mb-4 leading-relaxed">
+          Showing the first {results.length} matches. This is a broad search.
+          Narrow it with filters like print run, auto, or condition to surface the
           rarest cards.
         </p>
       )}
@@ -3414,7 +3405,7 @@ function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase
 
       {remaining > 0 && (
         <div className="pt-8 flex flex-col items-center gap-3">
-          <span className="text-[11px] tracking-[0.14em] uppercase" style={{ color: 'var(--ink-600)' }}>
+          <span className="text-[12px]" style={{ color: 'var(--ink-600)' }}>
             Showing {visible.length} of {results.length}
           </span>
           <button
@@ -3564,7 +3555,7 @@ function WatchStar({ item }) {
         color: saved ? 'var(--gold-bright)' : 'var(--ink-400)',
       }}
     >
-      <span style={{ fontSize: '15px', lineHeight: 1 }}>{saved ? '★' : '☆'}</span>
+      <Star className="w-4 h-4" strokeWidth={1.6} fill={saved ? 'currentColor' : 'none'} aria-hidden="true" />
     </button>
     {promptOpen && (
       <KeepCardPrompt item={item} onClose={() => setPromptOpen(false)} onSaved={saveNow} />
@@ -3723,7 +3714,7 @@ function KeepCardPrompt({ item, onClose, onSaved }) {
           aria-label="Close"
           className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center text-[18px] text-[var(--ink-400)] hover:text-[var(--ink-100)]"
         >
-          ×
+          <X className="w-4 h-4" strokeWidth={1.75} aria-hidden="true" />
         </button>
         <div className="font-mono text-[10px] uppercase tracking-[0.22em]" style={{ color: 'var(--gold)' }}>Free account</div>
         <h2 id="keep-card-title" className="font-display italic text-[26px] leading-tight mt-2">Keep this card</h2>
@@ -3735,7 +3726,7 @@ function KeepCardPrompt({ item, onClose, onSaved }) {
         </p>
         <div className="mt-5 grid gap-2">
           <button type="button" disabled={busy} onClick={() => continueWith('apple')} className={btn} style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
-            <span aria-hidden="true"></span> Continue with Apple
+            Continue with Apple
           </button>
           {!native && (
             <button type="button" disabled={busy} onClick={() => continueWith('google')} className={btn} style={{ background: 'transparent', color: 'var(--ink-100)', border: '0.5px solid var(--ink-600)' }}>
@@ -3867,7 +3858,7 @@ function ResultCard({ item, formatPrice, index, hasPendingFilters, onPendingClic
             // eslint-disable-next-line @next/next/no-img-element
             <img src={upscaleEbayImage(item.image)} alt={item.title} className="w-full h-full object-cover" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-[var(--ink-600)] font-display text-3xl italic">◇</div>
+            <div className="w-full h-full flex items-center justify-center text-[var(--ink-600)] font-display text-3xl italic"><ImageOff className="w-7 h-7" strokeWidth={1.5} aria-hidden="true" /></div>
           )}
           {item.isAuction && (
             <span className="absolute top-1.5 left-1.5 text-[10px] uppercase tracking-[0.16em] text-[var(--gold)] bg-[var(--bg-base)]/85 px-1 py-0.5 border border-[var(--gold-deep)]/30">
@@ -3980,7 +3971,7 @@ function ResultCard({ item, formatPrice, index, hasPendingFilters, onPendingClic
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-[var(--ink-600)] font-display text-4xl italic">
-                ◇
+                <ImageOff className="w-7 h-7" strokeWidth={1.5} aria-hidden="true" />
               </div>
             )}
             {item.isAuction && (
@@ -4326,7 +4317,7 @@ function PlayerSuggestDropdown({ id, rows, active, typed, rect, onHover, onPick 
         return (
           <Fragment key={`${row.kind}-${row.value}-${row.sport || ''}`}>
           {showGroup && (
-            <li role="presentation" className="font-mono uppercase" style={{ fontSize: 10, letterSpacing: '0.2em', color: 'var(--ink-600)', padding: '10px 16px 6px', background: 'var(--bg-base)' }}>
+            <li role="presentation" style={{ fontSize: 12, color: 'var(--ink-600)', padding: '10px 16px 6px', background: 'var(--bg-base)' }}>
               {group}
             </li>
           )}
@@ -4398,7 +4389,7 @@ function DidYouMeanLine({ fix, onPick, onDismiss }) {
         className="ml-2 text-[13px] px-1 transition-colors hover:text-[var(--ink-200)]"
         style={{ color: 'var(--ink-600)' }}
       >
-        ✕
+        <X className="w-4 h-4" strokeWidth={1.75} aria-hidden="true" />
       </button>
     </p>
   );
@@ -4547,7 +4538,7 @@ function ActiveFilterChips({ filters, onEdit, query = '' }) {
       {chips.map((c) => (
         <span
           key={c.label}
-          className="inline-flex items-center rounded-full font-mono text-[11px] tracking-[0.06em]"
+          className="inline-flex items-center rounded-full text-[12px]"
           style={{ minHeight: 26, padding: '0 10px', ...(c.tier ? tierChipStyle(c.tier) : OUTLINE_CHIP_STYLE) }}
         >
           {c.label}
@@ -4682,7 +4673,7 @@ function TeamFilter({ filters, setFilter }) {
                   return (
                     <button key={t.key} type="button" onClick={() => toggleTeam(t.key)} aria-pressed={on} title={t.label} className="inline-flex items-center gap-1.5 rounded-full transition-colors" style={subChip(on)}>
                       {t.short}
-                      {n ? <span className="font-mono text-[11px]" style={{ color: on ? 'var(--gold-bright)' : 'var(--ink-600)' }}>{n}</span> : null}
+                      {n ? <span className="text-[12px]" style={{ color: on ? 'var(--gold-bright)' : 'var(--ink-600)' }}>{n}</span> : null}
                     </button>
                   );
                 })}

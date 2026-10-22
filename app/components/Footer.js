@@ -46,7 +46,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-sm text-[var(--ink-400)] max-w-xs leading-relaxed">
-              A search instrument for serious collectors. Built for the hobby, not the algorithm.
+              Search every numbered sports card on eBay by print run, autograph and price.
             </p>
           </div>
           <div>
@@ -58,17 +58,14 @@ export default function Footer() {
             <NavList links={HOBBY_LINKS} />
           </div>
         </div>
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pt-8 border-t border-[var(--line-soft)] text-[10px] uppercase tracking-[0.22em] text-[var(--ink-600)]">
-          <div className="flex gap-6">
-            <span>Est. 2026</span>
-            <span>Issue №&nbsp;001</span>
-          </div>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pt-8 border-t border-[var(--line-soft)] text-[12px] text-[var(--ink-600)]">
+          <div>© 2026 Fields &amp; Floors</div>
           <div className="flex gap-6 items-center flex-wrap">
             <TourLink className="hover:text-[var(--gold)] transition-colors">Site tour</TourLink>
             <Link href="/contact" className="hover:text-[var(--gold)] transition-colors">Support</Link>
             <Link href="/privacy" className="hover:text-[var(--gold)] transition-colors">Privacy</Link>
             <Link href="/terms" className="hover:text-[var(--gold)] transition-colors">Terms</Link>
-            <span>Listing data via eBay — not affiliated with eBay Inc.</span>
+            <span>A search tool only. Purchases happen on eBay between you and the seller. Listing data via eBay. Not affiliated with eBay Inc.</span>
           </div>
         </div>
       </div>

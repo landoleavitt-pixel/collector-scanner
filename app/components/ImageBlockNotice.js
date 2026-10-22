@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { X } from 'lucide-react';
 
 /* ImageBlockNotice — explains blank card images instead of leaving alt text.
  *
@@ -94,7 +95,7 @@ export default function ImageBlockNotice() {
           className="flex-none leading-none"
           style={{ color: 'var(--ink-600)', fontSize: 16, background: 'none', border: 'none', cursor: 'pointer' }}
         >
-          ×
+          <X className="w-4 h-4" strokeWidth={1.75} aria-hidden="true" />
         </button>
       </div>
     </div>

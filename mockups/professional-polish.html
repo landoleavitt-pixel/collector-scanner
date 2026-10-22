@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Professional Polish</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap');
+:root{
+  --ink-100:#f7f1e1;--ink-200:#e8dfc9;--ink-400:#a99e85;--ink-600:#6b6354;
+  --bg-base:#0a0907;--bg-elev:#14110c;--bg-elev-2:#1a160f;--line:#2a251c;--line-soft:#1f1c16;
+  --gold:#c9954a;--gold-bright:#e6b96b;--gold-deep:#8f6a32;--ink-on-gold:#1a1612;--crit:#d4684a;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg-base);color:var(--ink-100);font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.page{max-width:1120px;margin:0 auto;padding:40px 16px 80px}
+.eyebrow{font:500 11px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+h1{font:italic 400 44px/1.02 'Instrument Serif',serif;margin:10px 0 10px}
+.lede{color:var(--ink-400);font-size:15px;max-width:700px;line-height:1.6;margin:0 0 40px}
+.sec{border-top:1px solid var(--gold-deep);padding-top:20px;margin:56px 0 22px}
+.sec .n{font:600 12px 'Geist Mono',monospace;color:var(--gold-bright);letter-spacing:.14em}
+.sec h2{font:italic 400 32px/1.1 'Instrument Serif',serif;margin:6px 0 6px}
+.sec p{margin:0;color:var(--ink-400);font-size:14px;max-width:700px;line-height:1.55}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.col h4{margin:0 0 8px;font:500 11px 'Geist Mono',monospace;letter-spacing:.16em;text-transform:uppercase}
+.col.before h4{color:var(--ink-600)} .col.after h4{color:var(--gold-bright)}
+.box{border:1px solid var(--line);border-radius:12px;background:var(--bg-elev);padding:18px;height:100%}
+.col.after .box{border-color:var(--gold-deep)}
+
+/* copy table */
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font:500 11px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-400);padding:10px 12px;border-bottom:1px solid var(--line)}
+td{padding:11px 12px;border-bottom:1px solid var(--line-soft);vertical-align:top;line-height:1.45}
+td.w{color:var(--ink-400);font-size:13px;width:150px}
+td.b{color:var(--ink-400);text-decoration:line-through;text-decoration-color:rgba(212,104,74,.5)}
+td.a{color:var(--ink-100)}
+td.why{color:var(--ink-600);font-size:13px;width:230px}
+.flag{display:inline-block;font:600 10px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-on-gold);background:var(--crit);padding:2px 6px;border-radius:4px;margin-right:6px}
+
+/* icons demo */
+.feat{list-style:none;margin:0;padding:0}
+.feat li{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--ink-200);padding:6px 0}
+.g{color:var(--gold);width:14px;flex:none;text-align:center}
+.ic{width:16px;height:16px;flex:none;stroke:var(--gold-bright);fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;margin-top:2px}
+.btn{display:inline-flex;align-items:center;gap:8px;font:600 12px Geist,sans-serif;letter-spacing:.12em;text-transform:uppercase;padding:12px 16px;border-radius:8px;border:0;background:var(--gold-bright);color:var(--ink-on-gold);margin-top:14px}
+.btn .ic{stroke:var(--ink-on-gold);margin:0}
+.ghost{background:transparent;color:var(--ink-100);border:1px solid rgba(232,226,213,.2)}
+.ghost .ic{stroke:var(--ink-100)}
+
+/* result row demo */
+.row{display:grid;grid-template-columns:64px 1fr auto;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line-soft)}
+.thumb{width:64px;aspect-ratio:3/4;border-radius:4px;background:linear-gradient(135deg,#ff9842,#cc5e0d);padding:3px}
+.thumb i{display:block;height:100%;border-radius:2px;background:radial-gradient(ellipse at 50% 30%,#4a3524,#120d08 70%)}
+.ph{width:64px;aspect-ratio:3/4;border-radius:4px;background:var(--bg-elev-2);display:grid;place-items:center;color:var(--gold-deep);font:italic 22px Georgia,serif}
+.ttl{font:italic 400 17px/1.2 'Instrument Serif',serif;margin-bottom:5px}
+.chip{font:700 11px 'Geist Mono',monospace;padding:2px 6px;border-radius:4px;color:var(--ink-on-gold);background:linear-gradient(180deg,#ffd97a,#d99c14);margin-right:4px}
+.cap{font:500 10px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-400)}
+.meta{font-size:13px;color:var(--ink-400)}
+.price{font:500 18px Geist,sans-serif;text-align:right}
+
+/* hero motion demo */
+.stage{height:250px;border-radius:12px;position:relative;overflow:hidden;display:grid;place-items:center;background:var(--bg-base)}
+.slab{width:120px;aspect-ratio:2.6/4;border-radius:10px;background:linear-gradient(160deg,#2b2620,#14110c);border:1px solid var(--line);padding:18px 9px 9px;position:relative;z-index:1}
+.slab i{display:block;height:100%;border-radius:5px;background:linear-gradient(135deg,#ff9842,#cc5e0d);padding:3px;position:relative;overflow:hidden}
+.slab i::after{content:'';position:absolute;inset:3px;border-radius:3px;background:radial-gradient(ellipse at 50% 30%,#4a3524,#120d08 70%)}
+.before .slab{animation:float 6s ease-in-out infinite;transform:rotate(-4deg)}
+.before .bloom{position:absolute;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(201,149,74,.35),transparent 65%);animation:pulse 3s ease-in-out infinite}
+.before .slab i b{position:absolute;top:0;bottom:0;left:-60%;width:60%;background:linear-gradient(115deg,transparent 30%,rgba(255,230,168,.35) 50%,transparent 70%);animation:sweep 3s linear infinite;z-index:2}
+.live{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:7px;align-items:center;font-size:12px;color:var(--ink-400);white-space:nowrap;z-index:2}
+.dot{width:6px;height:6px;border-radius:50%;background:#7fd49a}
+.before .dot{animation:ping 1.4s ease-out infinite}
+.after .slab{transform:rotate(-3deg);box-shadow:0 18px 40px rgba(0,0,0,.55)}
+@keyframes float{0%,100%{transform:rotate(-4deg) translateY(0)}50%{transform:rotate(-2deg) translateY(-10px)}}
+@keyframes pulse{0%,100%{opacity:.6;transform:scale(.9)}50%{opacity:1;transform:scale(1.05)}}
+@keyframes sweep{to{left:160%}}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(127,212,154,.6)}100%{box-shadow:0 0 0 8px rgba(127,212,154,0)}}
+
+/* footer demo */
+.foot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--ink-600);padding-top:12px;border-top:1px solid var(--line-soft)}
+.foot.caps{font:500 10px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase}
+
+.decide{margin-top:48px;border:1px solid var(--gold-deep);border-radius:12px;padding:18px 20px;background:var(--bg-elev)}
+.decide h3{margin:0 0 10px;font:500 11px 'Geist Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.decide ol{margin:0;padding-left:20px;font-size:15px;line-height:1.7;color:var(--ink-200)}
+@media (max-width:860px){.pair{grid-template-columns:1fr} td.why{display:none}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="eyebrow">Fields &amp; Floors · Polish pass</div>
+  <h1>Make it read as made by people</h1>
+  <p class="lede">The site already avoids most AI-template looks: real card photos, real eBay data, one colour system, no stock illustrations. What's left are small tells that add up: decorative labels, poetic filler lines, text symbols standing in for icons, glow and motion everywhere, and a few lines that are no longer true. Each fix below is shown before and after. The locked decisions (hero direction A, intro, tokens, type scale, solid gold buttons) are unchanged.</p>
+
+  <!-- 1 COPY -->
+  <div class="sec"><div class="n">1 · WORDS</div><h2>Plain, specific, true</h2><p>Swap stylised filler for what the product actually does. Three lines are now wrong and should change regardless of style.</p></div>
+  <div class="box" style="padding:0;overflow:auto">
+    <table>
+      <tr><th>Where</th><th>Today</th><th>Proposed</th><th>Why</th></tr>
+      <tr><td class="w">Tour, last step</td><td class="b">Every listing is a real eBay listing… We never take a cut.</td><td class="a">Every listing is a real eBay listing. You buy on eBay, not here.</td><td class="why"><span class="flag">Untrue soon</span>Joining eBay Partner Network means we'll earn on some sales.</td></tr>
+      <tr><td class="w">Guides intro</td><td class="b">No fluff, no affiliate hustle — just the things we…</td><td class="a">Guides to print runs, parallels and grading, written from real listings.</td><td class="why"><span class="flag">Untrue soon</span>Same affiliate conflict, plus "no fluff" is a template phrase.</td></tr>
+      <tr><td class="w">Alerts waitlist form</td><td class="b">You'll get a single email when Alerts goes live.</td><td class="a">(Remove the form. Alerts are live; link to the plan instead.)</td><td class="why"><span class="flag">Stale</span>Alerts shipped with Base.</td></tr>
+      <tr><td class="w">Footer, sign-in, sign-up, password pages</td><td class="b">Issue № 001 · Est. 2026</td><td class="a">Listing data via eBay. Not affiliated with eBay Inc.</td><td class="why">Magazine decoration with no meaning; the eBay line answers "is this legit?"</td></tr>
+      <tr><td class="w">Footer tagline, page descriptions</td><td class="b">A search instrument for serious collectors. Built for the hobby, not the algorithm.</td><td class="a">Search every numbered sports card on eBay by print run, autograph and price.</td><td class="why">"Instrument" and "X, not the algorithm" read like a template.</td></tr>
+      <tr><td class="w">Loading text</td><td class="b">Sifting the rare · Surfacing finds · Hunting print runs</td><td class="a">Searching eBay…</td><td class="why">One honest line; rotating cute phrases is a known AI tell.</td></tr>
+      <tr><td class="w">Pricing tagline</td><td class="b">Let the rare ones come to you.</td><td class="a">Email alerts on up to 5 saved searches.</td><td class="why">Say the benefit; the same poetic line appears in the tour too.</td></tr>
+      <tr><td class="w">Home comparison heading</td><td class="b">Why not just search eBay?</td><td class="a">What eBay's search can't do</td><td class="why">The Q&amp;A heading is a template. (Landing session owns this line.)</td></tr>
+      <tr><td class="w">Premium plan</td><td class="b">More alerts · Faster checks</td><td class="a">Coming soon. Tell us what you'd want in it.</td><td class="why">Placeholder features look invented. (DECISIONS: Premium is "coming soon".)</td></tr>
+      <tr><td class="w">Long pages (guides, privacy, how it works)</td><td class="b">~80 em-dash sentences</td><td class="a">Split into two sentences or use a comma.</td><td class="why">Heavy em-dash use is the most recognised AI writing tell.</td></tr>
+    </table>
+  </div>
+
+  <!-- 2 ICONS -->
+  <div class="sec"><div class="n">2 · ICONS</div><h2>One icon set, not text symbols</h2><p>About 70 text symbols (→ ✓ ★ ◇ ◎ ▾) are used as icons next to lucide icons drawn at a different weight. Swap them all for lucide (already installed) at one stroke weight.</p></div>
+  <div class="pair">
+    <div class="col before"><h4>Today</h4><div class="box">
+      <ul class="feat"><li><span class="g">✓</span>Email alerts on up to 5 saved searches</li><li><span class="g">✓</span>Bid reminders under your price</li></ul>
+      <button class="btn">Create free account →</button> <button class="btn ghost">★ Watch</button>
+      <div class="row" style="border:0;margin-top:10px"><div class="ph">◇</div><div><div class="ttl">Image unavailable</div><div class="meta">Placeholder glyph</div></div><div></div></div>
+    </div></div>
+    <div class="col after"><h4>Proposed</h4><div class="box">
+      <ul class="feat"><li><svg class="ic" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Email alerts on up to 5 saved searches</li><li><svg class="ic" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Bid reminders under your price</li></ul>
+      <button class="btn">Create free account <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button> <button class="btn ghost"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.6l1-5.8L3.5 9.7l5.9-.9z"/></svg>Watch</button>
+      <div class="row" style="border:0;margin-top:10px"><div class="ph"><svg class="ic" viewBox="0 0 24 24" style="stroke:var(--ink-600);width:22px;height:22px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg></div><div><div class="ttl">Photo not available</div><div class="meta">lucide ImageOff, same weight as the rest</div></div><div></div></div>
+    </div></div>
+  </div>
+
+  <!-- 3 LABELS -->
+  <div class="sec"><div class="n">3 · LABELS</div><h2>Fewer tracked capitals</h2><p>The home page has 37 small spaced-out capital labels; the card popup has 10. One per section reads as editorial, but on every line it reads as a template. Keep them for section eyebrows, and use normal sentence case for data.</p></div>
+  <div class="pair">
+    <div class="col before"><h4>Today</h4><div class="box">
+      <div class="row"><div class="thumb"><i></i></div><div><div class="ttl">2024 Topps Chrome Holliday Orange Wave</div><span class="chip">/25</span><div class="cap" style="margin-top:6px">Buy it now · 2d left · 4 watching</div></div><div class="price">$1,240</div></div>
+      <div class="row" style="border:0"><div class="thumb"><i></i></div><div><div class="ttl">2023 Bowman Chrome Skenes Gold Auto</div><span class="chip">/50</span><div class="cap" style="margin-top:6px">Auction · 6 bids · 14h</div></div><div class="price">$880</div></div>
+    </div></div>
+    <div class="col after"><h4>Proposed</h4><div class="box">
+      <div class="row"><div class="thumb"><i></i></div><div><div class="ttl">2024 Topps Chrome Holliday Orange Wave</div><span class="chip">/25</span><div class="meta" style="margin-top:6px">Buy it now · ends in 2 days</div></div><div class="price">$1,240</div></div>
+      <div class="row" style="border:0"><div class="thumb"><i></i></div><div><div class="ttl">2023 Bowman Chrome Skenes Gold Auto</div><span class="chip">/50</span><div class="meta" style="margin-top:6px">Auction · 6 bids · ends in 14 hours</div></div><div class="price">$880</div></div>
+    </div></div>
+  </div>
+
+  <!-- 4 MOTION -->
+  <div class="sec"><div class="n">4 · MOTION</div><h2>One movement at a time</h2><p>The hero runs four animations at once (float, foil sweep, gold bloom, pulsing dot), plus a fade-up on 28 blocks down the page. Real products move only when something happens. Proposed: the card sits still with a real shadow, the foil sweep plays once when you hover or tap it, and the dot doesn't pulse. Fade-ups stay only on the first screen. Hero direction A (the live card as the hero) is unchanged. <b style="color:var(--ink-200)">This touches the hero, so it's the Landing session's call to build.</b></p></div>
+  <div class="pair">
+    <div class="col before"><h4>Today</h4><div class="stage before"><div class="bloom"></div><div class="slab"><i><b></b></i></div><div class="live"><span class="dot"></span>Featured find · Live on eBay</div></div></div>
+    <div class="col after"><h4>Proposed</h4><div class="stage after"><div class="slab"><i></i></div><div class="live"><span class="dot"></span>Live on eBay · $1,240</div></div></div>
+  </div>
+
+  <!-- 5 GLOW -->
+  <div class="sec"><div class="n">5 · GLOW</div><h2>Gold as an accent, not a light source</h2><p>A warm gold vignette sits behind every page (globals.css), plus gold glows on the hero, the alert dot and the featured plan. Remove the page-wide vignette and keep gold for things you can press or things that are rare. The paper grain stays: it's subtle and it's what makes the dark feel printed, not generated.</p></div>
+  <div class="pair">
+    <div class="col before"><h4>Today</h4><div class="box" style="height:140px;background:radial-gradient(ellipse 80% 60% at 50% 30%,rgba(201,149,74,.12),transparent 70%),var(--bg-base)"><div class="eyebrow">How it works</div><div style="font:italic 30px 'Instrument Serif',serif;margin-top:8px">Search. Save. Get told when it lists.</div></div></div>
+    <div class="col after"><h4>Proposed</h4><div class="box" style="height:140px;background:var(--bg-base)"><div class="eyebrow">How it works</div><div style="font:italic 30px 'Instrument Serif',serif;margin-top:8px">Search. Save. Get told when it lists.</div></div></div>
+  </div>
+
+  <!-- 6 FOOTER -->
+  <div class="sec"><div class="n">6 · FOOTER &amp; SIGN-IN</div><h2>Trust lines instead of decoration</h2></div>
+  <div class="pair">
+    <div class="col before"><h4>Today</h4><div class="box"><div class="foot caps"><span>Est. 2026 · Issue № 001</span><span>Site tour · Support · Privacy · Terms</span></div></div></div>
+    <div class="col after"><h4>Proposed</h4><div class="box"><div class="foot"><span>Listing data via eBay. Not affiliated with eBay Inc. · © 2026 Fields &amp; Floors</span><span>Site tour · Support · Privacy · Terms</span></div></div></div>
+  </div>
+
+  <div class="decide"><h3>What's already professional (keep)</h3><ol>
+    <li>Real card photos and live eBay data in the hero and results.</li>
+    <li>One palette, one type scale, consistent corners, solid buttons.</li>
+    <li>Specific numbers where they're real: 1 alert, 5 alerts, $6.99, $59, 14 days.</li>
+    <li>The paper grain, Instrument Serif headlines and the slabbed-card styling.</li>
+  </ol></div>
+</div>
+</body>
+</html>

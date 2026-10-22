@@ -12,11 +12,11 @@ import PageShell from '../components/PageShell';
 //   3. Add the URL to app/sitemap.js.
 
 export const metadata = {
-  title: 'Guides — sports card hunting on eBay',
+  title: 'Guides to sports card hunting on eBay',
   description:
-    'Honest guides to print runs, rookie cards, autographs, and finding rare cards on eBay. Written by collectors, for collectors.',
+    'Honest guides to print runs, rookie cards, autographs, and finding rare cards on eBay. Written from real eBay listings.',
   openGraph: {
-    title: 'Guides — Fields & Floors',
+    title: 'Guides · Fields & Floors',
     description:
       'Honest guides to print runs, rookie cards, autographs, and finding rare cards on eBay.',
     type: 'website',
@@ -30,7 +30,7 @@ const GUIDES = [
     title: 'The complete guide to print runs',
     eyebrow: 'Numbered cards',
     summary:
-      'What /5, /10, /99, and /199 actually mean — and why the same player can sell for $40 or $4,000 depending on this one number.',
+      'What /5, /10, /99, and /199 actually mean, and why the same player can sell for $40 or $4,000 depending on this one number.',
     readTime: '8 min read',
     published: '2026-06-16',
   },
@@ -59,7 +59,7 @@ export default function GuidesIndexPage() {
     <PageShell
       eyebrow="The Library"
       title="Guides."
-      lede="Honest, deeply researched guides to the sports card hobby. No fluff, no affiliate hustle — just the things we wish someone had explained to us when we started."
+      lede="Guides to print runs, parallels and grading, written from real eBay listings. The things we wish someone had explained when we started collecting."
     >
       <div className="space-y-12">
         {GUIDES.map((g) => (

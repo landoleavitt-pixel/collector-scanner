@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import Link from 'next/link';
+import { Star } from 'lucide-react';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import Seal from './Seal';
 import { tierChipStyle, tierRowStyle, OUTLINE_CHIP_STYLE } from './rarityUtils';
@@ -175,7 +176,9 @@ function WatchlistArt({ lg }) {
         2025 Bowman Chrome Cooper Flagg Auto /10
         <span className={`block font-mono text-[var(--gold)] mt-1 ${lg ? 'text-[12px]' : 'text-[11px]'}`}>$1,240 · 2h 14m left</span>
       </div>
-      <span className={`ff-tour-star text-[var(--gold)] ${lg ? 'text-[24px] w-11 text-center' : 'text-[20px]'}`} aria-hidden="true">★</span>
+      <span className={`ff-tour-star flex-none flex justify-center text-[var(--gold)] ${lg ? 'w-11' : ''}`} aria-hidden="true">
+        <Star size={lg ? 24 : 20} strokeWidth={1.75} fill="currentColor" />
+      </span>
     </div>
   );
 }
@@ -273,11 +276,11 @@ const STEPS = [
   },
   {
     label: 'Alerts',
-    title: 'Let the cards come to you.',
+    title: 'Get an email when it lists.',
     text: 'Save a search and we’ll email you when new matches list, plus bid reminders before auctions end. Alerts are part of the Base plan, which has a 14-day free trial.',
     Art: AlertArt,
     app: {
-      title: 'Get a ping when it lists.',
+      title: 'Get a notification when it lists.',
       text: 'Save a search and we’ll send a notification to your phone (plus an email) when a new match lists, and remind you before auctions end. Alerts are part of Base, which has a 14-day free trial.',
       Art: PushArt,
       // /subscribe shows Apple's in-app purchase sheet in the app. Never
@@ -288,13 +291,12 @@ const STEPS = [
   {
     label: 'Buy',
     title: 'Checkout happens on eBay.',
-    // "We never take a cut" is true only while there are no affiliate links.
-    // If eBay Partner Network (or any affiliate) links are ever added, this
-    // copy MUST change.
-    text: 'Every listing is a real eBay listing. Open a card for details, then click through to buy there. We never take a cut.',
+    // No "we never take a cut" claim: eBay Partner Network links are a logged
+    // decision, so don't promise we earn nothing on a sale.
+    text: 'Every listing is a real eBay listing. Open a card, then click through to buy it on eBay.',
     Art: DoneArt,
     app: {
-      text: 'Every listing is a real eBay listing. Open a card, then tap through to buy it on eBay. We never take a cut.',
+      text: 'Every listing is a real eBay listing. Open a card, then tap through to buy it on eBay.',
     },
   },
 ];
@@ -309,7 +311,7 @@ const MOTION_CSS = `
     .ff-tour-backdrop { animation: ffTourFade .25s ease-out; }
     .ff-tour-panel { animation: ffTourRise .35s cubic-bezier(.2,.8,.2,1); }
     .ff-tour-caret { animation: ffTourBlink 1s steps(1) infinite; }
-    .ff-tour-star { display: inline-block; animation: ffTourPop 1.6s ease-in-out infinite; }
+    .ff-tour-star { animation: ffTourPop 1.6s ease-in-out infinite; }
   }
   @keyframes ffTourFade { from { opacity: 0 } }
   @keyframes ffTourRise { from { opacity: 0; transform: translateY(16px) } }

@@ -2,7 +2,7 @@ import { ArrowUpRight } from 'lucide-react';
 import PageShell, { SectionHeading } from '../components/PageShell';
 
 export const metadata = {
-  title: 'Reading list — Fields & Floors Collectors',
+  title: 'Reading list',
   description: 'A short, hand-picked list of the places that taught us what we know about the hobby.',
 };
 
@@ -97,7 +97,7 @@ export default function ReadingListPage() {
     <PageShell
       eyebrow="The Shelf"
       title="Reading list."
-      lede="A short, opinionated list of the places that taught us what we know about the hobby. No affiliate links, no sponsors, no SEO play — just what we actually use."
+      lede="A short, opinionated list of the places that taught us what we know about the hobby. No sponsors. Just what we actually use."
     >
       {READING.map((section, idx) => (
         <section key={section.section} className={idx === 0 ? '' : 'mt-16'}>

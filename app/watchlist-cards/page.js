@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import BidCountdown from '../components/BidCountdown';
 import { WatchlistProvider } from '../../lib/watchlistContext';
 import CardModal from '../components/CardModal';
+import { Check, X, Star, ImageOff } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -223,7 +224,7 @@ function Toast({ message, onClose }) {
         boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
       }}
     >
-      <span className="mt-0.5 text-[13px]" style={{ color: 'var(--gold-bright)' }}>✓</span>
+      <span className="mt-0.5" style={{ color: 'var(--gold-bright)' }}><Check className="inline-block w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" /></span>
       <p className="flex-1 text-[13px] leading-relaxed" style={{ color: 'var(--ink-200)' }}>{message}</p>
       <button
         onClick={onClose}
@@ -231,7 +232,7 @@ function Toast({ message, onClose }) {
         className="text-[16px] leading-none mt-0.5 transition-colors"
         style={{ color: 'var(--ink-600)' }}
       >
-        ×
+        <X className="w-4 h-4" strokeWidth={1.75} aria-hidden="true" />
       </button>
     </div>
   );
@@ -304,7 +305,7 @@ function WatchlistTile({ listing, onRemove, onToast, onCardClick }) {
             style={isSold ? { filter: 'grayscale(0.7) brightness(0.6)' } : undefined}
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'var(--bg-elev-2)', color: 'var(--ink-600)' }}>◇</div>
+          <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'var(--bg-elev-2)', color: 'var(--ink-600)' }}><ImageOff className="w-7 h-7" strokeWidth={1.5} aria-hidden="true" /></div>
         )}
 
         {isSold && (
@@ -320,7 +321,7 @@ function WatchlistTile({ listing, onRemove, onToast, onCardClick }) {
           className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full flex items-center justify-center"
           style={{ background: 'rgba(10,9,7,0.55)', backdropFilter: 'blur(4px)', border: '0.5px solid var(--gold)', color: 'var(--gold-bright)' }}
         >
-          <span style={{ fontSize: '15px', lineHeight: 1 }}>★</span>
+          <Star className="w-4 h-4" strokeWidth={1.6} fill="currentColor" aria-hidden="true" />
         </button>
 
         {/* Live countdown — only when this is still an active auction */}
@@ -410,8 +411,8 @@ function BidReminderControl({ listing, onToast }) {
     patch({ bid_reminder: true, reminder_max_price: price });
     onToast?.(
       price != null
-        ? `Reminder set — we'll only email you about this card if the bid is under $${price}.`
-        : `Reminder set — we'll email you in this auction's final hours.`
+        ? `Reminder set. We'll only email you about this card if the bid is under $${price}.`
+        : `Reminder set. We'll email you in this auction's final hours.`
     );
   }
 
@@ -475,7 +476,7 @@ function BidReminderModal({ listing, initialPrice, isSet, onSubmit, onRemove, on
             What's the most you'd pay?
           </h3>
           <p className="text-[13px] leading-relaxed mb-5" style={{ color: 'var(--ink-400)' }}>
-            We'll email you in this auction's final hours — and if you set a price,
+            We'll email you in this auction's final hours. If you set a price, we'll email
             only when the current bid is at or below it. Leave it blank to be
             reminded regardless of price.
           </p>
@@ -531,7 +532,7 @@ function BidReminderModal({ listing, initialPrice, isSet, onSubmit, onRemove, on
         </div>
 
         <p className="px-6 pb-5 text-[11px] leading-relaxed" style={{ color: 'var(--ink-600)' }}>
-          This doesn't buy or bid on the card — Fields &amp; Floors only emails you so
+          This doesn't buy or bid on the card. Fields &amp; Floors only emails you so
           you can decide and bid yourself on eBay. Prices and availability can change.
         </p>
       </div>

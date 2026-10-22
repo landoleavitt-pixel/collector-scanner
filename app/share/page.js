@@ -50,11 +50,11 @@ export async function generateMetadata({ searchParams }) {
 
   const filterText = describe(sp);
   const title = query
-    ? `${query} — Fields & Floors Collectors`
-    : 'Shared search — Fields & Floors Collectors';
+    ? query
+    : 'Shared search';
   const description = filterText
     ? `${query || 'Rare sports cards'} · ${filterText}. Search eBay by multiple print runs at once.`
-    : 'Search eBay by multiple print runs at once — plus autograph, rookie, and condition.';
+    : 'Search eBay by several print runs at once, plus autograph, rookie and condition.';
 
   return {
     title,

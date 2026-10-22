@@ -1,7 +1,7 @@
 import PageShell, { SectionHeading, Prose } from '../components/PageShell';
 
 export const metadata = {
-  title: 'Privacy Policy — Fields & Floors Collectors',
+  title: 'Privacy Policy',
   description: 'How Fields & Floors collects, uses, and protects your information.',
 };
 
@@ -27,15 +27,15 @@ export default function PrivacyPage() {
       <Prose>
         <p>When you create an account or use Fields &amp; Floors, we may handle:</p>
         <ul>
-          <li><strong>Account information</strong> &mdash; your email address, and (if you sign in with Google) your name and profile photo as provided by Google. If you use Sign in with Apple, we receive the email address Apple gives us, which may be Apple's private relay address.</li>
-          <li><strong>Plan and billing status</strong> &mdash; which plan you're on, whether you're in a free trial, when your subscription renews or ends, and whether you pay through our website or the App Store. We don't store card numbers.</li>
-          <li><strong>Saved searches</strong> &mdash; the search terms and filters you save so we can notify you of new matching cards.</li>
-          <li><strong>Watchlist</strong> &mdash; the listings you star. We save a copy of each listing's title, price, photo link, and eBay link so your watchlist loads quickly, and we refresh the price and status while you're watching it.</li>
-          <li><strong>Notification history</strong> &mdash; a record of which listings we've already alerted you about, so you never get the same one twice.</li>
-          <li><strong>Push notification token (iOS app)</strong> &mdash; if you turn on notifications in the app, we store a code that Apple gives your device so we can send alerts to it. It is deleted when you sign out or delete your account.</li>
-          <li><strong>Technical &amp; log data</strong> &mdash; information automatically recorded by our hosting and infrastructure providers, such as your IP address, browser and device type, access times, and error and security logs. This is used to operate, secure, and debug the service.</li>
-          <li><strong>Usage analytics</strong> &mdash; aggregate, non-personal information about how pages are used (such as page views), collected through privacy-friendly analytics. It is usage-based only and does not identify you personally.</li>
-          <li><strong>Anonymous usage events</strong> &mdash; which steps of the service are used (such as visiting, running a search, or opening a card), stored in our own database under a random ID kept on your device, with no name, email, or search words. Two events, creating an account and starting a trial, are recorded against your account so we can count them correctly. No ads and no third-party tracking. We skip these events if your browser sends a Do Not Track or Global Privacy Control signal.</li>
+          <li><strong>Account information</strong>: your email address, and (if you sign in with Google) your name and profile photo as provided by Google. If you use Sign in with Apple, we receive the email address Apple gives us, which may be Apple's private relay address.</li>
+          <li><strong>Plan and billing status</strong>: which plan you're on, whether you're in a free trial, when your subscription renews or ends, and whether you pay through our website or the App Store. We don't store card numbers.</li>
+          <li><strong>Saved searches</strong>: the search terms and filters you save so we can notify you of new matching cards.</li>
+          <li><strong>Watchlist</strong>: the listings you star. We save a copy of each listing's title, price, photo link, and eBay link so your watchlist loads quickly, and we refresh the price and status while you're watching it.</li>
+          <li><strong>Notification history</strong>: a record of which listings we've already alerted you about, so you never get the same one twice.</li>
+          <li><strong>Push notification token (iOS app)</strong>: if you turn on notifications in the app, we store a code that Apple gives your device so we can send alerts to it. It is deleted when you sign out or delete your account.</li>
+          <li><strong>Technical &amp; log data</strong>: information automatically recorded by our hosting and infrastructure providers, such as your IP address, browser and device type, access times, and error and security logs. This is used to operate, secure, and debug the service.</li>
+          <li><strong>Usage analytics</strong>: aggregate, non-personal information about how pages are used (such as page views), collected through privacy-friendly analytics. It is usage-based only and does not identify you personally.</li>
+          <li><strong>Anonymous usage events</strong>: which steps of the service are used (such as visiting, running a search, or opening a card), stored in our own database under a random ID kept on your device, with no name, email, or search words. Two events, creating an account and starting a trial, are recorded against your account so we can count them correctly. No ads and no third-party tracking. We skip these events if your browser sends a Do Not Track or Global Privacy Control signal.</li>
         </ul>
         <p>
           We do not collect payment card details directly. We do not sell your
@@ -64,7 +64,7 @@ export default function PrivacyPage() {
         <p>
           In short, we process your information to provide the service, operate your
           account and alerts, improve and secure the platform, and comply with our
-          legal obligations &mdash; not for any unrelated purpose.
+          legal obligations, and not for any unrelated purpose.
         </p>
       </Prose>
 
@@ -77,7 +77,7 @@ export default function PrivacyPage() {
           tokens stored in your browser) to keep you signed in, secure your account,
           and support privacy-friendly analytics. We also keep a random ID in your
           browser's local storage for the anonymous usage events described above. These are essential to how the
-          service works &mdash; without them, login and authentication wouldn't function.
+          service works. Without them, login and authentication wouldn't function.
           We don't use cookies to build advertising profiles or track you across other
           websites. You can control or clear cookies in your browser settings, but
           disabling essential ones may prevent you from signing in.
@@ -94,14 +94,14 @@ export default function PrivacyPage() {
           located outside Canada (see cross-border transfers below):
         </p>
         <ul>
-          <li><strong>Supabase</strong> &mdash; database and sign-in. Stores your account, saved searches, watchlist, plan status, notification history, push token, and anonymous usage events.</li>
-          <li><strong>Vercel</strong> &mdash; website hosting, technical and security logs, and aggregate page-view analytics.</li>
-          <li><strong>Resend</strong> &mdash; delivers our account and alert emails. It receives your email address and the content of the email.</li>
-          <li><strong>Stripe</strong> &mdash; processes card payments for subscriptions bought on our website. Stripe receives your email address and an internal account ID, and handles your card details, billing, and invoices. We never see or store your card number.</li>
-          <li><strong>Apple</strong> &mdash; if you subscribe in the iOS app, Apple processes the payment through the App Store, and Apple's push notification service delivers alerts to your device. If you use Sign in with Apple, Apple handles that sign-in. We don't see your payment details.</li>
-          <li><strong>RevenueCat</strong> &mdash; confirms the status of App Store subscriptions for the iOS app. It receives your internal account ID and your purchase information from Apple (such as which plan and when it renews), and tells us whether your subscription is active.</li>
-          <li><strong>Google</strong> &mdash; if you choose &quot;Sign in with Google,&quot; Google handles that authentication.</li>
-          <li><strong>eBay</strong> &mdash; we use eBay's public Browse API to find listings. Your search words and filters are sent to eBay to get results (and, for saved searches, by us on a schedule), but never your name, email, or account details. We don't receive or store eBay user data such as buyer or seller account information. The only listing details we keep are the ones you star, described above.</li>
+          <li><strong>Supabase</strong>: database and sign-in. Stores your account, saved searches, watchlist, plan status, notification history, push token, and anonymous usage events.</li>
+          <li><strong>Vercel</strong>: website hosting, technical and security logs, and aggregate page-view analytics.</li>
+          <li><strong>Resend</strong>: delivers our account and alert emails. It receives your email address and the content of the email.</li>
+          <li><strong>Stripe</strong>: processes card payments for subscriptions bought on our website. Stripe receives your email address and an internal account ID, and handles your card details, billing, and invoices. We never see or store your card number.</li>
+          <li><strong>Apple</strong>: if you subscribe in the iOS app, Apple processes the payment through the App Store, and Apple's push notification service delivers alerts to your device. If you use Sign in with Apple, Apple handles that sign-in. We don't see your payment details.</li>
+          <li><strong>RevenueCat</strong>: confirms the status of App Store subscriptions for the iOS app. It receives your internal account ID and your purchase information from Apple (such as which plan and when it renews), and tells us whether your subscription is active.</li>
+          <li><strong>Google</strong>: if you choose &quot;Sign in with Google,&quot; Google handles that authentication.</li>
+          <li><strong>eBay</strong>: we use eBay's public Browse API to find listings. Your search words and filters are sent to eBay to get results (and, for saved searches, by us on a schedule), but never your name, email, or account details. We don't receive or store eBay user data such as buyer or seller account information. The only listing details we keep are the ones you star, described above.</li>
         </ul>
         <p>
           We may also disclose information if required by law, or to protect the

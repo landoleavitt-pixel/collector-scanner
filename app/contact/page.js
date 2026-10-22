@@ -2,7 +2,7 @@ import { ArrowUpRight } from 'lucide-react';
 import PageShell, { Prose, SectionHeading } from '../components/PageShell';
 
 export const metadata = {
-  title: 'Contact — Fields & Floors Collectors',
+  title: 'Contact',
   description: 'Get in touch. Bug reports, feature ideas, and "this card got through your filter" reports especially welcome.',
 };
 
@@ -13,7 +13,7 @@ const CONTACTS = [
     label: 'Billing & subscriptions',
     handle: 'billing@fieldsandfloors.com',
     href: 'mailto:billing@fieldsandfloors.com?subject=Billing%20question',
-    note: 'Charged unexpectedly, trouble cancelling, or anything else about your subscription. We respond as quickly as we can — usually within a day.',
+    note: 'Charged unexpectedly, trouble cancelling, or anything else about your subscription. We usually reply within a day.',
   },
   {
     label: 'General',
@@ -73,7 +73,7 @@ export default function ContactPage() {
           A good bug report includes: the search term you typed, the filters you had on, and ideally a link to the listing that shouldn't have appeared (or should have). Screenshots help. We respond to everything that's signal.
         </p>
         <p>
-          Feature requests get filed and read. We can't build everything, and we deliberately ship narrow — but the requests are how we know what the next narrow thing should be.
+          Feature requests get filed and read. We can't build everything, and we keep the product focused. Your requests tell us what to build next.
         </p>
       </Prose>
     </PageShell>

@@ -48,8 +48,8 @@ export async function generateMetadata({ searchParams }) {
     : 'https://fieldsandfloors.com/opengraph-image.png';
 
   const pageTitle = title
-    ? `${title} — Fields & Floors Collectors`
-    : 'Shared card — Fields & Floors Collectors';
+    ? title
+    : 'Shared card';
   const description = [title, priceLabel].filter(Boolean).join(' · ')
     || 'A card worth watching, on Fields & Floors Collectors.';
 

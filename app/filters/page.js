@@ -1,7 +1,7 @@
 import PageShell, { SectionHeading, Prose } from '../components/PageShell';
 
 export const metadata = {
-  title: 'Filters — Fields & Floors Collectors',
+  title: 'Filters',
   description: 'Reference guide to every filter in Fields & Floors. What each catches, what it ignores, and how they combine.',
 };
 
@@ -43,12 +43,12 @@ export default function FiltersPage() {
       <div className="mt-8">
         <FilterRow
           name="Autographed"
-          summary="Listings with an autograph. Checked against the title for 'auto', 'autograph', 'signed', and common variants. If your search already contains 'auto', we don't double-add it — the toggle remains a soft visual confirmation rather than a redundant filter."
+          summary="Listings with an autograph. Checked against the title for 'auto', 'autograph', 'signed', and common variants. If your search already contains 'auto', we don't add it twice. The toggle remains a soft visual confirmation rather than a redundant filter."
           catches="auto · autograph · signed · on-card · sticker auto"
         />
         <FilterRow
           name="Rookie"
-          summary="Listings with rookie card markers in the title. Targets cards explicitly marked RC, rookie, or first-year. Doesn't try to infer rookie status from a player's career arc — that's brittle and we don't trust the inference enough to ship it."
+          summary="Listings with rookie card markers in the title. Targets cards explicitly marked RC, rookie, or first-year. Doesn't try to infer rookie status from a player's career arc, because that's brittle and we don't trust the inference enough to ship it."
           catches="RC · rookie · 1st year · first year · rookie debut"
         />
         <FilterRow
@@ -64,7 +64,7 @@ export default function FiltersPage() {
       </SectionHeading>
       <Prose>
         <p>
-          Three options: <strong>Any</strong>, <strong>Buy It Now</strong>, <strong>Auction</strong>. Auction-only is what you want when you're hunting for a possible steal — it surfaces listings with bids in motion and time pressure. Buy It Now is for when you've decided and you're done watching.
+          Three options: <strong>Any</strong>, <strong>Buy It Now</strong>, <strong>Auction</strong>. Auction-only is what you want when you're hunting for a possible steal. It surfaces listings with bids in motion and time pressure. Buy It Now is for when you've decided and you're done watching.
         </p>
         <p>
           Auction results show their time-remaining badge on the card. A listing ending in under two hours is highlighted; one ending in three days is quieter.
@@ -76,7 +76,7 @@ export default function FiltersPage() {
       </SectionHeading>
       <Prose>
         <p>
-          Three options: <strong>Any</strong>, <strong>Raw only</strong>, <strong>Graded only</strong>. We detect graded cards by parsing titles for the four major graders — <strong>PSA, BGS, SGC, CGC</strong> — followed by a numeric grade or grading-context words like "slab" or "gem."
+          Three options: <strong>Any</strong>, <strong>Raw only</strong>, <strong>Graded only</strong>. We detect graded cards by parsing titles for the four major graders (<strong>PSA, BGS, SGC, CGC</strong>) followed by a numeric grade or grading-context words like "slab" or "gem."
         </p>
         <p>
           eBay's structured Condition aspect is too inconsistently filled in by sellers to be useful here, so we use title parsing instead. The tradeoff: if a seller forgets to mention the grader in the title, the card may be misclassified as raw. In practice, almost every graded listing puts the grader in the title because buyers search for it.
@@ -88,7 +88,7 @@ export default function FiltersPage() {
       </SectionHeading>
       <Prose>
         <p>
-          A range slider, not free-form text fields, because most price-bounding decisions are spatial — you know roughly what your ceiling is and you adjust by feel. The max range adapts based on the magnitude of recent results, so the slider stays useful whether you're shopping $40 commons or $4,000 rookie autos.
+          A range slider, not free-form text fields, because most price-bounding decisions are spatial: you know roughly what your ceiling is and you adjust by feel. The max range adapts based on the magnitude of recent results, so the slider stays useful whether you're shopping $40 commons or $4,000 rookie autos.
         </p>
       </Prose>
 
@@ -97,14 +97,14 @@ export default function FiltersPage() {
       </SectionHeading>
       <Prose>
         <p>
-          Sort runs client-side after results land. That means it's instant — no spinner, no re-fetch. Available orders:
+          Sort runs client-side after results land. That means it's instant, with no new search. Available orders:
         </p>
         <ul>
-          <li><strong>Best match</strong> — eBay's default ranking.</li>
-          <li><strong>Price: low to high</strong> — the bargain hunter's view.</li>
-          <li><strong>Price: high to low</strong> — the grail hunter's view.</li>
-          <li><strong>Ending soonest</strong> — auctions first, sorted by time remaining.</li>
-          <li><strong>Newly listed</strong> — most recent listings at the top.</li>
+          <li><strong>Best match</strong>: eBay's default ranking.</li>
+          <li><strong>Price: low to high</strong>: the bargain hunter's view.</li>
+          <li><strong>Price: high to low</strong>: the grail hunter's view.</li>
+          <li><strong>Ending soonest</strong>: auctions first, sorted by time remaining.</li>
+          <li><strong>Newly listed</strong>: most recent listings at the top.</li>
         </ul>
       </Prose>
 
@@ -113,7 +113,7 @@ export default function FiltersPage() {
       </SectionHeading>
       <Prose>
         <p>
-          Every filter narrows. Toggling <strong>Autographed</strong> + <strong>Rookie</strong> + <strong>Numbered (Grail)</strong> + max price $500 gives you autographed rookies numbered to 25 or fewer, under $500. Each switch you flip removes listings — none of them ever add listings back in.
+          Every filter narrows. Toggling <strong>Autographed</strong> + <strong>Rookie</strong> + <strong>Numbered (Grail)</strong> + max price $500 gives you autographed rookies numbered to 25 or fewer, under $500. Each switch you flip removes listings. None of them add listings back.
         </p>
         <p>
           If you end up with zero results, loosen one toggle. The narrower stack is doing its job.

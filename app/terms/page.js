@@ -1,7 +1,7 @@
 import PageShell, { SectionHeading, Prose } from '../components/PageShell';
 
 export const metadata = {
-  title: 'Terms of Service — Fields & Floors Collectors',
+  title: 'Terms of Service',
   description: 'The terms that govern your use of Fields & Floors Collectors.',
 };
 
@@ -33,7 +33,87 @@ export default function TermsPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="02" label="Not affiliated with eBay">
+      <SectionHeading number="02" label="We're a search tool, not a seller">
+        Please read this before you buy anything.
+      </SectionHeading>
+      <Prose>
+        <p>
+          <strong>2.1 Definitions.</strong> In these Terms, &ldquo;Fields &amp;
+          Floors,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; and &ldquo;our&rdquo; mean
+          the operator of the website at fieldsandfloors.com and any related
+          mobile application (together, the &ldquo;Service&rdquo;). &ldquo;Third-Party
+          Marketplace&rdquo; means eBay. &ldquo;Sellers&rdquo; means the persons or
+          businesses that offer items for sale on a Third-Party Marketplace.
+          &ldquo;Listings&rdquo; means the offers for sale, descriptions, images,
+          prices, and other information published by Sellers that the Service
+          displays or links to. &ldquo;You&rdquo; and &ldquo;User&rdquo; mean the
+          person using the Service.
+        </p>
+        <p>
+          <strong>2.2 Nature of the Service.</strong> The Service is a search and
+          notification tool only. It helps Users find Listings and links to them. We
+          do not sell, own, hold, inspect, authenticate, grade, store, or ship any
+          item, and we do not process any purchase of an item.
+        </p>
+        <p>
+          <strong>2.3 No agency; not a party.</strong> We are not the agent,
+          partner, joint venturer, employee, or representative of eBay or of any
+          Seller, and nothing in the Service creates any such relationship. We are
+          not a party to, and have no control over, any transaction between a User
+          and a Seller or a Third-Party Marketplace.
+        </p>
+        <p>
+          <strong>2.4 As is; no warranty regarding items or Listings.</strong> To the
+          extent permitted by applicable law, the Service and all Listing information
+          are provided &ldquo;AS IS&rdquo; and &ldquo;AS AVAILABLE.&rdquo; WE MAKE NO
+          REPRESENTATIONS OR WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, REGARDING ANY
+          ITEM OR LISTING, INCLUDING AS TO AUTHENTICITY, GENUINENESS, CONDITION,
+          GRADING, AUTOGRAPHS, PROVENANCE, PRINT RUN, TITLE, OR THAT THE ITEM
+          DELIVERED WILL MATCH ITS LISTING, OR AS TO THE ACCURACY, COMPLETENESS, OR
+          TIMELINESS OF ANY LISTING DATA. TO THE EXTENT PERMITTED BY APPLICABLE LAW,
+          WE DISCLAIM ALL IMPLIED WARRANTIES, INCLUDING IMPLIED WARRANTIES OF
+          MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+        </p>
+        <p>
+          <strong>2.5 Automated labels.</strong> Classifications and labels that the
+          Service displays, including print run, rarity tier and colour, autograph,
+          rookie, set, and parallel designations, are generated automatically from
+          text written by Sellers. They are provided for informational purposes only,
+          may be inaccurate or incomplete, and must not be relied on as a
+          representation of fact about any item. You are responsible for reviewing
+          the full Listing, its images, and the Seller before making any purchase.
+        </p>
+        <p>
+          <strong>2.6 Transactions and disputes.</strong> Any purchase is made
+          solely between you and the Seller, under the terms of the Third-Party
+          Marketplace. Any dispute about an item, its authenticity or condition, its
+          delivery, or payment for it is solely between you, the Seller, and the
+          Third-Party Marketplace. The Third-Party Marketplace may offer buyer
+          protection programs, such as the eBay Money Back Guarantee, and you should
+          consult its terms to determine whether a particular purchase is eligible.
+          We make no representation or promise that any purchase will be covered by
+          any such program, and we have no obligation to resolve disputes, to
+          arrange refunds or returns, or to reverse any transaction.
+        </p>
+        <p>
+          <strong>2.7 Release.</strong> To the extent permitted by applicable law,
+          you release Fields &amp; Floors, and its owners, officers, employees, and
+          contractors, from any claim, demand, loss, or damage, known or unknown,
+          arising out of or connected with any transaction or dispute between you
+          and a Seller or a Third-Party Marketplace, or any item you buy or
+          attempt to buy through a Listing.
+        </p>
+        <p>
+          <strong>2.8 Relationship to other provisions.</strong> This Section 2 is
+          in addition to, and is to be read together with, Section 4 (Accuracy of
+          listing data), Section 12 (Disclaimers &amp; liability), and Section 14
+          (Governing law &amp; disputes). Nothing in this Section 2 excludes or
+          limits any right or liability that cannot be excluded or limited under
+          applicable law.
+        </p>
+      </Prose>
+
+      <SectionHeading number="03" label="Not affiliated with eBay">
         We're independent.
       </SectionHeading>
       <Prose>
@@ -42,13 +122,13 @@ export default function TermsPage() {
           operated by eBay Inc. "eBay" is a trademark of its respective owner, used
           here only to describe the source of listing data. All listings, prices, and
           availability originate with eBay and its sellers, and all purchases happen
-          on eBay under eBay's own terms — not ours. Listing content and data belong
+          on eBay under eBay's own terms, not ours. Listing content and data belong
           to eBay and its sellers; we only index and search publicly available
           listing information to help you find cards.
         </p>
       </Prose>
 
-      <SectionHeading number="03" label="Accuracy of listing data">
+      <SectionHeading number="04" label="Accuracy of listing data">
         We do our best, but we can't guarantee it.
       </SectionHeading>
       <Prose>
@@ -59,7 +139,7 @@ export default function TermsPage() {
           In particular, you acknowledge that:
         </p>
         <ul>
-          <li>Our print-run detection can make mistakes &mdash; it may miss a card's serial number, or misread other numbers (for example, a season like "22/23") as a print run.</li>
+          <li>Our print-run detection can make mistakes. It may miss a card's serial number, or misread other numbers (for example, a season like "22/23") as a print run.</li>
           <li>Listing titles are written by sellers and can be inaccurate, misleading, or mislabeled, and our parsing of them can be wrong.</li>
           <li>Grades, autographs, parallels, and other attributes we surface are derived from listing text and may not reflect the actual item.</li>
         </ul>
@@ -69,7 +149,7 @@ export default function TermsPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="04" label="Listing availability">
+      <SectionHeading number="05" label="Listing availability">
         Listings change constantly.
       </SectionHeading>
       <Prose>
@@ -80,12 +160,12 @@ export default function TermsPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="05" label="Third-party services">
+      <SectionHeading number="06" label="Third-party services">
         We depend on others to run.
       </SectionHeading>
       <Prose>
         <p>
-          Fields &amp; Floors relies on third-party services to operate &mdash; including
+          Fields &amp; Floors relies on third-party services to operate, including
           eBay for listing data, and providers such as Supabase, Vercel, Resend, and
           Google for hosting, database, email, and authentication. We don't control
           these services and aren't responsible for their accuracy, availability, or
@@ -95,7 +175,7 @@ export default function TermsPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="06" label="Alerts &amp; notifications">
+      <SectionHeading number="07" label="Alerts &amp; notifications">
         Useful, but not guaranteed.
       </SectionHeading>
       <Prose>
@@ -110,7 +190,7 @@ export default function TermsPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="07" label="Your account">
+      <SectionHeading number="08" label="Your account">
         Keep it secure, use it honestly.
       </SectionHeading>
       <Prose>
@@ -123,7 +203,7 @@ export default function TermsPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="08" label="Our intellectual property">
+      <SectionHeading number="09" label="Our intellectual property">
         The site and its design are ours.
       </SectionHeading>
       <Prose>
@@ -138,7 +218,7 @@ export default function TermsPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="09" label="Subscriptions, fees &amp; refunds">
+      <SectionHeading number="10" label="Subscriptions, fees &amp; refunds">
         Our paid plans and how billing works.
       </SectionHeading>
       <Prose>
@@ -147,7 +227,7 @@ export default function TermsPage() {
           subscription tier. Current pricing, billing intervals, and what each plan
           includes are listed on our pricing page and shown again at checkout. Paid
           features unlock additional functionality (such as automated alerts on
-          saved searches and bid reminders) &mdash; not access to third-party listing
+          saved searches and bid reminders), not access to third-party listing
           data itself, which belongs to eBay and its sellers.
         </p>
         <p>
@@ -201,19 +281,19 @@ export default function TermsPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="10" label="Changes to the service">
+      <SectionHeading number="11" label="Changes to the service">
         We may evolve or discontinue features.
       </SectionHeading>
       <Prose>
         <p>
-          We may add, change, suspend, or discontinue any part of the service &mdash;
-          including features, filters, or notifications &mdash; at any time, with or without
+          We may add, change, suspend, or discontinue any part of the service
+          (including features, filters, or notifications) at any time, with or without
           notice. We are not liable to you for any modification, suspension, or
           discontinuation of the service or any feature.
         </p>
       </Prose>
 
-      <SectionHeading number="11" label="Disclaimers &amp; liability">
+      <SectionHeading number="12" label="Disclaimers &amp; liability">
         The honest fine print.
       </SectionHeading>
       <Prose>
@@ -235,7 +315,7 @@ export default function TermsPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="12" label="Termination">
+      <SectionHeading number="13" label="Termination">
         Either of us can end it.
       </SectionHeading>
       <Prose>
@@ -243,13 +323,13 @@ export default function TermsPage() {
           You may stop using the service and delete your account at any time. We may
           suspend or terminate access if you violate these Terms or use the service in
           a way that risks harm to it or to others. Provisions that by their nature
-          should survive termination &mdash; including intellectual property, disclaimers,
-          and liability limits &mdash; will survive.
+          should survive termination (including intellectual property, disclaimers,
+          and liability limits) will survive.
         </p>
       </Prose>
 
-      <SectionHeading number="13" label="Governing law &amp; disputes">
-        Alberta, Canada &mdash; and let's talk first.
+      <SectionHeading number="14" label="Governing law &amp; disputes">
+        Alberta, Canada. Let's talk first.
       </SectionHeading>
       <Prose>
         <p>
@@ -262,7 +342,7 @@ export default function TermsPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="14" label="Changes &amp; contact">
+      <SectionHeading number="15" label="Changes &amp; contact">
         We'll post updates here.
       </SectionHeading>
       <Prose>

@@ -6,6 +6,7 @@ import { buildShareUrl } from '../../lib/shareLink';
 import { brandFilterLabels } from '../../lib/cardBrands';
 import { teamFilterLabels } from '../../lib/teams';
 import { isNativeApp } from '../../lib/native';
+import { X } from 'lucide-react';
 
 const TIER_STYLES = {
   grail:   { bg: 'rgba(255,193,77,0.12)',  color: '#ffc14d', border: 'rgba(255,193,77,0.35)' },
@@ -25,10 +26,10 @@ function buildChips(filters) {
   const hasScarce = ['/250', '/299', '/399', '/499', '/599', '/699', '/799', '/899', '/999'].some((r) => selected.has(r));
 
   if (filters.numberedCards) {
-    if (hasGrail)  chips.push({ label: 'Grail · /1—25',      tier: 'grail' });
-    if (hasUltra)  chips.push({ label: 'Ultra · /26—99',      tier: 'ultra' });
-    if (hasRare)   chips.push({ label: 'Rare · /100—249',     tier: 'rare' });
-    if (hasScarce) chips.push({ label: 'Scarce · /250—999',   tier: 'scarce' });
+    if (hasGrail)  chips.push({ label: 'Grail · /1–25',      tier: 'grail' });
+    if (hasUltra)  chips.push({ label: 'Ultra · /26–99',      tier: 'ultra' });
+    if (hasRare)   chips.push({ label: 'Rare · /100–249',     tier: 'rare' });
+    if (hasScarce) chips.push({ label: 'Scarce · /250–999',   tier: 'scarce' });
     if (filters.customPrintRuns?.length) {
       chips.push({ label: `+${filters.customPrintRuns.length} custom`, tier: 'neutral' });
     }
@@ -45,7 +46,7 @@ function buildChips(filters) {
 
   const min = filters.priceMin || 0;
   const max = filters.priceMax ?? 1000;
-  if (min > 0 || max < 1000) chips.push({ label: `$${min}—$${max}`, tier: 'neutral' });
+  if (min > 0 || max < 1000) chips.push({ label: `$${min}–$${max}`, tier: 'neutral' });
 
   return chips;
 }
@@ -108,7 +109,7 @@ function PaywallModal({ onClose }) {
             color: 'var(--ink-400)',
           }}
         >
-          ✕
+          <X className="w-4 h-4" strokeWidth={1.75} aria-hidden="true" />
         </button>
 
         <p
@@ -153,7 +154,7 @@ function PaywallModal({ onClose }) {
               cursor: loading ? 'wait' : 'pointer',
             }}
           >
-            {loading ? 'Opening checkout…' : 'Start free trial →'}
+            {loading ? 'Opening checkout…' : 'Start free trial'}
           </button>
           <button
             onClick={onClose}

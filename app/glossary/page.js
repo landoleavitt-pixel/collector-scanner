@@ -1,14 +1,14 @@
 import PageShell from '../components/PageShell';
 
 export const metadata = {
-  title: 'Glossary — Fields & Floors Collectors',
+  title: 'Glossary',
   description: 'Trading card collector terminology, defined. RC, /10, refractor, slab, FOTL, and the rest of the hobby\'s vocabulary.',
 };
 
 /* Sorted alphabetically. Add freely. */
 const TERMS = [
-  { term: '1/1', def: 'A card with a print run of exactly one copy. The most exclusive numbered tier — no other example exists.' },
-  { term: 'Auto / On-card auto', def: 'Short for autograph. "On-card" means signed directly on the card stock, which collectors prefer to "sticker auto" — a signed sticker applied to the card during manufacturing.' },
+  { term: '1/1', def: 'A card with a print run of exactly one copy. The rarest numbered tier: no other copy exists.' },
+  { term: 'Auto / On-card auto', def: 'Short for autograph. "On-card" means signed directly on the card stock, which collectors prefer to a "sticker auto", a signed sticker applied to the card during manufacturing.' },
   { term: 'Base / Base card', def: 'The standard, unparalleled version of a card in a set. Usually the most common variant.' },
   { term: 'BGS', def: 'Beckett Grading Services. One of the four major third-party grading companies, alongside PSA, SGC, and CGC. Known for sub-grades.' },
   { term: 'BIN', def: 'Buy It Now. An eBay listing sold at a fixed price, no auction.' },
@@ -23,8 +23,8 @@ const TERMS = [
   { term: 'Grail', def: 'A collector\'s ultimate target card. In Fields & Floors\' filters, "The Grail" tier refers to print runs of 25 or fewer.' },
   { term: 'Hanger', def: 'A retail box format hung on store pegs, smaller than a blaster. Common for Panini Prizm and Topps Chrome.' },
   { term: 'Hobby box', def: 'A sealed box sold through the hobby distribution channel (card shops, online breakers), as opposed to retail. Usually higher per-pack hit rates than retail blasters.' },
-  { term: 'Hot pack', def: 'A pack containing significantly more valuable cards than expected — sometimes intentionally salted, sometimes a fortunate pull.' },
-  { term: 'Insert', def: 'A card that\'s not part of the base set — a parallel, an autograph, a relic, or a special themed subset.' },
+  { term: 'Hot pack', def: 'A pack containing significantly more valuable cards than expected. Sometimes it\'s intentionally salted,, sometimes a fortunate pull.' },
+  { term: 'Insert', def: 'A card that\'s not part of the base set: a parallel, an autograph, a relic, or a special themed subset.' },
   { term: 'Jersey / Patch', def: 'A relic card containing a piece of game-worn or player-worn jersey material. "Patch" specifically refers to multi-color swatches, generally more valuable than plain single-color swatches.' },
   { term: 'Low pop', def: 'A card with a small Pop Report number at a given grade. Low pop + high grade = scarcity = price.' },
   { term: 'Numbered', def: 'A card with a print run printed directly on it, written as "##/total" (e.g., 5/10 means the 5th of 10 printed). See also: The Grail, /N.' },
@@ -38,12 +38,12 @@ const TERMS = [
   { term: 'RC / Rookie Card', def: 'A player\'s officially designated rookie card. The licensing bodies have specific rules about which year and which sets qualify.' },
   { term: 'Redemption', def: 'A card that, instead of the autograph or relic itself, is a coupon redeemable for the real card later. Often a source of frustration when the company is slow to fulfill.' },
   { term: 'Refractor', def: 'A chrome-finish card with a refractive rainbow surface. Originated with Topps Finest; the term is now used broadly.' },
-  { term: 'Relic', def: 'A card containing a piece of game-used or player-used material — jersey, bat, ball, helmet.' },
-  { term: 'Retail', def: 'The mass-market distribution channel — Target, Walmart, drugstores. Lower hit rates and different parallels than hobby.' },
+  { term: 'Relic', def: 'A card containing a piece of game-used or player-used material, such as a jersey, bat, ball or helmet.' },
+  { term: 'Retail', def: 'The mass-market distribution channel: Target, Walmart, drugstores. Lower hit rates and different parallels than hobby.' },
   { term: 'SGC', def: 'Sportscard Guaranty. A grading company known for its tuxedo-black insert label and reputation for vintage card grading.' },
-  { term: 'Short Print / SP / SSP', def: 'Cards intentionally produced in lower quantities than the base set. SSP — Super Short Print — is rarer still.' },
+  { term: 'Short Print / SP / SSP', def: 'Cards intentionally produced in lower quantities than the base set. An SSP (Super Short Print) is rarer still.' },
   { term: 'Sticker auto', def: 'An autograph signed on a sticker, which is then applied to the card during manufacturing. Generally less prized than on-card autos.' },
-  { term: 'Variation', def: 'A printing or photo variant of a card — different image, different color, different jersey number. Often deliberately released as chase cards.' },
+  { term: 'Variation', def: 'A printing or photo variant of a card: different image, different color, different jersey number. Often deliberately released as chase cards.' },
   { term: '/N', def: 'Shorthand for a print run. "/10" means numbered to ten. Read aloud as "numbered to ten."' },
 ];
 

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import PageShell, { SectionHeading, Prose } from '../../components/PageShell';
+import { ArrowRight } from 'lucide-react';
 
 // /app/guides/print-runs/page.js
 //
@@ -20,7 +21,7 @@ export const metadata = {
   openGraph: {
     title: 'The complete guide to print runs in sports cards',
     description:
-      'What /5, /10, /99, /199, and /499 actually mean — and why the same player can sell for $40 or $4,000 depending on this one number.',
+      'What /5, /10, /99, /199, and /499 actually mean, and why the same player can sell for $40 or $4,000 depending on this one number.',
     type: 'article',
     url: 'https://fieldsandfloors.com/guides/print-runs',
     publishedTime: '2026-06-16',
@@ -68,7 +69,7 @@ export default function PrintRunsGuide() {
       <PageShell
         eyebrow="Numbered cards"
         title="What print runs actually mean."
-        lede="Every collector eventually trips over this number. The same Mike Trout rookie can sell for $40 or $4,000 — and the difference is often just whatever is stamped after the slash. Here's how it works, why it matters, and how to find what you're looking for."
+        lede="Every collector eventually trips over this number. The same Mike Trout rookie can sell for $40 or $4,000. The difference is often just whatever is stamped after the slash. Here's how it works, why it matters, and how to find what you're looking for."
       >
         <SectionHeading number="01" label="The basics">
           What you're looking at when you see /99.
@@ -78,7 +79,7 @@ export default function PrintRunsGuide() {
             When you see a card listed as <strong>"/99"</strong> or <strong>"#23/99"</strong>,
             that number tells you exactly how many copies of that specific card the
             manufacturer produced. The "/99" is the print run. The "23" (when it's
-            printed on the card itself) is the serial number — that particular card's
+            printed on the card itself) is the serial number: that particular card's
             position in the run.
           </p>
           <p>
@@ -89,8 +90,8 @@ export default function PrintRunsGuide() {
             card is worth.
           </p>
           <p>
-            Not every card is numbered. Base cards — the most common, unnumbered
-            versions you'll see in a pack — are produced in huge quantities, often
+            Not every card is numbered. Base cards, the most common unnumbered
+            versions you'll see in a pack, are produced in huge quantities, often
             millions. Numbered parallels are the rarer versions of the same player's
             card, with the print run printed somewhere on the front or back.
           </p>
@@ -102,7 +103,7 @@ export default function PrintRunsGuide() {
         <Prose>
           <p>
             Take any modern rookie. A base card might sell for under a dollar. A
-            numbered parallel of the same card — same player, same year, same set —
+            numbered parallel of the same card (same player, same year, same set)
             might sell for $50 or $5,000 depending on what comes after the slash.
             The reason is pure supply and demand: fewer copies in circulation means
             more competition among buyers when one shows up.
@@ -111,14 +112,14 @@ export default function PrintRunsGuide() {
             But the relationship between print run and price isn't linear. A /99
             is not "five times rarer" than a /499, even though the math says it is.
             In practice, /99 cards trade at a premium far above 5x because they
-            occupy a different psychological tier — collectors think of them as
+            occupy a different psychological tier. Collectors think of them as
             "rare" while /499 is "common parallel." The number alone changes how the
             market categorizes a card.
           </p>
           <p>
             This is why understanding print run tiers (next section) is more useful
             than memorizing exact numbers. Collectors don't price cards by exact
-            print run — they price by the tier the print run falls into.
+            print run. They price by the tier the print run falls into.
           </p>
         </Prose>
 
@@ -128,38 +129,38 @@ export default function PrintRunsGuide() {
         <Prose>
           <p>
             After watching thousands of card sales, a tier structure emerges. These
-            aren't official manufacturer designations — they're how the market
+            aren't official manufacturer designations. They're how the market
             consistently behaves at different rarity levels.
           </p>
 
           <h3 className="font-display text-xl mt-8 mb-2 text-[var(--gold-bright)]">
-            /1 — One of one
+            /1: One of one
           </h3>
           <p>
             Literally the only copy in existence. Often labeled "1/1" on the card
             itself. These are pursued by completists and high-end collectors and
-            trade at a steep premium — for star rookies, easily 10-50x the next
+            trade at a steep premium. For star rookies, that's easily 10-50x the next
             tier. Auction-only territory for most players.
           </p>
 
           <h3 className="font-display text-xl mt-8 mb-2 text-[var(--gold-bright)]">
-            /5 to /25 — Grail tier
+            /5 to /25: Grail tier
           </h3>
           <p>
             The "I might own this someday" range for serious collectors. /5 and
             /10 parallels of a top rookie can hit five-figure prices. /25 is the
             sweet spot where serious money still meets sometimes-attainable supply.
             Important detail: gold parallels in Topps Chrome and Bowman Chrome are
-            typically /50, which lands at the edge of this tier — premium but
+            typically /50, which lands at the edge of this tier: premium but
             findable.
           </p>
 
           <h3 className="font-display text-xl mt-8 mb-2 text-[var(--gold-bright)]">
-            /50 to /99 — Ultra rare
+            /50 to /99: Ultra rare
           </h3>
           <p>
             Where most collectors stop chasing because prices stay sane. /99 is
-            arguably the most-traded numbered tier in modern cards — common enough
+            arguably the most-traded numbered tier in modern cards. It's common enough
             to find on eBay weekly, rare enough to command real premiums. Most
             modern Refractors and color parallels live here. If you're starting
             out and want to own numbered cards without spending grail money, this
@@ -167,17 +168,17 @@ export default function PrintRunsGuide() {
           </p>
 
           <h3 className="font-display text-xl mt-8 mb-2 text-[var(--gold-bright)]">
-            /100 to /499 — Rare
+            /100 to /499: Rare
           </h3>
           <p>
             Still numbered, still parallels, but the print run is high enough that
             supply is consistent. These usually trade at modest premiums over base
-            cards — say 2-5x — rather than the 10-50x of lower-numbered cards. For
+            cards (say 2-5x) rather than the 10-50x of lower-numbered cards. For
             many players the /199 tier is the entry point into numbered collecting.
           </p>
 
           <h3 className="font-display text-xl mt-8 mb-2 text-[var(--gold-bright)]">
-            /500 and above — Scarce
+            /500 and above: Scarce
           </h3>
           <p>
             Technically numbered but practically common. /999 cards in particular
@@ -203,7 +204,7 @@ export default function PrintRunsGuide() {
             number from the same run for top players.
           </p>
           <p>
-            <strong>The last card (X/X)</strong> — for example, 99/99 — also
+            <strong>The last card (X/X)</strong>, for example 99/99, also
             carries a premium, smaller than the #1 but real. The thinking: this is
             the final copy printed.
           </p>
@@ -216,7 +217,7 @@ export default function PrintRunsGuide() {
           </p>
           <p>
             For everything else, the specific serial number generally doesn't
-            change the value much — a 47/99 trades like any other "random number"
+            change the value much. A 47/99 trades like any other "random number"
             from that run.
           </p>
         </Prose>
@@ -234,7 +235,7 @@ export default function PrintRunsGuide() {
           </p>
           <p>
             The reason is that eBay's listing format doesn't have a structured
-            "print run" field — sellers type the print run into the title in any
+            "print run" field. Sellers type the print run into the title in any
             format they want. <em>"Bobby Witt Jr Refractor #/99," "BWJ /99,"
             "Witt /99 Refractor SP,"</em> and <em>"2024 Witt Refractor 99"</em> are
             all the same card from a search standpoint, but eBay's keyword matcher
@@ -243,7 +244,7 @@ export default function PrintRunsGuide() {
           <p>
             This is the problem <Link href="/" className="text-[var(--gold-bright)] underline decoration-1 underline-offset-[3px]">Fields &amp; Floors</Link>{' '}
             was built to solve. Our search parses each listing title against a
-            pattern that knows what a print run looks like — and crucially, knows
+            pattern that knows what a print run looks like and, crucially, knows
             what print runs <em>don't</em> look like (years, dates, inventory
             counts, prices). You filter by exact print run, and the false
             positives don't reach you.
@@ -256,7 +257,7 @@ export default function PrintRunsGuide() {
         <Prose>
           <p>
             <strong>Card numbers vs print runs.</strong> A card might have "#100"
-            on the front — that's the card number within the set, not a print run.
+            on the front. That's the card number within the set, not a print run.
             The 2024 Topps Chrome set has cards numbered #1 through #220, and they
             all have huge unnumbered base print runs. The print run, when it
             exists, will be formatted as a fraction or follow the word "of": "/99"
@@ -300,9 +301,9 @@ export default function PrintRunsGuide() {
             That's the difference between "I check eBay every day at 9pm" and "I
             found out about the listing 11 minutes after it went up." You can
             save searches with filters by exact print run, autograph status, and
-            price ceiling — and we'll email you when something matches.{' '}
+            price ceiling, and we'll email you when something matches.{' '}
             <Link href="/pricing" className="text-[var(--gold-bright)] underline decoration-1 underline-offset-[3px]">
-              See pricing &rarr;
+              See pricing <ArrowRight className="inline-block w-3.5 h-3.5 ml-1 -mt-0.5" strokeWidth={2} aria-hidden="true" />
             </Link>
           </p>
         </Prose>
@@ -343,7 +344,7 @@ export default function PrintRunsGuide() {
             className="inline-flex items-center justify-center px-6 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase transition-opacity hover:opacity-90"
             style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}
           >
-            Try a search &rarr;
+            Try a search <ArrowRight className="inline-block w-3.5 h-3.5 ml-1 -mt-0.5" strokeWidth={2} aria-hidden="true" />
           </Link>
         </div>
       </PageShell>

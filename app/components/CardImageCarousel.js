@@ -26,6 +26,7 @@
 //   onLensActive    - optional, fires (true/false) when lens engages
 
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { ImageOff } from 'lucide-react';
 
 const MAGNIFIER_DIAM = 180;
 const MAGNIFIER_ZOOM = 2.5;
@@ -181,7 +182,7 @@ export default function CardImageCarousel({
         />
       ) : (
         <div className="w-full h-full flex items-center justify-center font-serif italic text-5xl"
-             style={{ color: 'var(--ink-600)' }}>◇</div>
+             style={{ color: 'var(--ink-600)' }}><ImageOff className="w-7 h-7" strokeWidth={1.5} aria-hidden="true" /></div>
       )}
 
       {lensStyle && <div style={lensStyle} aria-hidden="true" />}

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { buildShareUrl } from '../../lib/shareLink';
+import { ArrowUpRight, Check } from 'lucide-react';
 
 /**
  * ShareSearchButton — copies (or natively shares) a link that reproduces
@@ -66,7 +67,7 @@ export default function ShareSearchButton({ query, filters, allPresetRuns = [], 
       onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--line)'; }}
       aria-label="Share this search"
     >
-      <span aria-hidden="true">{status === 'idle' ? '↗' : '✓'}</span>
+      {status === 'idle' ? <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={1.75} aria-hidden="true" /> : <Check className="w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" />}
       {label}
     </button>
   );

@@ -23,7 +23,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { ArrowUpRight, X, Star } from 'lucide-react';
+import { ArrowUpRight, X, Star, ArrowLeft, Check } from 'lucide-react';
 import RarityTree from './RarityTree';
 import CardImageCarousel from './CardImageCarousel';
 import { parseSetFromTitle } from '../../lib/parseSetFromTitle';
@@ -162,7 +162,7 @@ function CardModalInner({ item, printRun, onClose, expired = false }) {
     if (!item?.id) return;
     const url = `https://fieldsandfloors.com/share/card?card=${encodeURIComponent(item.id)}`;
     const text = item.title
-      ? `${item.title} — on Fields & Floors`
+      ? `${item.title} · Fields & Floors`
       : 'Check out this card on Fields & Floors';
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
@@ -479,13 +479,13 @@ function CardModalInner({ item, printRun, onClose, expired = false }) {
             This listing has ended.
           </p>
           <p className="text-[13px] leading-relaxed mb-5" style={{ color: 'var(--ink-200)' }}>
-            The card you&apos;re trying to view is no longer available on eBay —
-            it may have sold, been removed by the seller, or expired.
+            The card you&apos;re trying to view is no longer available on eBay.
+            It may have sold, been removed by the seller, or expired.
           </p>
           <button onClick={handleClose} data-no-tilt
                   className="text-[10px] uppercase tracking-[0.18em] font-semibold px-5 py-2.5 rounded"
                   style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
-            ← Back to search
+            <ArrowLeft className="inline-block w-3.5 h-3.5 mr-1 -mt-0.5" strokeWidth={2} aria-hidden="true" />Back to search
           </button>
         </div>
       </div>
@@ -704,13 +704,13 @@ function CardModalInner({ item, printRun, onClose, expired = false }) {
                   </span>
                 )}
                 {item.isAuction && (
-                  <span className="text-[10px] uppercase tracking-[0.16em] font-medium px-2 py-1 rounded"
+                  <span className="text-[11px] font-medium px-2 py-1 rounded"
                         style={{ background: 'rgba(201,122,58,0.10)', color: '#e6a86b', border: '0.5px solid rgba(201,122,58,0.4)' }}>
                     Live auction
                   </span>
                 )}
                 {item.condition && item.condition !== 'Unknown' && (
-                  <span className="text-[10px] uppercase tracking-[0.16em] px-2 py-1 rounded"
+                  <span className="text-[11px] px-2 py-1 rounded"
                         style={{ background: 'rgba(232,226,213,0.04)', color: 'var(--ink-200)', border: '0.5px solid rgba(232,226,213,0.16)' }}>
                     {item.condition}
                   </span>
@@ -753,7 +753,7 @@ function CardModalInner({ item, printRun, onClose, expired = false }) {
               {/* CTA row */}
               <div className="flex gap-2 mb-4">
                 <a href={item.url} target="_blank" rel="noopener noreferrer" data-no-tilt
-                   className="flex-1 inline-flex items-center justify-center gap-1.5 text-[10px] uppercase tracking-[0.18em] font-semibold rounded px-4 py-2.5"
+                   className="flex-1 inline-flex items-center justify-center gap-1.5 text-[11px] uppercase tracking-[0.16em] font-semibold rounded px-4 py-2.5"
                    style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
                   View on eBay
                   <ArrowUpRight size={12} strokeWidth={2} />
@@ -765,7 +765,7 @@ function CardModalInner({ item, printRun, onClose, expired = false }) {
                 <button onClick={toggleWatch} data-no-tilt disabled={watchBusy}
                         aria-label={isWatched ? 'Remove from watchlist' : 'Add to watchlist'}
                         aria-pressed={isWatched}
-                        className="flex-none inline-flex items-center justify-center gap-1.5 text-[10px] uppercase tracking-[0.18em] font-medium rounded px-4 py-2.5 transition-colors"
+                        className="flex-none inline-flex items-center justify-center gap-1.5 text-[11px] uppercase tracking-[0.16em] font-medium rounded px-4 py-2.5 transition-colors"
                         style={{
                           background: isWatched ? 'rgba(212,175,92,0.10)' : 'transparent',
                           color: isWatched ? 'var(--gold-bright)' : 'var(--ink-100)',
@@ -779,16 +779,20 @@ function CardModalInner({ item, printRun, onClose, expired = false }) {
                 </button>
                 <button onClick={handleShareCard} data-no-tilt
                         aria-label="Share this card"
-                        className="flex-none inline-flex items-center justify-center gap-1.5 text-[10px] uppercase tracking-[0.18em] font-medium rounded px-4 py-2.5 transition-colors"
+                        className="flex-none inline-flex items-center justify-center gap-1.5 text-[11px] uppercase tracking-[0.16em] font-medium rounded px-4 py-2.5 transition-colors"
                         style={{
                           background: 'transparent',
                           color: shareMsg ? 'var(--gold-bright)' : 'var(--ink-100)',
                           border: `0.5px solid ${shareMsg ? 'rgba(212,175,92,0.5)' : 'rgba(232,226,213,0.18)'}`,
                         }}>
-                  <span aria-hidden="true" style={{ fontSize: 13 }}>{shareMsg ? '✓' : '↗'}</span>
+                  {shareMsg ? <Check className="w-3 h-3" strokeWidth={2} aria-hidden="true" /> : <ArrowUpRight className="w-3 h-3" strokeWidth={2} aria-hidden="true" />}
                   {shareMsg || 'Share'}
                 </button>
               </div>
+              <p className="text-[12px] leading-relaxed -mt-1.5 mb-4" style={{ color: 'var(--ink-400)' }} data-no-tilt>
+                Sold by eBay sellers, not us. Labels are read from listing titles and can be wrong. Check the listing before you buy.{' '}
+                <a href="/terms" className="underline decoration-[var(--line)] underline-offset-2 hover:text-[var(--ink-200)]">Terms</a>
+              </p>
 
               {/* Rarity ladder: always visible */}
               <div className="mt-1" data-no-tilt>

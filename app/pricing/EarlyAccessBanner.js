@@ -57,10 +57,10 @@ export default function EarlyAccessBanner() {
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
         <div className="flex-1 min-w-0">
           <p className="text-[10px] uppercase tracking-[0.22em] text-[var(--gold-bright)] mb-1.5 font-medium">
-            Subscriptions launching
+            Premium
           </p>
           <p className="text-[13px] leading-relaxed text-[var(--ink-200)]">
-            Alerts and bid reminders go live in the next few days. Drop your email and we&apos;ll let you know the moment it ships.
+            Premium is in the works. Leave your email and we&apos;ll tell you when it&apos;s ready.
           </p>
         </div>
 

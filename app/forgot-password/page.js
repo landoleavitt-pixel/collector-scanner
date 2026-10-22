@@ -38,9 +38,6 @@ export default function ForgotPasswordPage() {
         <span className="font-serif text-base" style={{ color: 'var(--ink-200)' }}>
           Fields &amp; Floors
         </span>
-        <span className="ml-auto text-[10px] tracking-[0.12em] uppercase" style={{ color: 'var(--ink-600)' }}>
-          Issue 001 · Est 2026
-        </span>
       </div>
 
       <div className="flex-1 flex items-center justify-center px-6 py-12">
@@ -71,7 +68,7 @@ export default function ForgotPasswordPage() {
                 color: 'var(--gold-bright)',
               }}
             >
-              Check your email — we sent a reset link to {email}.
+              Check your email. We sent a reset link to {email}.
             </div>
           ) : (
             <form onSubmit={handleReset}>

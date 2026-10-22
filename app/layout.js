@@ -15,7 +15,7 @@ export const metadata = {
     template: '%s · Fields & Floors',
   },
   description:
-    'A search instrument for sports card collectors. Filter eBay by autograph, print run, and price simultaneously.',
+    'Search every numbered sports card on eBay by print run, autograph, rookie status and price. Save searches and get an email when a match lists.',
   keywords: [
     'sports cards',
     'card collecting',
@@ -32,7 +32,7 @@ export const metadata = {
     siteName: 'Fields & Floors Collectors',
     title: 'Fields & Floors Collectors',
     description:
-      'A search instrument for sports card collectors. Filter eBay by autograph, print run, rookie status, and price — then save searches and get alerted the moment a new card lists.',
+      'Search every numbered sports card on eBay by print run, autograph, rookie status and price, then save searches and get an email when a new card lists.',
     url: 'https://fieldsandfloors.com',
     locale: 'en_US',
     // app/opengraph-image.png is auto-detected by Next.js — no explicit image needed
@@ -41,7 +41,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'Fields & Floors Collectors',
     description:
-      'A search instrument for sports card collectors. Find the diamonds in the rough on eBay.',
+      'Search every numbered sports card on eBay by print run, autograph and price.',
     // app/twitter-image.png would override the OG image for Twitter specifically;
     // omitting it falls back to the OG image, which is what we want.
   },
@@ -65,7 +65,7 @@ export default function RootLayout({ children }) {
         name: 'Fields & Floors Collectors',
         url: 'https://fieldsandfloors.com',
         description:
-          'A search instrument for sports card collectors. Filters eBay listings by autograph status, print run, rookie cards, condition, and price — features eBay\'s native search does not offer. Save searches and get email alerts the moment a new matching card lists.',
+          'Searches eBay listings by autograph, print run, rookie status, condition and price at the same time, which eBay\'s own search does not offer. Save searches and get email alerts the moment a new matching card lists.',
         applicationCategory: 'BusinessApplication',
         operatingSystem: 'Web Browser',
         offers: [
@@ -73,15 +73,15 @@ export default function RootLayout({ children }) {
             '@type': 'Offer',
             name: 'Free',
             price: '0',
-            priceCurrency: 'USD',
-            description: 'Unlimited search and watchlist',
+            priceCurrency: 'CAD',
+            description: 'Unlimited search and saved searches, watchlist, and 1 email alert.',
           },
           {
             '@type': 'Offer',
             name: 'Base',
-            price: '5',
-            priceCurrency: 'USD',
-            description: 'Automated alerts on saved searches and bid reminders. 14-day free trial.',
+            price: '6.99',
+            priceCurrency: 'CAD',
+            description: 'Email alerts on up to 5 saved searches and bid reminders. $59 CAD a year option. 14-day free trial.',
           },
         ],
         featureList: [
@@ -101,7 +101,7 @@ export default function RootLayout({ children }) {
         name: 'Fields & Floors',
         url: 'https://fieldsandfloors.com',
         logo: 'https://fieldsandfloors.com/icon.png',
-        description: 'A search instrument for sports card collectors.',
+        description: 'Search every numbered sports card on eBay by print run, autograph and price.',
       },
       {
         '@type': 'WebSite',

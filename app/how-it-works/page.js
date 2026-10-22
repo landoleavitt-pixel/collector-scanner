@@ -1,8 +1,9 @@
 import PageShell, { SectionHeading, Prose } from '../components/PageShell';
 import { TourLink } from '../components/SiteTour';
+import { Play } from 'lucide-react';
 
 export const metadata = {
-  title: 'How it works — Fields & Floors Collectors',
+  title: 'How it works',
   description: 'Player verification, numbered card tiers, and how Fields & Floors filters the eBay marketplace differently.',
 };
 
@@ -17,14 +18,14 @@ export default function HowItWorksPage() {
         className="inline-flex items-center gap-2 mb-12 rounded-lg px-3.5 py-2 text-[13px] font-medium text-[var(--gold-bright)] hover:text-[var(--gold)] transition-colors"
         style={{ border: '0.5px solid var(--gold-deep)' }}
       >
-        <span aria-hidden="true">▶</span> Take the 1-minute tour
+        <Play className="inline-block w-3.5 h-3.5 -mt-0.5" strokeWidth={2} fill="currentColor" aria-hidden="true" /> Take the 1-minute tour
       </TourLink>
       <SectionHeading number="01" label="Verification">
         We confirm the player is actually in the title.
       </SectionHeading>
       <Prose>
         <p>
-          Type <code>Cooper Flagg</code> into eBay and you'll get Cooper Flagg cards — along with stacks of unrelated listings that happen to contain the words "Cooper" or "Flagg." Bulk lots. Misindexed cards. Sellers stuffing keywords.
+          Type <code>Cooper Flagg</code> into eBay and you'll get Cooper Flagg cards, along with stacks of unrelated listings that happen to contain the words "Cooper" or "Flagg." Bulk lots. Misindexed cards. Sellers stuffing keywords.
         </p>
         <p>
           We verify that the full player name (or a known variant) appears in the listing title before showing it to you. <strong>"Robert Williams"</strong> stops surfacing when you search for <strong>"Cooper Flagg."</strong> The eBay API doesn't do this for you. We do it after.
@@ -39,22 +40,22 @@ export default function HowItWorksPage() {
       </SectionHeading>
       <Prose>
         <p>
-          eBay has no concept of a print run. A card numbered <code>/10</code> is just text in a title to them — indistinguishable from <code>"2024-25 season"</code> or <code>"5/25/2024"</code> or <code>"+NEW 12/12"</code> stock counts.
+          eBay has no concept of a print run. A card numbered <code>/10</code> is just text in a title to them, no different from <code>"2024-25 season"</code> or <code>"5/25/2024"</code> or <code>"+NEW 12/12"</code> stock counts.
         </p>
         <p>
-          Our parser knows the difference. It catches the real ones — <code>/10</code>, <code>#5/10</code>, <code>1/1</code>, <code>numbered to 25</code>, <code>2/10</code>, <code>jersey #44/99</code> — and rejects the false positives: season years, calendar dates, inventory counts, card numbers without a denominator.
+          Our parser knows the difference. It catches the real ones (<code>/10</code>, <code>#5/10</code>, <code>1/1</code>, <code>numbered to 25</code>, <code>2/10</code>, <code>jersey #44/99</code>) and rejects the false positives: season years, calendar dates, inventory counts, card numbers without a denominator.
         </p>
         <p>
           Once a real print run is found, we sort it into a tier. Collectors think in tiers, so the filter speaks the same language:
         </p>
         <ul>
-          <li><strong>The Grail</strong> — numbered 1 to 25. The 1/1s and the lowest-pop chase cards.</li>
-          <li><strong>Ultra Rare</strong> — numbered 26 to 99. Still scarce, still desirable, more attainable.</li>
-          <li><strong>Rare</strong> — numbered 100 to 249. The standard "numbered" tier.</li>
-          <li><strong>Scarce</strong> — numbered 250 to 999. The widest band of numbered cards.</li>
+          <li><strong>The Grail</strong>: numbered 1 to 25. The 1/1s and the lowest-pop chase cards.</li>
+          <li><strong>Ultra Rare</strong>: numbered 26 to 99. Still scarce, still desirable, more attainable.</li>
+          <li><strong>Rare</strong>: numbered 100 to 249. The standard "numbered" tier.</li>
+          <li><strong>Scarce</strong>: numbered 250 to 999. The widest band of numbered cards.</li>
         </ul>
         <p>
-          You can also enter a custom print run — <code>/73</code>, <code>/88</code>, <code>/42</code>, any oddball denominator a specific set uses. Chain them together and we'll surface listings that match any of them.
+          You can also enter a custom print run: <code>/73</code>, <code>/88</code>, <code>/42</code>, any oddball denominator a specific set uses. Chain them together and we'll surface listings that match any of them.
         </p>
       </Prose>
 
@@ -80,11 +81,11 @@ export default function HowItWorksPage() {
         <p>
           We don't sell anything. We don't take a cut of your transactions. We
           don't run our own marketplace. Every listing on Fields &amp; Floors is a
-          real eBay listing &mdash; clicking through takes you to eBay and you check
+          real eBay listing. Clicking through takes you to eBay and you check
           out there.
         </p>
         <p>
-          Saved searches and automated alerts are part of our Base plan &mdash; we
+          Saved searches and automated alerts are part of our Base plan. We
           watch eBay for you and email when a new listing matches your filters.
           See <a href="/alerts">Alerts</a> for details.
         </p>

@@ -320,7 +320,7 @@ export default function SubscribePage() {
             </h1>
             <p className="text-[13px] leading-relaxed" style={{ color: 'var(--ink-400)' }}>
               You'll be redirected to secure checkout to start your 14-day free trial.
-              Hang tight — should be a second.
+              One moment.
             </p>
           </>
         )}

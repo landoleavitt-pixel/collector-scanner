@@ -1,10 +1,11 @@
 import Link from 'next/link';
 import EarlyAccessBanner from './EarlyAccessBanner';
+import { Check, Plus } from 'lucide-react';
 
 export const metadata = {
-  title: 'Pricing — Fields & Floors Collectors',
+  title: 'Pricing',
   description:
-    'Searching is always free. Turn on alerts for your saved searches with a 14-day free trial of Base — $6.99 CAD/month.',
+    'Searching is always free. Turn on alerts for your saved searches with a 14-day free trial of Base, then $6.99 CAD a month.',
 };
 
 /* Single tier card. `hero` = the paid plan we want most visible.
@@ -73,7 +74,7 @@ function Tier({ name, tagline, price, per, cta, fineprint, features, hero = fals
         {features.map((f, i) => (
           <li key={i} className="flex gap-2.5 items-start text-[13px] leading-snug" style={{ color: f.muted ? '#8a8071' : 'var(--ink-200)' }}>
             <span className="flex-none mt-px font-bold" style={{ color: f.muted ? 'var(--gold-deep)' : 'var(--gold-bright)' }}>
-              {f.muted ? '+' : '✓'}
+              {f.muted ? <Plus className="w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" /> : <Check className="w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" />}
             </span>
             <span>{f.node}</span>
           </li>
@@ -96,33 +97,12 @@ export default function PricingPage() {
             Searching is always <em className="italic text-[var(--gold-bright)]">free.</em>
           </h1>
           <p className="mt-6 text-lg text-[var(--ink-200)] leading-relaxed max-w-[56ch] mx-auto text-pretty rise" style={{ animationDelay: '160ms' }}>
-            Hunt every numbered, auto, and rookie on eBay for nothing. Turn on alerts when you want the rare ones to come to you.
+            Search every numbered, autographed and rookie card on eBay for free. Alerts start at $6.99 a month.
           </p>
         </header>
 
-        {/* Early-access banner — paid subscriptions are imminent but not live yet.
-            Capture interested emails so we can notify them the day it ships,
-            instead of letting the rare high-intent visitor dead-end. */}
-        <EarlyAccessBanner />
-
-        {/* Paid tier listed first and styled as the hero so it's the easiest thing to see */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch rise" style={{ animationDelay: '240ms' }}>
-          <Tier
-            hero
-            ribbon="14-day free trial"
-            name="Base"
-            tagline="Let the rare ones come to you."
-            price="$6.99"
-            per="/ month"
-            cta={{ label: 'Start 14-day free trial', href: '/signup?next=/subscribe' }}
-            fineprint="Card required · we'll remind you before it bills"
-            features={[
-              { node: 'Everything in Free' },
-              { node: <>Alerts on up to <b className="text-[var(--ink-100)]">5 saved searches</b> at a time (free has 1)</> },
-              { node: 'Bid reminders' },
-              { node: 'Cancel anytime' },
-            ]}
-          />
+        {/* Same three plans as the home page: Free · Base (raised) · Premium (coming soon) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch rise" style={{ animationDelay: '240ms' }}>
           <Tier
             name="Free"
             tagline="Everything you need to hunt, by hand."
@@ -139,29 +119,37 @@ export default function PricingPage() {
             ]}
           />
           <Tier
-            soon
-            ribbon="Coming soon"
-            name="Premium"
-            tagline="More searches. Price-drop alerts."
+            hero
+            ribbon="14-day free trial"
+            name="Base"
+            tagline="Email alerts on up to 5 saved searches."
+            price="$6.99"
+            per="/ month"
+            cta={{ label: 'Start 14-day free trial', href: '/signup?next=/subscribe' }}
+            fineprint="or $59/yr, over 3 months free · 14-day free trial"
             features={[
-              { node: 'More saved searches', muted: true },
-              { node: 'Price-drop alerts', muted: true },
+              { node: 'Everything in Free' },
+              { node: <>Alerts on up to <b className="text-[var(--ink-100)]">5 saved searches</b> at a time (free has 1)</> },
+              { node: 'Bid reminders' },
+              { node: 'Cancel anytime' },
             ]}
           />
           <Tier
             soon
             ribbon="Coming soon"
-            name="Pro"
-            tagline="For the serious hunter."
+            name="Premium"
+            tagline="Coming soon. Tell us what you'd want in it."
             features={[
-              { node: 'Faster, near-real-time alerts', muted: true },
-              { node: 'Highest saved-search limits', muted: true },
+              { node: <>Ideas welcome at <Link href="/contact" className="underline decoration-[var(--gold-deep)] underline-offset-2 hover:text-[var(--gold-bright)]">Support</Link></>, muted: true },
             ]}
           />
         </div>
 
+        {/* Premium waitlist: emails go to /api/waitlist. */}
+        <div className="mt-10"><EarlyAccessBanner /></div>
+
         <p className="text-center text-[var(--ink-600)] text-xs mt-12 leading-relaxed">
-          Prices in USD · Billed securely · Cancel anytime, no questions asked.
+          Prices in CAD, plus applicable taxes. Cancel anytime.
         </p>
       </div>
     </main>

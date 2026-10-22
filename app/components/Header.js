@@ -7,6 +7,7 @@ import Seal from './Seal';
 import { useUser } from '../../lib/useUser';
 import { createClient } from '../../lib/supabaseClient';
 import { isNativeApp, unregisterPush, openAppleSubscriptions } from '../../lib/native';
+import { ArrowLeft } from 'lucide-react';
 
 export default function Header() {
   const pathname = usePathname();
@@ -197,7 +198,7 @@ export default function Header() {
               href="/"
               className="text-[11px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
             >
-              ← Back to search
+              <ArrowLeft className="inline-block w-3.5 h-3.5 mr-1 -mt-0.5" strokeWidth={2} aria-hidden="true" />Back to search
             </Link>
           )}
 
@@ -430,7 +431,7 @@ function CloseAccountDialog({ onClose, appleBilled }) {
         {appleBilled && (
           <p className="text-[13px] leading-relaxed mb-4" style={{ color: 'var(--gold-bright)' }}>
             Your subscription is billed by Apple, so we can&rsquo;t cancel it for you.
-            Cancel it in Settings &rarr; your name &rarr; Subscriptions, or you&rsquo;ll keep being charged.
+            Cancel it in Settings &gt; your name &gt; Subscriptions, or you&rsquo;ll keep being charged.
           </p>
         )}
         <label
