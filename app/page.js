@@ -1731,6 +1731,8 @@ function PlansSection({ user }) {
 function SignedInHome({ query, setQuery, onSearch, onSuggested, recentSearches = [], onCardClick, error }) {
   // Save a card starred while signed out, now that they're back signed in.
   usePendingStarSave();
+  // Same as-you-type player and team suggestions as the visitor search.
+  const suggest = useSuggestBox(query, (v) => setQuery(v));
   const [native, setNative] = useState(false);
   useEffect(() => { setNative(isNativeApp()); }, []);
   const [saved, setSaved] = useState([]);
@@ -1761,14 +1763,19 @@ function SignedInHome({ query, setQuery, onSearch, onSuggested, recentSearches =
   return (
     <section className="max-w-[1040px] mx-auto px-5 md:px-6 lg:px-10 pt-8 md:pt-12 pb-16">
       <form
-        onSubmit={(e) => { e.preventDefault(); onSearch(); }}
+        ref={suggest.anchorRef}
+        onSubmit={(e) => { e.preventDefault(); suggest.close(); onSearch(); }}
         className="flex items-center gap-2.5 rounded-xl pl-4 pr-1.5 py-1.5"
         style={{ background: 'var(--bg-elev)', border: '1px solid var(--gold-deep)' }}
       >
         <Search className="w-[18px] h-[18px] flex-none" strokeWidth={1.75} style={{ color: 'var(--ink-400)' }} aria-hidden="true" />
         <input
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => { setQuery(e.target.value); suggest.openBox(); }}
+          onKeyDown={(e) => { suggest.handleKey(e); }}
+          onFocus={suggest.openBox}
+          onBlur={suggest.close}
+          {...suggest.inputProps}
           placeholder="Search a player or team"
           aria-label="Search a player or team"
           className="flex-1 min-w-0 bg-transparent outline-none text-[16px] py-2.5"
@@ -1778,6 +1785,7 @@ function SignedInHome({ query, setQuery, onSearch, onSuggested, recentSearches =
           <ArrowRight className="w-5 h-5" strokeWidth={2} />
         </button>
       </form>
+      {suggest.dropdown}
       {error && <p className="text-[13px] mt-2" style={{ color: 'var(--crit)' }}>{error}</p>}
 
       {(saved.length > 0 || recents.length > 0) && (
@@ -1798,7 +1806,7 @@ function SignedInHome({ query, setQuery, onSearch, onSuggested, recentSearches =
       )}
 
       <SinceLastVisit home={home} hasSaved={saved.length > 0} />
-      <LiveRightNow onCardClick={onCardClick} />
+      <LiveRightNow onCardClick={onCardClick} recentSearches={recentSearches} />
 
       {!native && home && home.tier === 'free' && (
         <div className="flex items-center justify-between gap-3 mt-8 rounded-xl px-4 py-3 text-[14px]" style={{ border: '1px solid var(--line)', color: 'var(--ink-200)' }}>
@@ -1910,15 +1918,28 @@ function SinceLastVisit({ home, hasSaved }) {
   );
 }
 
-function LiveRightNow({ onCardClick }) {
+/* LiveRightNow — live cards from the member's own hunts (their newest saved
+   searches, then recently searched players) via /api/live-for-you, which
+   caches each search for an hour. Falls back to the featured Grail cards
+   when they have no hunts yet or nothing comes back. */
+function LiveRightNow({ onCardClick, recentSearches = [] }) {
   const [items, setItems] = useState(null);
+  const recentKey = recentSearches.slice(0, 2).join('|');
   useEffect(() => {
     let cancelled = false;
-    fetch('/api/featured').then((r) => (r.ok ? r.json() : null)).then((d) => {
-      if (!cancelled) setItems(d?.items || (d?.featured ? [d.featured] : []));
-    }).catch(() => { if (!cancelled) setItems([]); });
+    const featured = () => fetch('/api/featured').then((r) => (r.ok ? r.json() : null))
+      .then((d) => d?.items || (d?.featured ? [d.featured] : []));
+    fetch('/api/live-for-you', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ recent: recentKey ? recentKey.split('|') : [] }),
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => (d?.items?.length ? d.items : featured()))
+      .then((list) => { if (!cancelled) setItems(list || []); })
+      .catch(() => featured().then((list) => { if (!cancelled) setItems(list || []); }).catch(() => { if (!cancelled) setItems([]); }));
     return () => { cancelled = true; };
-  }, []);
+  }, [recentKey]);
   if (items && items.length === 0) return null;
   return (
     <>
@@ -1937,6 +1958,9 @@ function LiveRightNow({ onCardClick }) {
               {it?.printRun && <TierChip run={`/${it.printRun}`} />} {it?.title || ''}
             </span>
             <span className="block text-[14px] font-medium mt-1.5">{it ? featuredPrice(it) : ''}</span>
+            {it?.from && (
+              <span className="block text-[12px] mt-0.5 truncate" style={{ color: 'var(--ink-400)' }}>From {it.from}</span>
+            )}
           </button>
         ))}
       </div>

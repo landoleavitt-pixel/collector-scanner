@@ -31,6 +31,7 @@ Everything Landon has decided, so no agent ever asks him the same thing twice. O
 - Professional-polish audit (mockups/professional-polish.html) **approved, except the hero motion, which stays as it is** (float, shimmer, glow, live dot). (2026-10-21)
 - Premium plan card says "Coming soon. Tell us what you'd want in it.", with no invented features. (2026-10-21)
 - Signed-in home **approved as mocked** (mockups/signed-in-home.html A and B): search first, saved and recent searches as chips, "Since you were last here" (new matches, price drops, ending soon), 5 live cards, and one upgrade line for free members. Leaner in the app. (2026-10-21)
+- On the signed-in home, **"Live right now" shows live cards from the member's own saved searches and recently searched players**, rarest first. It falls back to featured Grail cards when they have none. (2026-10-22)
 - Signed-out How it works is **3 icons** ("Pick print runs" · "Star cards" · "Get alerted"). Plans are a **price plus one line each**. (2026-10-21)
 - The home page is **too wordy**. Redo it as show, don't tell: about 25 words above the fold, the eBay comparison shown with real cards instead of a text table, How it works as icons plus 3–4 words, Plans as a price plus one line. Mockup first. (2026-10-21)
 - eBay comparison, row 1: eBay *can* search several print runs, but only through Advanced Search or a boolean search, so we say we let you **easily** pick them. Landon asked for this to be strictly accurate. (2026-10-21)

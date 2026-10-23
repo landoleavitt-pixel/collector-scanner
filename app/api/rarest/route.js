@@ -16,6 +16,7 @@
  */
 import { NextResponse } from 'next/server';
 import { POST as search } from '../search/route';
+import { printRunOf } from '../../../lib/printRun';
 
 const PLAYERS = ['Paul Skenes', 'Caitlin Clark', 'Shohei Ohtani', 'Victor Wembanyama'];
 const RUNS = ['/1', '/5', '/10', '/15', '/25', '/49', '/50'];
@@ -26,18 +27,8 @@ const TTL_MS = 60 * 60 * 1000;
 
 let cache = null; // { at, body }
 
-// The print run in a title, limited to the runs we searched for.
-function runOf(title) {
-  const t = String(title || '');
-  const allowed = new Set(RUNS.map((r) => Number(r.slice(1))));
-  const found = [];
-  for (const m of t.matchAll(/(?:^|[^\d])\/\s*(\d{1,3})\b/g)) found.push(Number(m[1]));
-  for (const m of t.matchAll(/\b(\d{1,3})\s*\/\s*(\d{1,3})\b/g)) {
-    if (Number(m[1]) <= Number(m[2])) found.push(Number(m[2]));
-  }
-  const ok = found.filter((n) => allowed.has(n));
-  return ok.length ? Math.min(...ok) : null;
-}
+const ALLOWED_RUNS = new Set(RUNS.map((r) => Number(r.slice(1))));
+const runOf = (title) => printRunOf(title, ALLOWED_RUNS);
 
 async function build() {
   const day = Math.floor(Date.now() / 86_400_000);

@@ -17,6 +17,7 @@ The single list of work that's finished or in progress but **not live yet**. The
 
 | When | What | Commit |
 |---|---|---|
+| 2026-10-22 | Signed-in "Live right now" from the member's saved and recent searches (cached hourly); as-you-type suggestions on the signed-in search | (live) |
 | 2026-10-22 | Home redesign: "The Grail Hunter" signed-out hero with real-card strip, 3-icon How it works, short Plans; simple signed-in home (search, saved searches, since last visit, live cards) | 6c9dafb |
 | 2026-10-21 | Professional polish: untrue lines fixed, slogans and decoration removed, lucide icons, no em-dashes, fewer all-caps labels, glow removed, Premium "coming soon" (hero motion kept); "Search tool only" disclaimer: Terms section 2 (legal style) + card popup line + footer line; pricing page fixed (CAD, no Pro, no stale banner); eBay comparison row 1 accuracy | e9c50bf |
 | 2026-10-21 | Subscribe page: annual badge "Over 3 months free"; "plus applicable taxes" under web prices; iOS bottom tab bar (step 4) + fix undefined --ink-500; "Why not just search eBay?" comparison + new hero sub copy (Landon's request) | 0fd2dd8 |
