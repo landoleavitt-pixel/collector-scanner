@@ -267,6 +267,8 @@ Deno.serve(async (_req) => {
 // one is sent once. reminder_max_price (optional) still gates every send.
 const REMINDER_OFFSETS = [180, 60, 30, 15, 5];
 const MAX_OFFSET_MIN = Math.max(...REMINDER_OFFSETS);
+// How often the reminder-only cron job runs (minutes).
+const REMINDER_CHECK_MIN = 5;
 
 // "about 3 hours" / "about 15 minutes"
 function timeLeftLabel(msLeft: number): string {
@@ -280,7 +282,7 @@ async function processBidReminders(errors: string[]): Promise<number> {
   let sent = 0;
   try {
     const nowMs = Date.now();
-    const horizon = new Date(nowMs + (MAX_OFFSET_MIN + 5) * 60000).toISOString();
+    const horizon = new Date(nowMs + (MAX_OFFSET_MIN + REMINDER_CHECK_MIN) * 60000).toISOString();
 
     // Armed reminders on active auctions ending within the longest window.
     const { data: rows, error } = await supabase
@@ -306,10 +308,12 @@ async function processBidReminders(errors: string[]): Promise<number> {
           ? row.reminder_offsets.filter((o: number) => REMINDER_OFFSETS.includes(o))
           : [180];
         const already: number[] = Array.isArray(row.reminders_sent) ? row.reminders_sent : [];
-        // Every chosen time we've now passed and haven't sent yet. If a check
-        // was missed and several are due at once, send one reminder and mark
-        // them all done, so nobody gets a burst.
-        const due = offsets.filter((o) => !already.includes(o) && msLeft <= o * 60000);
+        // Every chosen time that's due and hasn't been sent. The reminder-only
+        // check runs every 5 minutes, so each one goes out up to 5 minutes
+        // EARLY rather than late: "5 min" arrives with 5–10 minutes left, never
+        // after it's too late to bid. If several are due at once (a missed
+        // check), send one reminder and mark them all done, so nobody gets a burst.
+        const due = offsets.filter((o) => !already.includes(o) && msLeft <= (o + REMINDER_CHECK_MIN) * 60000);
         if (due.length === 0) continue;
 
         const markDone = () => supabase
