@@ -16,6 +16,8 @@ Everything Landon has decided, so no agent ever asks him the same thing twice. O
 - Funnel tracking goes in **our own Supabase table**, not Vercel paid events. (2026-10-21)
 - Tracking records funnel steps only, **not search words or which players people look at**. (2026-10-21)
 
+- **Price history: on hold.** No sold-prices button and no price history of our own (eBay's license likely forbids storing or aggregating their data for this). Revisit only with eBay's sold-data (Marketplace Insights) approval or another legitimate source. (2026-10-22)
+
 ## Look and feel
 - Landing page is **direction A**: the live featured card as the hero object. (2026-10-19)
 - The **intro plays once each time someone opens the site** (not first visit only) and lasts under 1 second. (2026-10-21)
@@ -44,7 +46,8 @@ Everything Landon has decided, so no agent ever asks him the same thing twice. O
 - Spelling suggestions cover pro players **and college players**. The roster refresh is run by hand once a quarter. (2026-10-20, 2026-10-21)
 - Card company filter, including Leaf and the listed product lines. (2026-10-20)
 - Lots, repacks and sealed product are hidden by default. The Auto filter drops "non-auto" titles. (2026-10-21)
-- Team search: whole-team search plus a Team filter, **college teams included**, 8 teams shown then "+ more". **Same-name teams (Rangers, Kings, Giants…) with no city or sport in the title are left out.** (2026-10-21; Landon's final answer)
+- Team search: whole-team search plus a Team filter, **college teams included**, 8 teams shown then "+ more". **Same-name teams (Rangers, Kings, Giants…) with no city or sport in the title are left out.** (2026-10-21; Landon's final answer) A title naming a player who clearly played for one of them (e.g. deGrom + Rangers) isn't unclear, so it counts. "NY" and "LA" count as city names. (2026-10-22)
+- Team search also finds cards that **name only the player**, using a player-to-team history matched by card year. (2026-10-22)
 
 ## Tours
 - Web and app tours are approved. Step 3 shows tier colours using example search results. (2026-10-20)

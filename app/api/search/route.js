@@ -10,7 +10,8 @@
 
 import { NextResponse } from 'next/server';
 import { makeBrandMatcher, brandQueryTerms } from '../../../lib/cardBrands';
-import { teamFromQuery, teamQueryKeywords, titleMatchesTeam, makeTeamMatcher } from '../../../lib/teams';
+import { teamFromQuery, teamQueryKeywords } from '../../../lib/teams';
+import { catalogTeamsForTitle, matchesTeam, makeCatalogTeamMatcher, teamQueryPlayers, orGroups } from '../../../lib/playerTeams';
 
 const EBAY_OAUTH_URL = 'https://api.ebay.com/identity/v1/oauth2/token';
 const EBAY_SEARCH_URL = 'https://api.ebay.com/buy/browse/v1/item_summary/search';
@@ -528,11 +529,11 @@ function isLotOrSealed(title) {
 const MAX_PAGES = 3;       // ceiling — 3 × 200 = up to 600 raw listings
 const PAGE_SIZE = 200;     // eBay's max per call
 
-async function fetchEbayResults(criteria, token) {
+async function fetchEbayResults(criteria, token, maxPages = MAX_PAGES) {
   let all = [];
   let total = 0;
 
-  for (let page = 0; page < MAX_PAGES; page++) {
+  for (let page = 0; page < maxPages; page++) {
     const offset = page * PAGE_SIZE;
     const params = buildSearchParams({ ...criteria, offset });
     const url = `${EBAY_SEARCH_URL}?${params.toString()}`;
@@ -572,6 +573,62 @@ async function fetchEbayResults(criteria, token) {
   return { items: all, total };
 }
 
+// BIN + Auction run as two explicit queries for "Any listing" (see POST).
+async function fetchByListingType(criteria, token, maxPages = MAX_PAGES) {
+  if (criteria.listingType === 'any' || !criteria.listingType) {
+    const [bin, auction] = await Promise.all([
+      fetchEbayResults({ ...criteria, listingType: 'buyItNow' }, token, maxPages),
+      fetchEbayResults({ ...criteria, listingType: 'auction' }, token, maxPages),
+    ]);
+    return { items: [...bin.items, ...auction.items], total: bin.total + auction.total };
+  }
+  return fetchEbayResults(criteria, token, maxPages);
+}
+
+/**
+ * Whole-team search. A team name alone misses most cards ("2024 Topps
+ * Chrome Paul Skenes Gold /50"), so we also ask eBay for the team's top
+ * current and recent players in a few OR groups, and the team filter below
+ * keeps only cards from the years each player was on the team
+ * (lib/playerTeams.js).
+ *
+ * eBay calls, "Any listing": team name 2 × up to 3 pages, plus 3 player
+ * groups × 2 × 1 page = up to 12 per search. Each query's results are
+ * cached for an hour on this server, shared across all users and alerts,
+ * the way /api/rarest and /api/live-for-you do it.
+ */
+const TEAM_PLAYER_GROUPS = 3;
+const TEAM_CACHE_TTL_MS = 60 * 60 * 1000;
+const TEAM_CACHE_MAX = 300;
+const teamCache = new Map(); // query + filters -> { at, result }
+
+async function cachedTeamQuery(criteria, token, maxPages) {
+  const key = JSON.stringify({ ...criteria, maxPages, offset: undefined });
+  const hit = teamCache.get(key);
+  if (hit && Date.now() - hit.at < TEAM_CACHE_TTL_MS) return hit.result;
+  const result = await fetchByListingType(criteria, token, maxPages);
+  if (teamCache.size >= TEAM_CACHE_MAX) teamCache.delete(teamCache.keys().next().value);
+  teamCache.set(key, { at: Date.now(), result });
+  return result;
+}
+
+async function fetchTeamResults(team, criteria, token) {
+  const players = orGroups(teamQueryPlayers(team.key), 120, TEAM_PLAYER_GROUPS);
+  const queries = [
+    { keywords: teamQueryKeywords(team), pages: MAX_PAGES },
+    ...players.map((group) => ({ keywords: group, pages: 1 })),
+  ];
+  const results = await Promise.all(queries.map((q) =>
+    cachedTeamQuery({ ...criteria, keywords: q.keywords }, token, q.pages)
+      // One failed player group shouldn't sink the whole search.
+      .catch((err) => { if (q.pages === 1) { console.warn('Team player group failed:', err.message); return { items: [], total: 0 }; } throw err; })));
+  console.log(`Team search (${team.key}): ${queries.length} queries`, results.map((r) => r.items.length));
+  return {
+    items: results.flatMap((r) => r.items),
+    total: results.reduce((n, r) => n + r.total, 0),
+  };
+}
+
 export async function POST(req) {
   try {
     // Rate limit BEFORE doing any eBay work or parsing the body.
@@ -601,8 +658,8 @@ export async function POST(req) {
     }
 
     // Whole-team search ("Pittsburgh Pirates", "Lakers"): ask eBay for the
-    // team's name and keep only titles that match the team (below), instead
-    // of requiring every typed word in the title.
+    // team's name and its players (fetchTeamResults) and keep only that
+    // team's cards (below), instead of requiring every typed word in the title.
     const teamSearch = teamFromQuery(criteria.keywords);
     if (teamSearch) criteria.keywords = teamQueryKeywords(teamSearch);
 
@@ -613,7 +670,12 @@ export async function POST(req) {
     // running TWO explicit queries (BIN + Auction) in parallel and merging.
     let items;
     let ebayTotal = 0;
-    if (criteria.listingType === 'any' || !criteria.listingType) {
+    if (teamSearch) {
+      const result = await fetchTeamResults(teamSearch, criteria, token);
+      const seen = new Set();
+      items = result.items.filter((it) => !seen.has(it.id) && seen.add(it.id));
+      ebayTotal = result.total;
+    } else if (criteria.listingType === 'any' || !criteria.listingType) {
       const [binResult, auctionResult] = await Promise.all([
         fetchEbayResults({ ...criteria, listingType: 'buyItNow' }, token),
         fetchEbayResults({ ...criteria, listingType: 'auction' }, token),
@@ -729,16 +791,20 @@ export async function POST(req) {
     }
 
     // Team: a whole-team search keeps that team's cards; the Team filter
-    // keeps any of the chosen teams. Title match only (lib/teams.js).
+    // keeps any of the chosen teams. A card counts when the title names the
+    // team (lib/teams.js) or names a player who was on it that year
+    // (lib/playerTeams.js). item.teams carries the second kind to the
+    // browser for the Team filter's counts.
+    items = items.map((it) => ({ ...it, teams: [...catalogTeamsForTitle(it.title)] }));
     if (teamSearch) {
       const before = items.length;
-      items = items.filter((it) => titleMatchesTeam(teamSearch, it.title));
+      items = items.filter((it) => matchesTeam(teamSearch, it.title, new Set(it.teams)));
       console.log(`Team search (${teamSearch.key}): ${before} → ${items.length}`);
     }
-    const teamMatch = makeTeamMatcher(criteria.teams);
+    const teamMatch = makeCatalogTeamMatcher(criteria.teams);
     if (teamMatch) {
       const before = items.length;
-      items = items.filter((it) => teamMatch(it.title));
+      items = items.filter((it) => teamMatch(it.title, new Set(it.teams)));
       console.log(`Team filter: ${before} → ${items.length}`);
     }
 

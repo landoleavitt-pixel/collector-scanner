@@ -4679,7 +4679,8 @@ function ActiveFilterChips({ filters, onEdit, query = '' }) {
 /* ─────────────────────────────────────────────
    Team filter — pick a league, then the team. College adds a conference
    step. Teams that appear in the current results come first with a count;
-   the rest are behind "+ N more". Title matching: lib/teams.js.
+   the rest are behind "+ N more". Title matching: lib/teams.js and, by
+   player, lib/playerTeams.js (server).
    ───────────────────────────────────────────── */
 // Current results, so filter UIs can count what's in them.
 const ResultsContext = createContext([]);
@@ -4699,7 +4700,8 @@ function TeamFilter({ filters, setFilter }) {
     if (!league || !results?.length) return m;
     for (const t of TEAMS) {
       if (t.league !== league) continue;
-      const n = results.reduce((acc, it) => acc + (titleMatchesTeam(t, it.title) ? 1 : 0), 0);
+      // item.teams: teams found through the players a title names (server).
+      const n = results.reduce((acc, it) => acc + (titleMatchesTeam(t, it.title) || it.teams?.includes(t.key) ? 1 : 0), 0);
       if (n) m.set(t.key, n);
     }
     return m;

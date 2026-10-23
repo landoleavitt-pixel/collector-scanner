@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bold Home</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink-100:#f7f1e1; --ink-200:#e8dfc9; --ink-400:#a99e85; --ink-600:#6b6354;
+    --bg-base:#0a0907; --bg-elev:#14110c; --bg-elev-2:#1a160f;
+    --line:#2a251c; --line-soft:#1f1c16;
+    --gold:#c9954a; --gold-bright:#e6b96b; --gold-deep:#8f6a32; --ink-on-gold:#1a1612;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:#050403; color:var(--ink-100); font-family:'Geist',system-ui,sans-serif; }
+  .page { max-width:1320px; margin:0 auto; padding:40px 20px 96px; }
+  .note { color:var(--ink-400); font-size:15px; line-height:1.6; max-width:760px; margin:0 0 8px; }
+  h1.t { font-family:'Instrument Serif',serif; font-weight:400; font-size:40px; margin:0 0 8px; }
+  h2.sec { font-family:'Instrument Serif',serif; font-weight:400; font-size:28px; margin:56px 0 6px; }
+  .lab { font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--gold); }
+
+  .frame { background:var(--bg-base); border:1px solid var(--line); border-radius:12px; overflow:hidden; margin-top:16px; }
+  .hdr { display:flex; justify-content:space-between; align-items:center; padding:20px 32px; border-bottom:1px solid var(--line-soft); }
+  .brand { font-family:'Instrument Serif',serif; font-size:22px; display:flex; gap:10px; align-items:center; }
+  .brand em { color:var(--gold); font-style:normal; }
+  .seal { width:28px; height:28px; border-radius:50%; border:1px solid var(--gold); display:grid; place-items:center; font-family:'Instrument Serif',serif; font-style:italic; font-size:11px; color:var(--gold-bright); }
+  .nav { display:flex; gap:24px; font-size:14px; color:var(--ink-400); }
+
+  /* Centre stage */
+  .stage { padding:72px 32px 40px; text-align:center; background:radial-gradient(60% 70% at 50% 0%, rgba(201,149,74,.10), transparent 70%); }
+  .greet { font-family:'Instrument Serif',serif; font-style:italic; font-size:44px; margin:0 0 28px; }
+  .greet em { color:var(--gold-bright); }
+  .search { max-width:760px; margin:0 auto; display:flex; align-items:center; gap:14px; background:var(--bg-elev); border:1.5px solid var(--gold-deep); border-radius:16px; padding:10px 10px 10px 24px; box-shadow:0 20px 50px rgba(0,0,0,.5); }
+  .search svg { flex:none; }
+  .search .ph { flex:1; text-align:left; font-size:22px; color:var(--ink-600); }
+  .search .go { height:56px; padding:0 26px; border-radius:12px; background:var(--gold-bright); color:var(--ink-on-gold); font-weight:600; font-size:17px; display:flex; align-items:center; gap:8px; }
+  .chips { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin:22px auto 0; max-width:820px; }
+  .chip { display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:999px; font-size:15px; color:var(--ink-200); border:1px solid var(--line); background:var(--bg-elev); }
+  .chip.saved { border-color:var(--gold-deep); }
+  .chip b { font-weight:500; }
+  .tier { font-family:'Geist Mono',monospace; font-size:11px; font-weight:700; padding:2px 6px; border-radius:4px; color:var(--ink-on-gold); background:linear-gradient(180deg,#ffd97a,#d99c14); }
+  .tier.u { background:linear-gradient(180deg,#e0e8f0,#98a5b3); }
+
+  .body { padding:24px 32px 48px; }
+  .row-h { display:flex; justify-content:space-between; align-items:baseline; margin:36px 0 16px; }
+  .row-h h3 { font-family:'Instrument Serif',serif; font-weight:400; font-size:30px; margin:0; }
+  .row-h span { font-size:14px; color:var(--ink-400); }
+  .cards { display:grid; grid-template-columns:repeat(5,1fr); gap:18px; }
+  .card { background:var(--bg-elev); border:1px solid var(--line-soft); border-radius:12px; padding:10px; }
+  .img { aspect-ratio:3/4; border-radius:8px; background:conic-gradient(from 210deg at 60% 55%,#8fb7ff,#ffd97a,#ff9ad5,#8ef0c9,#8fb7ff); opacity:.8; }
+  .card .ti { font-size:14px; line-height:1.35; margin:10px 2px 4px; color:var(--ink-200); }
+  .card .pr { font-family:'Instrument Serif',serif; font-size:24px; color:var(--gold-bright); margin:0 2px; }
+  .card .fr { font-size:12px; color:var(--ink-400); margin:2px; }
+  .since { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+  .panel { background:var(--bg-elev); border:1px solid var(--line-soft); border-radius:12px; padding:20px; }
+  .panel .k { font-size:14px; color:var(--ink-400); }
+  .panel .v { font-family:'Instrument Serif',serif; font-size:40px; margin:4px 0 8px; }
+  .panel .d { font-size:15px; color:var(--ink-200); line-height:1.45; }
+
+  /* Phone */
+  .phones { display:flex; gap:36px; flex-wrap:wrap; margin-top:16px; }
+  .phone { width:390px; border:1px solid #2e2920; border-radius:44px; background:var(--bg-base); overflow:hidden; box-shadow:0 30px 70px rgba(0,0,0,.6); }
+  .phone .scr { padding:64px 18px 24px; }
+  .phone .greet { font-size:34px; margin-bottom:20px; text-align:center; }
+  .phone .search { padding:8px 8px 8px 18px; border-radius:14px; }
+  .phone .search .ph { font-size:18px; }
+  .phone .search .go { height:50px; padding:0 18px; font-size:16px; }
+  .phone .chips { justify-content:flex-start; flex-wrap:nowrap; overflow:hidden; margin-top:16px; }
+  .phone .chip { font-size:14px; padding:9px 14px; flex:none; }
+  .phone .row-h h3 { font-size:26px; }
+  .phone .hscroll { display:flex; gap:12px; overflow:hidden; }
+  .phone .hscroll .card { width:150px; flex:none; }
+  .phone .since { grid-template-columns:1fr; gap:12px; }
+  .phone .panel { display:flex; align-items:center; gap:16px; padding:16px; }
+  .phone .panel .v { font-size:32px; margin:0; min-width:48px; }
+  .tabbar { margin:18px 10px 14px; display:flex; justify-content:space-around; padding:12px 6px; border-radius:999px; background:rgba(20,17,12,.92); border:1px solid var(--line); font-size:12px; color:var(--ink-400); }
+  .tabbar .on { color:var(--gold-bright); }
+  .cmp { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  .cmp div { font-size:15px; color:var(--ink-200); line-height:1.6; }
+  .cmp b { color:var(--gold-bright); font-weight:500; }
+  @media (max-width:900px) { .cards { grid-template-columns:repeat(2,1fr); } .since { grid-template-columns:1fr; } .cmp { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="lab">Mockup · signed-in home</div>
+  <h1 class="t">Search is the page.</h1>
+  <p class="note">The search bar moves to the centre and grows to about twice its size. Everything else gets bigger too: chips, card photos, prices and headings. The page reads as one big search, then your hunts, then what changed and live cards. It uses the same colours and fonts with no new effects, and the copy stays as approved.</p>
+
+  <div class="cmp" style="margin-top:20px">
+    <div><b>Now:</b> a 44px search bar on the left, 13px chips, 124px cards with 12px titles, 22px headings.</div>
+    <div><b>Proposed:</b> a 76px search bar centred on the screen, 15px chips, cards about 230px wide with 14px titles and 24px prices, 30px headings.</div>
+  </div>
+
+  <h2 class="sec">Desktop</h2>
+  <div class="frame">
+    <div class="hdr">
+      <div class="brand"><span class="seal">F&amp;F</span>Fields <em>&amp;</em> Floors</div>
+      <div class="nav"><span>My hunts</span><span>Watchlist</span><span>Alerts</span><span>Account</span></div>
+    </div>
+    <div class="stage">
+      <p class="greet">What are you <em>hunting</em> today?</p>
+      <div class="search">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a99e85" stroke-width="1.75" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <span class="ph">Search a player or team</span>
+        <span class="go">Show cards <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </div>
+      <div class="chips">
+        <span class="chip saved"><b>Holliday orange</b> <span class="tier">/25</span></span>
+        <span class="chip saved"><b>Wemby autos</b> <span class="tier">/1–25</span></span>
+        <span class="chip">Paul Skenes</span>
+        <span class="chip">Caitlin Clark</span>
+        <span class="chip">Connor Bedard</span>
+      </div>
+    </div>
+    <div class="body">
+      <div class="row-h"><h3>Since you were last here</h3><span>Yesterday</span></div>
+      <div class="since">
+        <div class="panel"><div class="k">New matches</div><div class="v">3</div><div class="d">Holliday orange /25 · 2 new<br>Wemby autos · 1 new</div></div>
+        <div class="panel"><div class="k">Price drops</div><div class="v">1</div><div class="d">Skenes Chrome Gold /50<br>$410 → $365</div></div>
+        <div class="panel"><div class="k">Ending soon</div><div class="v">2</div><div class="d">Clark Prizm /10 · 3h left<br>Bedard YG · 5h left</div></div>
+      </div>
+
+      <div class="row-h"><h3>Live right now</h3><span>From your hunts · updated hourly</span></div>
+      <div class="cards">
+        <div class="card"><div class="img"></div><div class="ti"><span class="tier">/5</span> Holliday Bowman Chrome Orange Auto</div><div class="pr">$1,240</div><div class="fr">From Holliday orange</div></div>
+        <div class="card"><div class="img" style="filter:hue-rotate(90deg)"></div><div class="ti"><span class="tier">/10</span> Wembanyama Prizm Gold Auto</div><div class="pr">$2,150</div><div class="fr">From Wemby autos</div></div>
+        <div class="card"><div class="img" style="filter:hue-rotate(200deg)"></div><div class="ti"><span class="tier">/25</span> Holliday Chrome Orange Refractor</div><div class="pr">$310</div><div class="fr">From Holliday orange</div></div>
+        <div class="card"><div class="img" style="filter:hue-rotate(300deg)"></div><div class="ti"><span class="tier u">/50</span> Paul Skenes Chrome Gold</div><div class="pr">$365</div><div class="fr">From Paul Skenes</div></div>
+        <div class="card"><div class="img" style="filter:hue-rotate(40deg)"></div><div class="ti"><span class="tier u">/99</span> Wembanyama Select Auto</div><div class="pr">$540</div><div class="fr">From Wemby autos</div></div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="sec">Phone and iPhone app</h2>
+  <div class="phones">
+    <div class="phone"><div class="scr">
+      <p class="greet">What are you <em>hunting</em>?</p>
+      <div class="search">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a99e85" stroke-width="1.75" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <span class="ph">Player or team</span>
+        <span class="go">Go</span>
+      </div>
+      <div class="chips">
+        <span class="chip saved"><b>Holliday orange</b></span>
+        <span class="chip saved"><b>Wemby autos</b></span>
+        <span class="chip">Paul Skenes</span>
+      </div>
+      <div class="row-h"><h3>Since last time</h3></div>
+      <div class="since">
+        <div class="panel"><div class="v">3</div><div><div class="k">New matches</div><div class="d">Holliday orange · 2 new</div></div></div>
+        <div class="panel"><div class="v">1</div><div><div class="k">Price drop</div><div class="d">Skenes Gold /50 · $365</div></div></div>
+      </div>
+      <div class="row-h"><h3>Live right now</h3></div>
+      <div class="hscroll">
+        <div class="card"><div class="img"></div><div class="ti"><span class="tier">/5</span> Holliday Orange Auto</div><div class="pr">$1,240</div></div>
+        <div class="card"><div class="img" style="filter:hue-rotate(90deg)"></div><div class="ti"><span class="tier">/10</span> Wemby Gold Auto</div><div class="pr">$2,150</div></div>
+      </div>
+      <div class="tabbar"><span class="on">Search</span><span>Watchlist</span><span>Alerts</span><span>Account</span></div>
+    </div></div>
+  </div>
+
+  <h2 class="sec">Also worth doing on the visitor page</h2>
+  <p class="note">The visitor "Grail Hunter" page has the same problem: the search sits in the left column at normal size. The same treatment fits there too: a bigger search bar and larger hunt pills, with the floating card kept beside it as you decided. I can mock that separately if you want it.</p>
+</div>
+</body>
+</html>

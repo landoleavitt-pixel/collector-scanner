@@ -13,6 +13,7 @@ Things only you can do, because they need your accounts, money or signature. The
 
 Full steps: [CFO_LAUNCH_CHECKLIST.md](CFO_LAUNCH_CHECKLIST.md), section 1.
 
+- [ ] **Check your Vercel plan** (Vercel → Settings → Billing). The free Hobby plan is for non-commercial use only. Once you take real payments, Vercel's terms require Pro (about $20 USD/month). Upgrade before switching Stripe to live.
 - [ ] Finish the Stripe business profile (SIN, bank account).
 - [ ] Create Base in Stripe live mode: **$6.99 CAD monthly** and **$59 CAD yearly**.
 - [ ] Add the live keys and both price IDs to Vercel (`STRIPE_SECRET_KEY`, `STRIPE_BASE_PRICE_ID`, `STRIPE_BASE_ANNUAL_PRICE_ID`, webhook secret).
@@ -46,6 +47,7 @@ Full steps: [IOS_APP_SETUP.md](IOS_APP_SETUP.md).
 
 ## Later
 
+- [ ] Apply to eBay for sold-price data (the Marketplace Insights API, approval-only) once you have steady traffic. Price history and any sold-prices button wait on this.
 - [ ] Ask eBay for a higher API limit, once daily usage regularly passes about 3,000 of 5,000 (check /admin/usage weekly). The draft is in CFO_LAUNCH_CHECKLIST.md.
 - [ ] Before passing $30k a year in sales, talk to an accountant about registering for GST/HST. Prices are shown "plus applicable taxes".
 - [ ] Have a lawyer look over the Terms and Privacy pages before a big launch. They haven't been legally reviewed. Start with Terms section 2 (the "search tool, not a seller" disclaimer), especially clause 2.7 (the release), which Alberta consumer law may limit.

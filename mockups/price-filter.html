@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Price Filter</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink-100:#f7f1e1; --ink-200:#e8dfc9; --ink-400:#a99e85; --ink-600:#6b6354;
+    --bg-base:#0a0907; --bg-elev:#14110c; --bg-elev-2:#1a160f;
+    --line:#2a251c; --gold:#c9954a; --gold-bright:#e6b96b; --gold-deep:#8f6a32; --ink-on-gold:#1a1612;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:#050403; color:var(--ink-100); font-family:'Geist',system-ui,sans-serif; }
+  .page { max-width:1100px; margin:0 auto; padding:40px 20px 80px; }
+  h1 { font-family:'Instrument Serif',serif; font-weight:400; font-size:38px; margin:0 0 8px; }
+  .note { color:var(--ink-400); font-size:15px; line-height:1.6; max-width:760px; margin:0 0 28px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:28px; }
+  .opt h2 { font-family:'Instrument Serif',serif; font-weight:400; font-size:26px; margin:0 0 4px; }
+  .opt .sub { color:var(--ink-400); font-size:14px; margin:0 0 14px; line-height:1.5; }
+  .tag { display:inline-block; font-size:12px; padding:3px 8px; border-radius:4px; background:var(--gold-bright); color:var(--ink-on-gold); font-weight:600; margin-bottom:8px; }
+  .panel { background:var(--bg-base); border:1px solid var(--line); border-radius:12px; padding:22px; }
+  .lbl { font-size:15px; font-weight:500; margin-bottom:12px; }
+  .presets { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+  .pre { font:inherit; font-size:14px; padding:9px 14px; border-radius:999px; border:1px solid var(--line); background:var(--bg-elev); color:var(--ink-200); cursor:pointer; }
+  .pre.on { border-color:var(--gold-bright); color:var(--gold-bright); background:rgba(230,185,107,.08); }
+  .boxes { display:flex; align-items:center; gap:10px; }
+  .box { flex:1; display:flex; align-items:center; gap:6px; background:var(--bg-elev); border:1px solid var(--line); border-radius:8px; padding:0 12px; height:48px; }
+  .box:focus-within { border-color:var(--gold-bright); }
+  .box span { color:var(--ink-400); font-size:16px; }
+  .box input { flex:1; min-width:0; background:transparent; border:0; outline:none; color:var(--ink-100); font:inherit; font-size:17px; }
+  .box input::placeholder { color:var(--ink-600); }
+  .to { color:var(--ink-400); font-size:14px; }
+  .summary { margin-top:14px; font-size:14px; color:var(--ink-400); }
+  .summary b { color:var(--ink-100); font-weight:500; }
+
+  .slider { position:relative; height:44px; margin:6px 4px 10px; }
+  .track { position:absolute; left:0; right:0; top:20px; height:4px; background:var(--line); border-radius:2px; }
+  .fill { position:absolute; top:20px; height:4px; background:var(--gold-bright); border-radius:2px; }
+  .slider input[type=range] { position:absolute; left:0; right:0; top:8px; width:100%; margin:0; background:transparent; pointer-events:none; -webkit-appearance:none; appearance:none; height:28px; }
+  .slider input[type=range]::-webkit-slider-thumb { pointer-events:auto; -webkit-appearance:none; width:28px; height:28px; border-radius:50%; background:var(--gold-bright); border:2px solid var(--bg-base); box-shadow:0 0 0 1px var(--gold-deep); cursor:grab; }
+  .slider input[type=range]::-moz-range-thumb { pointer-events:auto; width:28px; height:28px; border-radius:50%; background:var(--gold-bright); border:2px solid var(--bg-base); box-shadow:0 0 0 1px var(--gold-deep); cursor:grab; }
+  .ticks { display:flex; justify-content:space-between; font-size:12px; color:var(--ink-600); margin:0 4px 16px; }
+  .why { margin-top:40px; }
+  .why li { color:var(--ink-200); font-size:15px; line-height:1.7; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>A price filter that's easy to use.</h1>
+  <p class="note">Today it's two separate sliders that move in $25 steps up to $5,000, so $15 or $8,000 can't be picked, you can't type an amount, and the minimum can end up above the maximum. Both options below fix that. They're interactive: try them.</p>
+
+  <div class="grid">
+    <div class="opt">
+      <span class="tag">Recommended</span>
+      <h2>A. Quick picks + type it</h2>
+      <p class="sub">One tap for common ranges, or type exact numbers. Simplest on a phone, and works for a $10 base card or a $40,000 grail.</p>
+      <div class="panel">
+        <div class="lbl">Price</div>
+        <div class="presets" id="a-pre"></div>
+        <div class="boxes">
+          <label class="box"><span>$</span><input id="a-min" inputmode="numeric" placeholder="No min" aria-label="Minimum price"></label>
+          <span class="to">to</span>
+          <label class="box"><span>$</span><input id="a-max" inputmode="numeric" placeholder="No max" aria-label="Maximum price"></label>
+        </div>
+        <div class="summary" id="a-sum"></div>
+      </div>
+    </div>
+
+    <div class="opt">
+      <h2>B. One slider with two handles + type it</h2>
+      <p class="sub">A single bar with a handle at each end. It's spaced so low prices get more room ($0–$100 is as wide as $1,000–$10,000+), and the boxes stay typeable.</p>
+      <div class="panel">
+        <div class="lbl">Price</div>
+        <div class="slider">
+          <div class="track"></div><div class="fill" id="b-fill"></div>
+          <input type="range" id="b-lo" min="0" max="1000" value="0" aria-label="Minimum price">
+          <input type="range" id="b-hi" min="0" max="1000" value="1000" aria-label="Maximum price">
+        </div>
+        <div class="ticks"><span>$0</span><span>$100</span><span>$1k</span><span>$10k+</span></div>
+        <div class="boxes">
+          <label class="box"><span>$</span><input id="b-min" inputmode="numeric" placeholder="No min"></label>
+          <span class="to">to</span>
+          <label class="box"><span>$</span><input id="b-max" inputmode="numeric" placeholder="No max"></label>
+        </div>
+        <div class="summary" id="b-sum"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="why">
+    <h2 class="opt" style="font-family:'Instrument Serif',serif;font-weight:400;font-size:26px">What changes either way</h2>
+    <ul>
+      <li>Type any amount: $15, $8,000, $40,000. There's no $5,000 ceiling.</li>
+      <li>Blank means no limit, shown in plain words ("Any price", "Under $500", "$200 and up").</li>
+      <li>If the minimum is above the maximum, the two swap automatically. No error.</li>
+      <li>Number keypad on phones, big tap targets, and the same look in the filter drawer and the desktop sidebar.</li>
+      <li>Saved searches and share links keep working, and old saved searches open with their prices unchanged.</li>
+    </ul>
+  </div>
+</div>
+<script>
+  const fmt = (n) => '$' + Number(n).toLocaleString('en-US');
+  const num = (v) => { const n = parseInt(String(v).replace(/[^0-9]/g, ''), 10); return Number.isFinite(n) ? n : null; };
+  const label = (lo, hi) => {
+    if (lo == null && hi == null) return 'Showing <b>any price</b>';
+    if (lo == null) return 'Showing cards <b>under ' + fmt(hi) + '</b>';
+    if (hi == null) return 'Showing cards <b>' + fmt(lo) + ' and up</b>';
+    return 'Showing cards <b>' + fmt(lo) + ' to ' + fmt(hi) + '</b>';
+  };
+  // Option A
+  const presets = [['Any', null, null], ['Under $50', null, 50], ['$50–200', 50, 200], ['$200–1,000', 200, 1000], ['$1,000+', 1000, null]];
+  const aMin = document.getElementById('a-min'), aMax = document.getElementById('a-max'), aSum = document.getElementById('a-sum'), aPre = document.getElementById('a-pre');
+  function aRender() {
+    let lo = num(aMin.value), hi = num(aMax.value);
+    if (lo != null && hi != null && lo > hi) { [lo, hi] = [hi, lo]; aMin.value = lo; aMax.value = hi; }
+    aSum.innerHTML = label(lo, hi);
+    [...aPre.children].forEach((b, i) => b.classList.toggle('on', presets[i][1] === lo && presets[i][2] === hi));
+  }
+  presets.forEach(([t, lo, hi]) => {
+    const b = document.createElement('button'); b.className = 'pre'; b.textContent = t;
+    b.onclick = () => { aMin.value = lo ?? ''; aMax.value = hi ?? ''; aRender(); };
+    aPre.appendChild(b);
+  });
+  aMin.onchange = aMax.onchange = aRender; aMin.oninput = aMax.oninput = () => aSum.innerHTML = label(num(aMin.value), num(aMax.value));
+  aRender();
+  // Option B: 0..1000 position mapped to $0..$10k on a log-ish scale.
+  const toPrice = (p) => p <= 0 ? 0 : p >= 1000 ? null : Math.round(Math.pow(10, (p / 1000) * 4) / 5) * 5;
+  const toPos = (v) => v == null ? 1000 : v <= 0 ? 0 : Math.min(1000, Math.round(Math.log10(v) / 4 * 1000));
+  const bLo = document.getElementById('b-lo'), bHi = document.getElementById('b-hi'), bFill = document.getElementById('b-fill'), bMin = document.getElementById('b-min'), bMax = document.getElementById('b-max'), bSum = document.getElementById('b-sum');
+  function bFromSlider() {
+    let lo = +bLo.value, hi = +bHi.value; if (lo > hi) { [lo, hi] = [hi, lo]; bLo.value = lo; bHi.value = hi; }
+    const plo = toPrice(lo), phi = toPrice(hi);
+    bMin.value = plo ? plo : ''; bMax.value = phi == null ? '' : phi; bPaint(lo, hi, plo || null, phi);
+  }
+  function bFromBoxes() {
+    let lo = num(bMin.value), hi = num(bMax.value);
+    if (lo != null && hi != null && lo > hi) { [lo, hi] = [hi, lo]; bMin.value = lo; bMax.value = hi; }
+    bLo.value = toPos(lo ?? 0); bHi.value = toPos(hi); bPaint(+bLo.value, +bHi.value, lo, hi);
+  }
+  function bPaint(p1, p2, lo, hi) { bFill.style.left = (p1 / 10) + '%'; bFill.style.width = ((p2 - p1) / 10) + '%'; bSum.innerHTML = label(lo, hi); }
+  bLo.oninput = bHi.oninput = bFromSlider; bMin.onchange = bMax.onchange = bFromBoxes;
+  bFromSlider();
+</script>
+</body>
+</html>

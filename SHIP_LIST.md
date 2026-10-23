@@ -9,6 +9,7 @@ The single list of work that's finished or in progress but **not live yet**. The
 | 7 | eBay Partner Network affiliate links | CFO | ⏸ Plan approved. Waiting on Landon's sign-up + Campaign ID; code held until batch ships | SiteTour.js, guides, reading-list copy + link tagging | — |
 | 8 | Poller rate limit: alerts silently skip past ~20 unique searches | Debugger | ⚪ Needs a fix plan (not urgent at today's size) | poller, api/search | `supabase functions deploy poller` |
 | L05 | Proof strip | Landing | ⏹ Skipped: no honest live number yet (no fake figures) | — | — |
+| P-price | Price filter redesign | Boss | 🟡 Mockup; waiting on Landon's pick | page.js PriceRangeSlider | — |
 | 12 | 2024 Topps Chrome Football rarity data | Rarity tree | ⚪ Follow-up | lib/parallelData.js, lib/parseSetFromTitle.js | — |
 
 **iOS release reminders:** run `npx cap sync ios` before every archive, so the app points at fieldsandfloors.com and not a test server. Check that the TestFlight build receives push notifications. Add the `ff_base_annual` product in App Store Connect and RevenueCat.
@@ -17,7 +18,8 @@ The single list of work that's finished or in progress but **not live yet**. The
 
 | When | What | Commit |
 |---|---|---|
-| 2026-10-22 | Signed-in "Live right now" from the member's saved and recent searches (cached hourly); as-you-type suggestions on the signed-in search | (live) |
+| 2026-10-22 | Team search finds player-only titles via a player-to-team history | (team) |
+| 2026-10-22 | Signed-in "Live right now" from the member's saved and recent searches (cached hourly); as-you-type suggestions on the signed-in search | d6035ad |
 | 2026-10-22 | Home redesign: "The Grail Hunter" signed-out hero with real-card strip, 3-icon How it works, short Plans; simple signed-in home (search, saved searches, since last visit, live cards) | 6c9dafb |
 | 2026-10-21 | Professional polish: untrue lines fixed, slogans and decoration removed, lucide icons, no em-dashes, fewer all-caps labels, glow removed, Premium "coming soon" (hero motion kept); "Search tool only" disclaimer: Terms section 2 (legal style) + card popup line + footer line; pricing page fixed (CAD, no Pro, no stale banner); eBay comparison row 1 accuracy | e9c50bf |
 | 2026-10-21 | Subscribe page: annual badge "Over 3 months free"; "plus applicable taxes" under web prices; iOS bottom tab bar (step 4) + fix undefined --ink-500; "Why not just search eBay?" comparison + new hero sub copy (Landon's request) | 0fd2dd8 |

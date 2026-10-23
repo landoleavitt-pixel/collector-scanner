@@ -248,10 +248,13 @@ The search box suggests player names as you type and offers "Did you mean…?" f
 
 - **`lib/athletes-rosters.json`**: every current NBA, WNBA, NFL, MLB and NHL roster player, plus college football and basketball players in the ACC, Big 12, Big East, Big Ten and SEC. Refreshed by a script.
 - **`lib/teams.json`**: every NBA, WNBA, NFL, MLB and NHL team plus about 80 major-conference colleges, for team search. Refreshed by the same script. Nicknames and old city names ("Sixers", "Oakland Raiders") are kept by hand in `lib/teams.js`.
+- **`lib/playerTeams.json`**: which teams each player has been on, by season, so a team search finds cards that name the player but not the team ("2024 Topps Chrome Paul Skenes"). Kept up to date by the same script; matching is in `lib/playerTeams.js`.
 - **`lib/athletes.js`**: kept by hand. Stars (shown first), legends, college players and prospects not yet on a pro roster, and nicknames like "Wemby".
 
 Once a quarter (January, April, July, October):
 
 1. In the project folder, run `node scripts/update-athletes.mjs`. It takes about 20 seconds and needs internet. It reads ESPN's free public roster pages. No account or key, and nothing about you or your users is sent. If one league fails, that league keeps last quarter's names.
 2. Open `lib/athletes.js` and update it by hand: add new draft picks and hot prospects to `PROSPECTS`, and move breakout players into `STARS`.
-3. Commit both files and deploy as usual.
+3. Commit the changed files and deploy as usual.
+
+The quarterly run moves players to their new teams in `lib/playerTeams.json` without extra requests. To rebuild the player history from scratch (10 pro seasons, 5 college), run `node scripts/update-athletes.mjs --history`. It makes about 2,200 extra requests and takes about 30 minutes, so only do it if the file is lost or badly out of date.
