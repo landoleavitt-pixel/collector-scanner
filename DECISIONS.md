@@ -42,6 +42,10 @@ Everything Landon has decided, so no agent ever asks him the same thing twice. O
 
 - The site must clearly say **we're a search tool only**: we don't sell, inspect or guarantee cards (authenticity, condition, the right card arriving), and our labels come from listing titles and can be wrong. This appears in full in the Terms, **in formal legal wording**, and as short plain lines on the card popup and in the footer. (2026-10-21)
 
+- Price filter is **quick picks plus typeable min and max boxes** (Landon changed from the slider to option A). Quick picks only fill in the max: Under $50 · Under $100 · Under $250 · Under $500 · Under $1,000 · No max. Users type a min if they want one. No $5,000 cap, and min/max swap if reversed. (2026-10-23)
+- Signed-in home gets the **bold layout** (big centred search, larger chips, panels and cards). Its heading reuses approved lines: **"The Grail Hunter." with "One search. Rarest first."** Memorable, and it says what the search is for. Don't invent new headings. (2026-10-23)
+- Searches start at **any price** (no max), not "Under $1,000", so grail cards aren't hidden. (2026-10-23)
+
 ## Search
 - Spelling suggestions cover pro players **and college players**. The roster refresh is run by hand once a quarter. (2026-10-20, 2026-10-21)
 - Card company filter, including Leaf and the listed product lines. (2026-10-20)

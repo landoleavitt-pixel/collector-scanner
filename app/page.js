@@ -51,7 +51,7 @@ const DEFAULT_FILTERS = {
   listingType: 'any',   // 'any' | 'buyItNow' | 'auction'
   condition: 'any',     // 'any' | 'raw' | 'graded' — title-parsed for PSA/BGS/SGC/CGC
   priceMin: 0,
-  priceMax: 1000,
+  priceMax: 100000,     // PRICE_NO_MAX: every price by default (Landon, 2026-10-23)
   sortBy: 'printrun-rarest',
   brands: [],           // card companies, e.g. ['topps'] — lib/cardBrands.js
   brandLines: [],       // optional product lines within them, e.g. ['bowman-chrome']
@@ -61,6 +61,16 @@ const DEFAULT_FILTERS = {
 // Saved searches and share links written before numbered-by-default meant
 // "numbered off" when the key was missing, so they decode against this.
 const LEGACY_BASE_FILTERS = { ...DEFAULT_FILTERS, numberedCards: false };
+
+// "No maximum price". Older saved searches and share links used 5000 for
+// this (the old slider's top), so read 5000 as no max too.
+const PRICE_NO_MAX = 100000;
+function isPriceNoMax(v) {
+  return v == null || v === 5000 || v >= PRICE_NO_MAX;
+}
+function withPriceNoMax(f) {
+  return f && f.priceMax === 5000 ? { ...f, priceMax: PRICE_NO_MAX } : f;
+}
 
 // Ready-made hunts for the landing page: one tap to real results. Hero
 // renders them and calls onChipSearch(query, filters).
@@ -433,7 +443,7 @@ function Home() {
         if (!search) return;
 
         // Merge saved filters over defaults so any missing keys keep sane values
-        const restored = { ...LEGACY_BASE_FILTERS, ...(search.filters || {}) };
+        const restored = withPriceNoMax({ ...LEGACY_BASE_FILTERS, ...(search.filters || {}) });
         setFilters(restored);
         setQuery(search.query);
 
@@ -476,8 +486,9 @@ function Home() {
     if (searchParams.get('savedSearch') || searchParams.get('editSearch')) return;
     if (!hasShareParams(searchParams)) return;
 
-    const { query: sharedQuery, filters: sharedFilters } =
+    const { query: sharedQuery, filters: parsedShared } =
       parseShareParams(searchParams, LEGACY_BASE_FILTERS, ALL_PRESET_PRINT_RUNS);
+    const sharedFilters = withPriceNoMax(parsedShared);
     if (!sharedQuery) return;
 
     sharedSearchRan.current = true;
@@ -624,9 +635,9 @@ function Home() {
     teamFilterLabels(filters.teams).forEach((label) => chips.push({ label, tier: 'neutral' }));
 
     const min = filters.priceMin || 0;
-    const max = filters.priceMax ?? 1000;
-    if (min > 0 || max < 1000) {
-      chips.push({ label: `$${min}–$${max}`, tier: 'neutral' });
+    const max = filters.priceMax ?? PRICE_NO_MAX;
+    if (min > 0 || !isPriceNoMax(max)) {
+      chips.push({ label: priceRangeLabel(min, max === 5000 ? PRICE_NO_MAX : max), tier: 'neutral' });
     }
 
     return chips;
@@ -678,7 +689,7 @@ function Home() {
           listingType: f.listingType,
           condition: f.condition,
           priceMin: f.priceMin,
-          priceMax: f.priceMax === 5000 ? null : f.priceMax,
+          priceMax: f.priceMax === 5000 || f.priceMax >= PRICE_NO_MAX ? null : f.priceMax,
           sortBy: f.sortBy,
           brands: f.brands || [],
           brandLines: f.brandLines || [],
@@ -1761,14 +1772,23 @@ function SignedInHome({ query, setQuery, onSearch, onSuggested, recentSearches =
   const recents = recentSearches.filter((r) => !saved.some((s) => s.query?.toLowerCase() === r.toLowerCase())).slice(0, 4);
 
   return (
-    <section className="max-w-[1040px] mx-auto px-5 md:px-6 lg:px-10 pt-8 md:pt-12 pb-16">
+    <section className="max-w-[1120px] mx-auto px-5 md:px-6 lg:px-10 pt-12 md:pt-24 pb-20">
+      {/* Search is the centrepiece: big, centred, with the member's hunts under it.
+          Heading reuses the approved hero name and strip line (no new copy). */}
+      <div className="max-w-[760px] mx-auto">
+      <h1 className="text-center font-display text-[clamp(2.4rem,7vw,3.5rem)] leading-[1] tracking-[-0.015em]" style={{ textWrap: 'balance' }}>
+        The <em className="text-[var(--gold-bright)]">Grail</em> Hunter.
+      </h1>
+      <p className="text-center mt-3 mb-7 md:mb-9 font-display italic text-[19px] md:text-[22px] leading-none" style={{ color: 'var(--ink-400)' }}>
+        One search. Rarest first.
+      </p>
       <form
         ref={suggest.anchorRef}
         onSubmit={(e) => { e.preventDefault(); suggest.close(); onSearch(); }}
-        className="flex items-center gap-2.5 rounded-xl pl-4 pr-1.5 py-1.5"
-        style={{ background: 'var(--bg-elev)', border: '1px solid var(--gold-deep)' }}
+        className="flex items-center gap-3 rounded-2xl pl-5 pr-2 py-2"
+        style={{ background: 'var(--bg-elev)', border: '1.5px solid var(--gold-deep)', boxShadow: '0 20px 50px rgba(0,0,0,0.45)' }}
       >
-        <Search className="w-[18px] h-[18px] flex-none" strokeWidth={1.75} style={{ color: 'var(--ink-400)' }} aria-hidden="true" />
+        <Search className="w-6 h-6 flex-none" strokeWidth={1.75} style={{ color: 'var(--ink-400)' }} aria-hidden="true" />
         <input
           value={query}
           onChange={(e) => { setQuery(e.target.value); suggest.openBox(); }}
@@ -1778,10 +1798,11 @@ function SignedInHome({ query, setQuery, onSearch, onSuggested, recentSearches =
           {...suggest.inputProps}
           placeholder="Search a player or team"
           aria-label="Search a player or team"
-          className="flex-1 min-w-0 bg-transparent outline-none text-[16px] py-2.5"
+          className="flex-1 min-w-0 bg-transparent outline-none text-[19px] md:text-[22px] py-3"
           style={{ color: 'var(--ink-100)' }}
         />
-        <button type="submit" aria-label="Search" className="w-11 h-11 rounded-lg grid place-items-center flex-none" style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
+        <button type="submit" aria-label="Show cards" className="h-12 md:h-14 px-4 md:px-6 rounded-xl inline-flex items-center gap-2 flex-none text-[16px] font-semibold" style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
+          <span className="hidden md:inline">Show cards</span>
           <ArrowRight className="w-5 h-5" strokeWidth={2} />
         </button>
       </form>
@@ -1789,21 +1810,23 @@ function SignedInHome({ query, setQuery, onSearch, onSuggested, recentSearches =
       {error && <p className="text-[13px] mt-2" style={{ color: 'var(--crit)' }}>{error}</p>}
 
       {(saved.length > 0 || recents.length > 0) && (
-        <div className="flex gap-2 mt-3 overflow-x-auto md:flex-wrap pb-1 -mx-1 px-1">
+        <div className="flex gap-2.5 mt-5 overflow-x-auto md:flex-wrap md:justify-center pb-1 -mx-1 px-1">
           {saved.map((s) => (
-            <a key={s.id} href={`/?savedSearch=${s.id}`} className="flex-none inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] whitespace-nowrap"
+            <a key={s.id} href={`/?savedSearch=${s.id}`} className="flex-none inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-[15px] whitespace-nowrap"
                style={{ color: 'var(--ink-200)', border: '1px solid var(--gold-deep)' }}>
-              <Crosshair className="w-3.5 h-3.5" strokeWidth={1.75} style={{ color: 'var(--gold)' }} aria-hidden="true" />{s.name}
+              <Crosshair className="w-4 h-4" strokeWidth={1.75} style={{ color: 'var(--gold)' }} aria-hidden="true" />{s.name}
             </a>
           ))}
           {recents.map((r) => (
-            <button key={r} type="button" onClick={() => onSuggested(r)} className="flex-none inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] whitespace-nowrap"
+            <button key={r} type="button" onClick={() => onSuggested(r)} className="flex-none inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-[15px] whitespace-nowrap"
                     style={{ color: 'var(--ink-200)', border: '1px solid var(--line)' }}>
-              <Clock className="w-3.5 h-3.5" strokeWidth={1.75} style={{ color: 'var(--ink-400)' }} aria-hidden="true" />{r}
+              <Clock className="w-4 h-4" strokeWidth={1.75} style={{ color: 'var(--ink-400)' }} aria-hidden="true" />{r}
             </button>
           ))}
         </div>
       )}
+
+      </div>
 
       <SinceLastVisit home={home} hasSaved={saved.length > 0} />
       <LiveRightNow onCardClick={onCardClick} recentSearches={recentSearches} />
@@ -1839,8 +1862,8 @@ function SinceLastVisit({ home, hasSaved }) {
   const ending = home?.endingSoon || [];
   const nothing = home && !matches.length && !drops.length && !ending.length;
   const Head = (
-    <div className="flex items-baseline justify-between mt-9 mb-3">
-      <h2 className="font-display italic text-[22px]">Since you were last here</h2>
+    <div className="flex items-baseline justify-between mt-14 mb-4">
+      <h2 className="font-display italic text-[26px] md:text-[30px]">Since you were last here</h2>
       {home?.since && <span className="text-[13px]" style={{ color: 'var(--ink-400)' }}>{sinceLabel(home.since)}</span>}
     </div>
   );
@@ -1860,24 +1883,24 @@ function SinceLastVisit({ home, hasSaved }) {
     );
   }
   const Panel = ({ icon: Icon, title, children }) => (
-    <div className="rounded-xl px-4 py-3.5" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
-      <div className="flex items-center gap-2 text-[14px] font-medium mb-1" style={{ color: 'var(--ink-100)' }}>
-        <Icon className="w-4 h-4" strokeWidth={1.75} style={{ color: 'var(--gold)' }} aria-hidden="true" />{title}
+    <div className="rounded-xl px-5 py-4" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
+      <div className="flex items-center gap-2 text-[17px] font-medium mb-1.5" style={{ color: 'var(--ink-100)' }}>
+        <Icon className="w-5 h-5" strokeWidth={1.75} style={{ color: 'var(--gold)' }} aria-hidden="true" />{title}
       </div>
       {children}
     </div>
   );
   const Row = ({ href, image, title, meta, right, rightSub, rightTone }) => (
-    <a href={href} className="grid grid-cols-[38px_1fr_auto] gap-2.5 items-center py-2" style={{ borderTop: '1px solid var(--line-soft)' }}>
-      <span className="w-[38px] aspect-[3/4] rounded-[3px] overflow-hidden flex-none" style={{ background: 'var(--bg-elev-2)' }}>
+    <a href={href} className="grid grid-cols-[48px_1fr_auto] gap-3 items-center py-2.5" style={{ borderTop: '1px solid var(--line-soft)' }}>
+      <span className="w-[48px] aspect-[3/4] rounded-[3px] overflow-hidden flex-none" style={{ background: 'var(--bg-elev-2)' }}>
         {image && <img src={image} alt="" className="w-full h-full object-cover" loading="lazy" />}
       </span>
       <span className="min-w-0">
-        <span className="block text-[13px] leading-snug line-clamp-2" style={{ color: 'var(--ink-200)' }}>{title}</span>
+        <span className="block text-[14px] leading-snug line-clamp-2" style={{ color: 'var(--ink-200)' }}>{title}</span>
         {meta && <span className="block text-[12px] mt-0.5" style={{ color: 'var(--ink-400)' }}>{meta}</span>}
       </span>
       <span className="text-right whitespace-nowrap">
-        <span className="block text-[14px] font-medium" style={{ color: rightTone || 'var(--ink-100)' }}>{right}</span>
+        <span className="block text-[16px] font-medium" style={{ color: rightTone || 'var(--ink-100)' }}>{right}</span>
         {rightSub && <span className="block text-[12px]" style={{ color: 'var(--ink-400)' }}>{rightSub}</span>}
       </span>
     </a>
@@ -1885,11 +1908,11 @@ function SinceLastVisit({ home, hasSaved }) {
   const money = (v) => (v != null ? `$${Number(v).toLocaleString('en-US', { maximumFractionDigits: 0 })}` : '');
   return (
     <>{Head}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {matches.length > 0 && (
           <Panel icon={Bell} title={`${matches.reduce((n, m) => n + m.count, 0)} new matches`}>
             {matches.map((m) => (
-              <a key={m.id} href={`/?savedSearch=${m.id}`} className="flex items-center justify-between gap-3 py-2 text-[13px]" style={{ borderTop: '1px solid var(--line-soft)', color: 'var(--ink-200)' }}>
+              <a key={m.id} href={`/?savedSearch=${m.id}`} className="flex items-center justify-between gap-3 py-2.5 text-[15px]" style={{ borderTop: '1px solid var(--line-soft)', color: 'var(--ink-200)' }}>
                 <span className="truncate">{m.name}</span>
                 <span className="whitespace-nowrap" style={{ color: 'var(--gold-bright)' }}>{m.count} new</span>
               </a>
@@ -1943,23 +1966,23 @@ function LiveRightNow({ onCardClick, recentSearches = [] }) {
   if (items && items.length === 0) return null;
   return (
     <>
-      <div className="flex items-baseline justify-between mt-9 mb-3">
-        <h2 className="font-display italic text-[22px]">Live right now</h2>
+      <div className="flex items-baseline justify-between mt-14 mb-4">
+        <h2 className="font-display italic text-[26px] md:text-[30px]">Live right now</h2>
         <span className="text-[13px]" style={{ color: 'var(--ink-400)' }}>Updated hourly</span>
       </div>
-      <div className="flex md:grid md:grid-cols-5 gap-3 overflow-x-auto pb-1 -mx-1 px-1">
+      <div className="flex md:grid md:grid-cols-5 gap-4 overflow-x-auto pb-1 -mx-1 px-1">
         {(items || Array.from({ length: 5 }, () => null)).map((it, i) => (
           <button key={it?.id || i} type="button" disabled={!it} onClick={() => it && onCardClick?.(it)}
-                  className="w-[124px] md:w-auto flex-none text-left rounded-lg p-2" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line-soft)' }}>
+                  className="w-[160px] md:w-auto flex-none text-left rounded-xl p-2.5" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line-soft)' }}>
             <span className="block aspect-[3/4] rounded overflow-hidden mb-2" style={{ background: 'var(--bg-elev-2)' }}>
               {it?.image && <img src={upscaleEbayImage(it.image)} alt="" className="w-full h-full object-cover" loading="lazy" />}
             </span>
-            <span className="block text-[12px] leading-snug h-[32px] overflow-hidden" style={{ color: 'var(--ink-200)' }}>
+            <span className="block text-[14px] leading-snug h-[38px] overflow-hidden" style={{ color: 'var(--ink-200)' }}>
               {it?.printRun && <TierChip run={`/${it.printRun}`} />} {it?.title || ''}
             </span>
-            <span className="block text-[14px] font-medium mt-1.5">{it ? featuredPrice(it) : ''}</span>
+            <span className="block font-display text-[22px] leading-none mt-2.5" style={{ color: 'var(--gold-bright)' }}>{it ? featuredPrice(it) : ''}</span>
             {it?.from && (
-              <span className="block text-[12px] mt-0.5 truncate" style={{ color: 'var(--ink-400)' }}>From {it.from}</span>
+              <span className="block text-[13px] mt-1.5 truncate" style={{ color: 'var(--ink-400)' }}>From {it.from}</span>
             )}
           </button>
         ))}
@@ -2447,7 +2470,7 @@ function FilterControls({ filters, setFilter, compact = false }) {
         </div>
         <PriceRangeSlider
           min={filters.priceMin}
-          max={filters.priceMax}
+          max={filters.priceMax === 5000 ? PRICE_NO_MAX : filters.priceMax}
           onChange={(min, max) => {
             setFilter('priceMin', min);
             setFilter('priceMax', max);
@@ -2471,45 +2494,95 @@ function SectionDivider() {
   return <div className="h-px bg-[var(--line-soft)]" />;
 }
 
-/* PriceRangeSlider — two-row min/max slider with prominent USD readout.
-   Reuses the existing RangeRow component for the actual slider mechanics. */
+/* PriceRangeSlider — quick "Under $X" picks plus typeable min and max boxes.
+   A quick pick only fills in the max; the min stays whatever the user typed.
+   PRICE_NO_MAX means no maximum. Typed amounts can be anything (no $5,000
+   cap), and min/max swap if entered backwards. */
+const PRICE_QUICK_PICKS = [50, 100, 250, 500, 1000];
+
+function PriceBox({ label, value, placeholder, onCommit }) {
+  const shown = value == null ? '' : String(value);
+  const [draft, setDraft] = useState(shown);
+  const [editing, setEditing] = useState(false);
+  useEffect(() => { if (!editing) setDraft(shown); }, [shown, editing]);
+  // Read the box's own value, not state, so a fast type-then-leave can't
+  // commit a stale draft.
+  function commit(raw) {
+    setEditing(false);
+    const n = parseInt(String(raw).replace(/[^0-9]/g, ''), 10);
+    onCommit(Number.isFinite(n) ? n : null);
+  }
+  return (
+    <label className="flex-1 flex items-center gap-1.5 h-12 px-3 rounded-lg focus-within:border-[var(--gold-bright)]"
+           style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
+      <span className="text-[16px]" style={{ color: 'var(--ink-400)' }}>$</span>
+      <input
+        type="text"
+        inputMode="numeric"
+        pattern="[0-9]*"
+        value={editing ? draft : (value == null ? '' : Number(value).toLocaleString('en-US'))}
+        placeholder={placeholder}
+        onFocus={(e) => { setEditing(true); setDraft(shown); requestAnimationFrame(() => e.target.select()); }}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={(e) => commit(e.target.value)}
+        onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur(); } }}
+        aria-label={label}
+        className="flex-1 min-w-0 bg-transparent border-0 outline-none text-[17px]"
+        style={{ color: 'var(--ink-100)' }}
+      />
+    </label>
+  );
+}
+
+function priceRangeLabel(min, max) {
+  const fmt = (n) => `$${Number(n).toLocaleString('en-US')}`;
+  const noMax = max == null || max >= PRICE_NO_MAX;
+  if (!min && noMax) return 'Any price';
+  if (!min) return `Under ${fmt(max)}`;
+  if (noMax) return `${fmt(min)} and up`;
+  return `${fmt(min)} to ${fmt(max)}`;
+}
+
 function PriceRangeSlider({ min, max, onChange }) {
+  const lo = min || 0;
+  const hi = max ?? PRICE_NO_MAX;
+
+  // Keep min ≤ max whichever way the user enters them.
+  const set = (a, b) => {
+    const x = a ?? 0;
+    const y = b ?? PRICE_NO_MAX;
+    if (x > y) onChange(y >= PRICE_NO_MAX ? 0 : y, x);
+    else onChange(x, y);
+  };
+
+  const pick = (cap) => set(lo, cap);
+  const chip = (label, cap) => {
+    const on = cap === hi;
+    return (
+      <button key={label} type="button" onClick={() => pick(cap)} aria-pressed={on}
+              className="h-10 px-3.5 rounded-full text-[14px] whitespace-nowrap transition-colors"
+              style={on
+                ? { border: '1px solid var(--gold-bright)', color: 'var(--gold-bright)', background: 'rgba(230,185,107,0.08)' }
+                : { border: '1px solid var(--line)', color: 'var(--ink-200)', background: 'var(--bg-elev)' }}>
+        {label}
+      </button>
+    );
+  };
+
   return (
     <div>
-      {/* Readout — large serif numbers */}
-      <div className="flex items-baseline justify-between mb-5 font-display">
-        <div>
-          <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--ink-600)] mr-2">Min</span>
-          <span className="text-2xl text-[var(--ink-100)]">
-            <span className="text-sm text-[var(--ink-600)] mr-1">$</span>{min}
-          </span>
-        </div>
-        <span className="text-[var(--ink-600)] mx-2">–</span>
-        <div className="text-right">
-          <span className="text-2xl text-[var(--ink-100)]">
-            <span className="text-sm text-[var(--ink-600)] mr-1">$</span>{max === 5000 ? '5000+' : max}
-          </span>
-          <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--ink-600)] ml-2">Max</span>
-        </div>
+      <div className="flex flex-wrap gap-2 mb-4">
+        {PRICE_QUICK_PICKS.map((cap) => chip(`Under $${cap.toLocaleString('en-US')}`, cap))}
+        {chip('No max', PRICE_NO_MAX)}
       </div>
-      {/* Two sliders, one each for min and max */}
-      <div className="space-y-4">
-        <RangeRow
-          label="Min"
-          value={min}
-          max={2000}
-          step={25}
-          onChange={(v) => onChange(v, max)}
-        />
-        <RangeRow
-          label="Max"
-          value={max}
-          max={5000}
-          step={25}
-          onChange={(v) => onChange(min, v)}
-          showPlus
-        />
+      <div className="flex items-center gap-2.5">
+        <PriceBox label="Minimum price" value={lo > 0 ? lo : null} placeholder="No min" onCommit={(v) => set(v, hi)} />
+        <span className="text-[14px]" style={{ color: 'var(--ink-400)' }}>to</span>
+        <PriceBox label="Maximum price" value={hi >= PRICE_NO_MAX ? null : hi} placeholder="No max" onCommit={(v) => set(lo, v ?? PRICE_NO_MAX)} />
       </div>
+      <p className="mt-3 text-[13px]" style={{ color: 'var(--ink-400)' }}>
+        Showing <span style={{ color: 'var(--ink-100)' }}>{priceRangeLabel(lo, hi)}</span>
+      </p>
     </div>
   );
 }
@@ -2736,7 +2809,7 @@ function countActiveFilters(f) {
   if (f.numberedCards) n++;
   if (f.condition && f.condition !== 'any') n++;
   if (f.listingType && f.listingType !== 'any') n++;
-  if ((f.priceMin ?? 0) > 0 || (f.priceMax ?? 1000) < 1000) n++;
+  if ((f.priceMin ?? 0) > 0 || !isPriceNoMax(f.priceMax ?? PRICE_NO_MAX)) n++;
   if (f.brands?.length) n++;
   if (f.teams?.length) n++;
   return n;
@@ -3129,23 +3202,14 @@ function Filters({ filters, setFilter }) {
       {/* Price */}
       <div>
         <FilterLabel>Price</FilterLabel>
-        <div className="space-y-5">
-          <RangeRow
-            label="Min"
-            value={filters.priceMin}
-            max={2000}
-            step={10}
-            onChange={(v) => setFilter('priceMin', v)}
-          />
-          <RangeRow
-            label="Max"
-            value={filters.priceMax}
-            max={5000}
-            step={50}
-            onChange={(v) => setFilter('priceMax', v)}
-            showPlus
-          />
-        </div>
+        <PriceRangeSlider
+          min={filters.priceMin}
+          max={filters.priceMax === 5000 ? PRICE_NO_MAX : filters.priceMax}
+          onChange={(min, max) => {
+            setFilter('priceMin', min);
+            setFilter('priceMax', max);
+          }}
+        />
       </div>
 
       {/* Sort */}
@@ -3296,58 +3360,6 @@ function ToggleRow({ label, checked, onChange }) {
   );
 }
 
-function RangeRow({ label, value, max, step, onChange, showPlus }) {
-  // Local string state lets the user type freely (including a temporary empty
-  // input). We commit the snapped value to the parent only on blur/Enter.
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(String(value));
-  useEffect(() => { if (!editing) setDraft(String(value)); }, [value, editing]);
-
-  function commit() {
-    let n = parseInt(draft.replace(/[^0-9]/g, ''), 10);
-    if (!Number.isFinite(n)) n = 0;
-    if (n < 0) n = 0;
-    if (n > max) n = max;
-    n = Math.round(n / step) * step; // snap to step
-    onChange(n);
-    setDraft(String(n));
-    setEditing(false);
-  }
-
-  return (
-    <div>
-      <div className="flex justify-between items-baseline mb-2">
-        <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--ink-400)]">{label}</span>
-        <div className="flex items-baseline gap-1">
-          <span className="font-mono text-xs text-[var(--ink-600)]">$</span>
-          <input
-            type="text"
-            inputMode="numeric"
-            pattern="[0-9]*"
-            value={editing ? draft : (value + (showPlus && value === max ? '+' : ''))}
-            onFocus={(e) => { setEditing(true); setDraft(String(value)); requestAnimationFrame(() => e.target.select()); }}
-            onChange={(e) => setDraft(e.target.value)}
-            onBlur={commit}
-            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur(); } }}
-            className="font-mono text-xs text-[var(--ink-100)] bg-transparent border-0 outline-none w-16 text-right focus:text-[var(--gold-bright)]"
-            style={{ borderBottom: '0.5px dashed var(--line)' }}
-            aria-label={`${label} price`}
-          />
-        </div>
-      </div>
-      <input
-        type="range"
-        min="0"
-        max={max}
-        step={step}
-        value={value}
-        onChange={(e) => onChange(parseFloat(e.target.value))}
-        className="ff-price-range w-full"
-        aria-label={`${label} price slider`}
-      />
-    </div>
-  );
-}
 
 /* "Search with new filters?" modal — fires when filters drift from the
    active search and the user closes the filter drawer or tries to interact
@@ -4641,8 +4653,8 @@ function activeFilterChips(f) {
   brandFilterLabels(f.brands, f.brandLines).forEach((label) => chips.push({ label }));
   teamFilterLabels(f.teams).forEach((label) => chips.push({ label }));
   const min = f.priceMin || 0;
-  const max = f.priceMax ?? 1000;
-  if (min > 0 || max < 1000) chips.push({ label: max >= 5000 ? `$${min}+` : `$${min}–$${max}` });
+  const max = f.priceMax ?? PRICE_NO_MAX;
+  if (min > 0 || !isPriceNoMax(max)) chips.push({ label: priceRangeLabel(min, max === 5000 ? PRICE_NO_MAX : max) });
   return chips;
 }
 
