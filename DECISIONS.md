@@ -52,6 +52,8 @@ Everything Landon has decided, so no agent ever asks him the same thing twice. O
 - Auction reminders: members pick **any mix of 3 hours, 1 hour, 30, 15 or 5 minutes** before the end, each sent once, still with the optional "only if the bid is under $X". A reminder-only check runs **every 5 minutes**. (2026-10-23)
 - Option for later (**not decided**): free alerts as a daily summary, Base hourly. Revisit after ~30 days of funnel data. (2026-10-23, CFO)
 
+- Rarity colour lists grow to **~25 most-hunted sets from the last two seasons, including autograph colour lists**, with new releases added quarterly. Facts only from checklist sources. (2026-10-23)
+
 ## Search
 - Spelling suggestions cover pro players **and college players**. The roster refresh is run by hand once a quarter. (2026-10-20, 2026-10-21)
 - Card company filter, including Leaf and the listed product lines. (2026-10-20)

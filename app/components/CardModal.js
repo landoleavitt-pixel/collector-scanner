@@ -296,7 +296,7 @@ function CardModalInner({ item, printRun, onClose, expired = false }) {
   // ─ Identify the set + parallel from the listing title ─────────────
   // Done once per item open. parseSetFromTitle returns null when the
   // set isn't in our database, which RarityTree handles gracefully.
-  const detection = item && !expired ? parseSetFromTitle(item.title || '') : null;
+  const detection = item && !expired ? parseSetFromTitle(item.title || '', { sport: item.sportHint }) : null;
   const setData = detection ? getSet(detection.setKey) : null;
   const parallel = detection ? getParallel(detection.setKey, detection.parallelKey) : null;
   // Border color for the card frame. Prefer the matched parallel's color;

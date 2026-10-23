@@ -9,7 +9,7 @@ The single list of work that's finished or in progress but **not live yet**. The
 | 7 | eBay Partner Network affiliate links | CFO | ⏸ Plan approved. Waiting on Landon's sign-up + Campaign ID; code held until batch ships | SiteTour.js, guides, reading-list copy + link tagging | — |
 | L05 | Proof strip | Landing | ⏹ Skipped: no honest live number yet (no fake figures) | — | — |
 | S-poll | Lock down the alert checker: it can be triggered by anyone holding the public key; require a private secret header from the cron jobs instead | Debugger | ⚪ Follow-up (low risk today: it only re-runs checks and never re-sends) | poller, both cron jobs | poller deploy + Landon edits 2 cron jobs |
-| 12 | 2024 Topps Chrome Football rarity data | Rarity tree | ⚪ Follow-up | lib/parallelData.js, lib/parseSetFromTitle.js | — |
+| R-cov | Rarity colour lists for ~25 most-hunted sets (last two seasons) incl. autograph lists; quarterly additions | Rarity session | 🔵 Approved; starting | lib/parallelData.js, lib/parseSetFromTitle.js, RarityTree | — |
 
 **iOS release reminders:** run `npx cap sync ios` before every archive, so the app points at fieldsandfloors.com and not a test server. Check that the TestFlight build receives push notifications. Add the `ff_base_annual` product in App Store Connect and RevenueCat.
 
@@ -17,6 +17,7 @@ The single list of work that's finished or in progress but **not live yet**. The
 
 | When | What | Commit |
 |---|---|---|
+| 2026-10-23 | 2024 Topps Chrome Football colour list; sport hint from searched player | (fb) |
 | 2026-10-23 | Alert checker skips the visitor rate limit (signed) and retries if limited; funnel ignores your own and our browsers | b38e9c9 + poller deploy (Landon) |
 | 2026-10-23 | Auction reminders at chosen times (3h/1h/30m/15m/5m) with price cap; reminder-only poller mode for a 5-minute check; funnel "hit alert limit" tracking | 2a8c9e4 + poller deployed |
 | 2026-10-23 | Price filter: quick picks + typed min/max, no $5,000 cap, searches start at any price; bold signed-in home with "The Grail Hunter." heading | abeb98a |

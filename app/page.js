@@ -705,7 +705,10 @@ function Home() {
         track('searched', { listing: f.listingType || 'any', graded: f.condition === 'graded', auto: !!f.autoCards });
         // Store raw results; sorting happens via useMemo so changing the sort
         // option instantly re-orders without re-fetching from eBay.
-        setResults(data.items || []);
+        // The searched player's sport helps the card popup pick the right
+        // set's colour list (e.g. Topps Chrome football vs baseball).
+        const sportHint = playerSuggest?.sportOfPlayer?.(q) || null;
+        setResults(sportHint ? (data.items || []).map((it) => ({ ...it, sportHint })) : (data.items || []));
         setResultMeta({ ebayTotal: data.ebayTotal || 0, capped: !!data.capped });
         // Snapshot the filter values that produced this result set, so we
         // can detect when subsequent edits create "pending changes" relative
