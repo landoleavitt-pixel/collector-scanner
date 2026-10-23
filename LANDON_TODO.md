@@ -12,6 +12,9 @@ Things only you can do, because they need your accounts, money or signature. The
 - [x] **Paste the reminder-times SQL.** Supabase → SQL Editor → paste `supabase/migrations/20261023000000_reminder_times.sql` → Run. Do this before the boss pushes the reminders update.
 - [x] **Add the 5-minute reminder check** (after the boss says the reminders update is live). Supabase → Integrations → Cron → open the existing job that runs the `poller` function → create a copy with: schedule `*/5 * * * *` and the same URL with `?only=reminders` added on the end. Security note: it reuses the exact same settings and key as your existing hourly job, so nothing new is exposed.
 
+- [ ] **Deploy the alert checker** (alert fix + reminder timing): in Terminal, `cd ~/projects/Fields\ and\ Floors && supabase functions deploy poller`.
+- [ ] **Stop counting your own visits:** open **fieldsandfloors.com/?internal=1** once on each browser and phone you use (or just sign in on it). The agents' browser is already done.
+
 ## Stripe: take real payments on the website
 
 Full steps: [CFO_LAUNCH_CHECKLIST.md](CFO_LAUNCH_CHECKLIST.md), section 1.
