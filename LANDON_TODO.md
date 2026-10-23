@@ -9,6 +9,9 @@ Things only you can do, because they need your accounts, money or signature. The
 - [x] **Paste the signed-in home SQL.** Supabase → SQL Editor → paste `supabase/migrations/20261022000000_signed_in_home.sql` → Run. It adds your last-visit time and each starred card's saved price, so "Since you were last here" and price drops work.
 - [ ] After both SQL pastes and the next deploy, sign in and look at your new home page once (new matches, price drops, ending soon).
 
+- [x] **Paste the reminder-times SQL.** Supabase → SQL Editor → paste `supabase/migrations/20261023000000_reminder_times.sql` → Run. Do this before the boss pushes the reminders update.
+- [ ] **Add the 5-minute reminder check** (after the boss says the reminders update is live). Supabase → Integrations → Cron → open the existing job that runs the `poller` function → create a copy with: schedule `*/5 * * * *` and the same URL with `?only=reminders` added on the end. Security note: it reuses the exact same settings and key as your existing hourly job, so nothing new is exposed.
+
 ## Stripe: take real payments on the website
 
 Full steps: [CFO_LAUNCH_CHECKLIST.md](CFO_LAUNCH_CHECKLIST.md), section 1.

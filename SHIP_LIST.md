@@ -17,7 +17,8 @@ The single list of work that's finished or in progress but **not live yet**. The
 
 | When | What | Commit |
 |---|---|---|
-| 2026-10-23 | Price filter: quick picks + typed min/max, no $5,000 cap, searches start at any price; bold signed-in home with "The Grail Hunter." heading | (bold) |
+| 2026-10-23 | Auction reminders at chosen times (3h/1h/30m/15m/5m) with price cap; reminder-only poller mode for a 5-minute check; funnel "hit alert limit" tracking | (rem) + poller deployed |
+| 2026-10-23 | Price filter: quick picks + typed min/max, no $5,000 cap, searches start at any price; bold signed-in home with "The Grail Hunter." heading | abeb98a |
 | 2026-10-22 | Team search finds player-only titles via a player-to-team history | c8b4cfb |
 | 2026-10-22 | Signed-in "Live right now" from the member's saved and recent searches (cached hourly); as-you-type suggestions on the signed-in search | d6035ad |
 | 2026-10-22 | Home redesign: "The Grail Hunter" signed-out hero with real-card strip, 3-icon How it works, short Plans; simple signed-in home (search, saved searches, since last visit, live cards) | 6c9dafb |

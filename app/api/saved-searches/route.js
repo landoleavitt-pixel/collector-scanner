@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabase } from '../../../lib/supabaseServer';
+import { recordOnce } from '../../../lib/trackServer';
 import { brandFilterLabels } from '../../../lib/cardBrands';
 import { teamFilterLabels } from '../../../lib/teams';
 
@@ -74,6 +75,8 @@ export async function POST(request) {
     if ((count ?? 0) >= limit) {
       effectiveNotify = false;
       watchLimited = true;
+      // Funnel: first time this person runs into their alert cap (no search text stored).
+      await recordOnce({ event: 'watch_limit_hit', userId: user.id, source: 'create', meta: { plan: entitled ? 'base' : 'free' } });
     }
   }
 

@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import BidCountdown from '../components/BidCountdown';
 import { WatchlistProvider } from '../../lib/watchlistContext';
 import CardModal from '../components/CardModal';
-import { Check, X, Star, ImageOff } from 'lucide-react';
+import { Check, X, Star, ImageOff, Bell, Plus } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -382,12 +382,31 @@ function WatchlistTile({ listing, onRemove, onToast, onCardClick }) {
   );
 }
 
+// Reminder times members can pick, in minutes before the auction ends.
+// Must match REMINDER_OFFSETS in the watchlist API and the poller.
+const REMINDER_TIMES = [
+  { min: 180, label: '3 hours' },
+  { min: 60, label: '1 hour' },
+  { min: 30, label: '30 min' },
+  { min: 15, label: '15 min' },
+  { min: 5, label: '5 min' },
+];
+
+function reminderTimesLabel(times) {
+  const labels = REMINDER_TIMES.filter((t) => times.includes(t.min)).map((t) => t.label);
+  if (labels.length <= 1) return labels[0] || '';
+  return `${labels.slice(0, -1).join(', ')} and ${labels[labels.length - 1]}`;
+}
+
 // "Set a reminder" button that opens a modal. Once set, the button shows the
 // armed state ("Reminder set · $X") and reopens the modal to edit or remove.
 function BidReminderControl({ listing, onToast }) {
   const [on, setOn] = useState(!!listing.bid_reminder);
   const [maxPrice, setMaxPrice] = useState(
     listing.reminder_max_price != null ? Number(listing.reminder_max_price) : null
+  );
+  const [offsets, setOffsets] = useState(
+    Array.isArray(listing.reminder_offsets) && listing.reminder_offsets.length ? listing.reminder_offsets : [180]
   );
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -403,16 +422,18 @@ function BidReminderControl({ listing, onToast }) {
     }
   }
 
-  function handleSubmit(priceValue) {
+  function handleSubmit(priceValue, times) {
     const price = priceValue === '' || priceValue == null ? null : Number(priceValue);
     setOn(true);
     setMaxPrice(price);
+    setOffsets(times);
     setModalOpen(false);
-    patch({ bid_reminder: true, reminder_max_price: price });
+    patch({ bid_reminder: true, reminder_max_price: price, reminder_offsets: times });
+    const when = reminderTimesLabel(times);
     onToast?.(
       price != null
-        ? `Reminder set. We'll only email you about this card if the bid is under $${price}.`
-        : `Reminder set. We'll email you in this auction's final hours.`
+        ? `Reminder set for ${when} before the end, only if the bid is under $${price}.`
+        : `Reminder set for ${when} before the end.`
     );
   }
 
@@ -425,7 +446,7 @@ function BidReminderControl({ listing, onToast }) {
   }
 
   const buttonLabel = on
-    ? `Reminder set${maxPrice != null ? ` · $${maxPrice}` : ''}`
+    ? `Reminder · ${reminderTimesLabel(offsets)}${maxPrice != null ? ` · under $${maxPrice}` : ''}`
     : 'Set a reminder';
 
   return (
@@ -435,7 +456,7 @@ function BidReminderControl({ listing, onToast }) {
         className="flex items-center gap-2 text-[11px] uppercase tracking-[0.14em] transition-colors"
         style={{ color: on ? 'var(--gold-bright)' : 'var(--ink-400)' }}
       >
-        <span style={{ fontSize: '12px' }}>{on ? '🔔' : '+'}</span>
+        {on ? <Bell className="w-3.5 h-3.5" strokeWidth={1.75} aria-hidden="true" /> : <Plus className="w-3.5 h-3.5" strokeWidth={1.75} aria-hidden="true" />}
         {buttonLabel}
       </button>
 
@@ -443,6 +464,7 @@ function BidReminderControl({ listing, onToast }) {
         <BidReminderModal
           listing={listing}
           initialPrice={maxPrice}
+          initialOffsets={offsets}
           isSet={on}
           onSubmit={handleSubmit}
           onRemove={handleRemove}
@@ -454,8 +476,11 @@ function BidReminderControl({ listing, onToast }) {
 }
 
 // Modal: pick an optional max price, submit to arm the reminder.
-function BidReminderModal({ listing, initialPrice, isSet, onSubmit, onRemove, onClose }) {
+function BidReminderModal({ listing, initialPrice, initialOffsets, isSet, onSubmit, onRemove, onClose }) {
   const [price, setPrice] = useState(initialPrice != null ? String(initialPrice) : '');
+  const [times, setTimes] = useState(initialOffsets?.length ? initialOffsets : [180]);
+  const toggle = (m) => setTimes((t) => (t.includes(m) ? t.filter((x) => x !== m) : [...t, m].sort((a, b) => b - a)));
+  const submit = () => { if (times.length) onSubmit(price, times); };
 
   return (
     <div
@@ -473,20 +498,36 @@ function BidReminderModal({ listing, initialPrice, isSet, onSubmit, onRemove, on
             Bid reminder
           </div>
           <h3 className="font-display italic text-[24px] leading-[1.15] mb-2" style={{ color: 'var(--ink-100)' }}>
-            What's the most you'd pay?
+            Remind me before it ends
           </h3>
           <p className="text-[13px] leading-relaxed mb-5" style={{ color: 'var(--ink-400)' }}>
-            We'll email you in this auction's final hours. If you set a price, we'll email
-            only when the current bid is at or below it. Leave it blank to be
-            reminded regardless of price.
+            Pick when you want a reminder. Choose as many as you like; each one is sent once.
           </p>
 
           <div className="text-[11px] line-clamp-2 mb-4 italic" style={{ color: 'var(--ink-600)' }}>
             {listing.title}
           </div>
 
+          <div className="flex flex-wrap gap-2 mb-1" role="group" aria-label="Reminder times">
+            {REMINDER_TIMES.map(({ min, label }) => {
+              const on = times.includes(min);
+              return (
+                <button key={min} type="button" onClick={() => toggle(min)} aria-pressed={on}
+                        className="h-10 px-3.5 rounded-full text-[14px] whitespace-nowrap transition-colors"
+                        style={on
+                          ? { border: '1px solid var(--gold-bright)', color: 'var(--gold-bright)', background: 'rgba(230,185,107,0.08)' }
+                          : { border: '1px solid var(--line)', color: 'var(--ink-200)', background: 'var(--bg-elev-2)' }}>
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+          <p className="text-[12px] mb-5" style={{ color: times.length ? 'var(--ink-600)' : 'var(--crit)' }}>
+            {times.length ? 'Before the auction ends.' : 'Pick at least one time.'}
+          </p>
+
           <label className="block text-[10px] uppercase tracking-[0.14em] mb-2" style={{ color: 'var(--ink-400)' }}>
-            Notify me only if the bid is at or below
+            Only remind me if the bid is at or below (optional)
           </label>
           <div className="flex items-center mb-2" style={{ border: '0.5px solid var(--line)', borderRadius: 8, overflow: 'hidden' }}>
             <span className="text-[16px] px-3" style={{ color: 'var(--ink-400)' }}>$</span>
@@ -499,15 +540,16 @@ function BidReminderModal({ listing, initialPrice, isSet, onSubmit, onRemove, on
               placeholder="Any amount"
               className="flex-1 bg-transparent text-[16px] py-3 pr-3 outline-none"
               style={{ color: 'var(--ink-100)' }}
-              onKeyDown={(e) => { if (e.key === 'Enter') onSubmit(price); }}
+              onKeyDown={(e) => { if (e.key === 'Enter') submit(); }}
             />
           </div>
         </div>
 
         <div className="px-6 py-4 flex items-center gap-3" style={{ borderTop: '0.5px solid var(--line-soft)' }}>
           <button
-            onClick={() => onSubmit(price)}
-            className="flex-1 text-[11px] uppercase tracking-[0.18em] py-3 rounded-full transition-opacity hover:opacity-90"
+            onClick={submit}
+            disabled={!times.length}
+            className="flex-1 text-[11px] uppercase tracking-[0.18em] py-3 rounded-full transition-opacity hover:opacity-90 disabled:opacity-40"
             style={{ background: 'var(--gold)', color: 'var(--ink-on-gold)' }}
           >
             {isSet ? 'Update reminder' : 'Set reminder'}
@@ -532,8 +574,8 @@ function BidReminderModal({ listing, initialPrice, isSet, onSubmit, onRemove, on
         </div>
 
         <p className="px-6 pb-5 text-[11px] leading-relaxed" style={{ color: 'var(--ink-600)' }}>
-          This doesn't buy or bid on the card. Fields &amp; Floors only emails you so
-          you can decide and bid yourself on eBay. Prices and availability can change.
+          This doesn't buy or bid on the card. We only remind you, by email and in the
+          app, so you can decide and bid yourself on eBay. Prices and availability can change.
         </p>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabase } from '../../../../lib/supabaseServer';
+import { recordOnce } from '../../../../lib/trackServer';
 
 // Fetch a single saved search by id
 export async function GET(request, { params }) {
@@ -80,6 +81,8 @@ export async function PATCH(request, { params }) {
       .neq('id', params.id);
 
     if ((count ?? 0) >= limit) {
+      // Funnel: first time this person runs into their alert cap (no search text stored).
+      await recordOnce({ event: 'watch_limit_hit', userId: user.id, source: 'toggle', meta: { plan: entitled ? 'base' : 'free' } });
       return NextResponse.json(
         {
           error: entitled

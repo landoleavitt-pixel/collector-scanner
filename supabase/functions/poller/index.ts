@@ -58,6 +58,15 @@ interface UserDigest {
 
 // --- Main handler ---
 Deno.serve(async (_req) => {
+  // Reminder-only run: a pg_cron job calls ?only=reminders every 5 minutes so
+  // 30/15/5-minute reminders land on time. The hourly full run below also
+  // checks reminders, as a backup.
+  if (new URL(_req.url).searchParams.get("only") === "reminders") {
+    const reminderErrors: string[] = [];
+    const reminded = await processBidReminders(reminderErrors);
+    return jsonResponse({ ok: true, bidRemindersSent: reminded, errors: reminderErrors.slice(0, 5) });
+  }
+
   const startedAt = new Date().toISOString();
   let searchesChecked = 0;
   let notificationsSent = 0;
@@ -254,35 +263,59 @@ Deno.serve(async (_req) => {
 // Bid reminders: email users when a watched auction enters its final hours.
 // "Approximate" timing — runs each hourly poll, fires once per auction when it's
 // within the reminder window. Optionally gated on a max current-bid price.
-const REMINDER_WINDOW_HOURS = 3;
+// Members pick any mix of these, in minutes before the auction ends. Each
+// one is sent once. reminder_max_price (optional) still gates every send.
+const REMINDER_OFFSETS = [180, 60, 30, 15, 5];
+const MAX_OFFSET_MIN = Math.max(...REMINDER_OFFSETS);
+
+// "about 3 hours" / "about 15 minutes"
+function timeLeftLabel(msLeft: number): string {
+  const mins = Math.max(1, Math.round(msLeft / 60000));
+  if (mins < 60) return `${mins} minute${mins === 1 ? "" : "s"}`;
+  const hours = Math.max(1, Math.round(mins / 60));
+  return `${hours} hour${hours === 1 ? "" : "s"}`;
+}
 
 async function processBidReminders(errors: string[]): Promise<number> {
   let sent = 0;
   try {
     const nowMs = Date.now();
-    const windowMs = REMINDER_WINDOW_HOURS * 60 * 60 * 1000;
+    const horizon = new Date(nowMs + (MAX_OFFSET_MIN + 5) * 60000).toISOString();
 
-    // Armed reminders on active auctions that haven't been reminded yet.
+    // Armed reminders on active auctions ending within the longest window.
     const { data: rows, error } = await supabase
       .from("watched_listings")
       .select("*")
       .eq("bid_reminder", true)
-      .eq("reminder_sent", false)
       .eq("status", "active")
-      .eq("is_auction", true);
+      .eq("is_auction", true)
+      .gt("end_time", new Date(nowMs).toISOString())
+      .lte("end_time", horizon);
 
     if (error) throw error;
     if (!rows || rows.length === 0) return 0;
 
     for (const row of rows) {
       try {
-        if (!row.end_time) continue;
         const endMs = new Date(row.end_time).getTime();
         if (isNaN(endMs)) continue;
-
         const msLeft = endMs - nowMs;
-        // Skip if already ended, or not yet within the final window.
-        if (msLeft <= 0 || msLeft > windowMs) continue;
+        if (msLeft <= 0) continue;
+
+        const offsets: number[] = (Array.isArray(row.reminder_offsets) && row.reminder_offsets.length)
+          ? row.reminder_offsets.filter((o: number) => REMINDER_OFFSETS.includes(o))
+          : [180];
+        const already: number[] = Array.isArray(row.reminders_sent) ? row.reminders_sent : [];
+        // Every chosen time we've now passed and haven't sent yet. If a check
+        // was missed and several are due at once, send one reminder and mark
+        // them all done, so nobody gets a burst.
+        const due = offsets.filter((o) => !already.includes(o) && msLeft <= o * 60000);
+        if (due.length === 0) continue;
+
+        const markDone = () => supabase
+          .from("watched_listings")
+          .update({ reminders_sent: [...already, ...due], reminder_sent: true })
+          .eq("id", row.id);
 
         // Optional price gate: only remind if the current bid is at/below max.
         let currentPrice = row.price;
@@ -290,7 +323,8 @@ async function processBidReminders(errors: string[]): Promise<number> {
           const live = await fetchLiveItemPrice(row.listing_id);
           if (live != null) currentPrice = live;
           if (currentPrice != null && Number(currentPrice) > Number(row.reminder_max_price)) {
-            continue; // bid has exceeded their max — don't remind
+            await markDone(); // over their max for this time slot; skip it
+            continue;
           }
         }
 
@@ -298,18 +332,13 @@ async function processBidReminders(errors: string[]): Promise<number> {
         if (!email) continue;
 
         await sendBidReminderEmail(email, row, currentPrice, msLeft);
-        const hoursLeft = Math.max(1, Math.round(msLeft / (60 * 60 * 1000)));
         await sendPushToUser(supabase, row.user_id, {
-          title: `Ending in about ${hoursLeft} hour${hoursLeft === 1 ? "" : "s"}`,
+          title: `Ending in about ${timeLeftLabel(msLeft)}`,
           body: row.title || "An auction you're watching is ending soon.",
           url: "/watchlist-cards",
         });
 
-        await supabase
-          .from("watched_listings")
-          .update({ reminder_sent: true })
-          .eq("id", row.id);
-
+        await markDone();
         sent++;
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
@@ -619,7 +648,6 @@ async function sendBidReminderEmail(
   const priceStr = currentPrice != null
     ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(Number(currentPrice))
     : "—";
-  const hoursLeft = Math.max(1, Math.round(msLeft / (60 * 60 * 1000)));
   const title = row.title || "Your watched auction";
   const url = row.listing_url || "https://fieldsandfloors.com/watchlist-cards";
 
@@ -635,7 +663,7 @@ async function sendBidReminderEmail(
       Fields &amp; Floors · Auction ending soon
     </div>
     <div style="font-style:italic;font-size:26px;line-height:1.2;color:#f7f1e1;margin-bottom:18px;">
-      An auction you're watching ends in about ${hoursLeft} hour${hoursLeft === 1 ? "" : "s"}.
+      An auction you're watching ends in about ${timeLeftLabel(msLeft)}.
     </div>
     <div style="border:0.5px solid #2a251c;border-radius:12px;background:#14110c;padding:18px;margin-bottom:22px;">
       <div style="font-size:14px;line-height:1.4;color:#f7f1e1;margin-bottom:10px;">${title}</div>

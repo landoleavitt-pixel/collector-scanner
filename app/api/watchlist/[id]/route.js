@@ -25,8 +25,10 @@ export async function DELETE(request, { params }) {
 }
 
 // Update bid-reminder settings on a watched auction. Body may include:
-//   bid_reminder (bool), reminder_max_price (number|null)
-// Setting bid_reminder resets reminder_sent so a fresh reminder can fire.
+//   bid_reminder (bool), reminder_max_price (number|null),
+//   reminder_offsets (minutes before the end: any of 180, 60, 30, 15, 5)
+// Changing the toggle or the times re-arms them so fresh reminders can fire.
+const REMINDER_OFFSETS = [180, 60, 30, 15, 5];
 export async function PATCH(request, { params }) {
   const supabase = createServerSupabase();
   const { data: { user } } = await supabase.auth.getUser();
@@ -40,6 +42,15 @@ export async function PATCH(request, { params }) {
   if (typeof body.bid_reminder === 'boolean') {
     patch.bid_reminder = body.bid_reminder;
     patch.reminder_sent = false; // re-arm whenever the toggle is changed
+  }
+  if (Array.isArray(body.reminder_offsets)) {
+    const offsets = [...new Set(body.reminder_offsets.map(Number))].filter((o) => REMINDER_OFFSETS.includes(o));
+    if (offsets.length === 0) {
+      return NextResponse.json({ error: 'Pick at least one reminder time' }, { status: 400 });
+    }
+    patch.reminder_offsets = offsets.sort((a, b) => b - a);
+    patch.reminders_sent = [];
+    patch.reminder_sent = false;
   }
   if ('reminder_max_price' in body) {
     patch.reminder_max_price =

@@ -13,6 +13,7 @@ const LABELS = {
   card_opened: 'Opened a card',
   starred: 'Starred a card',
   signed_up: 'Created an account',
+  watch_limit_hit: 'Hit their alert limit',
   trial_started: 'Started a free trial',
 };
 
@@ -97,6 +98,21 @@ export default function AdminFunnelPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+        {!state.loading && !state.error && state.data?.health && (
+          <div className="mt-8" style={{ border: '1px solid var(--line)', borderRadius: 12, padding: '16px 20px', color: 'var(--ink-200)' }}>
+            <div className="text-[10px] tracking-[0.16em] uppercase mb-3" style={{ color: 'var(--ink-400)' }}>
+              Is free the right size? (all time, accounts older than 14 days)
+            </div>
+            <p className="text-[14px] leading-[1.6]">
+              <strong style={{ color: 'var(--ink-100)' }}>{state.data.health.freeStillOnAlert}</strong> of{' '}
+              {state.data.health.freeOlderThan14Days} free accounts still have their one alert on.
+            </p>
+            <p className="text-[14px] leading-[1.6]">
+              <strong style={{ color: 'var(--ink-100)' }}>{state.data.health.trialsNowPaying}</strong> of{' '}
+              {state.data.health.trialsOlderThan14Days} free trials that began 14+ days ago are now paying.
+            </p>
           </div>
         )}
         <p className="text-[12px] mt-4 leading-[1.5]" style={{ color: 'var(--ink-600)' }}>
