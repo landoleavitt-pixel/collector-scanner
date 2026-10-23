@@ -1,8 +1,8 @@
 /**
  * GET /api/featured
  *
- * Returns one Grail-tier (print run ≤ 25) trading card from eBay's Browse API
- * to display in the homepage's "Featured Find" panel.
+ * Returns Grail-tier (print run ≤ 25) cards from eBay's Browse API: the
+ * homepage's featured card plus up to four more for the signed-in home.
  *
  * Caching: results are cached server-side for 1 hour via Next.js fetch revalidation.
  * Every hour-or-so the featured card refreshes; in between, we serve cached.
@@ -141,13 +141,17 @@ export async function GET() {
     // Find the first item whose title parses as Grail-tier (≤ 25)
     // and has a real image. We iterate in price-desc order, so the first
     // match is also the most expensive Grail card — the best showcase.
-    let featured = null;
+    const picks = [];
+    const seenTitles = new Set();
     for (const it of items) {
       const printRun = detectPrintRun(it.title);
       if (!printRun || printRun > 25) continue;
       if (!it.image?.imageUrl) continue;
 
-      featured = {
+      const key = it.title.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 40);
+      if (seenTitles.has(key)) continue;
+      seenTitles.add(key);
+      picks.push({
         id: it.itemId,
         title: it.title,
         url: it.itemWebUrl,
@@ -161,17 +165,15 @@ export async function GET() {
         bgsGrade: it.title.match(/BGS\s*(\d{1,2}(?:\.\d)?)/i)?.[1] || null,
         sgcGrade: it.title.match(/SGC\s*(\d{1,2}(?:\.\d)?)/i)?.[1] || null,
         cgcGrade: it.title.match(/CGC\s*(\d{1,2}(?:\.\d)?)/i)?.[1] || null,
-      };
-      break;
+      });
+      if (picks.length >= 5) break;
     }
 
-    if (!featured) {
-      // No Grail match found this hour — return null and let the frontend
-      // render a graceful fallback.
-      return Response.json({ featured: null });
-    }
-
-    return Response.json({ featured });
+    // `featured` is the hero card (the most expensive Grail match); `items`
+    // adds up to four more for the signed-in home's "Live right now" row.
+    // Same single cached eBay call either way. Null when nothing matched this
+    // hour, and the frontend shows its fallback.
+    return Response.json({ featured: picks[0] || null, items: picks });
   } catch (err) {
     console.error('Featured fetch failed:', err);
     return Response.json({ error: 'Featured fetch failed' }, { status: 500 });

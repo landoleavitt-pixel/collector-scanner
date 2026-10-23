@@ -6,6 +6,9 @@ Things only you can do, because they need your accounts, money or signature. The
 
 - [ ] **Paste the tracking table SQL.** Supabase → SQL Editor → paste `supabase/migrations/20261021000000_funnel_events.sql` → Run. You should see "Success. No rows returned".
 
+- [ ] **Paste the signed-in home SQL.** Supabase → SQL Editor → paste `supabase/migrations/20261022000000_signed_in_home.sql` → Run. It adds your last-visit time and each starred card's saved price, so "Since you were last here" and price drops work.
+- [ ] After both SQL pastes and the next deploy, sign in and look at your new home page once (new matches, price drops, ending soon).
+
 ## Stripe: take real payments on the website
 
 Full steps: [CFO_LAUNCH_CHECKLIST.md](CFO_LAUNCH_CHECKLIST.md), section 1.

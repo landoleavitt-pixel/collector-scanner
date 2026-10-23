@@ -11,7 +11,7 @@ function upscaleEbayImage(url) {
   if (!url) return url;
   return url.replace(/\/s-l\d+\.(\w+)/, '/s-l640.$1');
 }
-import { ArrowRight, ArrowUpRight, ArrowUp, Star, Check, X, Crosshair, ArrowLeft, ImageOff } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, ArrowUp, Star, Check, X, Crosshair, ArrowLeft, ImageOff, Search, Clock, Bell, TrendingDown, Hourglass, ListFilter } from 'lucide-react';
 import SaveSearchModal from './components/SaveSearchModal';
 import BidCountdown from './components/BidCountdown';
 import CardModal from './components/CardModal';
@@ -836,6 +836,18 @@ function Home() {
           data-ff-idle hides this via CSS when the deep-link class is set. */}
       {appStage === 'idle' && (
         <div data-ff-idle>
+          {user ? (
+            <SignedInHome
+              query={query}
+              setQuery={setQuery}
+              onSearch={() => handleQuerySubmit()}
+              onSuggested={(q) => handleQuerySubmit(q)}
+              recentSearches={tidyRecents}
+              onCardClick={openCard}
+              error={error}
+            />
+          ) : (
+          <>
           <Hero
             query={query}
             setQuery={setQuery}
@@ -860,6 +872,8 @@ function Home() {
             }}
           />
           <WhyFields user={user} />
+          </>
+          )}
         </div>
       )}
 
@@ -1312,30 +1326,24 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
           "Live right now" row underneath. */}
       <div className="relative max-w-[1120px] mx-auto px-6 lg:px-10 pt-8 pb-14 md:pt-20 md:pb-28 grid md:grid-cols-[1.05fr_0.95fr] gap-9 md:gap-16 items-center">
         <div className="text-left">
-          <div
-            className="font-mono text-[10px] uppercase tracking-[0.24em] rise"
-            style={{ color: 'var(--gold)', animationDelay: '160ms' }}
-          >
-            Find the one
-          </div>
+          {/* Show, don't tell: a name, an invitation, the search. The real
+              cards in RarityStrip below do the explaining. */}
           <h1
-            className="mt-3 font-display text-[clamp(2.25rem,7.5vw,3.5rem)] leading-[1.02] tracking-[-0.015em] rise"
+            className="font-display text-[clamp(2.75rem,9vw,4.25rem)] leading-[1] tracking-[-0.015em] rise"
             style={{ animationDelay: '220ms', textWrap: 'balance' }}
           >
-            Every <em className="text-[var(--gold-bright)]">numbered card</em> on eBay, on one page.
+            The <em className="text-[var(--gold-bright)]">Grail</em> Hunter.
+            <span className="sr-only"> Search eBay for rare numbered sports cards, rarest first.</span>
           </h1>
-
           <p
-            className="mt-4 text-[15px] md:text-[17px] leading-relaxed max-w-[480px] rise"
-            style={{ color: 'var(--ink-400)', animationDelay: '300ms' }}
+            className="mt-5 md:mt-7 font-display italic text-[20px] md:text-[22px] leading-none rise"
+            style={{ color: 'var(--gold-bright)', animationDelay: '300ms' }}
           >
-            One search for every card of a player numbered{' '}
-            <span style={{ color: 'var(--ink-100)' }}>50 or less</span>, rarest first.
-            Then get an email within the hour when a new one lists.
+            Just try it.
           </p>
 
           {/* Search — a solid gold-edged field with a labelled gold button. */}
-          <div className="mt-6 md:mt-8 rise" style={{ animationDelay: '380ms' }}>
+          <div className="mt-3 rise" style={{ animationDelay: '380ms' }}>
             <div
               ref={suggest.anchorRef}
               className="relative flex items-center rounded-xl transition-colors focus-within:border-[var(--gold)]"
@@ -1374,15 +1382,7 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
             {suggest.dropdown}
             {error && <p className="mt-3 text-[13px] text-[var(--crit)]">{error}</p>}
 
-            {/* Reassurance before anyone has to ask. */}
-            <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px]" style={{ color: 'var(--ink-400)' }}>
-              {['Free', 'No account needed', 'Real eBay listings'].map((t) => (
-                <span key={t} className="inline-flex items-center gap-1.5">
-                  <Check className="w-3.5 h-3.5" strokeWidth={1.75} style={{ color: 'var(--gold)' }} aria-hidden="true" />{t}
-                </span>
-              ))}
-              <span style={{ color: 'var(--ink-600)' }}>Not affiliated with eBay</span>
-            </div>
+            <p className="mt-2 text-[11px]" style={{ color: 'var(--ink-600)' }}>Not affiliated with eBay</p>
           </div>
 
           {/* Returning visitors get their own searches back; everyone else
@@ -1413,25 +1413,23 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
                 ))}
               </div>
             ) : (
-              <div className="grid gap-2 max-w-[480px]">
+              <div className="flex flex-wrap items-center gap-2">
                 {hunts.map((h) => (
                   <button
                     key={h.label}
                     type="button"
                     onClick={() => onChipSearch(h.query, h.filters)}
                     disabled={loading}
-                    className="group flex items-center justify-between gap-3 px-4 py-3 rounded-lg text-left transition-colors disabled:opacity-40 hover:border-[var(--gold-deep)]"
-                    style={{ border: '0.5px solid var(--line)', background: 'var(--bg-elev)' }}
+                    className="group inline-flex items-center gap-2 text-[13px] pl-4 pr-2 py-1.5 rounded-full transition-colors disabled:opacity-40 hover:border-[var(--gold-deep)]"
+                    style={{ border: '0.5px solid var(--line)', background: 'var(--bg-elev)', color: 'var(--ink-200)', minHeight: 36 }}
                   >
-                    <span className="text-[15px] text-[var(--ink-200)] group-hover:text-[var(--gold-bright)] transition-colors">{h.text}</span>
-                    <span className="flex items-center gap-2 flex-none">
-                      {h.chip && (
-                        h.tier
-                          ? <Badge mono tier={h.tier}>{h.chip}</Badge>
-                          : <Badge>{h.chip}</Badge>
-                      )}
-                      <ArrowRight className="w-4 h-4 text-[var(--ink-600)] group-hover:text-[var(--gold-bright)] transition-colors" strokeWidth={1.75} aria-hidden="true" />
-                    </span>
+                    <span className="group-hover:text-[var(--gold-bright)] transition-colors">{h.text}</span>
+                    {h.chip && (
+                      h.tier
+                        ? <Badge mono tier={h.tier}>{h.chip}</Badge>
+                        : <Badge>{h.chip}</Badge>
+                    )}
+                    {!h.chip && <span className="w-2" aria-hidden="true" />}
                   </button>
                 ))}
               </div>
@@ -1468,72 +1466,100 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
         </div>
       </div>
 
-      <EbayComparison />
+      <RarityStrip onCardClick={onCardClick} onChipSearch={onChipSearch} />
     </section>
   );
 }
 
-/* EbayComparison — the answer to "why not just search eBay?", in the
-   visitor's own terms. Sits at the foot of the hero so it's the first thing
-   read after the search box. The eBay column is stated plainly and fairly;
-   ours carries the gold. Keep both sides true: alerts are hourly because the
-   poller runs hourly (supabase/functions/poller). */
-const EBAY_COMPARISON = [
-  {
-    topic: 'Rare cards in one search',
-    ebay: 'Searching several print runs at once means typing a boolean search, like (/10, /25, /49).',
-    ours: 'Easily pick every print run you want (say, everything numbered 50 or less) and see them together.',
-  },
-  {
-    topic: 'Rarest first',
-    ebay: 'Sorts by price, newest or "best match". Rarity isn’t an option.',
-    ours: 'Sorts by print run, so the /1s and /5s are at the top.',
-  },
-  {
-    topic: 'New-listing alerts',
-    ebay: 'Saved-search emails come once a day, and can’t filter by print run.',
-    ours: 'Checked every hour with your exact print-run filters. We email you as soon as a match turns up.',
-  },
-];
+/* RarityStrip — "show, don't tell" for what makes us different from eBay:
+   one search across many print runs, sorted rarest first. Real, live
+   listings from /api/rarest (our own search, cached hourly). Hidden if there
+   aren't enough cards; never placeholders. Tapping a card opens the card
+   popup; "See all" runs the same search. */
+const RARITY_STRIP_RUNS = ['/1', '/5', '/10', '/15', '/25', '/49', '/50'];
 
-function EbayComparison() {
+function RarityStrip({ onCardClick, onChipSearch }) {
+  const [data, setData] = useState(null); // null = loading
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/rarest')
+      .then((r) => (r.ok ? r.json() : { items: [] }))
+      .catch(() => ({ items: [] }))
+      .then((d) => { if (!cancelled) setData(d); });
+    return () => { cancelled = true; };
+  }, []);
+
+  if (data && !(data.items?.length >= 6)) return null;
+  const items = data?.items || [];
+  const fmt = (p) => `$${Number(p).toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+
   return (
-    <div className="relative max-w-[1120px] mx-auto px-6 lg:px-10 pb-14 md:pb-20">
-      <div className="font-mono text-[10px] uppercase tracking-[0.24em]" style={{ color: 'var(--gold)' }}>
-        What eBay’s search can’t do
-      </div>
-      <h2 className="mt-2 font-display text-[clamp(1.6rem,4vw,2.25rem)] leading-tight" style={{ textWrap: 'balance' }}>
-        Same listings. <em className="text-[var(--gold-bright)]">Better search, smarter alerts.</em>
-      </h2>
-
-      <div className="mt-6 rounded-xl overflow-hidden" style={{ border: '0.5px solid var(--line)' }}>
-        {/* Column labels — desktop only; phones label each line instead. */}
-        <div
-          className="hidden md:grid grid-cols-[200px_1fr_1fr] gap-6 px-6 py-3 font-mono text-[10px] uppercase tracking-[0.2em]"
-          style={{ background: 'var(--bg-elev)', color: 'var(--ink-400)', borderBottom: '0.5px solid var(--line)' }}
-        >
-          <span />
-          <span>On eBay</span>
-          <span style={{ color: 'var(--gold)' }}>On Fields &amp; Floors</span>
-        </div>
-        {EBAY_COMPARISON.map((row, i) => (
-          <div
-            key={row.topic}
-            className="grid md:grid-cols-[200px_1fr_1fr] gap-2 md:gap-6 px-5 md:px-6 py-4"
-            style={{ borderTop: i ? '0.5px solid var(--line-soft)' : undefined }}
-          >
-            <div className="font-display text-[19px] md:text-[20px] leading-snug">{row.topic}</div>
-            <p className="text-[13px] md:text-[15px] leading-relaxed" style={{ color: 'var(--ink-400)' }}>
-              <span className="md:hidden font-mono text-[10px] uppercase tracking-[0.2em] mr-2" style={{ color: 'var(--ink-600)' }}>eBay</span>
-              {row.ebay}
-            </p>
-            <p className="text-[13px] md:text-[15px] leading-relaxed" style={{ color: 'var(--ink-100)' }}>
-              <span className="md:hidden font-mono text-[10px] uppercase tracking-[0.2em] mr-2" style={{ color: 'var(--gold)' }}>Us</span>
-              <Check className="hidden md:inline-block w-4 h-4 mr-2 -mt-0.5 align-middle" strokeWidth={1.75} style={{ color: 'var(--gold)' }} aria-hidden="true" />
-              {row.ours}
-            </p>
+    <div className="relative border-t border-[var(--line-soft)]">
+      <div className="max-w-[1120px] mx-auto px-6 lg:px-10 pt-10 pb-12 md:pt-14 md:pb-16">
+        <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+          <div>
+            <h2 className="font-display text-[clamp(1.75rem,4vw,2.25rem)] leading-tight">
+              One search. <em className="text-[var(--gold-bright)]">Rarest first.</em>
+            </h2>
+            <div className="mt-3 flex flex-wrap items-center gap-1.5 min-h-[24px]">
+              {data?.player && (
+                <>
+                  <Badge>{data.player}</Badge>
+                  <Badge>Auto</Badge>
+                  <Badge mono tier="grail">/1–25</Badge>
+                  <Badge mono tier="ultra">/26–50</Badge>
+                </>
+              )}
+            </div>
           </div>
-        ))}
+          {data?.player && (
+            <button
+              type="button"
+              onClick={() => onChipSearch(data.player, { autoCards: true, numberedCards: true, selectedPrintRuns: RARITY_STRIP_RUNS })}
+              className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
+            >
+              See all <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.75} aria-hidden="true" />
+            </button>
+          )}
+        </div>
+
+        {/* Phones: a sideways-scrolling row. Desktop: all eight in one line. */}
+        <div className="mt-6 -mx-6 px-6 md:mx-0 md:px-0 flex md:grid md:grid-cols-8 gap-3 overflow-x-auto md:overflow-visible snap-x pb-2">
+          {(data ? items : Array.from({ length: 8 }, (_, i) => ({ id: `s${i}` }))).map((it) => (
+            <button
+              key={it.id}
+              type="button"
+              onClick={() => it.title && onCardClick?.(it)}
+              disabled={!it.title}
+              aria-label={it.title ? `${it.title}, ${fmt(it.price)}` : 'Loading'}
+              className="group flex-none w-[128px] md:w-auto snap-start text-left grid gap-1.5 content-start"
+            >
+              <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-[var(--bg-elev-2)]">
+                {!it.title && <div className="absolute inset-0 shimmer" />}
+                {it.image && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={upscaleEbayImage(it.image)}
+                    alt=""
+                    loading="lazy"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                  />
+                )}
+              </div>
+              {it.printRun != null && (
+                <span className="justify-self-start">
+                  <Badge mono tier={tierForRun(`/${it.printRun}`) || 'grail'}>/{it.printRun}</Badge>
+                </span>
+              )}
+              {it.title && (
+                <span className="text-[11px] leading-snug line-clamp-2" style={{ color: 'var(--ink-400)' }}>{it.title}</span>
+              )}
+              {it.price != null && (
+                <span className="font-display text-[17px] leading-none text-[var(--gold-bright)]">{fmt(it.price)}</span>
+              )}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -1577,110 +1603,32 @@ function RotatingPlaceholder({ align = 'center', padRight = '4rem' }) {
    rows (active + sold). Step 3 shows the saved-search card. The email
    preview gets its own dedicated section below for full readable width. */
 function WhyFields({ user }) {
+  // How it works as three icons, then the plans. Show, don't tell: the card
+  // strip above already demonstrates the product.
+  const steps = [
+    [ListFilter, 'Pick print runs'],
+    [Star, 'Star cards'],
+    [Bell, 'Get alerted'],
+  ];
   return (
     <>
-      {/* How it works — open editorial columns on the page background (no
-          boxes), so it reads differently from the band and plans below. */}
-      <section id="why" className="relative max-w-[1040px] mx-auto px-6 lg:px-10 pt-16 lg:pt-24 pb-14 lg:pb-16 scroll-mt-24">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 md:gap-8 mb-6 md:mb-10">
-          <div>
-            <div className="font-mono text-[10px] tracking-[0.22em] uppercase mb-3" style={{ color: 'var(--gold)' }}>
-              How it works
-            </div>
-            <h2 className="font-display italic text-[clamp(2rem,5vw,3.4rem)] leading-[1.04] tracking-[-0.02em]">
-              Search. Save. Get told when it lists.
-            </h2>
-          </div>
-          <p className="text-[15px] leading-relaxed max-w-[330px]" style={{ color: 'var(--ink-400)' }}>
-            Search the way collectors actually think: by print run, autograph and rookie, all at once.
-          </p>
-        </div>
-
-        <ol className="list-none p-0 m-0 grid grid-cols-1 md:grid-cols-3 border-t" style={{ borderColor: 'var(--line)' }}>
-          <HowStep n="01" title="Set your tier" body="Pick the print runs you want and stack on autos, rookies, condition.">
-            <FilterPickerArtifact />
-          </HowStep>
-          <HowStep n="02" title="Save what catches your eye" body="Add listings to your watchlist. We keep price and status fresh.">
-            <WatchlistArtifact />
-          </HowStep>
-          <HowStep n="03" title="Get an email when it lists" body="Save your filters and we'll email you when a match lists." last>
-            <SavedSearchExampleCard />
-          </HowStep>
-        </ol>
+      <section id="why" className="max-w-[1040px] mx-auto px-6 lg:px-10 pt-12 lg:pt-16 scroll-mt-24">
+        <h2 className="sr-only">How it works</h2>
+        <ul className="list-none m-0 p-0 grid grid-cols-1 md:grid-cols-3 border-y" style={{ borderColor: 'var(--line)' }}>
+          {steps.map(([Icon, label], i) => (
+            <li
+              key={label}
+              className={`flex items-center gap-3 py-4 md:py-5 md:px-5 text-[16px] font-medium ${i ? 'border-t md:border-t-0 md:border-l' : ''}`}
+              style={{ borderColor: 'var(--line-soft)', color: 'var(--ink-100)' }}
+            >
+              <Icon className="w-[22px] h-[22px] flex-none" strokeWidth={1.75} style={{ color: 'var(--gold-bright)' }} aria-hidden="true" />
+              {label}
+            </li>
+          ))}
+        </ul>
       </section>
-
       <PlansSection user={user} />
     </>
-  );
-}
-
-/* One how-it-works column. On phones it becomes a row: the outlined
-   numeral on the left, the copy and artifact on the right. */
-function HowStep({ n, title, body, children, last = false }) {
-  return (
-    <li
-      className={`grid grid-cols-[48px_1fr] md:block gap-x-4 py-6 md:pt-7 md:pb-2 ${last ? '' : 'border-b md:border-b-0 md:border-r md:pr-6 md:mr-6'}`}
-      style={{ borderColor: 'var(--line-soft)' }}
-    >
-      <div
-        aria-hidden="true"
-        className="font-display italic leading-none text-[44px] md:text-[64px]"
-        style={{ color: 'transparent', WebkitTextStroke: '1px var(--gold-deep)' }}
-      >
-        {n}
-      </div>
-      <div className="min-w-0">
-        <h4 className="font-display italic text-[21px] md:text-[24px] mt-0.5 md:mt-3 mb-1.5">{title}</h4>
-        <p className="text-[14px] md:text-[15px] leading-relaxed mb-4" style={{ color: 'var(--ink-400)' }}>{body}</p>
-        {children}
-      </div>
-    </li>
-  );
-}
-
-/* Step 1 artifact — the multi-tier filter picker. Demonstrates that
-   different print runs map to different rarity tiers (gold/silver/copper/gray).
-   Visitors learn the color system at a glance. */
-function FilterPickerArtifact() {
-  const chipBase = 'font-mono text-[11px] px-1.5 py-[2px] rounded';
-  return (
-    <div>
-      <div className="flex flex-wrap gap-1 mb-2">
-        <TierChip run="/5" />
-        <TierChip run="/10" />
-        <TierChip run="/25" />
-        <TierChip run="/50" />
-        <TierChip run="/99" />
-        <TierChip run="/199" />
-        <TierChip run="/499" />
-      </div>
-      <div className="flex flex-wrap gap-1">
-        <span className={chipBase} style={{ ...OUTLINE_CHIP_STYLE, letterSpacing: '0.14em' }}>Auto</span>
-        <span className={chipBase} style={{ ...OUTLINE_CHIP_STYLE, letterSpacing: '0.14em' }}>RC</span>
-        <span className={chipBase} style={{ ...OUTLINE_CHIP_STYLE, letterSpacing: '0.14em' }}>Graded</span>
-      </div>
-    </div>
-  );
-}
-
-/* Step 2 artifact — two watchlist rows showing different rarity tiers.
-   First row is an active /25 (grail); second is a sold /99 (ultra). Shows
-   the watchlist auto-refreshes status. */
-function WatchlistArtifact() {
-  const Row = ({ tierRun, title, meta, sold }) => (
-    <div className="flex items-center justify-between gap-3 py-2 border-b border-dashed" style={{ borderColor: 'var(--line-soft)' }}>
-      <div className="flex items-center gap-2 min-w-0">
-        <TierChip run={tierRun} />
-        <span className="text-[13px] truncate" style={{ color: 'var(--ink-200)' }}>{title}</span>
-      </div>
-      <span className="font-mono text-[12px] flex-none" style={{ color: sold ? 'var(--ink-400)' : 'var(--gold-bright)' }}>{meta}</span>
-    </div>
-  );
-  return (
-    <div>
-      <Row tierRun="/25" title="Bowman Chrome Auto Gold" meta="$1,840" />
-      <Row tierRun="/99" title="Topps Chrome Skenes" meta="Sold" sold />
-    </div>
   );
 }
 
@@ -1699,81 +1647,28 @@ function TierChip({ run }) {
   );
 }
 
-/* Saved-search example card — visual that lives inside step 03: the alert
-   a Base member gets when a saved search finds a match. */
-function SavedSearchExampleCard() {
-  return (
-    <div className="text-[13px] leading-snug pl-3 py-1" style={{ borderLeft: '2px solid var(--gold)', color: 'var(--ink-200)' }}>
-      <span className="block font-mono text-[10px] tracking-[0.18em] uppercase mb-1" style={{ color: 'var(--gold-bright)' }}>
-        New match · just listed
-      </span>
-      Caitlin Clark Auto <TierChip run="/25" /> listed 4 min ago
-    </div>
-  );
-}
-
-/* One plan in PlansSection. `featured` raises it (Base). `summary` is the
-   one-line version phones show for the non-featured plans. */
-function PlanTier({ name, price, priceUnit, line, summary, listLead, features, ctaLabel, ctaShort, ctaHref, featured = false, ribbon, muted = false }) {
+/* One plan: a price and one line. `featured` raises Base (and puts it first
+   on phones); the others collapse to a single row on phones. */
+function PlanCard({ name, price, unit, line, ctaLabel, ctaHref, featured = false, muted = false }) {
   return (
     <div
-      className={`relative flex flex-col p-6 md:p-7 rounded-xl ${featured
-        ? 'order-first md:order-none md:-my-3'
-        : 'border md:border-0 md:rounded-none'}`}
+      className={`rounded-xl p-4 md:p-5 flex ${featured ? 'flex-col gap-1.5 order-first md:order-none' : 'flex-row md:flex-col items-center md:items-stretch justify-between gap-3 md:gap-1.5'}`}
       style={featured
-        ? { background: 'var(--bg-elev)', border: '1px solid var(--gold-bright)', boxShadow: '0 24px 60px rgba(0,0,0,0.5), 0 0 0 6px rgba(230,185,107,0.05)' }
-        : { borderColor: 'var(--line)' }}
+        ? { background: 'var(--bg-elev)', border: '1px solid var(--gold-bright)' }
+        : { border: '1px solid var(--line)', opacity: muted ? 0.8 : 1 }}
     >
-      {ribbon && (
-        <span
-          className="absolute -top-3 left-1/2 -translate-x-1/2 font-mono text-[10px] tracking-[0.16em] uppercase px-2.5 py-1 rounded-full whitespace-nowrap"
-          style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', fontWeight: 600 }}
-        >
-          {ribbon}
-        </span>
-      )}
-      <div className={featured ? '' : 'flex items-center justify-between gap-4 md:block'}>
-        <div>
-          <div className="font-mono uppercase tracking-[0.22em] text-[10px] mb-2" style={{ color: featured ? 'var(--gold)' : 'var(--ink-400)' }}>
-            {name}
-          </div>
-          <div className="font-display italic leading-none text-[30px] md:text-[44px]" style={{ color: muted ? 'var(--ink-400)' : 'var(--ink-100)' }}>
-            {price}
-            {priceUnit && <small className="not-italic ml-1 font-sans text-[14px]" style={{ color: 'var(--ink-400)' }}>{priceUnit}</small>}
-          </div>
-          {line && <div className={`text-[13px] mt-2 ${featured ? '' : 'hidden md:block'}`} style={{ color: 'var(--ink-400)' }}>{line}</div>}
+      <div className="min-w-0">
+        <div className="text-[13px] font-medium" style={{ color: featured ? 'var(--gold)' : 'var(--ink-400)' }}>{name}</div>
+        <div className="font-display italic leading-none text-[28px] md:text-[34px] mt-1" style={{ color: muted ? 'var(--ink-400)' : 'var(--ink-100)' }}>
+          {price}{unit && <small className="not-italic font-sans text-[13px] ml-1" style={{ color: 'var(--ink-400)' }}>{unit}</small>}
         </div>
-        {!featured && (
-          <Link
-            href={ctaHref}
-            className="md:hidden flex-none inline-flex items-center justify-center px-3.5 py-2.5 rounded-lg text-[11px] tracking-[0.14em] uppercase no-underline whitespace-nowrap"
-            style={{ color: 'var(--ink-100)', border: '1px solid var(--ink-600)' }}
-          >
-            {ctaShort || ctaLabel}
-          </Link>
-        )}
+        <div className="text-[14px] mt-1.5" style={{ color: 'var(--ink-200)' }}>{line}</div>
       </div>
-      {summary && !featured && <div className="text-[13px] mt-2 md:hidden" style={{ color: 'var(--ink-200)' }}>{summary}</div>}
-      <ul className={`list-none p-0 m-0 mt-5 mb-6 flex-1 ${featured ? '' : 'hidden md:block'}`}>
-        {listLead && (
-          <li className="text-[13px] mb-3" style={{ color: 'var(--ink-400)' }}>{listLead}:</li>
-        )}
-        {features.map((f) => (
-          <li
-            key={f.label}
-            className="text-[14px] leading-snug pl-5 relative mb-2.5"
-            style={{ color: f.isNew ? 'var(--ink-100)' : 'var(--ink-200)' }}
-          >
-            <span className="absolute left-0 top-0 text-[13px]" style={{ color: f.isNew ? 'var(--gold-bright)' : 'var(--ink-600)' }}><Check className="w-3.5 h-3.5 mt-[3px]" strokeWidth={2} aria-hidden="true" /></span>
-            {f.label}
-          </li>
-        ))}
-      </ul>
       <Link
         href={ctaHref}
-        className={`items-center justify-center px-4 py-3.5 rounded-lg text-[12px] tracking-[0.14em] uppercase no-underline ${featured ? 'inline-flex' : 'hidden md:inline-flex'}`}
+        className={`flex-none text-center rounded-lg text-[12px] tracking-[0.12em] uppercase font-semibold no-underline whitespace-nowrap ${featured ? 'mt-3 py-3' : 'px-3.5 py-2.5 md:mt-3 md:py-3'}`}
         style={featured
-          ? { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', fontWeight: 600 }
+          ? { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }
           : { color: 'var(--ink-100)', border: '1px solid var(--ink-600)' }}
       >
         {ctaLabel}
@@ -1782,72 +1677,270 @@ function PlanTier({ name, price, priceUnit, line, summary, listLead, features, c
   );
 }
 
-/* PlansSection — one framed group with Base raised in the middle (first on
-   phones). Inside the iOS app no web price is shown: Apple bills the trial,
-   and the App Store price appears on the purchase screen (/subscribe). */
+/* Plans: a price and one line each. Inside the iOS app no web price is shown;
+   Apple bills the trial and /subscribe shows the App Store price. */
 function PlansSection({ user }) {
   const [native, setNative] = useState(false);
   useEffect(() => { setNative(isNativeApp()); }, []);
-
   return (
-    <section className="max-w-[1040px] mx-auto px-6 lg:px-10 pt-16 lg:pt-20 pb-20">
-      <div className="text-center mb-10 md:mb-12">
-        <div className="font-mono uppercase tracking-[0.22em] text-[10px] mb-3" style={{ color: 'var(--gold)' }}>
-          Plans
-        </div>
-        <h3 className="font-display italic text-[clamp(2rem,4.6vw,3.2rem)] leading-[1.05] tracking-[-0.02em]">
-          Searching is free. Alerts start at $6.99.
-        </h3>
-      </div>
-
-      <div className="flex flex-col gap-3 md:gap-0 md:grid md:grid-cols-[1fr_1.15fr_1fr] md:items-stretch md:border md:rounded-xl" style={{ borderColor: 'var(--line)' }}>
-        <PlanTier
+    <section className="max-w-[1040px] mx-auto px-6 lg:px-10 pt-8 pb-16">
+      <h2 className="sr-only">Plans</h2>
+      <div className="flex flex-col gap-3 md:grid md:grid-cols-[1fr_1.15fr_1fr] md:items-stretch">
+        <PlanCard
           name="Free"
           price="$0"
-          line="No credit card"
-          summary="Search, watchlist, unlimited saved searches, 1 email alert"
-          features={[
-            { label: 'Unlimited search', isNew: false },
-            { label: 'Watchlist with live prices', isNew: false },
-            { label: 'Unlimited saved searches', isNew: false },
-            { label: '1 email alert', isNew: false },
-          ]}
-          ctaLabel={user ? 'You\u2019re signed in' : 'Create account'}
-          ctaShort={user ? 'Signed in' : 'Sign up free'}
+          line="Search, watchlist and 1 alert."
+          ctaLabel={user ? 'Signed in' : 'Sign up'}
           ctaHref={user ? '/watchlist-cards' : '/signup?src=banner'}
         />
-        <PlanTier
+        <PlanCard
           featured
-          ribbon="Most popular"
           name="Base"
           price={native ? '14 days free' : '$6.99'}
-          priceUnit={native ? null : '/mo'}
-          line={native ? 'Then billed by Apple · monthly or yearly' : 'or $59/yr, over 3 months free · 14-day free trial'}
-          listLead="Everything in Free, plus"
-          features={[
-            { label: 'Email alerts on up to 5 saved searches', isNew: true },
-            { label: 'Bid reminders under your price', isNew: true },
-          ]}
-          ctaLabel="Start 14-day free trial"
+          unit={native ? null : '/mo'}
+          line={native ? 'Alerts on 5 searches. Billed by Apple.' : 'Alerts on 5 searches. 14 days free.'}
+          ctaLabel="Start free trial"
           ctaHref={user ? '/subscribe' : '/signup?next=/subscribe'}
         />
-        <PlanTier
+        <PlanCard
+          muted
           name="Premium"
           price="Soon"
-          line="Coming soon. Tell us what you'd want in it."
-          summary="Coming soon. Tell us what you'd want in it."
-          features={[]}
+          line="Tell us what you'd want."
           ctaLabel="Tell us"
           ctaHref="/contact"
-          muted
         />
       </div>
       {!native && (
-        <p className="text-center text-[13px] mt-8" style={{ color: 'var(--ink-600)' }}>
-          Prices in CAD. Cancel anytime.
+        <p className="text-center text-[12px] mt-5" style={{ color: 'var(--ink-600)' }}>
+          Base is also $59/yr, over 3 months free. Prices in CAD, plus applicable taxes.
         </p>
       )}
     </section>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   Signed-in home. Members already know what the site does, so no pitch:
+   search first (their saved and recent searches as chips), then what
+   changed since their last visit, then a small row of live cards. Free
+   members on the website get one upgrade line. The iOS app skips that
+   line and the header nav, since the tab bar covers it.
+   Data: /api/home (our tables only) and /api/featured (cached hourly).
+   ────────────────────────────────────────────────────────────────────── */
+function SignedInHome({ query, setQuery, onSearch, onSuggested, recentSearches = [], onCardClick, error }) {
+  // Save a card starred while signed out, now that they're back signed in.
+  usePendingStarSave();
+  const [native, setNative] = useState(false);
+  useEffect(() => { setNative(isNativeApp()); }, []);
+  const [saved, setSaved] = useState([]);
+  const [home, setHome] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/saved-searches').then((r) => (r.ok ? r.json() : null)).then((d) => {
+      if (!cancelled && d?.searches) setSaved(d.searches.slice(0, 4));
+    }).catch(() => {});
+    // One summary per visit: /api/home moves "last seen" forward, so reuse the
+    // first answer for the rest of this browser session.
+    let cachedHome = null;
+    try { cachedHome = JSON.parse(sessionStorage.getItem('ffHomeSummary') || 'null'); } catch {}
+    if (cachedHome) { setHome(cachedHome); }
+    else {
+      fetch('/api/home').then((r) => (r.ok ? r.json() : null)).then((d) => {
+        if (cancelled || !d) return;
+        setHome(d);
+        try { sessionStorage.setItem('ffHomeSummary', JSON.stringify(d)); } catch {}
+      }).catch(() => {});
+    }
+    return () => { cancelled = true; };
+  }, []);
+
+  const recents = recentSearches.filter((r) => !saved.some((s) => s.query?.toLowerCase() === r.toLowerCase())).slice(0, 4);
+
+  return (
+    <section className="max-w-[1040px] mx-auto px-5 md:px-6 lg:px-10 pt-8 md:pt-12 pb-16">
+      <form
+        onSubmit={(e) => { e.preventDefault(); onSearch(); }}
+        className="flex items-center gap-2.5 rounded-xl pl-4 pr-1.5 py-1.5"
+        style={{ background: 'var(--bg-elev)', border: '1px solid var(--gold-deep)' }}
+      >
+        <Search className="w-[18px] h-[18px] flex-none" strokeWidth={1.75} style={{ color: 'var(--ink-400)' }} aria-hidden="true" />
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search a player or team"
+          aria-label="Search a player or team"
+          className="flex-1 min-w-0 bg-transparent outline-none text-[16px] py-2.5"
+          style={{ color: 'var(--ink-100)' }}
+        />
+        <button type="submit" aria-label="Search" className="w-11 h-11 rounded-lg grid place-items-center flex-none" style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
+          <ArrowRight className="w-5 h-5" strokeWidth={2} />
+        </button>
+      </form>
+      {error && <p className="text-[13px] mt-2" style={{ color: 'var(--crit)' }}>{error}</p>}
+
+      {(saved.length > 0 || recents.length > 0) && (
+        <div className="flex gap-2 mt-3 overflow-x-auto md:flex-wrap pb-1 -mx-1 px-1">
+          {saved.map((s) => (
+            <a key={s.id} href={`/?savedSearch=${s.id}`} className="flex-none inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] whitespace-nowrap"
+               style={{ color: 'var(--ink-200)', border: '1px solid var(--gold-deep)' }}>
+              <Crosshair className="w-3.5 h-3.5" strokeWidth={1.75} style={{ color: 'var(--gold)' }} aria-hidden="true" />{s.name}
+            </a>
+          ))}
+          {recents.map((r) => (
+            <button key={r} type="button" onClick={() => onSuggested(r)} className="flex-none inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] whitespace-nowrap"
+                    style={{ color: 'var(--ink-200)', border: '1px solid var(--line)' }}>
+              <Clock className="w-3.5 h-3.5" strokeWidth={1.75} style={{ color: 'var(--ink-400)' }} aria-hidden="true" />{r}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <SinceLastVisit home={home} hasSaved={saved.length > 0} />
+      <LiveRightNow onCardClick={onCardClick} />
+
+      {!native && home && home.tier === 'free' && (
+        <div className="flex items-center justify-between gap-3 mt-8 rounded-xl px-4 py-3 text-[14px]" style={{ border: '1px solid var(--line)', color: 'var(--ink-200)' }}>
+          <span>You have 1 alert on the free plan.</span>
+          <Link href="/subscribe" className="inline-flex items-center gap-1.5 whitespace-nowrap" style={{ color: 'var(--gold-bright)' }}>
+            Get alerts on 5 searches <ArrowRight className="w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" />
+          </Link>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function sinceLabel(iso) {
+  if (!iso) return null;
+  const d = Math.round((Date.now() - new Date(iso).getTime()) / 86400000);
+  if (d <= 0) return 'Earlier today';
+  if (d === 1) return 'Yesterday';
+  return `${d} days ago`;
+}
+
+function timeLeft(ms) {
+  const h = Math.floor(ms / 3600000), m = Math.floor((ms % 3600000) / 60000);
+  return h > 0 ? `${h}h ${m}m` : `${m}m`;
+}
+
+function SinceLastVisit({ home, hasSaved }) {
+  const matches = home?.newMatches || [];
+  const drops = home?.priceDrops || [];
+  const ending = home?.endingSoon || [];
+  const nothing = home && !matches.length && !drops.length && !ending.length;
+  const Head = (
+    <div className="flex items-baseline justify-between mt-9 mb-3">
+      <h2 className="font-display italic text-[22px]">Since you were last here</h2>
+      {home?.since && <span className="text-[13px]" style={{ color: 'var(--ink-400)' }}>{sinceLabel(home.since)}</span>}
+    </div>
+  );
+  if (!home) return <>{Head}<div className="h-[120px] rounded-xl shimmer" style={{ background: 'var(--bg-elev)' }} /></>;
+  if (nothing) {
+    return (
+      <>{Head}
+        <div className="rounded-xl px-4 py-4" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
+          <div className="flex items-center gap-2 text-[14px]" style={{ color: 'var(--ink-200)' }}>
+            <Bell className="w-4 h-4" strokeWidth={1.75} style={{ color: 'var(--gold)' }} aria-hidden="true" />Nothing new yet
+          </div>
+          <p className="text-[13px] mt-1.5" style={{ color: 'var(--ink-600)' }}>
+            {hasSaved ? 'New matches, price drops and ending auctions will show up here.' : 'Save a search or star a card and changes will show up here.'}
+          </p>
+        </div>
+      </>
+    );
+  }
+  const Panel = ({ icon: Icon, title, children }) => (
+    <div className="rounded-xl px-4 py-3.5" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
+      <div className="flex items-center gap-2 text-[14px] font-medium mb-1" style={{ color: 'var(--ink-100)' }}>
+        <Icon className="w-4 h-4" strokeWidth={1.75} style={{ color: 'var(--gold)' }} aria-hidden="true" />{title}
+      </div>
+      {children}
+    </div>
+  );
+  const Row = ({ href, image, title, meta, right, rightSub, rightTone }) => (
+    <a href={href} className="grid grid-cols-[38px_1fr_auto] gap-2.5 items-center py-2" style={{ borderTop: '1px solid var(--line-soft)' }}>
+      <span className="w-[38px] aspect-[3/4] rounded-[3px] overflow-hidden flex-none" style={{ background: 'var(--bg-elev-2)' }}>
+        {image && <img src={image} alt="" className="w-full h-full object-cover" loading="lazy" />}
+      </span>
+      <span className="min-w-0">
+        <span className="block text-[13px] leading-snug line-clamp-2" style={{ color: 'var(--ink-200)' }}>{title}</span>
+        {meta && <span className="block text-[12px] mt-0.5" style={{ color: 'var(--ink-400)' }}>{meta}</span>}
+      </span>
+      <span className="text-right whitespace-nowrap">
+        <span className="block text-[14px] font-medium" style={{ color: rightTone || 'var(--ink-100)' }}>{right}</span>
+        {rightSub && <span className="block text-[12px]" style={{ color: 'var(--ink-400)' }}>{rightSub}</span>}
+      </span>
+    </a>
+  );
+  const money = (v) => (v != null ? `$${Number(v).toLocaleString('en-US', { maximumFractionDigits: 0 })}` : '');
+  return (
+    <>{Head}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        {matches.length > 0 && (
+          <Panel icon={Bell} title={`${matches.reduce((n, m) => n + m.count, 0)} new matches`}>
+            {matches.map((m) => (
+              <a key={m.id} href={`/?savedSearch=${m.id}`} className="flex items-center justify-between gap-3 py-2 text-[13px]" style={{ borderTop: '1px solid var(--line-soft)', color: 'var(--ink-200)' }}>
+                <span className="truncate">{m.name}</span>
+                <span className="whitespace-nowrap" style={{ color: 'var(--gold-bright)' }}>{m.count} new</span>
+              </a>
+            ))}
+          </Panel>
+        )}
+        {drops.length > 0 && (
+          <Panel icon={TrendingDown} title={`${drops.length} price ${drops.length === 1 ? 'drop' : 'drops'}`}>
+            {drops.map((d) => (
+              <Row key={d.id} href="/watchlist-cards" image={d.image_url} title={d.title} meta={`Was ${money(d.price_when_saved)}`}
+                   right={money(d.price)} rightSub={`−${d.dropPct}%`} rightTone="#7fd49a" />
+            ))}
+          </Panel>
+        )}
+        {ending.length > 0 && (
+          <Panel icon={Hourglass} title={`${ending.length} ${ending.length === 1 ? 'auction' : 'auctions'} ending soon`}>
+            {ending.map((d) => (
+              <Row key={d.id} href="/watchlist-cards" image={d.image_url} title={d.title}
+                   meta={d.bid_count != null ? `${d.bid_count} ${d.bid_count === 1 ? 'bid' : 'bids'}` : null}
+                   right={money(d.price)} rightSub={timeLeft(d.msLeft)} />
+            ))}
+          </Panel>
+        )}
+      </div>
+    </>
+  );
+}
+
+function LiveRightNow({ onCardClick }) {
+  const [items, setItems] = useState(null);
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/featured').then((r) => (r.ok ? r.json() : null)).then((d) => {
+      if (!cancelled) setItems(d?.items || (d?.featured ? [d.featured] : []));
+    }).catch(() => { if (!cancelled) setItems([]); });
+    return () => { cancelled = true; };
+  }, []);
+  if (items && items.length === 0) return null;
+  return (
+    <>
+      <div className="flex items-baseline justify-between mt-9 mb-3">
+        <h2 className="font-display italic text-[22px]">Live right now</h2>
+        <span className="text-[13px]" style={{ color: 'var(--ink-400)' }}>Updated hourly</span>
+      </div>
+      <div className="flex md:grid md:grid-cols-5 gap-3 overflow-x-auto pb-1 -mx-1 px-1">
+        {(items || Array.from({ length: 5 }, () => null)).map((it, i) => (
+          <button key={it?.id || i} type="button" disabled={!it} onClick={() => it && onCardClick?.(it)}
+                  className="w-[124px] md:w-auto flex-none text-left rounded-lg p-2" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line-soft)' }}>
+            <span className="block aspect-[3/4] rounded overflow-hidden mb-2" style={{ background: 'var(--bg-elev-2)' }}>
+              {it?.image && <img src={upscaleEbayImage(it.image)} alt="" className="w-full h-full object-cover" loading="lazy" />}
+            </span>
+            <span className="block text-[12px] leading-snug h-[32px] overflow-hidden" style={{ color: 'var(--ink-200)' }}>
+              {it?.printRun && <TierChip run={`/${it.printRun}`} />} {it?.title || ''}
+            </span>
+            <span className="block text-[14px] font-medium mt-1.5">{it ? featuredPrice(it) : ''}</span>
+          </button>
+        ))}
+      </div>
+    </>
   );
 }
 

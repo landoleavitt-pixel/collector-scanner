@@ -50,25 +50,30 @@ export async function POST(request) {
     return NextResponse.json({ error: 'listing_id is required' }, { status: 400 });
   }
 
-  const { data, error } = await supabase
-    .from('watched_listings')
-    .insert({
-      user_id: user.id,
-      listing_id: String(listing_id),
-      title: title ?? null,
-      price: price ?? null,
-      currency: currency ?? 'USD',
-      image_url: image_url ?? null,
-      listing_url: listing_url ?? null,
-      badges: badges ?? {},
-      status: 'active',
-      is_auction: !!is_auction,
-      end_time: end_time ?? null,
-      bid_count: bid_count ?? null,
-      condition: condition ?? null,
-    })
-    .select()
-    .single();
+  const row = {
+    user_id: user.id,
+    listing_id: String(listing_id),
+    title: title ?? null,
+    price: price ?? null,
+    currency: currency ?? 'USD',
+    image_url: image_url ?? null,
+    listing_url: listing_url ?? null,
+    badges: badges ?? {},
+    status: 'active',
+    is_auction: !!is_auction,
+    end_time: end_time ?? null,
+    bid_count: bid_count ?? null,
+    condition: condition ?? null,
+    // Price at the moment of starring, for "price dropped" on the signed-in home.
+    price_when_saved: price ?? null,
+  };
+  let { data, error } = await supabase.from('watched_listings').insert(row).select().single();
+  // Before the signed_in_home migration runs, price_when_saved doesn't exist yet.
+  // Save without it rather than failing the star.
+  if (error && /price_when_saved/.test(error.message || '')) {
+    const { price_when_saved, ...rest } = row;
+    ({ data, error } = await supabase.from('watched_listings').insert(rest).select().single());
+  }
 
   if (error) {
     // Unique violation = already saved. Treat as success (idempotent).
