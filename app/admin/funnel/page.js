@@ -116,7 +116,7 @@ export default function AdminFunnelPage() {
           </div>
         )}
         <p className="text-[12px] mt-4 leading-[1.5]" style={{ color: 'var(--ink-600)' }}>
-          Account and trial steps are counted per signed-in user; the rest per browser, so the
+          Your own browsers are left out (any browser where you've signed in as admin, or opened ?internal=1), counted from Oct 23 on. Account and trial steps are counted per signed-in user; the rest per browser, so the
           percentages are a guide rather than an exact conversion rate.
         </p>
       </div>

@@ -7,7 +7,6 @@ The single list of work that's finished or in progress but **not live yet**. The
 | # | What | Agent | Status | Files | Extra deploy step |
 |---|---|---|---|---|---|
 | 7 | eBay Partner Network affiliate links | CFO | ⏸ Plan approved. Waiting on Landon's sign-up + Campaign ID; code held until batch ships | SiteTour.js, guides, reading-list copy + link tagging | — |
-| 8 | Poller rate limit: alerts silently skip past ~20 unique searches | Debugger | ⚪ Needs a fix plan (not urgent at today's size) | poller, api/search | `supabase functions deploy poller` |
 | L05 | Proof strip | Landing | ⏹ Skipped: no honest live number yet (no fake figures) | — | — |
 | S-poll | Lock down the alert checker: it can be triggered by anyone holding the public key; require a private secret header from the cron jobs instead | Debugger | ⚪ Follow-up (low risk today: it only re-runs checks and never re-sends) | poller, both cron jobs | poller deploy + Landon edits 2 cron jobs |
 | 12 | 2024 Topps Chrome Football rarity data | Rarity tree | ⚪ Follow-up | lib/parallelData.js, lib/parseSetFromTitle.js | — |
@@ -18,6 +17,7 @@ The single list of work that's finished or in progress but **not live yet**. The
 
 | When | What | Commit |
 |---|---|---|
+| 2026-10-23 | Alert checker skips the visitor rate limit (signed) and retries if limited; funnel ignores your own and our browsers | (int) + poller deploy (Landon) |
 | 2026-10-23 | Auction reminders at chosen times (3h/1h/30m/15m/5m) with price cap; reminder-only poller mode for a 5-minute check; funnel "hit alert limit" tracking | 2a8c9e4 + poller deployed |
 | 2026-10-23 | Price filter: quick picks + typed min/max, no $5,000 cap, searches start at any price; bold signed-in home with "The Grail Hunter." heading | abeb98a |
 | 2026-10-22 | Team search finds player-only titles via a player-to-team history | c8b4cfb |

@@ -14,9 +14,12 @@ Everything Landon has decided, so no agent ever asks him the same thing twice. O
 - Join the **eBay Partner Network**. Affiliate copy and links switch on only once Landon has a Campaign ID. (2026-10-20)
 - **Hold** the eBay quota increase request until daily usage is regularly above ~3,000 calls. (2026-10-20)
 - Funnel tracking goes in **our own Supabase table**, not Vercel paid events. (2026-10-21)
+- Funnel numbers **leave out Landon's and the agents' browsers** (admin sign-in, or fieldsandfloors.com/?internal=1). (2026-10-23)
 - Tracking records funnel steps only, **not search words or which players people look at**. (2026-10-21)
 
 - **Price history: on hold.** No sold-prices button and no price history of our own (eBay's license likely forbids storing or aggregating their data for this). Revisit only with eBay's sold-data (Marketplace Insights) approval or another legitimate source. (2026-10-22)
+
+- **eBay only** for listings. No scraping other marketplaces; their terms forbid it. Other sites only through an official partnership, and that's not on the list for now. (2026-10-23)
 
 ## Look and feel
 - Landing page is **direction A**: the live featured card as the hero object. (2026-10-19)

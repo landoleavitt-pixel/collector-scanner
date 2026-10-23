@@ -9,6 +9,7 @@
 //   https://developer.ebay.com/api-docs/static/oauth-client-credentials-grant.html
 
 import { NextResponse } from 'next/server';
+import { isTrustedPoller } from '../../../lib/pollerAuth';
 import { makeBrandMatcher, brandQueryTerms } from '../../../lib/cardBrands';
 import { teamFromQuery, teamQueryKeywords } from '../../../lib/teams';
 import { catalogTeamsForTitle, matchesTeam, makeCatalogTeamMatcher, teamQueryPlayers, orGroups } from '../../../lib/playerTeams';
@@ -634,7 +635,9 @@ export async function POST(req) {
     // Rate limit BEFORE doing any eBay work or parsing the body.
     // Cheap to fail fast on abusive IPs.
     const ip = getClientIp(req);
-    const rate = checkRateLimit(ip);
+    // The alert checker signs its requests and isn't held to the visitor limit
+    // (lib/pollerAuth.js). Everyone else is.
+    const rate = isTrustedPoller(req) ? { allowed: true } : checkRateLimit(ip);
     if (!rate.allowed) {
       return NextResponse.json(
         {

@@ -600,17 +600,42 @@ async function callAppSearch(query: string, filters: Record<string, unknown>): P
     teams: (filters.teams as string[]) ?? [],
   };
 
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) {
-    throw new Error(`Search API returned ${res.status}`);
+  // Signed so the site lets the checker past the per-visitor rate limit
+  // (lib/pollerAuth.js). If the site doesn't recognise the signature and
+  // rate-limits us anyway, wait as told and retry once rather than silently
+  // skipping this search.
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...(await pollerSignature()) },
+      body: JSON.stringify(body),
+    });
+    if (res.status === 429 && attempt === 0) {
+      const wait = Math.min(60, Number(res.headers.get("Retry-After")) || 10);
+      await new Promise((r) => setTimeout(r, wait * 1000));
+      continue;
+    }
+    if (!res.ok) {
+      throw new Error(`Search API returned ${res.status}`);
+    }
+    const data = await res.json();
+    return data.items ?? [];
   }
-  const data = await res.json();
-  return data.items ?? [];
+  throw new Error("Search API rate-limited the alert checker twice");
+}
+
+// "poller:<unix seconds>" signed with POLLER_SECRET (or the service role key),
+// matching lib/pollerAuth.js on the site.
+async function pollerSignature(): Promise<Record<string, string>> {
+  const secret = Deno.env.get("POLLER_SECRET") || SUPABASE_SERVICE_ROLE_KEY;
+  if (!secret) return {};
+  const ts = String(Math.floor(Date.now() / 1000));
+  const key = await crypto.subtle.importKey(
+    "raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"],
+  );
+  const mac = new Uint8Array(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(`poller:${ts}`)));
+  const sig = [...mac].map((b) => b.toString(16).padStart(2, "0")).join("");
+  return { "x-ff-poller-ts": ts, "x-ff-poller-sig": sig };
 }
 
 // Fetch a user's email from Supabase auth.
