@@ -419,3 +419,12 @@ html.ff-deep-link [data-ff-home-nav] {
    button above it. */
 html.ff-tabbar body { padding-bottom: 88px; }
 html.ff-tabbar button[aria-label="Back to top"] { bottom: 88px !important; }
+
+/* iOS app (NativeBridge sets html.native-app): the tab bar is the navigation,
+   so the footer shrinks to its legal line (search-tool note, Privacy, Terms,
+   Support). Kept rather than removed so signed-out visitors and App Review
+   can always reach them. */
+html.native-app [data-ff-footer] { margin-top: 2rem; }
+html.native-app [data-ff-footer] > div { padding-top: 1.25rem; padding-bottom: 1.25rem; }
+html.native-app [data-ff-footer-main] { display: none; }
+html.native-app [data-ff-footer-legal] { padding-top: 0; border-top: 0; }

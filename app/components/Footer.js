@@ -35,9 +35,9 @@ function NavList({ links }) {
 
 export default function Footer() {
   return (
-    <footer className="relative z-10 mt-24 border-t border-[var(--line)]">
+    <footer data-ff-footer className="relative z-10 mt-24 border-t border-[var(--line)]">
       <div className="max-w-[1200px] mx-auto px-6 lg:px-10 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+        <div data-ff-footer-main className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
           <div className="col-span-2">
             <Link href="/" className="flex items-center gap-3 mb-4 group w-fit">
               <Seal size={20} />
@@ -58,7 +58,7 @@ export default function Footer() {
             <NavList links={HOBBY_LINKS} />
           </div>
         </div>
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pt-8 border-t border-[var(--line-soft)] text-[12px] text-[var(--ink-600)]">
+        <div data-ff-footer-legal className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pt-8 border-t border-[var(--line-soft)] text-[12px] text-[var(--ink-600)]">
           <div>© 2026 Fields &amp; Floors</div>
           <div className="flex gap-6 items-center flex-wrap">
             <TourLink className="hover:text-[var(--gold)] transition-colors">Site tour</TourLink>
