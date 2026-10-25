@@ -28,6 +28,7 @@ Everything Landon has decided, so no agent ever asks him the same thing twice. O
 - Main buttons are **solid gold-bright**. The gold gradient is only for the Grail tier chip. (2026-10-20)
 - Tier colours: Grail gold /1–25, Ultra platinum /26–99, Rare bronze /100–249, Scarce steel /250+. (2026-10-19)
 - Rarity view uses **rungs** with the real card on its row, not the v2 ladder. (2026-10-20)
+- In the iOS app the website footer shrinks to **one compact legal line** (© · Support · Privacy · Terms · "A search tool only…" · not affiliated with eBay). The logo and link columns are hidden. It stays visible because signed-out app visitors have no Account menu, and App Review needs Privacy and Terms reachable. (2026-10-25)
 - iOS app gets a **floating pill tab bar**: Search · Watchlist · Alerts · Account. (2026-10-20)
 - All 7 items from the landing conversion review are approved, and done in parallel rather than week by week. (2026-10-21)
 - The proof strip only ever shows **real numbers**. With no honest number, ship no strip. (2026-10-21)

@@ -1,17 +1,10 @@
 # Landon's To-Do List
 
-Things only you can do, because they need your accounts, money or signature. The boss session keeps this list up to date and adds anything new the agents find. Tick items off as you go.
+Things only you can do, because they need your accounts, money or signature. The boss session keeps this list up to date and adds anything new the agents find. Finished items are removed.
 
 ## Do now
 
-- [x] **Paste the tracking table SQL.** Supabase → SQL Editor → paste `supabase/migrations/20261021000000_funnel_events.sql` → Run. You should see "Success. No rows returned".
-
-- [x] **Paste the signed-in home SQL.** Supabase → SQL Editor → paste `supabase/migrations/20261022000000_signed_in_home.sql` → Run. It adds your last-visit time and each starred card's saved price, so "Since you were last here" and price drops work.
-- [ ] After both SQL pastes and the next deploy, sign in and look at your new home page once (new matches, price drops, ending soon).
-
-- [x] **Paste the reminder-times SQL.** Supabase → SQL Editor → paste `supabase/migrations/20261023000000_reminder_times.sql` → Run. Do this before the boss pushes the reminders update.
-- [x] **Add the 5-minute reminder check** (after the boss says the reminders update is live). Supabase → Integrations → Cron → open the existing job that runs the `poller` function → create a copy with: schedule `*/5 * * * *` and the same URL with `?only=reminders` added on the end. Security note: it reuses the exact same settings and key as your existing hourly job, so nothing new is exposed.
-
+- [ ] Sign in and look at your new home page once (new matches, price drops, ending soon). Tell the boss if anything looks off.
 - [ ] **Deploy the alert checker** (alert fix + reminder timing): in Terminal, `cd ~/projects/Fields\ and\ Floors && supabase functions deploy poller`.
 - [ ] **Stop counting your own visits:** open **fieldsandfloors.com/?internal=1** once on each browser and phone you use (or just sign in on it). The agents' browser is already done.
 
