@@ -1,0 +1,522 @@
+{
+  "_readme": "Sets generated into lib/parallelDataExtra.js by scripts/build-parallel-data.mjs. Each entry names a Checklist Insider page and the section headings to read. kind 'auto' entries are autograph colour lists; parent is the base set they belong to. See README 'Adding a set each quarter'.",
+  "pulled": "2026-10-23",
+  "sets": [
+    {
+      "key": "2025-bowman-chrome-prospects",
+      "label": "2025 Bowman Chrome Prospects",
+      "sport": "baseball",
+      "year": 2025,
+      "brand": "bowman-chrome",
+      "page": "2025-bowman-chrome-baseball",
+      "sections": [
+        "Chrome Prospects Checklist"
+      ],
+      "note": "Prospect (BCP) cards."
+    },
+    {
+      "key": "2025-bowman-chrome-prospect-autos",
+      "kind": "auto",
+      "line": "prospect-auto",
+      "parent": "2025-bowman-chrome-prospects",
+      "label": "2025 Bowman Chrome Prospect Autographs",
+      "sport": "baseball",
+      "year": 2025,
+      "brand": "bowman-chrome",
+      "page": "2025-bowman-chrome-baseball",
+      "sections": [
+        "Chrome Prospect Autographs Checklist"
+      ],
+      "baseAuto": true
+    },
+    {
+      "key": "2025-bowman-prospects",
+      "label": "2025 Bowman Chrome Prospects (spring Bowman)",
+      "sport": "baseball",
+      "year": 2025,
+      "brand": "bowman-chrome",
+      "page": "2025-bowman-baseball",
+      "sections": [
+        "Chrome Prospects Checklist"
+      ],
+      "oddsFrom": "2025 Bowman Baseball Base & Prospect Details",
+      "note": "Chrome Prospects from the spring Bowman release, not the later Bowman Chrome box."
+    },
+    {
+      "key": "2025-bowman-prospect-autos",
+      "kind": "auto",
+      "line": "prospect-auto",
+      "parent": "2025-bowman-prospects",
+      "label": "2025 Bowman Chrome Prospect Autographs (spring Bowman)",
+      "sport": "baseball",
+      "year": 2025,
+      "brand": "bowman-chrome",
+      "page": "2025-bowman-baseball",
+      "sections": [
+        "Chrome Prospect Autographs Checklist"
+      ],
+      "baseAuto": true
+    },
+    {
+      "key": "2026-bowman-prospects",
+      "label": "2026 Bowman Chrome Prospects (spring Bowman)",
+      "sport": "baseball",
+      "year": 2026,
+      "brand": "bowman-chrome",
+      "page": "2026-bowman-baseball",
+      "sections": [
+        "Chrome Prospects Checklist"
+      ],
+      "note": "Chrome Prospects from the spring Bowman release, not the later Bowman Chrome box."
+    },
+    {
+      "key": "2026-bowman-prospect-autos",
+      "kind": "auto",
+      "line": "prospect-auto",
+      "parent": "2026-bowman-prospects",
+      "label": "2026 Bowman Chrome Prospect Autographs (spring Bowman)",
+      "sport": "baseball",
+      "year": 2026,
+      "brand": "bowman-chrome",
+      "page": "2026-bowman-baseball",
+      "sections": [
+        "Chrome Prospects Autographs Checklist"
+      ],
+      "baseAuto": true
+    },
+    {
+      "key": "2026-bowman-chrome-prospects",
+      "label": "2026 Bowman Chrome Prospects",
+      "sport": "baseball",
+      "year": 2026,
+      "brand": "bowman-chrome",
+      "page": "2026-bowman-chrome-baseball",
+      "sections": [
+        "Chrome Prospects Checklist"
+      ],
+      "note": "Prospect (BCP) cards."
+    },
+    {
+      "key": "2026-bowman-chrome-prospect-autos",
+      "kind": "auto",
+      "line": "prospect-auto",
+      "parent": "2026-bowman-chrome-prospects",
+      "label": "2026 Bowman Chrome Prospect Autographs",
+      "sport": "baseball",
+      "year": 2026,
+      "brand": "bowman-chrome",
+      "page": "2026-bowman-chrome-baseball",
+      "sections": [
+        "Chrome Prospect Autographs Checklist"
+      ],
+      "baseAuto": true
+    },
+    {
+      "key": "2024-bowman-chrome-prospect-autos",
+      "kind": "auto",
+      "line": "prospect-auto",
+      "parent": "2024-bowman-chrome-prospects",
+      "label": "2024 Bowman Chrome Prospect Autographs",
+      "sport": "baseball",
+      "year": 2024,
+      "brand": "bowman-chrome",
+      "page": "2024-bowman-chrome-baseball",
+      "sections": [
+        "Chrome Prospect Autographs Checklist"
+      ],
+      "baseAuto": true
+    },
+    {
+      "key": "2024-bowman-prospects",
+      "label": "2024 Bowman Chrome Prospects (spring Bowman)",
+      "sport": "baseball",
+      "year": 2024,
+      "brand": "bowman-chrome",
+      "page": "2024-bowman-baseball",
+      "sections": [
+        "Chrome Prospects Checklist"
+      ],
+      "note": "Chrome Prospects from the spring Bowman release, not the later Bowman Chrome box. Kept so the two 2024 lists are never mixed up."
+    },
+    {
+      "key": "2024-bowman-prospect-autos",
+      "kind": "auto",
+      "line": "prospect-auto",
+      "parent": "2024-bowman-prospects",
+      "label": "2024 Bowman Chrome Prospect Autographs (spring Bowman)",
+      "sport": "baseball",
+      "year": 2024,
+      "brand": "bowman-chrome",
+      "page": "2024-bowman-baseball",
+      "sections": [
+        "Chrome Prospect Autographs Checklist"
+      ],
+      "baseAuto": true
+    },
+    {
+      "key": "2025-bowman-draft-chrome",
+      "label": "2025 Bowman Draft Chrome",
+      "sport": "baseball",
+      "year": 2025,
+      "brand": "bowman-draft",
+      "page": "2025-bowman-draft-baseball",
+      "sections": [
+        "Base Chrome Checklist"
+      ],
+      "note": "Chrome draft prospect (BDC) cards."
+    },
+    {
+      "key": "2025-bowman-draft-prospect-autos",
+      "kind": "auto",
+      "line": "prospect-auto",
+      "parent": "2025-bowman-draft-chrome",
+      "label": "2025 Bowman Draft Chrome Prospect Autographs",
+      "sport": "baseball",
+      "year": 2025,
+      "brand": "bowman-draft",
+      "page": "2025-bowman-draft-baseball",
+      "sections": [
+        "Chrome Prospect Autographs Checklist"
+      ],
+      "baseAuto": true
+    },
+    {
+      "key": "2026-topps-chrome-baseball",
+      "label": "2026 Topps Chrome",
+      "sport": "baseball",
+      "year": 2026,
+      "brand": "topps-chrome",
+      "page": "2026-topps-chrome-baseball",
+      "sections": [
+        "Base Checklist"
+      ],
+      "oddsFrom": "Base & Parallel Details"
+    },
+    {
+      "key": "2024-topps-chrome-rookie-autos",
+      "kind": "auto",
+      "line": "rookie-auto",
+      "parent": "2024-topps-chrome-baseball",
+      "label": "2024 Topps Chrome Rookie Autographs",
+      "sport": "baseball",
+      "year": 2024,
+      "brand": "topps-chrome",
+      "page": "2024-topps-chrome-baseball",
+      "sections": [
+        "Chrome Rookie Autographs Checklist"
+      ],
+      "baseAuto": true
+    },
+    {
+      "key": "2025-topps-chrome-rookie-autos",
+      "kind": "auto",
+      "line": "rookie-auto",
+      "parent": "2025-topps-chrome-baseball",
+      "label": "2025 Topps Chrome Rookie Autographs",
+      "sport": "baseball",
+      "year": 2025,
+      "brand": "topps-chrome",
+      "page": "2025-topps-chrome-baseball",
+      "sections": [
+        "Rookie Autographs Checklist"
+      ],
+      "baseAuto": true
+    },
+    {
+      "key": "2026-topps-chrome-rookie-autos",
+      "kind": "auto",
+      "line": "rookie-auto",
+      "parent": "2026-topps-chrome-baseball",
+      "label": "2026 Topps Chrome Rookie Autographs",
+      "sport": "baseball",
+      "year": 2026,
+      "brand": "topps-chrome",
+      "page": "2026-topps-chrome-baseball",
+      "sections": [
+        "Chrome Rookie Autographs Checklist"
+      ],
+      "baseAuto": true
+    },
+    {
+      "key": "2026-topps-series-1-baseball",
+      "label": "2026 Topps Series 1",
+      "sport": "baseball",
+      "year": 2026,
+      "brand": "topps-series-1",
+      "page": "2026-topps-series-1-baseball",
+      "sections": [
+        "Base & Parallel Details"
+      ],
+      "requireNamed": true,
+      "note": "Series 1 base cards. Series 2 is a separate release."
+    },
+    {
+      "key": "2025-topps-chrome-football",
+      "label": "2025 Topps Chrome Football",
+      "sport": "football",
+      "year": 2025,
+      "brand": "topps-chrome",
+      "page": "2025-topps-chrome-football",
+      "sections": [
+        "Base & Parallel Details"
+      ],
+      "oddsFrom": "Base Rookies Checklist"
+    },
+    {
+      "key": "2024-topps-chrome-football-rookie-autos",
+      "kind": "auto",
+      "line": "rookie-auto",
+      "parent": "2024-topps-chrome-football",
+      "label": "2024 Topps Chrome Football Rookie Autographs",
+      "sport": "football",
+      "year": 2024,
+      "brand": "topps-chrome",
+      "page": "2024-topps-chrome-football",
+      "sections": [
+        "Rookie Autographs Checklist"
+      ],
+      "baseAuto": true
+    },
+    {
+      "key": "2025-topps-chrome-football-rookie-autos",
+      "kind": "auto",
+      "line": "rookie-auto",
+      "parent": "2025-topps-chrome-football",
+      "label": "2025 Topps Chrome Football Rookie Autographs",
+      "sport": "football",
+      "year": 2025,
+      "brand": "topps-chrome",
+      "page": "2025-topps-chrome-football",
+      "sections": [
+        "Rookies Autographs Checklist"
+      ],
+      "baseAuto": true
+    },
+    {
+      "key": "2025-panini-prizm-football",
+      "label": "2025 Panini Prizm Football",
+      "sport": "football",
+      "year": 2025,
+      "brand": "panini-prizm",
+      "page": "2025-panini-prizm-football",
+      "sections": [
+        "Base Checklist"
+      ]
+    },
+    {
+      "key": "2025-panini-prizm-football-rookie-autos",
+      "kind": "auto",
+      "line": "rookie-auto",
+      "parent": "2025-panini-prizm-football",
+      "label": "2025 Panini Prizm Football Rookie Autographs",
+      "sport": "football",
+      "year": 2025,
+      "brand": "panini-prizm",
+      "page": "2025-panini-prizm-football",
+      "sections": [
+        "Base Rookie Autographs Checklist"
+      ],
+      "note": "Not every player comes in every colour."
+    },
+    {
+      "key": "2025-donruss-optic-football",
+      "label": "2025 Donruss Optic Football",
+      "sport": "football",
+      "year": 2025,
+      "brand": "donruss-optic",
+      "page": "2025-donruss-optic-football",
+      "sections": [
+        "Base Rated Rookie Checklist"
+      ],
+      "note": "Rated Rookie colours; veteran base cards have most of the same ones."
+    },
+    {
+      "key": "2025-donruss-optic-football-rookie-autos",
+      "kind": "auto",
+      "line": "rated-rookie-auto",
+      "parent": "2025-donruss-optic-football",
+      "label": "2025 Donruss Optic Rated Rookie Autographs",
+      "sport": "football",
+      "year": 2025,
+      "brand": "donruss-optic",
+      "page": "2025-donruss-optic-football",
+      "sections": [
+        "Base Rated Rookie Autographs Checklist"
+      ]
+    },
+    {
+      "key": "2025-panini-mosaic-football",
+      "label": "2025 Panini Mosaic Football",
+      "sport": "football",
+      "year": 2025,
+      "brand": "panini-mosaic",
+      "page": "2025-panini-mosaic-football",
+      "sections": [
+        "Base Checklist"
+      ]
+    },
+    {
+      "key": "2026-bowman-football-prospects",
+      "label": "2026 Bowman Football Chrome Prospects",
+      "sport": "football",
+      "college": true,
+      "year": 2026,
+      "brand": "bowman-college",
+      "page": "2026-bowman-football",
+      "sections": [
+        "Chrome Prospects NIL Checklist"
+      ],
+      "note": "College prospect cards."
+    },
+    {
+      "key": "2026-bowman-football-prospect-autos",
+      "kind": "auto",
+      "line": "prospect-auto",
+      "parent": "2026-bowman-football-prospects",
+      "label": "2026 Bowman Football Chrome Prospect Autographs",
+      "sport": "football",
+      "college": true,
+      "year": 2026,
+      "brand": "bowman-college",
+      "page": "2026-bowman-football",
+      "sections": [
+        "Chrome Prospect Autographs NIL Checklist"
+      ],
+      "baseAuto": true
+    },
+    {
+      "key": "2025-26-topps-chrome-basketball",
+      "label": "2025-26 Topps Chrome Basketball",
+      "sport": "basketball",
+      "year": 2025,
+      "season": true,
+      "brand": "topps-chrome",
+      "page": "2025-26-topps-chrome-basketball",
+      "sections": [
+        "Base Checklist"
+      ],
+      "oddsFrom": "Base & Parallel Details"
+    },
+    {
+      "key": "2025-26-topps-chrome-basketball-rookie-autos",
+      "kind": "auto",
+      "line": "rookie-auto",
+      "parent": "2025-26-topps-chrome-basketball",
+      "label": "2025-26 Topps Chrome Rookie Autographs",
+      "sport": "basketball",
+      "year": 2025,
+      "season": true,
+      "brand": "topps-chrome",
+      "page": "2025-26-topps-chrome-basketball",
+      "sections": [
+        "Topps Chrome Autographs Rookies Checklist"
+      ],
+      "baseAuto": true
+    },
+    {
+      "key": "2025-26-topps-basketball",
+      "label": "2025-26 Topps Basketball",
+      "sport": "basketball",
+      "year": 2025,
+      "season": true,
+      "brand": "topps-flagship",
+      "page": "2025-26-topps-basketball",
+      "sections": [
+        "Base & Parallel Details"
+      ],
+      "requireNamed": true
+    },
+    {
+      "key": "2024-25-donruss-optic-basketball",
+      "label": "2024-25 Donruss Optic Basketball",
+      "sport": "basketball",
+      "year": 2024,
+      "season": true,
+      "brand": "donruss-optic",
+      "page": "2024-25-donruss-optic-basketball",
+      "sections": [
+        "Base Rated Rookie Checklist"
+      ],
+      "note": "Rated Rookie colours; veteran base cards have most of the same ones."
+    },
+    {
+      "key": "2024-25-donruss-optic-basketball-rookie-autos",
+      "kind": "auto",
+      "line": "rated-rookie-auto",
+      "parent": "2024-25-donruss-optic-basketball",
+      "label": "2024-25 Donruss Optic Rated Rookie Autographs",
+      "sport": "basketball",
+      "year": 2024,
+      "season": true,
+      "brand": "donruss-optic",
+      "page": "2024-25-donruss-optic-basketball",
+      "sections": [
+        "Base Rated Rookie Signatures Checklist"
+      ]
+    },
+    {
+      "key": "2023-24-panini-prizm-basketball-rookie-autos",
+      "kind": "auto",
+      "line": "rookie-auto",
+      "parent": "2023-24-panini-prizm-basketball",
+      "label": "2023-24 Panini Prizm Rookie Signatures",
+      "sport": "basketball",
+      "year": 2023,
+      "season": true,
+      "brand": "panini-prizm",
+      "page": "2023-24-panini-prizm-basketball",
+      "sections": [
+        "Rookie Signatures Checklist"
+      ],
+      "note": "Not every player comes in every colour."
+    },
+    {
+      "key": "2025-26-bowman-basketball-prospects",
+      "label": "2025-26 Bowman Basketball Chrome Prospects",
+      "sport": "basketball",
+      "college": true,
+      "year": 2025,
+      "season": true,
+      "brand": "bowman-college",
+      "page": "2025-26-bowman-basketball",
+      "sections": [
+        "Chrome Prospects Checklist"
+      ],
+      "note": "College prospect cards."
+    },
+    {
+      "key": "2025-26-bowman-basketball-prospect-autos",
+      "kind": "auto",
+      "line": "prospect-auto",
+      "parent": "2025-26-bowman-basketball-prospects",
+      "label": "2025-26 Bowman Basketball Chrome Prospect Autographs",
+      "sport": "basketball",
+      "college": true,
+      "year": 2025,
+      "season": true,
+      "brand": "bowman-college",
+      "page": "2025-26-bowman-basketball",
+      "sections": [
+        "Chrome Prospect Autographs Checklist"
+      ],
+      "baseAuto": true
+    },
+    {
+      "key": "2025-26-ud-young-guns-hockey",
+      "label": "2025-26 Upper Deck Young Guns",
+      "sport": "hockey",
+      "year": 2025,
+      "season": true,
+      "brand": "ud-young-guns",
+      "page": "2025-26-upper-deck-series-1-hockey",
+      "sections": [
+        "Young Guns & Parallel Details"
+      ],
+      "baseName": "Young Guns",
+      "baseOdds": {
+        "Hobby": "1:2"
+      },
+      "note": "Young Guns rookies fall 1:2 Hobby packs."
+    }
+  ]
+}

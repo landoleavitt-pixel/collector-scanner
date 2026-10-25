@@ -11,6 +11,9 @@
 // Layout: the rungs from mockups/rarity-tree.html (v2), with the clarity
 // rules from mockups/rarity-tree-v3.html. Chosen by Landon 2026-10-19.
 //
+// Autograph lists (setData.kind === 'auto') use the same ladder; only the
+// words change ("Base autograph", "signed versions").
+//
 // Props:
 //   setData     - set object from lib/parallelData.js, or null if unknown
 //   parallelKey - matched parallel key, or null
@@ -42,20 +45,28 @@ const shortName = (n) => {
 const BOX_WORDS = {
   Hobby: 'hobby packs', Jumbo: 'jumbo packs', Breaker: "Breaker's Delight packs",
   Blaster: 'blaster packs', Monster: 'monster box packs', Mega: 'mega box packs',
-  'Fanatics Mega': 'Fanatics mega box packs',
+  'Fanatics Mega': 'Fanatics mega box packs', 'Value Blaster': 'value blaster packs',
+  Hanger: 'hanger packs', FDI: 'First Day Issue packs', Fanatics: 'Fanatics box packs',
+  Packs: 'packs', Bulk: 'bulk box packs',
 };
-const ODDS_ORDER = ['Hobby', 'Blaster', 'Mega', 'Monster', 'Jumbo', 'Breaker'];
+const ODDS_ORDER = ['Hobby', 'Packs', 'Blaster', 'Value Blaster', 'Mega', 'Monster', 'Jumbo', 'Hanger', 'FDI', 'Breaker'];
+const EXCLUSIVE_WORDS = { FDI: 'First Day Issue', Breaker: "Breaker's Delight", Super: 'Super Box' };
 
 /** "About 1 in 733 hobby packs", or the box it's exclusive to, or null. */
 function oddsLine(p) {
   const k = ODDS_ORDER.find((b) => p.odds?.[b]);
   if (k) {
     const n = p.odds[k].replace(/^1:/, '');
-    return Number(n.replace(/,/g, '')) < 1
+    const line = Number(n.replace(/,/g, '')) < 1
       ? `Several in every ${BOX_WORDS[k].replace(/s$/, '')}`
       : `About 1 in ${n} ${BOX_WORDS[k]}`;
+    // The plain autograph's odds are for the whole set, any colour.
+    return p.oddsAnyColour ? `Any colour: ${line.charAt(0).toLowerCase()}${line.slice(1)}` : line;
   }
-  if (p.exclusive) return `Only in ${p.exclusive} boxes`;
+  if (p.exclusive) {
+    const ex = EXCLUSIVE_WORDS[p.exclusive] || p.exclusive;
+    return /pack$/i.test(ex) ? `Only in ${ex}s` : `Only in ${ex} boxes`;
+  }
   return null;
 }
 
@@ -84,6 +95,7 @@ function KnownSet({ setData, parallelKey, printRun, imageUrl }) {
   const activeRun = matched?.run || (rungs.some((r) => r.run === serial) ? serial : null);
   const mi = activeRun ? rungs.findIndex((r) => r.run === activeRun) : -1;
   const isBase = !matched ? mi < 0 : matched.key === setData.baseKey;
+  const isAuto = setData.kind === 'auto';
   const unnumberedMatch = matched && !matched.run && !isBase;
 
   const [openRow, setOpenRow] = useState(null);
@@ -104,9 +116,9 @@ function KnownSet({ setData, parallelKey, printRun, imageUrl }) {
     line2 = `${shortName(matched.name)} · ${setData.label}`;
     line3 = oddsLine(matched);
   } else {
-    big = 'Base card';
-    line2 = `The standard version from ${setData.label}.`;
-    line3 = (matched && oddsLine(matched)) || 'The colours below are the rarer versions.';
+    big = isAuto ? 'Base autograph' : 'Base card';
+    line2 = isAuto ? `The plain signed version from ${setData.label}.` : `The standard version from ${setData.label}.`;
+    line3 = (matched && oddsLine(matched)) || (isAuto ? 'The colours below are the rarer signed versions.' : 'The colours below are the rarer versions.');
   }
 
   // Window: two rows either side of this card; the rarest five otherwise.
@@ -185,7 +197,7 @@ function KnownSet({ setData, parallelKey, printRun, imageUrl }) {
               onClick={() => setShowUnnumbered((v) => !v)}
             >
               <span className="rt-made">Not numbered</span>
-              <span className="rt-line rt-quiet">{unnumbered.length} colours, ranked by pack odds</span>
+              <span className="rt-line rt-quiet">{unnumbered.length} colours with no serial number</span>
               {unnumberedMatch && (
                 <span className="rt-me">
                   {imageUrl && <CardThumb src={imageUrl} />}
@@ -200,7 +212,10 @@ function KnownSet({ setData, parallelKey, printRun, imageUrl }) {
 
       <div className="rt-source">
         {setData.note && <>{setData.note} </>}
-        Base cards only; autographs and inserts have their own colours. Source:{' '}
+        {isAuto
+          ? 'Colours for this autograph set only. Other autograph sets and inserts have their own.'
+          : 'Base cards only; autographs and inserts have their own colours.'}{' '}
+        Source:{' '}
         {setData.source?.url
           ? <a href={setData.source.url} target="_blank" rel="noopener noreferrer">{setData.source.name}</a>
           : setData.source?.name}

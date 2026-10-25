@@ -1,48 +1,139 @@
-| # | Title | Expected | Old parser | New parser | Result |
-|---|---|---|---|---|---|
-| 1 | 2024 Topps Chrome Cosmic #156 Kamren Kinchens Orange Galactic Refractor #/25 | none | 2024-topps-chrome-baseball:orange | none | PASS |
-| 2 | 2024 Topps Chrome Cosmic #25 Troy Aikman Orange Galactic Refractor #/25 | none | 2024-topps-chrome-baseball:orange | none | PASS |
-| 3 | 2024 Topps Chrome Quinyon Mitchell #229 Green Geo Refractor /99 (RC) | none | 2024-topps-chrome-baseball:refractor | none | PASS |
-| 4 | 2024 Topps Chrome F1 Andrea Kimi Antonelli Autograph /99 CAC-ANT PSA 9 AUTO 10 | none | none | none | PASS |
-| 5 | 2024 Topps Chrome Logofractor Edition Noelvi Marte #RCA-NM Gold On Card Auto /50 | none | 2024-topps-chrome-baseball:gold | none | PASS |
-| 6 | 2024 Topps Chrome Joe Montana Gold Wave Refractor Auto #/50 49ers HOF SSP | none | 2024-topps-chrome-baseball:gold | none | PASS |
-| 7 | 2024 Topps Chrome Update Auto Blue Refractors /150 #AC-KHU Kyle Hurt RC Dodgers | none | none | none | PASS |
-| 8 | 2024 Topps Chrome Update #USC150 Elly De La Cruz Gold Mini-Diamond Refractor /50 | none | none | none | PASS |
-| 9 | 2025 TOPPS CHROME AUTOS BLUE LAVA #JGO JARED GOFF 101/150 PSA 9 | none | 2024-topps-chrome-baseball:blue | none | PASS |
-| 10 | 2025 Topps Chrome, Matthew Stafford, Green Lava /99 Auto, PSA 10 10 Pop 1 | none | none | none | PASS |
-| 11 | 2025 Topps Chrome - Mike Trout #100 Aqua Lava Refractor /199 | 2025-topps-chrome-baseball:aqua-lava | 2024-topps-chrome-baseball:refractor | 2025-topps-chrome-baseball:aqua-lava | PASS |
-| 12 | 2025 Topps Chrome VJ Edgecombe RC Aqua RayWave /199 PSA 9 #253 | KNOWN-MISS | none | 2025-topps-chrome-baseball:aqua-raywave | known miss |
-| 13 | Topps 2024 Bowman Chrome Prospects Nelson Rada Gold /50 #BCP-212 Angels | 2024-bowman-chrome-prospects:gold | none | 2024-bowman-chrome-prospects:gold | PASS |
-| 14 | 2024 BOWMAN CHROME 1ST PROSPECTS GOLD SAPPHIRE GEORGE LOMBARD JR. /50 PSA 10 | none | none | none | PASS |
-| 15 | 2024 Bowman Chrome 1st Refractor BDC-72 Braylon Payne Brewers | none | none | none | PASS |
-| 16 | Topps 2024 Bowman Chrome Junior Caminero My 1st Bowman Auto Gold /50 #1BA-JC | none | none | none | PASS |
-| 17 | PANINI PRIZM Silver 2024-25 Victor Wembanyama  #172 Spurs Basketball Very Nice | 2024-25-panini-prizm-basketball:silver-prizm | none | 2024-25-panini-prizm-basketball:silver-prizm | PASS |
-| 18 | 2023 Prizm 136 Victor Wembanyama Cracked Ice | 2023-24-panini-prizm-basketball:ice | none | 2023-24-panini-prizm-basketball:ice | PASS |
-| 19 | 2023-24 Panini Prizm Silver Prizm Refractor Pick Your Player Complete Your Set | 2023-24-panini-prizm-basketball:silver-prizm | 2023-24-panini-prizm-basketball:base-prizm | 2023-24-panini-prizm-basketball:silver-prizm | PASS |
-| 20 | 2023-24 Prizm - Brandin Podziemski #147 Silver Prizm (RC) PSA 9 | 2023-24-panini-prizm-basketball:silver-prizm | none | 2023-24-panini-prizm-basketball:silver-prizm | PASS |
-| 21 | 2024-25 Panini Prizm Black - Stephon Castle, Stephon Castle #96 Orange Prizm /49 | none | none | none | PASS |
-| 22 | 2024-25 Prizm Monopoly Donovan Clingan #6 True Gold /49 (RC) PSA 10 (Low Pop) | none | none | none | PASS |
-| 23 | 2024 Prizm Football - Derrick Henry Green Fireworks #10 | none | none | none | PASS |
-| 24 | 2024 Panini Prizm Football Theo Johnson Rookie Gold Choice Prizm /10 | 2024-panini-prizm-football:choice-gold | 2023-24-panini-prizm-basketball:gold-prizm | 2024-panini-prizm-football:choice-gold | PASS |
-| 25 | Panini 2024 Prizm Draft Picks Victor Wembanyama San Antonio Spurs #99 | none | none | none | PASS |
-| 26 | Mac McClung 2024 Prizm Draft Picks #SS-MAC Sensational Signatures Purple /99 | none | none | none | PASS |
-| 27 | 2023-24 Upper Deck Series 2 Young Guns Matthew Poitras RC #478 Bruins | 2023-24-ud-young-guns-hockey:young-guns | 2023-24-ud-young-guns-hockey:base-yg | 2023-24-ud-young-guns-hockey:young-guns | PASS |
-| 28 | Upper Deck 2023-24 Extended Series Young Guns Adam Fantilli Blue Jackets #711 RC | 2023-24-ud-young-guns-hockey:young-guns | 2023-24-ud-young-guns-hockey:base-yg | 2023-24-ud-young-guns-hockey:young-guns | PASS |
-| 29 | 2024-25 Upper Deck Nikita Kucherov Young Guns Renewed Exclusives 041/100 | none | 2023-24-ud-young-guns-hockey:exclusives | none | PASS |
-| 30 | 2024-25 Upper Deck Series 2 Young Guns Exclusives 93/100 Igor Shesterkin Rookie | 2024-25-ud-young-guns-hockey:exclusives | 2023-24-ud-young-guns-hockey:exclusives | 2024-25-ud-young-guns-hockey:exclusives | PASS |
-| 31 | Upper Deck 2024-25 Series 2 UD Canvas Young Guns Checklist Smith/Geekie #C240 | none | 2023-24-ud-young-guns-hockey:base-yg | none | PASS |
-| 32 | 2025 UPPER DECK #365 MATTHEW SCHAEFER UD CANVAS YOUNG GUNS BLACK AND WHITE RC | none | 2023-24-ud-young-guns-hockey:base-yg | none | PASS |
-| 33 | 2022 Topps Chrome Black - Autographs Alex Kirilloff #CBA-AK Orange Refractor /25 | none | none | none | PASS |
-| 34 | 2022 Topps Chrome Ben Baller Orange Refractor Astros Jeremy Pena Auto 20/25 | none | 2024-topps-chrome-baseball:orange | none | PASS |
-| 35 | 2024-25 Topps Merlin Chrome Endrick Merlin's Gamers RC Gold Fireworks  #/50 | none | none | none | PASS |
-| 36 | Topps 2024 Chrome Ronald Acuña Jr. Braves Aqua Ray Wave #250 /199 | 2024-topps-chrome-baseball:aqua-raywave | none | 2024-topps-chrome-baseball:aqua-raywave | PASS |
-| 37 | 2023 Topps Chrome Gunnar Henderson Orange Refractor /25 RC _(wrong year (2023 not held))_ | none | 2024-topps-chrome-baseball:orange | none | PASS |
-| 38 | 2024 Topps Chrome Holliday Purple Refractor /299 _(serial wins: shows the /299 rung (Purple Speckle), no single parallel claimed)_ | 2024-topps-chrome-baseball:- | none | 2024-topps-chrome-baseball:- | PASS |
-| 39 | 2024 Topps Chrome Jackson Holliday Orange Wave Refractor 12/25 RC | 2024-topps-chrome-baseball:orange-wave | 2024-topps-chrome-baseball:orange | 2024-topps-chrome-baseball:orange-wave | PASS |
-| 40 | 2024 Topps Chrome Boston Red Sox Devers Blue Refractor #/150 _(team name has a colour)_ | 2024-topps-chrome-baseball:blue | 2024-topps-chrome-baseball:blue | 2024-topps-chrome-baseball:blue | PASS |
-| 41 | 2024 Topps Chrome Holliday RC /250 _(serial only → rung)_ | 2024-topps-chrome-baseball:- | none | 2024-topps-chrome-baseball:- | PASS |
-| 42 | 2022-23 Panini Prizm Paolo Banchero Silver RC _(wrong season)_ | none | none | none | PASS |
-| 43 | 2024 Panini Prizm Wembanyama Red /299 _(ambiguous: both seasons have Red /299)_ | none | 2023-24-panini-prizm-basketball:red-prizm | none | PASS |
-| 44 | 2024-25 Panini Prizm Fast Break Neon Green /5 Castle | 2024-25-panini-prizm-basketball:fast-break-neon-green | none | 2024-25-panini-prizm-basketball:fast-break-neon-green | PASS |
+# Card-set parser test results
 
-New parser: 43 pass, 0 fail, 1 known miss (of 44). Old parser matched the expected answer on 16.
+Real eBay titles, pulled through the site's own search on 2026-10-25 (plus a few rows from the first table). "Old parser" is the version in the last commit; "new" is this change. Expected answers were checked by hand against the checklist lists. `setKey:-` means the set is known but the title doesn't name the colour (the ladder lights the print-run row, or shows the base card).
+
+Generated by `node scripts/test-parser.mjs` from `mockups/parser-test-cases.json`.
+
+**New parser: 107 pass, 0 fail (of 107). Old parser matched the expected answer on 58.** Wrong-ladder answers from the new parser: none.
+
+### Autographs
+
+| Title | Sport hint | Expected | Old parser | New parser | Result |
+|---|---|---|---|---|---|
+| Topps 2026 Bowman Football 1st Bowman Green Auto /99 Micah Ford Stanford _(the card that started this: 1st Bowman Green Auto /99)_ |  | 2026-bowman-football-prospect-autos:green-refractor | none | 2026-bowman-football-prospect-autos:green-refractor | PASS |
+| 2026 Bowman Football Chrome Jackson Harris LSU 1st BCPA-JHA True Green Auto /99 |  | 2026-bowman-football-prospect-autos:green-refractor | none | 2026-bowman-football-prospect-autos:green-refractor | PASS |
+| 2026 Bowman Chrome 1st Football TRE BROWN III #/50 GOLD MOJO AUTO NIL LSU Tigers |  | 2026-bowman-football-prospect-autos:gold-mojo | none | 2026-bowman-football-prospect-autos:gold-mojo | PASS |
+| Topps 2026 Bowman Football Charmar Brown 1st Bowman Chrome Auto BCPA-CBR _(no colour, no serial: the plain autograph)_ |  | 2026-bowman-football-prospect-autos:auto | none | 2026-bowman-football-prospect-autos:auto | PASS |
+| 2026 Bowman Football Antwan Raymond 1st Bowman Auto Refractor /499 #BCPA-AR |  | 2026-bowman-football-prospect-autos:refractor | none | 2026-bowman-football-prospect-autos:refractor | PASS |
+| 2025-26 Bowman Basketball John Blackwell 1st Bowman Chrome Auto - Duke |  | 2025-26-bowman-basketball-prospect-autos:auto | none | 2025-26-bowman-basketball-prospect-autos:auto | PASS |
+| Topps 2025-26 Bowman Chrome Basketball Ace Flagg Orange Auto #CPA-AF 19/25 |  | 2025-26-bowman-basketball-prospect-autos:orange-refractor | none | 2025-26-bowman-basketball-prospect-autos:orange-refractor | PASS |
+| 2025-26 Bowman Basketball Chrome Prospects CJ INGRAM Auto Yellow Refractor /75 |  | 2025-26-bowman-basketball-prospect-autos:yellow-refractor | none | 2025-26-bowman-basketball-prospect-autos:yellow-refractor | PASS |
+| 2025 Bowman Draft Zach Root 1st Chrome Auto Blue Refractor /150 PSA 9 Auto 10 |  | 2025-bowman-draft-prospect-autos:blue-refractor | none | 2025-bowman-draft-prospect-autos:blue-refractor | PASS |
+| 2025 Bowman Draft Chrome Prospect Aqua Lava Refractor /199 Murf Gray Auto r3u |  | 2025-bowman-draft-prospect-autos:aqua-lava-refractor | none | 2025-bowman-draft-prospect-autos:aqua-lava-refractor | PASS |
+| 2025 Bowman Draft Jamie Arnold 1st Bowman Chrome Auto Athletics A’s 1st Rd Pick |  | 2025-bowman-draft-prospect-autos:auto | none | 2025-bowman-draft-prospect-autos:auto | PASS |
+| 2025 Bowman Chrome Prospect Blue RayWave Refractor 17/150 Will Taylor Auto sg4 _(Blue RayWave is only in the autumn Bowman Chrome list)_ |  | 2025-bowman-chrome-prospect-autos:blue-raywave-refractor | none | 2025-bowman-chrome-prospect-autos:blue-raywave-refractor | PASS |
+| 2025 Bowman - Chrome Prospect Auto Chase Mobley #CPA-CMY Gold Lava Ref /50 _(Gold Lava is only in the spring Bowman list)_ |  | 2025-bowman-prospect-autos:gold-lava-refractor | none | 2025-bowman-prospect-autos:gold-lava-refractor | PASS |
+| 2024 Bowman Chrome Khristian Curtis Prospect Auto #CPA-KC Blue RayWave /150 |  | 2024-bowman-chrome-prospect-autos:blue-raywave | none | 2024-bowman-chrome-prospect-autos:blue-raywave | PASS |
+| 2024 Bowman - Chrome Prospect Auto Cesar Quintas #CPA-CQ Blue Lunar 011/150 _(Blue Lunar is only in spring 2024 Bowman)_ |  | 2024-bowman-prospect-autos:blue-lunar-refractor | none | 2024-bowman-prospect-autos:blue-lunar-refractor | PASS |
+| 2026 Topps Chrome Maximo Acosta Rookie Auto Yellow Refractor RC #/275 Marlins | baseball | 2026-topps-chrome-rookie-autos:yellow-refractor | none | 2026-topps-chrome-rookie-autos:yellow-refractor | PASS |
+| 2026 Topps Chrome Baseball #RA-MBR McCade Brown Rookie Auto |  | 2026-topps-chrome-rookie-autos:auto | none | 2026-topps-chrome-rookie-autos:auto | PASS |
+| 2025 Topps Chrome Baseball Gerson Garabito Rookie Auto Purple 134/250 SD8350 |  | 2025-topps-chrome-rookie-autos:purple-refractor | none | 2025-topps-chrome-rookie-autos:purple-refractor | PASS |
+| 2024 Topps Chrome Rookie Autographs Austin Wells #RA-AW Gold Refractor /50 AUTO | baseball | 2024-topps-chrome-rookie-autos:gold-refractor | none | 2024-topps-chrome-rookie-autos:gold-refractor | PASS |
+| 2025 Topps Chrome Football Will Howard RC Rookie Auto Blue Lava Refractor /150 |  | 2025-topps-chrome-football-rookie-autos:blue-lava-refractor | none | 2025-topps-chrome-football-rookie-autos:blue-lava-refractor | PASS |
+| 2024 Topps Chrome Football #RA-MCO Malachi Corley Green Rookie Auto RC /99 Jets |  | 2024-topps-chrome-football-rookie-autos:green-refractor | none | 2024-topps-chrome-football-rookie-autos:green-refractor | PASS |
+| 2025 Panini Prizm Football Pat Bryant #366 Rookie Auto Green Scope /75 Broncos |  | 2025-panini-prizm-football-rookie-autos:green-scope-prizms | none | 2025-panini-prizm-football-rookie-autos:green-scope-prizms | PASS |
+| 2025 Panini Prizm Football Shedeur Sanders Red Wave 118/149 rookie Auto |  | 2025-panini-prizm-football-rookie-autos:red-wave-prizms | none | 2025-panini-prizm-football-rookie-autos:red-wave-prizms | PASS |
+| 2025 Donruss Optic Football RJ Harvey #208 Rated Rookie Pink Velocity Auto /75 |  | 2025-donruss-optic-football-rookie-autos:pink-velocity | none | 2025-donruss-optic-football-rookie-autos:pink-velocity | PASS |
+| 2024-25 Donruss Optic Nikola Durisic Gold Auto /10 Rated Rookie #309 Hawks |  | 2024-25-donruss-optic-basketball-rookie-autos:gold | none | 2024-25-donruss-optic-basketball-rookie-autos:gold | PASS |
+| 2024-25 Panini Donruss Optic Rated Rookie #341 Enrique Freeman AUTO RC Pacers _(plain signed card; Panini lists have no separate base autograph)_ |  | 2024-25-donruss-optic-basketball-rookie-autos:- | none | 2024-25-donruss-optic-basketball-rookie-autos:- | PASS |
+| 2023-24 Panini Prizm Rookie Signatures Choice 70/88 Kris Murray Auto RC 0m89 |  | 2023-24-panini-prizm-basketball-rookie-autos:choice-prizms | none | 2023-24-panini-prizm-basketball-rookie-autos:choice-prizms | PASS |
+| 2023-24 Panini Prizm - Rookie Signatures Amen Thompson Gold /10 PSA 10 Gem Mint |  | 2023-24-panini-prizm-basketball-rookie-autos:gold-prizms | none | 2023-24-panini-prizm-basketball-rookie-autos:gold-prizms | PASS |
+
+### Other autographs and inserts (should stay none)
+
+| Title | Sport hint | Expected | Old parser | New parser | Result |
+|---|---|---|---|---|---|
+| Topps 2026 Bowman Football 1st Bowman Cyncir Bowers BPPA-CBO RC Auto Gold 14/50 _(BPPA is the paper prospect autograph)_ |  | none | none | none | PASS |
+| 2026 Bowman Football #BPA-QB Que'Sean Brown 1st Bowman Orange Auto /25 Hokies _(BPA is a paper autograph)_ |  | none | none | none | PASS |
+| 2025 Topps Chrome Football Ty Robinson Teal Rookie Auto /199 - Eagles - RRA-TYR _(RRA is Retail Rookie Autographs, a different list)_ |  | none | none | none | PASS |
+| 2026 Topps Chrome Carson Williams Rookie on card Auto! Chromographs 21/50! Rays! |  | none | none | none | PASS |
+| DJ Giddens 2025 Prizm Football Rookie Gold Sensational Signatures Auto /10 Colts |  | none | none | none | PASS |
+| Topps 2025 Chrome Football Cam Ward Rookie RPA Auto Titans RPA-CW _(patch autograph)_ |  | none | none | none | PASS |
+| MIA POHANKOVA 2026 Topps Chrome Tennis Rookie Blue AUTO /150 #AT-MPA RC RARE SP _(tennis)_ |  | none | none | none | PASS |
+| Topps 2024 Bowman Chrome Junior Caminero My 1st Bowman Auto Gold /50 #1BA-JC _(My 1st Bowman is its own autograph set)_ |  | none | none | none | PASS |
+| 2026 Bowman Chrome TRAVEL TAGS Refractor Inserts RC Prospects Stars |  | none | none | none | PASS |
+| Brian Burns - 2025 Mosaic Football - Mosaic Bang! _(Bang is an insert)_ |  | none | none | none | PASS |
+| 2025 Panini Mosaic Football #3 Matthew Golden Green Mosaic Rookie RC Elevate(AQ) _(Elevate is an insert)_ |  | none | none | none | PASS |
+| 2025-26 Upper Deck Series 1 Young Guns Checklist Ivan Demidov Levshunov #250 _(checklist card)_ |  | none | none | none | PASS |
+| 2025 Donruss Jalen Milroe Optic Preview Auto #307 Rated Rookie Seahawks Holo _(Optic Preview is another product)_ |  | none | none | none | PASS |
+| 2025 Bowman Chrome Prospect Autograph Reed Bailey Gold Geo Auto /50 #CPA-RB _(Gold Geometric is in both 2025 lists)_ |  | none | none | none | PASS |
+
+### Sport and release ambiguity
+
+| Title | Sport hint | Expected | Old parser | New parser | Result |
+|---|---|---|---|---|---|
+| 2026 Bowman #BCP-129 Antwann Hill Jr. Chrome Prospects Mojo Refractor _(baseball card; no Mojo in our baseball lists, and the college list needs a sport)_ |  | none | none | none | PASS |
+| 2026 Bowman #BCP-180 Dezmen Roebuck Chrome Prospects Aqua Refractor #/199 _(college player, but football or basketball isn't said)_ | college | none | none | none | PASS |
+| Jordan Shipp 2026 Bowman Football #BCP-108 Chrome Prospects Red Refractor /5 |  | 2026-bowman-football-prospects:red-refractor | none | 2026-bowman-football-prospects:red-refractor | PASS |
+| 2025 Topps Chrome - Mike Trout #100 Aqua Lava Refractor /199 _(no sport: 2025 Chrome is baseball, football and 2025-26 basketball)_ |  | none | 2025-topps-chrome-baseball:aqua-lava | none | PASS |
+| 2025 Topps Chrome - Mike Trout #100 Aqua Lava Refractor /199 | baseball | 2025-topps-chrome-baseball:aqua-lava | 2025-topps-chrome-baseball:aqua-lava | 2025-topps-chrome-baseball:aqua-lava | PASS |
+| Theo Johnson 2024 Topps Chrome Rookie Auto Gold Refractor /50 RC Giants _(Giants could be baseball or football)_ |  | none | none | none | PASS |
+| Theo Johnson 2024 Topps Chrome Rookie Auto Gold Refractor /50 RC Giants | football | 2024-topps-chrome-football-rookie-autos:gold-refractor | none | 2024-topps-chrome-football-rookie-autos:gold-refractor | PASS |
+| 2024 Topps Chrome Jackson Holliday Orange Wave Refractor 12/25 RC | baseball | 2024-topps-chrome-baseball:orange-wave | 2024-topps-chrome-baseball:orange-wave | 2024-topps-chrome-baseball:orange-wave | PASS |
+| 2024 Topps Chrome Boston Red Sox Devers Blue Refractor #/150 _(Red Sox isn't read as a colour)_ | baseball | 2024-topps-chrome-baseball:blue | 2024-topps-chrome-baseball:blue | 2024-topps-chrome-baseball:blue | PASS |
+| Topps 2024 Bowman Chrome Prospects Nelson Rada Gold /50 #BCP-212 Angels _(Gold /50 is in both spring Bowman and Bowman Chrome (was Bowman Chrome before))_ |  | none | 2024-bowman-chrome-prospects:gold | none | PASS |
+| 2026 Bowman Chrome #BCP-152 Wandy Asigen Prospects Wave Refractor 1/100 _(Wave /100 is only in the autumn list)_ |  | 2026-bowman-chrome-prospects:wave-refractor | none | 2026-bowman-chrome-prospects:wave-refractor | PASS |
+| 2026 Bowman #BCP-136 Gavin Kilen Chrome Prospects Wave Refractor #/350 Giants _(Wave /350 is only in the spring list)_ |  | 2026-bowman-prospects:wave-refractor | none | 2026-bowman-prospects:wave-refractor | PASS |
+
+### Base colour lists
+
+| Title | Sport hint | Expected | Old parser | New parser | Result |
+|---|---|---|---|---|---|
+| 2026 Topps Series 1 Gold Parallel Agustín Ramírez #287 /2026 Marlins MLB |  | 2026-topps-series-1-baseball:gold | none | 2026-topps-series-1-baseball:gold | PASS |
+| 2026 Topps Series 1 Brendan Donovan Rainbow Foil Cardinals MLB Parallel #26 |  | 2026-topps-series-1-baseball:rainbow-foil | none | 2026-topps-series-1-baseball:rainbow-foil | PASS |
+| 2026 Topps Chrome • Byron Buxton • #173 Baseball Seams Refractor • Twins |  | 2026-topps-chrome-baseball:baseball-seams-refractor | none | 2026-topps-chrome-baseball:baseball-seams-refractor | PASS |
+| 2025-26 Topps Chrome Basketball-Jonas Valunciunas TEAL Refractor /299 Kings |  | 2025-26-topps-chrome-basketball:teal-refractor | none | 2025-26-topps-chrome-basketball:teal-refractor | PASS |
+| Liam McNeeley RC 2025-26 Topps Chrome Basketball Refractor Rookie _('Topps Chrome Basketball' is the product, not the Basketball Refractor)_ |  | 2025-26-topps-chrome-basketball:base-refractor | none | 2025-26-topps-chrome-basketball:base-refractor | PASS |
+| 2025-26 Topps Chrome #53 Jarace Walker Aqua Basketball Refractor #/199 |  | 2025-26-topps-chrome-basketball:aqua-basketball-refractor | none | 2025-26-topps-chrome-basketball:aqua-basketball-refractor | PASS |
+| 2025-26 Topps Basketball Nikola Vucevic Gold Parallel /2025 Boston Celtics #36 |  | 2025-26-topps-basketball:gold | none | 2025-26-topps-basketball:gold | PASS |
+| 2025 Panini Prizm Football A.J. BROWN Silver Prizm #253 Philadelphia Eagles |  | 2025-panini-prizm-football:silver-prizms | none | 2025-panini-prizm-football:silver-prizms | PASS |
+| 2024-25 Donruss Optic Bronny James Jr. Rated Rookie RC Green Shock /149 #282 |  | 2024-25-donruss-optic-basketball:green-shock | none | 2024-25-donruss-optic-basketball:green-shock | PASS |
+| 2024-25 Donruss Optic  Zaccharie Risacher Rated Rookie  #268 Hawks _(base Rated Rookie)_ |  | 2024-25-donruss-optic-basketball:- | none | 2024-25-donruss-optic-basketball:- | PASS |
+| CHIGOZIEM OKONKWO 2025 PANINI MOSAIC FOOTBALL RED SPARKLE #115 TITANS Q3280 |  | 2025-panini-mosaic-football:red-sparkle | none | 2025-panini-mosaic-football:red-sparkle | PASS |
+| 2025-26 Upper Deck Series 2 Young Guns Hunter Haight #475 RC |  | 2025-26-ud-young-guns-hockey:base | none | 2025-26-ud-young-guns-hockey:base | PASS |
+| Upper Deck 2025-26 Series 2 Young Guns Braeden Cootes #497 Canucks RC /250 _(serial only: the /250 rung (Deluxe))_ |  | 2025-26-ud-young-guns-hockey:- | none | 2025-26-ud-young-guns-hockey:- | PASS |
+| 2025-26 Upper Deck Young Guns Silver Outburst Carson Lambos Minnesota Wild #729 |  | 2025-26-ud-young-guns-hockey:outburst-silver | none | 2025-26-ud-young-guns-hockey:outburst-silver | PASS |
+| 2026 Bowman Chrome Prospects Fuchsia Shimmer Refractor /199 Juan Rujano #BCP-177 |  | 2026-bowman-chrome-prospects:fuchsia-shimmer-refractor | none | 2026-bowman-chrome-prospects:fuchsia-shimmer-refractor | PASS |
+
+### First table (2026-10-19), rechecked
+
+| Title | Sport hint | Expected | Old parser | New parser | Result |
+|---|---|---|---|---|---|
+| 2024 Topps Chrome Cosmic #156 Kamren Kinchens Orange Galactic Refractor #/25 |  | none | none | none | PASS |
+| 2024 Topps Chrome Cosmic #25 Troy Aikman Orange Galactic Refractor #/25 |  | none | none | none | PASS |
+| 2024 Topps Chrome Quinyon Mitchell #229 Green Geo Refractor /99 (RC) |  | none | none | none | PASS |
+| 2024 Topps Chrome F1 Andrea Kimi Antonelli Autograph /99 CAC-ANT PSA 9 AUTO 10 |  | none | none | none | PASS |
+| 2024 Topps Chrome Logofractor Edition Noelvi Marte #RCA-NM Gold On Card Auto /50 |  | none | none | none | PASS |
+| 2024 Topps Chrome Joe Montana Gold Wave Refractor Auto #/50 49ers HOF SSP |  | none | none | none | PASS |
+| 2024 Topps Chrome Update Auto Blue Refractors /150 #AC-KHU Kyle Hurt RC Dodgers |  | none | none | none | PASS |
+| 2024 Topps Chrome Update #USC150 Elly De La Cruz Gold Mini-Diamond Refractor /50 |  | none | none | none | PASS |
+| 2025 TOPPS CHROME AUTOS BLUE LAVA #JGO JARED GOFF 101/150 PSA 9 |  | none | none | none | PASS |
+| 2025 Topps Chrome, Matthew Stafford, Green Lava /99 Auto, PSA 10 10 Pop 1 |  | none | none | none | PASS |
+| 2024 BOWMAN CHROME 1ST PROSPECTS GOLD SAPPHIRE GEORGE LOMBARD JR. /50 PSA 10 |  | none | none | none | PASS |
+| 2024 Bowman Chrome 1st Refractor BDC-72 Braylon Payne Brewers |  | none | none | none | PASS |
+| PANINI PRIZM Silver 2024-25 Victor Wembanyama  #172 Spurs Basketball Very Nice |  | 2024-25-panini-prizm-basketball:silver-prizm | 2024-25-panini-prizm-basketball:silver-prizm | 2024-25-panini-prizm-basketball:silver-prizm | PASS |
+| 2023 Prizm 136 Victor Wembanyama Cracked Ice |  | 2023-24-panini-prizm-basketball:ice | 2023-24-panini-prizm-basketball:ice | 2023-24-panini-prizm-basketball:ice | PASS |
+| 2023-24 Panini Prizm Silver Prizm Refractor Pick Your Player Complete Your Set |  | 2023-24-panini-prizm-basketball:silver-prizm | 2023-24-panini-prizm-basketball:silver-prizm | 2023-24-panini-prizm-basketball:silver-prizm | PASS |
+| 2023-24 Prizm - Brandin Podziemski #147 Silver Prizm (RC) PSA 9 |  | 2023-24-panini-prizm-basketball:silver-prizm | 2023-24-panini-prizm-basketball:silver-prizm | 2023-24-panini-prizm-basketball:silver-prizm | PASS |
+| 2024-25 Panini Prizm Black - Stephon Castle, Stephon Castle #96 Orange Prizm /49 |  | none | none | none | PASS |
+| 2024-25 Prizm Monopoly Donovan Clingan #6 True Gold /49 (RC) PSA 10 (Low Pop) |  | none | none | none | PASS |
+| 2024 Prizm Football - Derrick Henry Green Fireworks #10 |  | none | none | none | PASS |
+| 2024 Panini Prizm Football Theo Johnson Rookie Gold Choice Prizm /10 |  | 2024-panini-prizm-football:choice-gold | 2024-panini-prizm-football:choice-gold | 2024-panini-prizm-football:choice-gold | PASS |
+| Panini 2024 Prizm Draft Picks Victor Wembanyama San Antonio Spurs #99 |  | none | none | none | PASS |
+| Mac McClung 2024 Prizm Draft Picks #SS-MAC Sensational Signatures Purple /99 |  | none | none | none | PASS |
+| 2023-24 Upper Deck Series 2 Young Guns Matthew Poitras RC #478 Bruins |  | 2023-24-ud-young-guns-hockey:young-guns | 2023-24-ud-young-guns-hockey:young-guns | 2023-24-ud-young-guns-hockey:young-guns | PASS |
+| Upper Deck 2023-24 Extended Series Young Guns Adam Fantilli Blue Jackets #711 RC |  | 2023-24-ud-young-guns-hockey:young-guns | 2023-24-ud-young-guns-hockey:young-guns | 2023-24-ud-young-guns-hockey:young-guns | PASS |
+| 2024-25 Upper Deck Nikita Kucherov Young Guns Renewed Exclusives 041/100 |  | none | none | none | PASS |
+| 2024-25 Upper Deck Series 2 Young Guns Exclusives 93/100 Igor Shesterkin Rookie |  | 2024-25-ud-young-guns-hockey:exclusives | 2024-25-ud-young-guns-hockey:exclusives | 2024-25-ud-young-guns-hockey:exclusives | PASS |
+| Upper Deck 2024-25 Series 2 UD Canvas Young Guns Checklist Smith/Geekie #C240 |  | none | none | none | PASS |
+| 2025 UPPER DECK #365 MATTHEW SCHAEFER UD CANVAS YOUNG GUNS BLACK AND WHITE RC |  | none | none | none | PASS |
+| 2022 Topps Chrome Black - Autographs Alex Kirilloff #CBA-AK Orange Refractor /25 |  | none | none | none | PASS |
+| 2022 Topps Chrome Ben Baller Orange Refractor Astros Jeremy Pena Auto 20/25 |  | none | none | none | PASS |
+| 2024-25 Topps Merlin Chrome Endrick Merlin's Gamers RC Gold Fireworks  #/50 |  | none | none | none | PASS |
+| Topps 2024 Chrome Ronald Acuña Jr. Braves Aqua Ray Wave #250 /199 | baseball | 2024-topps-chrome-baseball:aqua-raywave | 2024-topps-chrome-baseball:aqua-raywave | 2024-topps-chrome-baseball:aqua-raywave | PASS |
+| 2023 Topps Chrome Gunnar Henderson Orange Refractor /25 RC _(wrong year (2023 not held))_ |  | none | none | none | PASS |
+| 2024 Topps Chrome Holliday Purple Refractor /299 _(serial wins: shows the /299 rung (Purple Speckle), no single parallel claimed)_ | baseball | 2024-topps-chrome-baseball:- | 2024-topps-chrome-baseball:- | 2024-topps-chrome-baseball:- | PASS |
+| 2024 Topps Chrome Holliday RC /250 _(serial only → rung)_ | baseball | 2024-topps-chrome-baseball:- | 2024-topps-chrome-baseball:- | 2024-topps-chrome-baseball:- | PASS |
+| 2022-23 Panini Prizm Paolo Banchero Silver RC _(wrong season)_ |  | none | none | none | PASS |
+| 2024 Panini Prizm Wembanyama Red /299 _(ambiguous: both seasons have Red /299)_ |  | none | none | none | PASS |
+| 2024-25 Panini Prizm Fast Break Neon Green /5 Castle |  | 2024-25-panini-prizm-basketball:fast-break-neon-green | 2024-25-panini-prizm-basketball:fast-break-neon-green | 2024-25-panini-prizm-basketball:fast-break-neon-green | PASS |

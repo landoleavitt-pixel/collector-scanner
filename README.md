@@ -258,3 +258,15 @@ Once a quarter (January, April, July, October):
 3. Commit the changed files and deploy as usual.
 
 The quarterly run moves players to their new teams in `lib/playerTeams.json` without extra requests. To rebuild the player history from scratch (10 pro seasons, 5 college), run `node scripts/update-athletes.mjs --history`. It makes about 2,200 extra requests and takes about 30 minutes, so only do it if the file is lost or badly out of date.
+
+## Adding a set each quarter (rarity colour lists)
+
+The card popup's colour ladder comes from `lib/parallelData.js`. Most sets are generated from `scripts/parallel-sets.json` into `lib/parallelDataExtra.js`. Don't edit the generated file by hand.
+
+1. Find the set's page on checklistinsider.com (for example `2026-topps-chrome-football`). Run `node scripts/checklist-parallels.mjs https://www.checklistinsider.com/<page>` to list its sections, and note the exact heading of the base list (often "Base Checklist") and of the main autograph line ("Chrome Prospect Autographs Checklist", "Rookie Autographs Checklist"...).
+2. Add one entry to `scripts/parallel-sets.json` for the base list, and one with `"kind": "auto"` for each autograph list, copying a similar set (same `brand` for the same product). Set `"pulled"` to today's date. A new product name (a brand the parser doesn't know yet) also needs a rule in `BRANDS` in `lib/parseSetFromTitle.js`.
+3. Run `node scripts/build-parallel-data.mjs --check` and read the summary: names and print runs should match the checklist page. Then run it without `--check` to write the file. It makes one request per page, a second apart.
+4. Add a few real listing titles for the new set to `mockups/parser-test-cases.json` (including one that should stay unmatched, like an insert), then run `node scripts/test-parser.mjs`. Every row must pass; it rewrites `mockups/parser-test-results.md`.
+5. Commit and deploy as usual.
+
+Facts only: names, print runs, pack odds and box exclusives, with the source page linked in the popup. No descriptions are copied, and the lists aren't offered for download.
