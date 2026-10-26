@@ -8,16 +8,21 @@ Things only you can do, because they need your accounts, money or signature. The
 - [ ] **Deploy the alert checker** (alert fix + reminder timing): in Terminal, `cd ~/projects/Fields\ and\ Floors && supabase functions deploy poller`.
 - [ ] **Stop counting your own visits:** open **fieldsandfloors.com/?internal=1** once on each browser and phone you use (or just sign in on it). The agents' browser is already done.
 
-## Stripe: take real payments on the website
+## Stripe: get ready now, switch on later
 
-Full steps: [CFO_LAUNCH_CHECKLIST.md](CFO_LAUNCH_CHECKLIST.md), section 1.
+Decision (2026-10-26): set Stripe up now but keep the website in **test mode**. Upgrade Vercel to Pro and put the live keys in **on the same day** you want real payments. Full click-by-click steps are in the boss chat (Stripe steps 2–10).
 
-- [ ] **Check your Vercel plan** (Vercel → Settings → Billing). The free Hobby plan is for non-commercial use only. Once you take real payments, Vercel's terms require Pro (about $20 USD/month). Upgrade before switching Stripe to live.
-- [ ] Finish the Stripe business profile (SIN, bank account).
-- [ ] Create Base in Stripe live mode: **$6.99 CAD monthly** and **$59 CAD yearly**.
-- [ ] Add the live keys and both price IDs to Vercel (`STRIPE_SECRET_KEY`, `STRIPE_BASE_PRICE_ID`, `STRIPE_BASE_ANNUAL_PRICE_ID`, webhook secret).
-- [ ] In Stripe → Settings → Billing → Subscriptions and emails, turn on **email customers before their free trial ends**. Then tell the boss, so the pricing page can say "We'll remind you before the trial ends" again.
-- [ ] Do one real $6.99 purchase with your own card, check you became Base, then refund it.
+**Now (free):**
+- [ ] Activate your Stripe account (business details, SIN and bank on stripe.com only).
+- [ ] In **live mode**, create the product **Base** with two prices: **$6.99 CAD monthly** and **$59 CAD yearly**. Save both `price_…` IDs somewhere handy (not secret).
+- [ ] Live mode: set up the **Customer portal** (cancel, update card, invoices, switch plans).
+- [ ] Live mode: turn on **trial-ending reminder emails**, then tell the boss.
+- [ ] Live mode: add the **webhook** `https://fieldsandfloors.com/api/stripe/webhook` with the 6 events. Don't copy its secret anywhere yet.
+
+**Launch day (together):**
+- [ ] Upgrade Vercel to **Pro** (about $20 USD/month; required once you take payments).
+- [ ] Put the live `sk_live_…`, `whsec_…` and both price IDs into Vercel (Production), then redeploy.
+- [ ] Do one real test purchase with your own card, then cancel it.
 
 ## iPhone app
 
