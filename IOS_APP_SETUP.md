@@ -2,6 +2,8 @@
 
 Claude has built the code. These steps need your accounts, so only you can do them. Go in order; each one unlocks the next.
 
+> **Update 2026-10-26: free early-access version first.** The site and app run as free early access, with no payments. For the first App Store release **skip** the subscription parts: section 4 steps 2–4 (paid apps agreement, Small Business Program, subscriptions), section 5 (RevenueCat), and the RevenueCat values in section 6. Do them when you decide to charge. Everything else still applies.
+
 ## How the app works
 
 - The app is a native iPhone shell that loads fieldsandfloors.com. Site updates reach the app instantly with no App Store resubmission. Only native changes (icon, plugins, permissions) need a new build.

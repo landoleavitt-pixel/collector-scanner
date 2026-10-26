@@ -271,10 +271,10 @@ function UnknownSet({ printRun }) {
       <div className="rt-head">
         <div className="rt-big">{run === 1 ? 'One of one' : `Only ${run.toLocaleString('en-US')} made`}</div>
         <div className="rt-line rt-quiet">
-          We don&apos;t have this card&apos;s full set of colours yet. Here&apos;s how rare {run === 1 ? 'a one of one' : `${run} copies`} is across the hobby.
+          We don&apos;t have this set&apos;s colours yet. Common print runs show where {run === 1 ? 'a one of one sits' : `${run} copies sit`} across the hobby.
         </div>
       </div>
-      <div className="rt-key"><span>Higher = rarer</span></div>
+      <div className="rt-key"><span>Common print runs</span></div>
       <div className="rt-ladder">
         {TIERS.map((t) => {
           const isMe = t.key === active;

@@ -7,6 +7,7 @@ The single list of work that's finished or in progress but **not live yet**. The
 | # | What | Agent | Status | Files | Extra deploy step |
 |---|---|---|---|---|---|
 | P-soon | Early access: payments, plans and pricing hidden; "Free during early access"; everyone gets 5 alerts + bid reminders; checkout blocked; one switch for launch day | Design | 🔵 Building | create-checkout, pricing, subscribe, Plans, paywall, tour, saved-searches, poller, Terms | Poller deploy + EARLY_ACCESS secret (Landon) |
+| R-copy | Fallback ladder renamed "Common print runs" with plain explanation | Rarity coverage | 🟢 Done; ships with early-access batch | RarityTree.js | — |
 | 7 | eBay Partner Network affiliate links | CFO | ⏸ Plan approved. Waiting on Landon's sign-up + Campaign ID; code held until batch ships | SiteTour.js, guides, reading-list copy + link tagging | — |
 | L05 | Proof strip | Landing | ⏹ Skipped: no honest live number yet (no fake figures) | — | — |
 | S-poll | Lock down the alert checker: it can be triggered by anyone holding the public key; require a private secret header from the cron jobs instead | Debugger | ⚪ Follow-up (low risk today: it only re-runs checks and never re-sends) | poller, both cron jobs | poller deploy + Landon edits 2 cron jobs |

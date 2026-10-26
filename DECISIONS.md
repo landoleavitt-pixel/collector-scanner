@@ -56,6 +56,8 @@ Everything Landon has decided, so no agent ever asks him the same thing twice. O
 
 - Rarity colour lists grow to **~25 most-hunted sets from the last two seasons, including autograph colour lists**, with new releases added quarterly. Facts only from checklist sources. (2026-10-23)
 
+- Cards with no colour list show the **"Common print runs"** view: "We don't have this set's colours yet. Common print runs show where N copies sit across the hobby." (2026-10-26, Landon's wording)
+
 ## Search
 - Spelling suggestions cover pro players **and college players**. The roster refresh is run by hand once a quarter. (2026-10-20, 2026-10-21)
 - Card company filter, including Leaf and the listed product lines. (2026-10-20)

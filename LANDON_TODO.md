@@ -24,20 +24,17 @@ The site runs as free early access for now (2026-10-26), so none of this is need
 - [ ] Put the live `sk_live_…`, `whsec_…`, both price IDs **and `NEXT_PUBLIC_PAYMENTS_LIVE` = `1`** into Vercel (Production), then redeploy. That switch turns "Coming soon" back into "Start free trial".
 - [ ] Do one real test purchase with your own card, then cancel it.
 
-## iPhone app
+## iPhone app (free early-access version first)
 
-Full steps: [IOS_APP_SETUP.md](IOS_APP_SETUP.md).
+Full steps: [IOS_APP_SETUP.md](IOS_APP_SETUP.md). No in-app purchases, RevenueCat or App Store subscriptions for now; those wait until you charge.
 
-- [ ] Join the Apple Developer Program ($99 USD/yr).
-- [ ] Turn on Sign in with Apple in Supabase.
-- [ ] In App Store Connect: create the app, accept the Paid Apps agreement, and join the Small Business Program.
-- [ ] Create the subscriptions **at the same prices as the website**: CA$6.99 monthly and the price closest to CA$59 yearly (double-check the yearly price point before submitting), with Canada as the base country, **and a free 14-day introductory offer on both**. The Terms page promises that trial.
-- [ ] Set up RevenueCat (products, the `base` entitlement, a Monthly + Annual offering, the webhook).
-- [ ] Add the RevenueCat and Apple push keys to Vercel and Supabase.
-- [ ] Run it on your iPhone from Xcode and test sign-in, purchase and alerts.
-- [ ] Before archiving for the App Store, ask the boss to run `npx cap sync ios`, so the app points at fieldsandfloors.com.
-- [ ] Fill in App Privacy labels to match the privacy page: email, purchases, device ID for push, and Product Interaction (analytics).
-- [ ] Check the TestFlight build receives push notifications.
+- [ ] Join the Apple Developer Program ($99 USD/yr). **Security note:** name, address and card go only on developer.apple.com.
+- [ ] Register the App ID `com.fieldsandfloors.app` (Push Notifications + Sign in with Apple) and create one key (.p8) for push + Sign in with Apple. Note the Key ID and Team ID.
+- [ ] Turn on Sign in with Apple in Supabase (Client ID `com.fieldsandfloors.app`).
+- [ ] Add the push key to Supabase (the boss gives you the exact command; the key file never goes in chat).
+- [ ] Run the app on your iPhone from Xcode with the boss walking you through it; test sign-in, a search and an alert.
+- [ ] App Store Connect: create the app, fill in App Privacy (email, device ID for push, Product Interaction analytics), and add a demo account for reviewers. The boss drafts the text and screenshots.
+- [ ] Before archiving, ask the boss to run `npx cap sync ios`; then submit.
 
 ## eBay Partner Network (affiliate commission)
 
