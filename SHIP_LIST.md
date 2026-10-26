@@ -16,7 +16,8 @@ The single list of work that's finished or in progress but **not live yet**. The
 
 | When | What | Commit |
 |---|---|---|
-| 2026-10-25 | Rarity colour lists: 27 sets + 19 autograph lists | (rcov) |
+| 2026-10-26 | "How it works" header link jumps to its section (or opens the page) | (hiw) |
+| 2026-10-25 | Rarity colour lists: 27 sets + 19 autograph lists | 19a92e3 |
 | 2026-10-25 | iOS app footer shrinks to one legal line | ca44725 |
 | 2026-10-23 | 2024 Topps Chrome Football colour list; sport hint from searched player | a7cc720 |
 | 2026-10-23 | Alert checker skips the visitor rate limit (signed) and retries if limited; funnel ignores your own and our browsers | b38e9c9 + poller deploy (Landon) |

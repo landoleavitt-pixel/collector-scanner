@@ -185,7 +185,16 @@ export default function Header() {
                 ].map((item) => (
                   <Link
                     key={item.href}
-                    href={item.href}
+                    href={item.href === '#why' ? '/how-it-works' : item.href}
+                    onClick={(e) => {
+                      // "How it works" scrolls to that section on the home
+                      // page; if it isn't there, the link opens the full page.
+                      if (item.href !== '#why') return;
+                      const el = document.getElementById('why');
+                      if (!el) return;
+                      e.preventDefault();
+                      el.scrollIntoView({ block: 'start' });
+                    }}
                     className="py-1 text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
                   >
                     {item.label}
