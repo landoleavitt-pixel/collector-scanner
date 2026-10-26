@@ -11,7 +11,7 @@ Everything Landon has decided, so no agent ever asks him the same thing twice. O
 - Inside the iOS app: Apple in-app purchase only. No Stripe, no web prices, no hard-coded prices. (2026-10-19)
 
 ## Money and partners
-- Stripe is **set up now but the website stays in test mode**. Vercel Pro and the live keys go in **together on launch day**. Don't run real payments on Vercel's free plan. (2026-10-26)
+- **Proof-of-concept / early access: no payments on the site or app for now.** Plans, pricing and checkout are hidden behind one switch (NEXT_PUBLIC_PAYMENTS_LIVE). A small note says "Free during early access", and **everyone gets alerts on up to 5 saved searches plus bid reminders**. On launch day: Vercel Pro, live Stripe keys and the switch go on together. Don't run real payments on Vercel's free plan. (2026-10-26)
 - Join the **eBay Partner Network**. Affiliate copy and links switch on only once Landon has a Campaign ID. (2026-10-20)
 - **Hold** the eBay quota increase request until daily usage is regularly above ~3,000 calls. (2026-10-20)
 - Funnel tracking goes in **our own Supabase table**, not Vercel paid events. (2026-10-21)

@@ -8,11 +8,11 @@ Things only you can do, because they need your accounts, money or signature. The
 - [ ] **Deploy the alert checker** (alert fix + reminder timing): in Terminal, `cd ~/projects/Fields\ and\ Floors && supabase functions deploy poller`.
 - [ ] **Stop counting your own visits:** open **fieldsandfloors.com/?internal=1** once on each browser and phone you use (or just sign in on it). The agents' browser is already done.
 
-## Stripe: get ready now, switch on later
+## Stripe: for when you're ready to charge (not now)
 
-Decision (2026-10-26): set Stripe up now but keep the website in **test mode**. Upgrade Vercel to Pro and put the live keys in **on the same day** you want real payments. Full click-by-click steps are in the boss chat (Stripe steps 2–10).
+The site runs as free early access for now (2026-10-26), so none of this is needed yet. When you decide to charge, do these, then the launch-day steps together.
 
-**Now (free):**
+**Setup (free, any time before launch):**
 - [ ] Activate your Stripe account (business details, SIN and bank on stripe.com only).
 - [ ] In **live mode**, create the product **Base** with two prices: **$6.99 CAD monthly** and **$59 CAD yearly**. Save both `price_…` IDs somewhere handy (not secret).
 - [ ] Live mode: set up the **Customer portal** (cancel, update card, invoices, switch plans).
@@ -21,7 +21,7 @@ Decision (2026-10-26): set Stripe up now but keep the website in **test mode**. 
 
 **Launch day (together):**
 - [ ] Upgrade Vercel to **Pro** (about $20 USD/month; required once you take payments).
-- [ ] Put the live `sk_live_…`, `whsec_…` and both price IDs into Vercel (Production), then redeploy.
+- [ ] Put the live `sk_live_…`, `whsec_…`, both price IDs **and `NEXT_PUBLIC_PAYMENTS_LIVE` = `1`** into Vercel (Production), then redeploy. That switch turns "Coming soon" back into "Start free trial".
 - [ ] Do one real test purchase with your own card, then cancel it.
 
 ## iPhone app

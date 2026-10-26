@@ -6,6 +6,7 @@ The single list of work that's finished or in progress but **not live yet**. The
 
 | # | What | Agent | Status | Files | Extra deploy step |
 |---|---|---|---|---|---|
+| P-soon | Early access: payments, plans and pricing hidden; "Free during early access"; everyone gets 5 alerts + bid reminders; checkout blocked; one switch for launch day | Design | 🔵 Building | create-checkout, pricing, subscribe, Plans, paywall, tour, saved-searches, poller, Terms | Poller deploy + EARLY_ACCESS secret (Landon) |
 | 7 | eBay Partner Network affiliate links | CFO | ⏸ Plan approved. Waiting on Landon's sign-up + Campaign ID; code held until batch ships | SiteTour.js, guides, reading-list copy + link tagging | — |
 | L05 | Proof strip | Landing | ⏹ Skipped: no honest live number yet (no fake figures) | — | — |
 | S-poll | Lock down the alert checker: it can be triggered by anyone holding the public key; require a private secret header from the cron jobs instead | Debugger | ⚪ Follow-up (low risk today: it only re-runs checks and never re-sends) | poller, both cron jobs | poller deploy + Landon edits 2 cron jobs |
@@ -16,7 +17,7 @@ The single list of work that's finished or in progress but **not live yet**. The
 
 | When | What | Commit |
 |---|---|---|
-| 2026-10-26 | "How it works" header link jumps to its section (or opens the page) | (hiw) |
+| 2026-10-26 | "How it works" header link jumps to its section (or opens the page) | 1fe3a45 |
 | 2026-10-25 | Rarity colour lists: 27 sets + 19 autograph lists | 19a92e3 |
 | 2026-10-25 | iOS app footer shrinks to one legal line | ca44725 |
 | 2026-10-23 | 2024 Topps Chrome Football colour list; sport hint from searched player | a7cc720 |
