@@ -1,4 +1,5 @@
 import PageShell, { SectionHeading, Prose } from '../components/PageShell';
+import { PAYMENTS_LIVE } from '../../lib/payments';
 
 export const metadata = {
   title: 'Terms of Service',
@@ -222,6 +223,12 @@ export default function TermsPage() {
         Our paid plans and how billing works.
       </SectionHeading>
       <Prose>
+        {!PAYMENTS_LIVE && (
+          <p>
+            <strong>Early access.</strong> Paid plans aren&apos;t available yet. During
+            early access the service is free. The terms below apply once paid plans launch.
+          </p>
+        )}
         <p>
           The Fields &amp; Floors service includes a free tier and at least one paid
           subscription tier. Current pricing, billing intervals, and what each plan

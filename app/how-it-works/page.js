@@ -1,3 +1,4 @@
+import { PAYMENTS_LIVE } from '../../lib/payments';
 import PageShell, { SectionHeading, Prose } from '../components/PageShell';
 import { TourLink } from '../components/SiteTour';
 import { Play } from 'lucide-react';
@@ -85,8 +86,10 @@ export default function HowItWorksPage() {
           out there.
         </p>
         <p>
-          Saved searches and automated alerts are part of our Base plan. We
-          watch eBay for you and email when a new listing matches your filters.
+          {PAYMENTS_LIVE
+            ? 'Saved searches and automated alerts are part of our Base plan.'
+            : 'Saved searches and automated alerts are free during early access, on up to 5 searches.'}{' '}
+          We watch eBay for you and email when a new listing matches your filters.
           See <a href="/alerts">Alerts</a> for details.
         </p>
       </Prose>

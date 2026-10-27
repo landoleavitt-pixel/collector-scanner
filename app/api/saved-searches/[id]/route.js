@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabase } from '../../../../lib/supabaseServer';
 import { recordOnce } from '../../../../lib/trackServer';
+import { PAYMENTS_LIVE } from '../../../../lib/payments';
 
 // Fetch a single saved search by id
 export async function GET(request, { params }) {
@@ -68,7 +69,8 @@ export async function PATCH(request, { params }) {
       .eq('id', user.id)
       .single();
 
-    const entitled = profile?.tier === 'base' || profile?.is_founding_member === true;
+    // Early access: everyone gets the Base limit.
+    const entitled = !PAYMENTS_LIVE || profile?.tier === 'base' || profile?.is_founding_member === true;
     const limit = entitled ? MAX_ACTIVE_WATCHES : FREE_ACTIVE_WATCHES;
 
     // Count OTHER searches already watching (exclude this one so toggling

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Seal from './Seal';
 import { PRODUCT_LINKS, HOBBY_LINKS } from './navLinks';
 import { TourLink } from './SiteTour';
+import { PAYMENTS_LIVE } from '../../lib/payments';
 
 function FilterLabel({ children }) {
   return (
@@ -51,7 +52,7 @@ export default function Footer() {
           </div>
           <div>
             <FilterLabel>Product</FilterLabel>
-            <NavList links={PRODUCT_LINKS} />
+            <NavList links={PAYMENTS_LIVE ? PRODUCT_LINKS : PRODUCT_LINKS.filter((l) => l.href !== '/pricing')} />
           </div>
           <div>
             <FilterLabel>Hobby</FilterLabel>

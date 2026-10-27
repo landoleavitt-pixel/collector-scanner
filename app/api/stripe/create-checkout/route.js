@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createServerSupabase } from '../../../../lib/supabaseServer';
+import { PAYMENTS_LIVE } from '../../../../lib/payments';
 
 // Creates a Stripe Checkout Session for the Base subscription and returns
 // { url } for the client to redirect to. Mirrors the old Lemon Squeezy
@@ -23,6 +24,10 @@ import { createServerSupabase } from '../../../../lib/supabaseServer';
 //   NEXT_PUBLIC_SITE_URL         — https://fieldsandfloors.com (or preview URL)
 
 export async function POST(request) {
+  // Early access: no payments until launch day (see lib/payments.js).
+  if (!PAYMENTS_LIVE) {
+    return NextResponse.json({ code: 'PAYMENTS_NOT_LIVE', error: 'Paid plans aren\'t available yet.' }, { status: 503 });
+  }
   const supabase = createServerSupabase();
   const { data: { user } } = await supabase.auth.getUser();
 

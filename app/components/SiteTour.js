@@ -7,6 +7,7 @@ import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import Seal from './Seal';
 import { tierChipStyle, tierRowStyle, OUTLINE_CHIP_STYLE } from './rarityUtils';
 import { isNativeApp } from '../../lib/native';
+import { PAYMENTS_LIVE } from '../../lib/payments';
 
 /* SiteTour — a six-step walkthrough for first-time visitors.
  *
@@ -277,15 +278,19 @@ const STEPS = [
   {
     label: 'Alerts',
     title: 'Get an email when it lists.',
-    text: 'Save a search and we’ll email you when new matches list, plus bid reminders before auctions end. Alerts are part of the Base plan, which has a 14-day free trial.',
+    text: PAYMENTS_LIVE
+      ? 'Save a search and we’ll email you when new matches list, plus bid reminders before auctions end. Alerts are part of the Base plan, which has a 14-day free trial.'
+      : 'Save a search and we’ll email you when new matches list, plus bid reminders before auctions end. Free during early access, on up to 5 saved searches.',
     Art: AlertArt,
     app: {
       title: 'Get a notification when it lists.',
-      text: 'Save a search and we’ll send a notification to your phone (plus an email) when a new match lists, and remind you before auctions end. Alerts are part of Base, which has a 14-day free trial.',
+      text: PAYMENTS_LIVE
+        ? 'Save a search and we’ll send a notification to your phone (plus an email) when a new match lists, and remind you before auctions end. Alerts are part of Base, which has a 14-day free trial.'
+        : 'Save a search and we’ll send a notification to your phone (plus an email) when a new match lists, and remind you before auctions end. Free during early access, on up to 5 saved searches.',
       Art: PushArt,
       // /subscribe shows Apple's in-app purchase sheet in the app. Never
       // hard-code a price here — Apple shows it on the purchase sheet.
-      trialHref: '/subscribe',
+      trialHref: PAYMENTS_LIVE ? '/subscribe' : null,
     },
   },
   {

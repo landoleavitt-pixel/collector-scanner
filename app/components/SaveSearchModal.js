@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '../../lib/supabaseClient';
+import { PAYMENTS_LIVE } from '../../lib/payments';
 
 function suggestName(query) {
   if (!query) return '';
@@ -51,7 +52,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
           .eq('id', user.id)
           .single();
         if (cancelled) return;
-        const entitled = profile?.tier === 'base' || profile?.is_founding_member === true;
+        const entitled = !PAYMENTS_LIVE || profile?.tier === 'base' || profile?.is_founding_member === true;
         // Every signed-in account can alert; free accounts get 1, Base gets 5.
         setCanAlert(true);
         setWatchLimit(entitled ? 5 : 1);

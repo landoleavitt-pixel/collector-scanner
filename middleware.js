@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
+import { PAYMENTS_LIVE } from './lib/payments';
 
 // Routes that require an authenticated user
 const PROTECTED_PREFIXES = ['/watchlist', '/alerts/settings', '/account', '/subscribe', '/admin'];
@@ -30,6 +31,11 @@ export async function middleware(request) {
 
   // Check if this route requires auth
   const { pathname } = request.nextUrl;
+
+  // Early access: no plans or checkout to show (lib/payments.js).
+  if (!PAYMENTS_LIVE && (pathname === '/pricing' || pathname.startsWith('/subscribe'))) {
+    return NextResponse.redirect(new URL('/', request.url));
+  }
   const isProtected = PROTECTED_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 
   if (isProtected && !user) {

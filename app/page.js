@@ -25,6 +25,7 @@ import { TEAMS, TEAM_LEAGUES, suggestTeams, teamFromQuery, teamFilterLabels, tit
 import { WatchlistContext, WatchlistProvider } from '../lib/watchlistContext';
 import { useUser } from '../lib/useUser';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { PAYMENTS_LIVE } from '../lib/payments';
 import { isNativeApp } from '../lib/native';
 
 // Print run tiers — grouped visually by rarity.
@@ -803,7 +804,9 @@ function Home() {
                 name: 'What does Fields & Floors cost?',
                 acceptedAnswer: {
                   '@type': 'Answer',
-                  text: 'Searching is free, including the watchlist. Free accounts include 1 live email alert. Up to 5 alerts and bid reminders require the Base plan at $6.99 CAD per month ($59 CAD per year), with a 14-day free trial. A Premium tier is planned but not yet available.',
+                  text: PAYMENTS_LIVE
+                    ? 'Searching is free, including the watchlist. Free accounts include 1 live email alert. Up to 5 alerts and bid reminders require the Base plan at $6.99 CAD per month ($59 CAD per year), with a 14-day free trial. A Premium tier is planned but not yet available.'
+                    : 'Fields & Floors is free during early access, including search, the watchlist, and email alerts on up to 5 saved searches. Paid plans are not available yet.',
                 },
               },
               {
@@ -1696,6 +1699,16 @@ function PlanCard({ name, price, unit, line, ctaLabel, ctaHref, featured = false
 function PlansSection({ user }) {
   const [native, setNative] = useState(false);
   useEffect(() => { setNative(isNativeApp()); }, []);
+  // Early access: no plans or prices, just one plain line.
+  if (!PAYMENTS_LIVE) {
+    return (
+      <section className="max-w-[1040px] mx-auto px-6 lg:px-10 pt-8 pb-16">
+        <p className="text-center text-[15px]" style={{ color: 'var(--ink-200)' }}>
+          Free during early access. Alerts on up to 5 saved searches.
+        </p>
+      </section>
+    );
+  }
   return (
     <section className="max-w-[1040px] mx-auto px-6 lg:px-10 pt-8 pb-16">
       <h2 className="sr-only">Plans</h2>
@@ -1834,7 +1847,7 @@ function SignedInHome({ query, setQuery, onSearch, onSuggested, recentSearches =
       <SinceLastVisit home={home} hasSaved={saved.length > 0} />
       <LiveRightNow onCardClick={onCardClick} recentSearches={recentSearches} />
 
-      {!native && home && home.tier === 'free' && (
+      {PAYMENTS_LIVE && !native && home && home.tier === 'free' && (
         <div className="flex items-center justify-between gap-3 mt-8 rounded-xl px-4 py-3 text-[14px]" style={{ border: '1px solid var(--line)', color: 'var(--ink-200)' }}>
           <span>You have 1 alert on the free plan.</span>
           <Link href="/subscribe" className="inline-flex items-center gap-1.5 whitespace-nowrap" style={{ color: 'var(--gold-bright)' }}>
@@ -3909,7 +3922,7 @@ function AlertBand({ query, filters, onAlert }) {
           Get an email when a new <em className="text-[var(--gold-bright)]">{query}</em> card lists.
         </p>
         <p className="mt-1 text-[13px]" style={{ color: 'var(--ink-400)' }}>
-          We check eBay every hour with these filters. Your first alert is free.
+          We check eBay every hour with these filters. {PAYMENTS_LIVE ? 'Your first alert is free.' : 'Alerts are free during early access.'}
         </p>
       </div>
       {user ? (

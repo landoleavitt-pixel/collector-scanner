@@ -3,6 +3,7 @@ import { createServerSupabase } from '../../../lib/supabaseServer';
 import { recordOnce } from '../../../lib/trackServer';
 import { brandFilterLabels } from '../../../lib/cardBrands';
 import { teamFilterLabels } from '../../../lib/teams';
+import { PAYMENTS_LIVE } from '../../../lib/payments';
 
 // Max searches that can be actively notifying at once (Base tier).
 // Must match MAX_ACTIVE_WATCHES in app/api/saved-searches/[id]/route.js.
@@ -64,7 +65,8 @@ export async function POST(request) {
       .eq('id', user.id)
       .single();
 
-    const entitled = profile?.tier === 'base' || profile?.is_founding_member === true;
+    // Early access: everyone gets the Base limit.
+    const entitled = !PAYMENTS_LIVE || profile?.tier === 'base' || profile?.is_founding_member === true;
     const limit = entitled ? MAX_ACTIVE_WATCHES : FREE_ACTIVE_WATCHES;
     const { count } = await supabase
       .from('saved_searches')

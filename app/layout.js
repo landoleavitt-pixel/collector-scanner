@@ -7,6 +7,7 @@ import NativeBridge from './components/NativeBridge';
 import TabBar from './components/TabBar';
 import FunnelTracker from './components/FunnelTracker';
 import SiteTour from './components/SiteTour';
+import { PAYMENTS_LIVE } from '../lib/payments';
 
 export const metadata = {
   metadataBase: new URL('https://fieldsandfloors.com'),
@@ -68,7 +69,7 @@ export default function RootLayout({ children }) {
           'Searches eBay listings by autograph, print run, rookie status, condition and price at the same time, which eBay\'s own search does not offer. Save searches and get email alerts the moment a new matching card lists.',
         applicationCategory: 'BusinessApplication',
         operatingSystem: 'Web Browser',
-        offers: [
+        offers: PAYMENTS_LIVE ? [
           {
             '@type': 'Offer',
             name: 'Free',
@@ -82,6 +83,14 @@ export default function RootLayout({ children }) {
             price: '6.99',
             priceCurrency: 'CAD',
             description: 'Email alerts on up to 5 saved searches and bid reminders. $59 CAD a year option. 14-day free trial.',
+          },
+        ] : [
+          {
+            '@type': 'Offer',
+            name: 'Early access',
+            price: '0',
+            priceCurrency: 'CAD',
+            description: 'Free during early access: search, watchlist, and email alerts on up to 5 saved searches.',
           },
         ],
         featureList: [

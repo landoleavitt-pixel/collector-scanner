@@ -8,6 +8,7 @@ import { useUser } from '../../lib/useUser';
 import { createClient } from '../../lib/supabaseClient';
 import { isNativeApp, unregisterPush, openAppleSubscriptions } from '../../lib/native';
 import { ArrowLeft } from 'lucide-react';
+import { PAYMENTS_LIVE } from '../../lib/payments';
 
 export default function Header() {
   const pathname = usePathname();
@@ -182,7 +183,7 @@ export default function Header() {
                 {[
                   { href: '#why', label: 'How it works' },
                   { href: '/pricing', label: 'Pricing' },
-                ].map((item) => (
+                ].filter((item) => PAYMENTS_LIVE || item.href !== '/pricing').map((item) => (
                   <Link
                     key={item.href}
                     href={item.href === '#why' ? '/how-it-works' : item.href}
@@ -268,7 +269,7 @@ export default function Header() {
                           </span>
                         )}
                       </div>
-                      {!(native && billingSource === 'stripe' && tier !== 'free') && (
+                      {!(native && billingSource === 'stripe' && tier !== 'free') && (PAYMENTS_LIVE || (tier && tier !== 'free')) && (
                       <button
                         onClick={openPortal}
                         disabled={portalBusy}
@@ -277,7 +278,7 @@ export default function Header() {
                         Manage membership
                       </button>
                       )}
-                      {!native && (
+                      {!native && (PAYMENTS_LIVE || (tier && tier !== 'free')) && (
                       <button
                         onClick={openPortal}
                         disabled={portalBusy}

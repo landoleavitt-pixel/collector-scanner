@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { createServerSupabase } from '../../lib/supabaseServer';
 import WatchlistRow from '../components/WatchlistRow';
 import NotifyFrequency from '../components/NotifyFrequency';
+import { PAYMENTS_LIVE } from '../../lib/payments';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,6 +29,7 @@ export default async function WatchlistPage() {
 
   // User can use alerts if they're on base tier OR a founding member
   const canUseAlerts =
+    !PAYMENTS_LIVE ||
     profile?.tier === 'base' ||
     profile?.is_founding_member === true;
 

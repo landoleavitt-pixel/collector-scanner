@@ -96,9 +96,13 @@ Deno.serve(async (_req) => {
 
     if (profileError) throw profileError;
 
+    // Early access (Supabase secret EARLY_ACCESS, on unless "0"): every account
+    // alerts on everything it has switched on. The saved-searches API caps
+    // that at 5 per account. Set EARLY_ACCESS=0 on launch day.
+    const earlyAccess = (Deno.env.get("EARLY_ACCESS") ?? "1") !== "0";
     const entitled = new Set(
       (profiles ?? [])
-        .filter((p) => p.tier === "base" || p.is_founding_member === true)
+        .filter((p) => earlyAccess || p.tier === "base" || p.is_founding_member === true)
         .map((p) => p.id)
     );
 

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import PageShell, { SectionHeading, Prose } from '../components/PageShell';
 import { ArrowRight } from 'lucide-react';
+import { PAYMENTS_LIVE } from '../../lib/payments';
 
 export const metadata = {
   title: 'Alerts',
@@ -10,7 +11,7 @@ export const metadata = {
 export default function AlertsPage() {
   return (
     <PageShell
-      eyebrow="Now live · Base plan"
+      eyebrow={PAYMENTS_LIVE ? 'Base plan' : 'Free during early access'}
       title="Alerts."
       lede="Save a search. We watch eBay. The moment a new listing matches your filters, you get an email, usually within the hour."
     >
@@ -21,8 +22,8 @@ export default function AlertsPage() {
         <p>
           Find a card you'd buy if the price were right? Save the search.
           When a listing lands that matches every filter you set (the right
-          player, the right print run, under your ceiling), we email you
-          immediately.
+          player, the right print run, under your ceiling), we email you,
+          usually within the hour.
         </p>
         <p>
           No more refreshing the same search five times a day. No more missing
@@ -42,21 +43,23 @@ export default function AlertsPage() {
           at any time from your watchlist page.
         </p>
         <p>
-          Alerts run on up to five saved searches at once on the Base plan. If
-          you have an auction tracked with a bid reminder armed, you'll also
-          get a heads-up email in the auction's final three hours so you have
-          time to bid.
+          Alerts run on up to five saved searches at once
+          {PAYMENTS_LIVE ? ' on the Base plan' : ''}. Star an auction and set a
+          bid reminder to get a heads-up before it ends: pick any of 3 hours,
+          1 hour, 30, 15 or 5 minutes, and add a price if you only want it when
+          the bid is under your limit.
         </p>
       </Prose>
 
+      {PAYMENTS_LIVE ? (
+      <>
       <SectionHeading number="03" label="What it costs">
         $6.99 a month, fourteen days free.
       </SectionHeading>
       <Prose>
         <p>
           Alerts are part of our Base plan: <strong>$6.99 CAD / month</strong> with a
-          14-day free trial. A valid card is required to start the trial; we'll
-          email you a reminder before it converts. Cancel anytime.
+          14-day free trial. A valid card is required to start the trial. Cancel anytime.
         </p>
         <p>
           Free-tier users still get the full search experience and watchlist,
@@ -84,6 +87,20 @@ export default function AlertsPage() {
           Start free trial <ArrowRight className="inline-block w-3.5 h-3.5 ml-1 -mt-0.5" strokeWidth={2} aria-hidden="true" />
         </Link>
       </div>
+      </>
+      ) : (
+      <>
+      <SectionHeading number="03" label="What it costs">
+        Free during early access.
+      </SectionHeading>
+      <Prose>
+        <p>
+          Alerts are free while we're in early access: every account can turn them
+          on for up to 5 saved searches, plus bid reminders.
+        </p>
+      </Prose>
+      </>
+      )}
     </PageShell>
   );
 }
