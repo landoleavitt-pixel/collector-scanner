@@ -16,12 +16,12 @@ The single list of work that's finished or in progress but **not live yet**. The
 
 | When | What | Commit |
 |---|---|---|
-| 2026-10-26 | Free early access (no payments; everyone 5 alerts; plans/pricing hidden behind NEXT_PUBLIC_PAYMENTS_LIVE); "Common print runs" wording | a5180af + poller deploy (Landon) |
+| 2026-10-26 | Free early access (no payments; everyone 5 alerts; plans/pricing hidden behind NEXT_PUBLIC_PAYMENTS_LIVE); "Common print runs" wording | a5180af + poller deployed |
 | 2026-10-26 | "How it works" header link jumps to its section (or opens the page) | 1fe3a45 |
 | 2026-10-25 | Rarity colour lists: 27 sets + 19 autograph lists | 19a92e3 |
 | 2026-10-25 | iOS app footer shrinks to one legal line | ca44725 |
 | 2026-10-23 | 2024 Topps Chrome Football colour list; sport hint from searched player | a7cc720 |
-| 2026-10-23 | Alert checker skips the visitor rate limit (signed) and retries if limited; funnel ignores your own and our browsers | b38e9c9 + poller deploy (Landon) |
+| 2026-10-23 | Alert checker skips the visitor rate limit (signed) and retries if limited; funnel ignores your own and our browsers | b38e9c9 + poller deployed |
 | 2026-10-23 | Auction reminders at chosen times (3h/1h/30m/15m/5m) with price cap; reminder-only poller mode for a 5-minute check; funnel "hit alert limit" tracking | 2a8c9e4 + poller deployed |
 | 2026-10-23 | Price filter: quick picks + typed min/max, no $5,000 cap, searches start at any price; bold signed-in home with "The Grail Hunter." heading | abeb98a |
 | 2026-10-22 | Team search finds player-only titles via a player-to-team history | c8b4cfb |
