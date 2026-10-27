@@ -5,7 +5,7 @@ Things only you can do, because they need your accounts, money or signature. The
 ## Do now
 
 - [ ] Sign in and look at your new home page once (new matches, price drops, ending soon). Tell the boss if anything looks off.
-- [ ] **Deploy the alert checker** (alert fix + reminder timing): in Terminal, `cd ~/projects/Fields\ and\ Floors && supabase functions deploy poller`.
+- [ ] **Deploy the alert checker** (early access 5 alerts for everyone + alert fix + reminder timing): in Terminal, `cd ~/projects/Fields\ and\ Floors && supabase functions deploy poller`.
 - [ ] **Stop counting your own visits:** open **fieldsandfloors.com/?internal=1** once on each browser and phone you use (or just sign in on it). The agents' browser is already done.
 
 ## Stripe: for when you're ready to charge (not now)

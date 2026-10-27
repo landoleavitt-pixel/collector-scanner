@@ -16,7 +16,7 @@ The single list of work that's finished or in progress but **not live yet**. The
 
 | When | What | Commit |
 |---|---|---|
-| 2026-10-26 | Free early access (no payments; everyone 5 alerts; plans/pricing hidden behind NEXT_PUBLIC_PAYMENTS_LIVE); "Common print runs" wording | (ea) + poller deploy (Landon) |
+| 2026-10-26 | Free early access (no payments; everyone 5 alerts; plans/pricing hidden behind NEXT_PUBLIC_PAYMENTS_LIVE); "Common print runs" wording | a5180af + poller deploy (Landon) |
 | 2026-10-26 | "How it works" header link jumps to its section (or opens the page) | 1fe3a45 |
 | 2026-10-25 | Rarity colour lists: 27 sets + 19 autograph lists | 19a92e3 |
 | 2026-10-25 | iOS app footer shrinks to one legal line | ca44725 |
