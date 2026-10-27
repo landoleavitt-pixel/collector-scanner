@@ -205,7 +205,7 @@ Files are in `appstore/screenshots/`. Upload them in the numbered order.
 
 Apple only requires the 6.9" set; it scales it down for smaller iPhones. The 6.5" set is there in case App Store Connect asks for it.
 
-Screenshot status is in `appstore/screenshots/README.md` (which shots, if any, need a retake once the early-access version is live).
+**Status:** shots 1 to 3 are done (taken on the live early-access version). Shots 4 and 5 (watchlist, alerts) need the signed-in demo account from section 4; steps are in `appstore/screenshots/README.md`. Apple accepts 1 to 10 screenshots, so you can submit with 3 if needed.
 
 ---
 
