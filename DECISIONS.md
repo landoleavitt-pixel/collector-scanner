@@ -58,6 +58,8 @@ Everything Landon has decided, so no agent ever asks him the same thing twice. O
 
 - Cards with no colour list show the **"Common print runs"** view: "We don't have this set's colours yet. Common print runs show where N copies sit across the hobby." (2026-10-26, Landon's wording)
 
+- Signed-out visitors see a **"why sign up" prompt when they search for a card**, listing the account benefits, with "Not now" to keep searching without an account. **Option B approved**: a card inside the results after the 4th card, on each search until "Not now" for that visit. The sign-up page benefits are approved as mocked (mockups/signup-benefits.html). (2026-10-26, 2026-10-29)
+
 ## Search
 - Spelling suggestions cover pro players **and college players**. The roster refresh is run by hand once a quarter. (2026-10-20, 2026-10-21)
 - Card company filter, including Leaf and the listed product lines. (2026-10-20)

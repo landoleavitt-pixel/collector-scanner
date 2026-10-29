@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { createClient } from '../../lib/supabaseClient';
 import Seal from '../components/Seal';
+import SignupBenefits from '../components/SignupBenefits';
 import { isNativeApp, signInWithAppleNative } from '../../lib/native';
 import { track } from '../../lib/track';
 
@@ -16,7 +17,7 @@ function SignupForm() {
   // /pricing's CTA passes ?next=/subscribe so post-confirmation lands at checkout.
   const next = searchParams.get('next') || '/';
   // Which button sent them here (star | alert | banner | direct), for funnel tracking.
-  const src = ['star', 'alert', 'banner'].includes(searchParams.get('src')) ? searchParams.get('src') : 'direct';
+  const src = ['star', 'alert', 'banner', 'prompt'].includes(searchParams.get('src')) ? searchParams.get('src') : 'direct';
 
   // If the user is already logged in (e.g. they hit /signup?next=/subscribe
   // while already authenticated), skip the form and go straight to next.
@@ -93,16 +94,18 @@ function SignupForm() {
 
   return (
     <main className="min-h-screen flex flex-col" style={{ background: 'var(--bg-base)' }}>
-      <div className="flex items-center gap-3 px-6 pt-8 opacity-70">
+      <div className="hidden md:flex items-center gap-3 px-6 pt-8 opacity-70">
         <Seal className="w-6 h-6" />
         <span className="font-serif text-base" style={{ color: 'var(--ink-200)' }}>
           Fields &amp; Floors
         </span>
       </div>
 
-      <div className="flex-1 flex items-center justify-center px-6 py-12">
+      <div className="flex-1 flex items-center justify-center px-6 py-8 md:py-12">
+        <div className="w-full max-w-[920px] grid grid-cols-1 md:grid-cols-[1fr_400px] gap-6 md:gap-14 items-center">
+        <SignupBenefits />
         <div
-          className="w-full max-w-[400px] rounded-xl p-9"
+          className="w-full max-w-[400px] rounded-xl p-6 md:p-9"
           style={{
             background: 'var(--ink-on-gold)',
             border: '0.5px solid rgba(232,226,213,0.08)',
@@ -276,6 +279,7 @@ function SignupForm() {
               Sign in
             </Link>
           </div>
+        </div>
         </div>
       </div>
     </main>

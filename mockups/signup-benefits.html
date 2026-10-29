@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign-up Benefits</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap');
+:root{
+  --ink-100:#f7f1e1;--ink-200:#e8dfc9;--ink-400:#a99e85;--ink-600:#6b6354;
+  --bg-base:#0a0907;--bg-elev:#14110c;--bg-elev-2:#1a160f;--line:#2a251c;--line-soft:#1f1c16;
+  --gold:#c9954a;--gold-bright:#e6b96b;--gold-deep:#8f6a32;--ink-on-gold:#1a1612;
+}
+*{box-sizing:border-box}
+body{margin:0;background:#050403;color:var(--ink-100);font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.page{max-width:1200px;margin:0 auto;padding:40px 16px 80px}
+.eyebrow{font:500 11px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+h1.t{font:italic 400 44px/1.02 'Instrument Serif',serif;margin:10px 0 10px}
+.lede{color:var(--ink-400);font-size:15px;max-width:720px;line-height:1.6;margin:0 0 36px}
+.sec{border-top:1px solid var(--gold-deep);padding-top:20px;margin:56px 0 22px}
+.sec .n{font:600 12px 'Geist Mono',monospace;color:var(--gold-bright);letter-spacing:.14em}
+.sec h2{font:italic 400 32px/1.1 'Instrument Serif',serif;margin:6px 0 6px}
+.sec p{margin:0;color:var(--ink-400);font-size:14px;max-width:720px;line-height:1.55}
+.ic{width:18px;height:18px;fill:none;stroke:var(--gold-bright);stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* frames */
+.desk{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--bg-base);box-shadow:0 30px 80px rgba(0,0,0,.6);position:relative}
+.bar{display:flex;align-items:center;justify-content:space-between;padding:16px 26px;border-bottom:1px solid var(--line-soft)}
+.brand{display:flex;align-items:center;gap:10px;font:400 20px 'Instrument Serif',serif}
+.brand em{color:var(--gold);font-style:normal}
+.seal{width:24px;height:24px;border-radius:50%;border:1px solid var(--gold-deep);display:grid;place-items:center;font:italic 11px 'Instrument Serif',serif;color:var(--gold)}
+.pill{font:600 11px Geist,sans-serif;letter-spacing:.14em;text-transform:uppercase;background:var(--gold-bright);color:var(--ink-on-gold);border-radius:999px;padding:8px 14px}
+.phones{display:flex;gap:28px;flex-wrap:wrap;justify-content:center}
+.phone{width:375px;max-width:100%;height:812px;border:10px solid #1b1813;border-radius:50px;overflow:hidden;position:relative;background:var(--bg-base);box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.status{height:44px;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font:600 14px Geist,sans-serif}
+.caption{text-align:center;color:var(--ink-400);font-size:13px;margin:12px auto 0;max-width:370px;line-height:1.45}
+
+/* benefits */
+.ben{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.ben li{display:grid;grid-template-columns:22px 1fr;gap:12px;align-items:start;font-size:15px;color:var(--ink-200);line-height:1.4}
+.ben li b{display:block;color:var(--ink-100);font-weight:500}
+.ben li span{font-size:13px;color:var(--ink-400)}
+.free{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--gold-bright);border:1px solid var(--gold-deep);border-radius:999px;padding:6px 12px;margin-bottom:18px}
+
+/* form */
+.form{background:var(--bg-elev);border:1px solid var(--line);border-radius:12px;padding:24px}
+.form h3{font:italic 400 26px 'Instrument Serif',serif;margin:0 0 4px;text-align:center}
+.form .sub{text-align:center;color:var(--ink-400);font-size:13px;margin:0 0 18px}
+.oauth{display:flex;align-items:center;justify-content:center;gap:10px;border:1px solid rgba(232,226,213,.18);border-radius:8px;padding:12px;font-size:14px;color:var(--ink-100);margin-bottom:8px}
+.or{display:flex;align-items:center;gap:10px;color:var(--ink-600);font-size:12px;margin:14px 0}
+.or::before,.or::after{content:'';flex:1;height:1px;background:var(--line)}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:12px;color:var(--ink-400);margin-bottom:6px}
+.field div{border:1px solid var(--line);border-radius:8px;padding:12px;color:var(--ink-600);font-size:14px;background:var(--bg-elev-2)}
+.cta{display:block;text-align:center;background:var(--gold-bright);color:var(--ink-on-gold);font:600 12px Geist,sans-serif;letter-spacing:.14em;text-transform:uppercase;border-radius:8px;padding:13px;margin-top:6px}
+.fine{text-align:center;color:var(--ink-600);font-size:12px;margin-top:12px}
+.su{display:grid;grid-template-columns:1fr 400px;gap:56px;align-items:center;padding:56px 64px}
+.su h2{font:italic 400 40px/1.05 'Instrument Serif',serif;margin:0 0 20px}
+
+/* results bg */
+.res{padding:22px 26px}
+.res .q{font:italic 400 30px 'Instrument Serif',serif;margin:2px 0 14px}
+.rrow{display:grid;grid-template-columns:64px 1fr auto;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line-soft)}
+.th{width:64px;aspect-ratio:3/4;border-radius:4px;padding:3px}
+.th i{display:block;height:100%;border-radius:2px;background:radial-gradient(ellipse at 50% 30%,#4a3524,#120d08 70%)}
+.rrow .tt{font:italic 400 17px/1.2 'Instrument Serif',serif}
+.chip{font:700 11px 'Geist Mono',monospace;padding:2px 6px;border-radius:4px;color:var(--ink-on-gold);background:linear-gradient(180deg,#ffd97a,#d99c14);margin-top:6px;display:inline-block}
+.rrow .p{font:500 18px Geist,sans-serif}
+
+/* option A: slide-up card */
+.slide{position:absolute;right:22px;bottom:22px;width:360px;background:var(--bg-elev-2);border:1px solid var(--gold-deep);border-radius:12px;padding:18px;box-shadow:0 20px 50px rgba(0,0,0,.6)}
+.slide h4{margin:0 0 10px;font:italic 400 22px 'Instrument Serif',serif}
+.slide .ben{gap:9px}
+.slide .ben li{font-size:13px;grid-template-columns:18px 1fr;gap:9px}
+.slide .ic{width:15px;height:15px}
+.btns{display:flex;gap:8px;margin-top:14px}
+.btns a{flex:1;text-align:center;font:600 12px Geist,sans-serif;letter-spacing:.1em;text-transform:uppercase;border-radius:8px;padding:11px}
+.btns .y{background:var(--gold-bright);color:var(--ink-on-gold)}
+.btns .n{border:1px solid rgba(232,226,213,.2);color:var(--ink-200)}
+.x{position:absolute;top:12px;right:12px;width:18px;height:18px;stroke:var(--ink-400)}
+/* option B: inline card in results */
+.inline{margin:14px 0;border:1px solid var(--gold-deep);border-radius:12px;padding:16px 18px;background:linear-gradient(180deg,rgba(201,149,74,.06),transparent)}
+.inline .top{display:flex;align-items:center;gap:10px;font:500 15px Geist,sans-serif}
+.inline p{margin:6px 0 0;font-size:13px;color:var(--ink-400)}
+.inline .btns a{flex:none;padding:10px 14px}
+/* phone variants */
+.phone .res{padding:14px 16px}
+.phone .res .q{font-size:26px}
+.phone .rrow{grid-template-columns:56px 1fr auto}
+.phone .th{width:56px}
+.phone .slide{left:12px;right:12px;bottom:12px;width:auto}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--bg-elev-2);border-top:1px solid var(--gold-deep);border-radius:22px 22px 0 0;padding:10px 20px 30px;box-shadow:0 -20px 50px rgba(0,0,0,.6)}
+.grab{width:40px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 16px}
+.sheet h4{margin:0 0 14px;font:italic 400 26px 'Instrument Serif',serif}
+.apple{display:flex;align-items:center;justify-content:center;gap:8px;background:#f7f1e1;color:#0a0907;border-radius:12px;padding:14px;font:600 16px Geist,sans-serif;margin-top:18px}
+.mail{display:flex;align-items:center;justify-content:center;border:1px solid rgba(232,226,213,.2);color:var(--ink-100);border-radius:12px;padding:13px;font:500 15px Geist,sans-serif;margin-top:8px}
+.notnow{display:block;text-align:center;color:var(--ink-400);font-size:15px;padding:12px 0 0}
+.dim::after{content:'';position:absolute;inset:0;background:rgba(5,4,3,.45);pointer-events:none}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.rule{border:1px solid var(--line);border-radius:10px;padding:16px;background:var(--bg-elev)}
+.rule h3{margin:0 0 6px;font:500 11px 'Geist Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.rule p{margin:0;font-size:14px;line-height:1.55;color:var(--ink-200)}
+.rec{display:inline-block;font:600 10px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-on-gold);background:var(--gold-bright);padding:2px 7px;border-radius:4px;margin-left:8px;vertical-align:4px}
+@media (max-width:900px){.su{grid-template-columns:1fr;padding:28px}.slide{position:static;width:auto;margin:16px}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="eyebrow">Fields &amp; Floors · Sign-up</div>
+  <h1 class="t">Why make an account</h1>
+  <p class="lede">Two parts. First, the sign-up page says what an account gets you, right next to the form. Second, a gentle prompt for visitors who are searching without an account. It always has a "Not now" that lets them keep going. Every benefit listed is true today in early access.</p>
+
+  <!-- PART 1 -->
+  <div class="sec"><div class="n">1</div><h2>Sign-up page with benefits</h2><p>Where "Get alerts" and every sign-up link lands. Benefits on the left, the form on the right. On phones, a compact version sits above the form.</p></div>
+  <div class="desk">
+    <div class="bar"><div class="brand"><span class="seal">F</span>Fields <em>&amp;</em> Floors</div></div>
+    <div class="su">
+      <div>
+        <span class="free">__I_gift__Free during early access</span>
+        <h2>Let the cards come to you.</h2>
+        <ul class="ben" data-ben></ul>
+      </div>
+      <div class="form">
+        <h3>Create your account</h3><p class="sub">Takes about 20 seconds.</p>
+        <div class="oauth">Sign up with Google</div><div class="oauth">Sign up with Apple</div>
+        <div class="or">or</div>
+        <div class="field"><label>Email</label><div>you@example.com</div></div>
+        <div class="field"><label>Password</label><div>Minimum 10 characters</div></div>
+        <span class="cta">Create account</span>
+        <p class="fine">Already have one? Sign in</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="phones" style="margin-top:28px">
+    <div><div class="phone" id="su-phone"></div><p class="caption">Sign-up on a phone. Benefits are short lines above the form, and the form stays above the fold.</p></div>
+    <div><div class="phone" id="login-phone"></div><p class="caption">Sign-in keeps it to one line: what's waiting for you.</p></div>
+  </div>
+
+  <!-- PART 2 -->
+  <div class="sec"><div class="n">2</div><h2>The prompt for visitors without an account</h2><p>It's triggered by the search itself: it appears when a signed-out visitor's results arrive, next to the results, never over them and never before they load. Never on the landing page, during the intro or during the tour. Sign-ups from it are tagged <code style="font-family:'Geist Mono',monospace;color:var(--ink-200)">?src=prompt</code> so the funnel shows whether it works.</p></div>
+
+  <div class="sub-h" style="display:flex;align-items:baseline;gap:12px;margin:22px 0 12px"><b style="font:600 12px 'Geist Mono',monospace;color:var(--gold-bright)">OPTION A</b><span style="font:400 22px 'Instrument Serif',serif">Slide-up card</span><span class="rec">Recommended</span><em style="margin-left:auto;font-style:normal;color:var(--ink-400);font-size:13px">Slides up beside the results as they arrive. Shown once; "Not now" or × hides it for 7 days.</em></div>
+  <div class="desk" style="height:560px">
+    <div class="bar"><div class="brand"><span class="seal">F</span>Fields <em>&amp;</em> Floors</div><span class="pill">Get alerts</span></div>
+    <div class="res" data-results="5"></div>
+    <div class="slide"><svg class="x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      <h4>Keep track of what you find</h4>
+      <ul class="ben" data-ben-short></ul>
+      <div class="btns"><a class="y">Create free account</a><a class="n">Not now</a></div>
+    </div>
+  </div>
+
+  <div class="sub-h" style="display:flex;align-items:baseline;gap:12px;margin:34px 0 12px"><b style="font:600 12px 'Geist Mono',monospace;color:var(--gold-bright)">OPTION B</b><span style="font:400 22px 'Instrument Serif',serif">Card inside the results</span><em style="margin-left:auto;font-style:normal;color:var(--ink-400);font-size:13px">Sits in the results after the 4th card. Shown on each search; "Not now" hides it until the browser is closed.</em></div>
+  <div class="desk" style="height:620px">
+    <div class="bar"><div class="brand"><span class="seal">F</span>Fields <em>&amp;</em> Floors</div><span class="pill">Get alerts</span></div>
+    <div class="res" data-results="4" data-inline="1"></div>
+  </div>
+
+  <div class="sec"><div class="n">3</div><h2>On a phone and in the iOS app</h2></div>
+  <div class="phones">
+    <div><div class="phone" id="pA"></div><p class="caption">Website, option A: slides up from the bottom as the results arrive</p></div>
+    <div><div class="phone dim" id="pApp"></div><p class="caption">iOS app: a bottom sheet with Sign in with Apple and email only (Google sign-in doesn't work inside apps)</p></div>
+  </div>
+
+  <div class="sec"><div class="n">4</div><h2>Rules</h2></div>
+  <div class="rules">
+    <div class="rule"><h3>When</h3><p>When a signed-out visitor searches and the results arrive. Same trigger for both options. Never on the landing page, during the intro, during the tour, or over a card popup.</p></div>
+    <div class="rule"><h3>How often</h3><p>A: once, then quiet for 7 days after "Not now". B: on each search, until "Not now" for that visit. Signed-in members never see either.</p></div>
+    <div class="rule"><h3>Tracking</h3><p>"Create free account" goes to /signup?src=prompt. The funnel already counts sign-ups by source, so we'll see if it pays off.</p></div>
+    <div class="rule"><h3>My pick</h3><p>Option A on the web and the bottom sheet in the app. It's seen once at the right moment, then leaves people alone. Option B is quieter on screen but repeats on every search, which can start to feel like an ad.</p></div>
+  </div>
+</div>
+
+<script>
+const P = {
+  bell:'<path d="M6 16.5V11a6 6 0 0112 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 004 0"/>',
+  star:'<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.6l1-5.8L3.5 9.7l5.9-.9z"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  devices:'<rect x="3" y="4" width="13" height="10" rx="1.5"/><rect x="16" y="9" width="5" height="11" rx="1"/><path d="M7 18h6"/>',
+  gift:'<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v9h14v-9M7.5 8a2.5 2.5 0 010-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 010 5"/>',
+};
+const ic = (n, s='') => `<svg class="ic" viewBox="0 0 24 24" ${s}>${P[n]}</svg>`;
+const BEN = [
+  ['bell','Alerts on up to 5 saved searches','Email, plus a notification in the iPhone app'],
+  ['star','A watchlist that stays current','Live price and sold status on every card you star'],
+  ['clock','Bid reminders','At the times you pick before an auction ends'],
+  ['devices','Your searches on every device','Phone, laptop and the app, all in sync'],
+];
+document.querySelectorAll('[data-ben]').forEach(u => u.innerHTML = BEN.map(b=>`<li>${ic(b[0])}<div><b>${b[1]}</b><span>${b[2]}</span></div></li>`).join(''));
+document.querySelectorAll('[data-ben-short]').forEach(u => u.innerHTML = BEN.slice(0,3).map(b=>`<li>${ic(b[0])}<div>${b[1]}</div></li>`).join('') + `<li>${ic('gift')}<div>Free during early access</div></li>`);
+document.querySelectorAll('.free').forEach(e => e.innerHTML = e.innerHTML.replace('__I_gift__', ic('gift','style="width:14px;height:14px"')));
+
+const T = [['#ff9842','#cc5e0d'],['#e6c14d','#a8851e'],['#cc3340','#8a1c25'],['#5694ff','#2a5db8'],['#86d957','#3fa61c']];
+const R = [['2024 Bowman Chrome Paul Skenes Orange Auto','/25','$1,240'],['2023 Topps Chrome Skenes Gold Refractor','/50','$880'],['2024 Prizm Skenes Red Auto','/5','$4,200'],['2024 Bowman Draft Skenes Blue','/150','$310'],['2024 Topps Chrome Skenes Green Wave','/99','$260']];
+const rows = n => R.slice(0,n).map((r,i)=>`<div class="rrow"><div class="th" style="background:linear-gradient(135deg,${T[i][0]},${T[i][1]})"><i></i></div><div><div class="tt">${r[0]}</div><span class="chip">${r[1]}</span></div><div class="p">${r[2]}</div></div>`).join('');
+const inlineCard = `<div class="inline"><div class="top">${ic('bell')}Want to know when the next one lists?</div><p>A free account gets you alerts on up to 5 saved searches, a watchlist and bid reminders. Free during early access.</p><div class="btns"><a class="y">Create free account</a><a class="n">Not now</a></div></div>`;
+document.querySelectorAll('[data-results]').forEach(el => {
+  const n = +el.dataset.results;
+  el.innerHTML = `<div style="font:500 11px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-400)">Searching for</div><div class="q">Paul Skenes</div>` +
+    (el.dataset.inline ? rows(4) + inlineCard + rows(1).replace(R[0][0],R[4][0]) : rows(n));
+});
+
+const status = '<div class="status"><span>9:41</span><span>●●●</span></div>';
+const phoneBar = '<div class="bar" style="padding:12px 18px"><div class="brand" style="font-size:18px"><span class="seal">F</span>Fields <em>&amp;</em> Floors</div></div>';
+document.getElementById('su-phone').innerHTML = status + phoneBar + `<div style="padding:18px 18px 0">
+  <h2 style="font:italic 400 28px/1.1 'Instrument Serif',serif;margin:0 0 12px">Let the cards come to you.</h2>
+  <ul class="ben" style="gap:8px">${BEN.map(b=>`<li style="font-size:14px;grid-template-columns:18px 1fr;gap:9px">${ic(b[0],'style="width:15px;height:15px"')}<div>${b[1]}</div></li>`).join('')}</ul>
+  <div class="free" style="margin:14px 0 14px">${ic('gift','style="width:14px;height:14px"')}Free during early access</div>
+  <div class="form" style="padding:18px"><div class="oauth">Sign up with Google</div><div class="oauth">Sign up with Apple</div><div class="or">or</div>
+  <div class="field"><label>Email</label><div>you@example.com</div></div><span class="cta">Create account</span></div></div>`;
+document.getElementById('login-phone').innerHTML = status + phoneBar + `<div style="padding:28px 18px 0">
+  <div class="form" style="padding:20px"><h3>Welcome back.</h3><p class="sub">Your alerts, watchlist and saved searches are waiting.</p>
+  <div class="oauth">Continue with Google</div><div class="oauth">Continue with Apple</div><div class="or">or</div>
+  <div class="field"><label>Email</label><div>you@example.com</div></div><div class="field"><label>Password</label><div>••••••••••</div></div><span class="cta">Sign in</span>
+  <p class="fine">New here? Create a free account</p></div></div>`;
+document.getElementById('pA').innerHTML = status + phoneBar + `<div class="res" data-r>${'<div style="font:500 11px Geist Mono,monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-400)">Searching for</div><div class="q">Paul Skenes</div>' + rows(5)}</div>
+  <div class="slide"><svg class="x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg><h4>Keep track of what you find</h4>
+  <ul class="ben">${BEN.slice(0,3).map(b=>`<li>${ic(b[0])}<div>${b[1]}</div></li>`).join('')}<li>${ic('gift')}<div>Free during early access</div></li></ul>
+  <div class="btns"><a class="y">Create free account</a><a class="n">Not now</a></div></div>`;
+document.getElementById('pApp').innerHTML = status + `<div class="bar" style="padding:12px 18px;justify-content:center"><div class="brand" style="font-size:18px"><span class="seal">F</span>Fields <em>&amp;</em> Floors</div></div><div class="res">${'<div class="q">Paul Skenes</div>' + rows(5)}</div>
+  <div class="sheet" style="z-index:2"><div class="grab"></div><h4>Keep track of what you find</h4>
+  <ul class="ben" style="gap:10px">${BEN.slice(0,3).map(b=>`<li style="font-size:15px">${ic(b[0])}<div>${b[1]}</div></li>`).join('')}<li style="font-size:15px">${ic('gift')}<div>Free during early access</div></li></ul>
+  <div class="apple"> Sign in with Apple</div><div class="mail">Continue with email</div><span class="notnow">Not now</span></div>`;
+</script>
+</body>
+</html>

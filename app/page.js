@@ -13,6 +13,7 @@ function upscaleEbayImage(url) {
 }
 import { ArrowRight, ArrowUpRight, ArrowUp, Star, Check, X, Crosshair, ArrowLeft, ImageOff, Search, Clock, Bell, TrendingDown, Hourglass, ListFilter } from 'lucide-react';
 import SaveSearchModal from './components/SaveSearchModal';
+import SignupPromptCard from './components/SignupPromptCard';
 import BidCountdown from './components/BidCountdown';
 import CardModal from './components/CardModal';
 import { tierForRun, tierChipStyle, tierRowStyle, OUTLINE_CHIP_STYLE } from './components/rarityUtils';
@@ -3543,9 +3544,11 @@ function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase
         </p>
       )}
       <div className="divide-y divide-[var(--line-soft)]">
-        {visible.map((item, i) => (
-          <ResultCard key={item.id} item={item} formatPrice={formatPrice} index={i} hasPendingFilters={hasPendingFilters} onPendingClick={onPendingClick} onCardClick={onCardClick} />
-        ))}
+        {visible.flatMap((item, i) => {
+          const card = <ResultCard key={item.id} item={item} formatPrice={formatPrice} index={i} hasPendingFilters={hasPendingFilters} onPendingClick={onPendingClick} onCardClick={onCardClick} />;
+          // Sign-up prompt for visitors who aren't signed in, after the 4th card.
+          return i === 3 ? [card, <SignupPromptCard key="signup-prompt" />] : [card];
+        })}
       </div>
 
       {remaining > 0 && (

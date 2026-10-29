@@ -110,7 +110,7 @@ export default function LoginPage() {
             Welcome back.
           </h1>
           <p className="text-[13px] text-center mb-6" style={{ color: 'var(--ink-400)' }}>
-            Sign in to view your saved searches.
+            Your alerts, watchlist and saved searches are waiting.
           </p>
 
           {magicLinkSent ? (
