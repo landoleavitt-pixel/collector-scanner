@@ -351,12 +351,51 @@ These quick searches are a first screen, not clearance. A proper trademark searc
 
 ---
 
+## 7. Sports side: an "every card of this player" checklist (added 2026-10-31)
+
+**The idea:** on Fields & Floors, pick an athlete and see every card they have. The list is sorted by set, then card number, then parallel (Gold /50, Red /5…), and members tick the ones they own.
+
+**What we already have:**
+- [lib/parallelData.js](../lib/parallelData.js) and [lib/parallelDataExtra.js](../lib/parallelDataExtra.js) hold **50 lists**: **31 base-set rainbows** (parallel names, print runs, odds) and 19 autograph rainbows.
+- We do **not** have which card number each player has in each set. Only 9 of the 31 base sets even record the set size.
+- So the **parallel half** of the checklist is done. The **player-and-card-number half** is missing.
+
+### Where per-player checklists can legitimately come from
+
+| Source | What it gives | Cost | Can we show it in our app? | Verdict |
+|---|---|---|---|---|
+| **The manufacturers' own checklists**: Topps (checklist page and its Ripped blog), Panini (checklist tab; its guide says you can download one Excel file per product), Upper Deck (a "Product Checklists" section on each product page) | Every card number and player for each set, usually with the inserts. Parallels are often in the same file or the sell sheet. | **Free** | Probably. A plain list of card numbers and names is **facts**, and US law doesn't protect facts (Feist, 1991). The manufacturer is the original source, so there's no middle-man's selection to copy. I **couldn't read Topps' or Panini's website terms**: both sites showed bot checks, which I didn't try to get past. | **Recommended as our source.** Download each file by hand, keep only the facts (number, player, team, rookie flag) and cite the source, as we already do for parallels. |
+| **CardSight AI API** | Catalog of 16M+ cards: card number, player name, set, and parallels with print run (`numberedTo`). Free tier 750 calls a month; **Pro $14.95** (5,000 calls); **Premium $74.95** (30,000); Ultra $199.95 a month. | $0–75 a month for our size | **Only as a live feed.** Its terms allow caching "for the sole purpose of improving the performance" of our app, require regular refresh and deletion when we stop paying, and **forbid building "a standalone database of trading card … information"** or a competing product. | **Good backup or cross-check.** Before building on it, get written confirmation that a per-player checklist with "I own this" ticks is allowed. |
+| **SportsCardsPro (PriceCharting)** | Collector plan **$6 a month** includes downloadable set checklists. Legendary **$49 a month** adds API and CSV, but it's price-focused. | $6–49 a month | **No, not without a deal.** Its docs say the API and CSV data are "licensed for internal use only"; showing it to our users "requires a commercial license and express written permission." | Not suitable as is. Its core data is prices, which also runs against our no-price-history rule. |
+| **Beckett** | The most complete checklists in the hobby, plus spreadsheet downloads on its news pages. | — | **No public API or data licence found.** Beckett **sued** Zistle, a collection-tracking site, in **2015** for copying its checklists. | **Avoid.** Never copy from Beckett, even by hand. |
+| **Trading Card Database (tcdb.com)** | A large community checklist database. | — | Its terms page was behind a bot check, so I couldn't read them. There's no public API. | Avoid unless they grant permission in writing. |
+| Checklist Insider, Cardsmiths Breaks and other fan or breaker sites | Searchable per-player and per-team lists. | — | We already take parallel facts from Checklist Insider. Copying a whole player checklist from a middle-man is riskier than going to the manufacturer. | Use only to double-check, not as the source. |
+
+### Can our 31 sets be covered?
+- **Yes, mostly with free manufacturer files:** 31 base checklists of 200–400 cards each, joined to the parallel rainbows we already store.
+- **Watch for parallels that don't apply to every card.** Some rookie-only colours, short-print image variations and box-exclusive colours only exist for part of the set. Our parallel data doesn't mark this yet, so the checklist must say "this parallel may not exist for every card" until each set is checked.
+- **Late or changing checklists.** Panini's own files say the information is accurate "at the time of posting", and checklists change after release. Each set needs a re-check about a month after it comes out.
+- **Inserts and autographs** have their own numbering. Autograph rainbows are already stored for 19 lines. Inserts would be phase 2.
+- **One gap:** for a few Topps products I found the full checklist only in retailer copies, not on Topps' own pages. Those sets wait until we find the manufacturer file, or come from CardSight live.
+
+### Recommendation and cost
+1. **Build from manufacturer checklists for the 31 sets we already cover. Data cost: $0.** Effort is about 1–2 agent days: an import script per checklist format (Topps PDF, Panini Excel, Upper Deck PDF) feeding the same build step that `scripts/build-parallel-data.mjs` uses. After that, it's about 15 minutes per new set each quarter.
+2. **Store facts only:** card number, player, team, rookie flag and set. No descriptions or artwork, and link each set to its manufacturer source.
+3. **Members' "I own this" ticks are our own data.** This is a small new table: user, set, card number, parallel.
+4. **CardSight Pro ($14.95 a month) later**, only if we want sets beyond our 31 or a cross-check, and only after CardSight confirms in writing that our use fits its terms.
+5. **Not recommended:** SportsCardsPro (no permission to show its data), Beckett (no licence, and it sues over checklists), TCDB (terms unknown).
+
+**Privacy and security note:** "I own this" ticks reveal what valuable cards a member holds. Keep each member's collection private by default, never shown on public profiles or share links, so the feature doesn't become a list of who owns what for thieves.
+
+---
+
 ## Questions for Landon (added 2026-10-31, from section 0)
 
 A. **Card family search:** make "find every version of a card" the main idea of Foils & Fables, added game by game (Magic and Pokémon first) on top of the 5-game launch that's already decided?
 B. **Run the 40-card test** (20 Pokémon, 20 Magic) with our eBay keys before building it?
 C. **Scryfall's free-data rule:** OK for the Boss to email Scryfall to confirm that paid alerts are fine as long as card lists stay free?
 D. **Faster alerts:** do you want 15-minute alerts as a paid perk? That means checking 4× as often and likely the eBay quota increase sooner (CFO to cost it).
+E. **Player checklists (section 7):** OK to build the sports "every card of this player" checklist from the manufacturers' free checklists ($0 data, about 1–2 agent days), with members' "I own this" ticks private by default?
 
 ## Questions for Landon (original, 2026-10-30; several are now answered in DECISIONS.md)
 
@@ -395,3 +434,12 @@ D. **Faster alerts:** do you want 15-minute alerts as a paid perk? That means ch
 - [TCGdex card fields](https://tcgdex.dev/reference/card) · [TCGdex database (MIT licence)](https://github.com/tcgdex/cards-database)
 - [Pokémon TCG API deprecation notice](https://docs.pokemontcg.io/)
 - [Scrydex pricing](https://scrydex.com/pricing) (tiers as reported by [ScrapingBee's comparison](https://www.scrapingbee.com/blog/pokemon-card-api/); not confirmed)
+
+### Sources for section 7 (read 2026-10-31)
+- CardSight AI pricing: https://cardsight.ai/pricing · terms (§3(b)(13), §3(b)(14), §3(c)): https://cardsight.ai/terms · SDK (card number, parallels, numberedTo): https://github.com/CardSightAI/cardsightai-sdk-node
+- SportsCardsPro API docs, "Usage & Attribution": https://www.sportscardspro.com/api-documentation · plans ($6 / $49): https://www.pricecharting.com/pricecharting-pro
+- Panini, "How to Understand a Checklist" (checklist tab, Excel per program): https://assets.paniniamerica.net/resources/Whitepaper_Checklist.pdf · Panini file note "accurate at the time of posting": https://blog.paniniamerica.net/wp-content/uploads/2025/08/National-VIP-checklist.pdf
+- Topps checklists page (blocked by a bot check when read): https://topps.com/pages/checklists · Topps Ripped checklist article: https://ripped.topps.com/2026-topps-series-1-baseball-checklist
+- Upper Deck product page with "Product Checklists": https://upperdeck.com/product/2025-26-upper-deck-series-1-hockey-cards-mass-blaster/
+- Beckett v. Zistle (2015): https://www.cardboardconnection.com/law-cards-beckett-sues-zistle-checklists
+- Feist v. Rural (facts are not copyrightable): https://www.law.cornell.edu/supremecourt/text/499/340
