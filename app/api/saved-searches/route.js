@@ -5,6 +5,7 @@ import { brandFilterLabels } from '../../../lib/cardBrands';
 import { teamFilterLabels } from '../../../lib/teams';
 import { PAYMENTS_LIVE } from '../../../lib/payments';
 import { savedSearchParams } from '../../../lib/tcg/search';
+import { buildFablesConfirmation, FABLES_SENDER } from '../../../lib/fablesEmail';
 
 // Max searches that can be actively notifying at once (Base tier).
 // Must match MAX_ACTIVE_WATCHES in app/api/saved-searches/[id]/route.js.
@@ -183,6 +184,11 @@ async function sendConfirmationEmail(email, savedSearch, filters) {
   if (!apiKey || !email) return; // silently skip in dev / missing config
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://fieldsandfloors.com';
+  // Card-game searches get the Foils & Fables version (lib/fablesEmail.js).
+  if (savedSearch.side === 'fables') {
+    const { subject, html } = buildFablesConfirmation(savedSearch, filters, siteUrl);
+    return sendResend(apiKey, { from: FABLES_SENDER, to: email, subject, html });
+  }
   const filterLine = summarizeFilters(filters);
   const alertsOn = savedSearch.notify_enabled !== false;
 
@@ -213,18 +219,22 @@ async function sendConfirmationEmail(email, savedSearch, filters) {
     </table>
   </div>`;
 
+  return sendResend(apiKey, {
+    from: 'Fields & Floors <alerts@fieldsandfloors.com>',
+    to: email,
+    subject: `Hunt confirmed: ${savedSearch.name}`,
+    html,
+  });
+}
+
+async function sendResend(apiKey, message) {
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      from: 'Fields & Floors <alerts@fieldsandfloors.com>',
-      to: email,
-      subject: `Hunt confirmed: ${savedSearch.name}`,
-      html,
-    }),
+    body: JSON.stringify(message),
   });
   if (!res.ok) {
     const body = await res.text().catch(() => '');
