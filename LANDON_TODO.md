@@ -56,3 +56,34 @@ Full steps: [IOS_APP_SETUP.md](IOS_APP_SETUP.md). No in-app purchases, RevenueCa
 
 ## Foils & Fables (do these now, in order)
 1. Deploy the updated alert checker: `npx supabase functions deploy poller`
+
+## Sports checklists (for "every card of this player")
+Download each set's official checklist **in your own browser** and save it into the folder `data/checklists/` in the project. Keep the file as it comes (Excel, PDF or CSV); the name doesn't matter. Where to find them: Topps → each product's page or the Ripped blog "checklist"; Panini → the product's **Checklist** tab (Excel); Upper Deck → "Product Checklists". If a site asks you to accept terms to download, read them first and tell the Boss anything that says the data can't be reused.
+- [ ] 2024 Topps Chrome Baseball
+- [ ] 2025 Topps Chrome Baseball
+- [ ] 2026 Topps Chrome Baseball
+- [ ] 2026 Topps Series 1 Baseball
+- [ ] 2026 Topps Series 2 Baseball
+- [ ] 2024 Bowman Chrome Prospects (and 2024 spring Bowman)
+- [ ] 2025 Bowman Chrome Prospects (and 2025 spring Bowman)
+- [ ] 2026 Bowman Chrome Prospects (and 2026 spring Bowman)
+- [ ] 2025 Bowman Draft Chrome
+- [ ] 2024 Topps Chrome Football
+- [ ] 2025 Topps Chrome Football
+- [ ] 2024 Panini Prizm Football
+- [ ] 2025 Panini Prizm Football
+- [ ] 2025 Donruss Optic Football
+- [ ] 2025 Panini Mosaic Football
+- [ ] 2026 Bowman Football Chrome Prospects
+- [ ] 2023-24 Panini Prizm Basketball
+- [ ] 2024-25 Panini Prizm Basketball
+- [ ] 2025-26 Panini Prizm Basketball
+- [ ] 2024-25 Panini Mosaic Basketball
+- [ ] 2024-25 Donruss Optic Basketball
+- [ ] 2025-26 Topps Chrome Basketball
+- [ ] 2025-26 Topps Basketball
+- [ ] 2025-26 Bowman Basketball Chrome Prospects
+- [ ] 2023-24 Upper Deck Series 1 Hockey (Young Guns)
+- [ ] 2024-25 Upper Deck Series 1 Hockey (Young Guns)
+- [ ] 2025-26 Upper Deck Series 1 Hockey (Young Guns)
+- [ ] 2025-26 Upper Deck Series 2 Hockey
