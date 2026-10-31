@@ -1269,6 +1269,611 @@
     "game": "onepiece",
     "rarity": "prize"
    }
+  },
+  {
+   "group": "Fakes and customs",
+   "title": "MTG Underground Sea Revised Play Test Card Dual Land",
+   "hint": "mtg",
+   "expect": {
+    "proxy": true
+   }
+  },
+  {
+   "group": "Fakes and customs",
+   "title": "Underground Sea Play-test Revised Magic the Gathering",
+   "hint": "mtg",
+   "expect": {
+    "proxy": true
+   }
+  },
+  {
+   "group": "Fakes and customs",
+   "title": "Mana Drain Legends Playtest Card MTG Vintage Cube",
+   "hint": "mtg",
+   "expect": {
+    "proxy": true
+   }
+  },
+  {
+   "group": "Fakes and customs",
+   "title": "Force of Will Alliances Play Test Proxy Quality MTG",
+   "hint": "mtg",
+   "expect": {
+    "proxy": true
+   }
+  },
+  {
+   "group": "Fakes and customs",
+   "title": "Sheoldred, the Apocalypse - Play Test - Dominaria United MTG",
+   "hint": "mtg",
+   "expect": {
+    "proxy": true
+   }
+  },
+  {
+   "group": "Fakes and customs",
+   "title": "Dockside Extortionist Play Test Card Commander EDH",
+   "hint": "mtg",
+   "expect": {
+    "proxy": true
+   }
+  },
+  {
+   "group": "Fakes and customs",
+   "title": "Ancient Tomb Tempest Play Test MTG Card",
+   "hint": "mtg",
+   "expect": {
+    "proxy": true
+   }
+  },
+  {
+   "group": "Fakes and customs",
+   "title": "Gaea's Cradle Altered Art - Commander - EDH Urza's Saga",
+   "hint": "mtg",
+   "expect": {
+    "proxy": true
+   }
+  },
+  {
+   "group": "Fakes and customs",
+   "title": "Ancient Tomb - Altered Art - Commander - EDH Full Art",
+   "hint": "mtg",
+   "expect": {
+    "proxy": true
+   }
+  },
+  {
+   "group": "Fakes and customs",
+   "title": "Black Lotus Altered Art Proxy Hand Painted Alpha",
+   "hint": "mtg",
+   "expect": {
+    "proxy": true
+   }
+  },
+  {
+   "group": "Fakes and customs",
+   "title": "Smothering Tithe DIY Full Art Foil MTG Card",
+   "hint": "mtg",
+   "expect": {
+    "proxy": true
+   }
+  },
+  {
+   "group": "Fakes and customs",
+   "title": "Rhystic Study Naruto Anime Full Art Foil MTG",
+   "hint": "mtg",
+   "expect": {
+    "proxy": true
+   }
+  },
+  {
+   "group": "Fakes and customs",
+   "title": "Cyclonic Rift Kirby Full Art MTG Card Foil",
+   "hint": "mtg",
+   "expect": {
+    "proxy": true
+   }
+  },
+  {
+   "group": "Fakes and customs",
+   "title": "Smothering Tithe Nintendo Box Art Borderless MTG",
+   "hint": "mtg",
+   "expect": {
+    "proxy": true
+   }
+  },
+  {
+   "group": "Fakes and customs",
+   "title": "Black Lotus COA Replica Alpha Gold Display Card",
+   "hint": "mtg",
+   "expect": {
+    "proxy": true
+   }
+  },
+  {
+   "group": "Fakes and customs",
+   "title": "Black Lotus Currency Card Collectible MTG",
+   "hint": "mtg",
+   "expect": {
+    "proxy": true
+   }
+  },
+  {
+   "group": "Fakes and customs",
+   "title": "Ultra Pro Black Lotus Puzzle Promo Magic the Gathering",
+   "hint": "mtg",
+   "expect": {
+    "proxy": true
+   }
+  },
+  {
+   "group": "Fakes and customs",
+   "title": "Iono Waifu Card Full Art Holo Pokemon Anime Girl",
+   "hint": "pokemon",
+   "expect": {
+    "proxy": true
+   }
+  },
+  {
+   "group": "Fakes and customs",
+   "title": "Charizard VMAX Metal Card Gold Pokemon",
+   "hint": "pokemon",
+   "expect": {
+    "proxy": true
+   }
+  },
+  {
+   "group": "Fakes and customs",
+   "title": "Pokemon Charizard Gold Metal 4/102 Base Set Display",
+   "expect": {
+    "proxy": true
+   }
+  },
+  {
+   "group": "Fakes and customs",
+   "title": "Pokemon Charizard Metal Charizard Rainbow Card",
+   "expect": {
+    "proxy": true
+   }
+  },
+  {
+   "group": "Fakes and customs",
+   "title": "Mystery Booster Playtest Card Lazier Goblin MTG CMB1",
+   "hint": "mtg",
+   "expect": {
+    "proxy": false
+   }
+  },
+  {
+   "group": "Fakes and customs",
+   "title": "Pokemon Metal Energy 19/111 Neo Genesis 1st Edition",
+   "expect": {
+    "proxy": false
+   }
+  },
+  {
+   "group": "Fakes and customs",
+   "title": "Altered Ego Ixalan Mythic Rare MTG NM",
+   "hint": "mtg",
+   "expect": {
+    "proxy": false,
+    "rarity": "mythic"
+   }
+  },
+  {
+   "group": "Fakes and customs",
+   "title": "Pokemon Charizard Nintendo 1999 Base Set Holo 4/102",
+   "expect": {
+    "proxy": false
+   }
+  },
+  {
+   "group": "Special printings",
+   "title": "Ragavan, Nimble Pilferer Prerelease Promo Foil Modern Horizons 2 MTG",
+   "hint": "mtg",
+   "expect": {
+    "printing": "prerelease"
+   }
+  },
+  {
+   "group": "Special printings",
+   "title": "Sheoldred, the Apocalypse Promo Pack Stamped Dominaria United Foil",
+   "hint": "mtg",
+   "expect": {
+    "printing": "stamped"
+   }
+  },
+  {
+   "group": "Special printings",
+   "title": "Sheoldred the Apocalypse Dominaria United Promos - Stamped NM",
+   "hint": "mtg",
+   "expect": {
+    "printing": "stamped"
+   }
+  },
+  {
+   "group": "Special printings",
+   "title": "Smothering Tithe Planeswalker Stamp Promo Ravnica Allegiance",
+   "hint": "mtg",
+   "expect": {
+    "printing": "stamped"
+   }
+  },
+  {
+   "group": "Special printings",
+   "title": "Gaea's Cradle Judge Promo Foil DCI MTG",
+   "hint": "mtg",
+   "expect": {
+    "printing": "judge"
+   }
+  },
+  {
+   "group": "Special printings",
+   "title": "Gaea's Cradle DCI Judge Foil 1999 Magic",
+   "hint": "mtg",
+   "expect": {
+    "printing": "judge"
+   }
+  },
+  {
+   "group": "Special printings",
+   "title": "Gaea's Cradle 1999 World Championship Deck Kai Budde MTG",
+   "hint": "mtg",
+   "expect": {
+    "printing": "wcd"
+   }
+  },
+  {
+   "group": "Special printings",
+   "title": "Gaea's Cradle World Championship 1999 Gold Border",
+   "hint": "mtg",
+   "expect": {
+    "printing": "wcd"
+   }
+  },
+  {
+   "group": "Special printings",
+   "title": "Force of Will WCD 2000 Gold Bordered MTG",
+   "hint": "mtg",
+   "expect": {
+    "printing": "wcd"
+   }
+  },
+  {
+   "group": "Special printings",
+   "title": "Dockside Extortionist The List Double Masters 2022 MTG",
+   "hint": "mtg",
+   "expect": {
+    "printing": "list"
+   }
+  },
+  {
+   "group": "Special printings",
+   "title": "LIST 107/024 Dockside Extortionist Magic NM",
+   "hint": "mtg",
+   "expect": {
+    "printing": "list"
+   }
+  },
+  {
+   "group": "Special printings",
+   "title": "Sol Ring Mystery Booster Commander Edition MTG",
+   "hint": "mtg",
+   "expect": {
+    "printing": "mystery",
+    "lot": false
+   }
+  },
+  {
+   "group": "Special printings",
+   "title": "Demonic Tutor Box Topper Ultimate Masters Foil MTG",
+   "hint": "mtg",
+   "expect": {
+    "printing": "box-topper",
+    "lot": false
+   }
+  },
+  {
+   "group": "Special printings",
+   "title": "Mana Crypt Book Promo Harper Prism MTG",
+   "hint": "mtg",
+   "expect": {
+    "printing": "book"
+   }
+  },
+  {
+   "group": "Special printings",
+   "title": "Umbreon ex World Championship Deck 2024 Pokemon Not Tournament Legal",
+   "hint": "pokemon",
+   "expect": {
+    "printing": "wcd"
+   }
+  },
+  {
+   "group": "Special printings",
+   "title": "Umbreon ex 060/064 Surprise Box Stamp Pokemon Shrouded Fable",
+   "hint": "pokemon",
+   "expect": {
+    "printing": "stamped"
+   }
+  },
+  {
+   "group": "Special printings",
+   "title": "Pikachu ex Play! Pokemon Prize Pack Stamped Holo",
+   "hint": "pokemon",
+   "expect": {
+    "printing": "prize-pack",
+    "lot": false
+   }
+  },
+  {
+   "group": "Special printings",
+   "title": "Gengar VMAX Prize Pack Series Spanish 157/264",
+   "hint": "pokemon",
+   "expect": {
+    "printing": "prize-pack",
+    "lot": false
+   }
+  },
+  {
+   "group": "Special printings",
+   "title": "Sylveon ex MEP 100 Mega Evolution Black Star Promo",
+   "hint": "pokemon",
+   "expect": {
+    "printing": "promo"
+   }
+  },
+  {
+   "group": "Special printings",
+   "title": "Greninja ex ME Promo 099 Pokemon Card",
+   "hint": "pokemon",
+   "expect": {
+    "printing": "promo"
+   }
+  },
+  {
+   "group": "Special printings",
+   "title": "Sylveon ex Stamped Promo Pokemon Card NM",
+   "hint": "pokemon",
+   "expect": {
+    "printing": "stamped"
+   }
+  },
+  {
+   "group": "Special printings",
+   "title": "Charizard ex 199/165 Special Illustration Rare 151",
+   "hint": "pokemon",
+   "expect": {
+    "printing": null,
+    "rarity": "sir"
+   }
+  },
+  {
+   "group": "Special printings",
+   "title": "2023 Yu-Gi-Oh World Championship Prize Card Super Rare",
+   "hint": "yugioh",
+   "expect": {
+    "printing": null
+   }
+  },
+  {
+   "group": "Bundles",
+   "title": "Mewtwo ex SAR 205/165 Mew ex SAR 204/165 Japanese 151 Pokemon",
+   "hint": "pokemon",
+   "expect": {
+    "lot": true
+   }
+  },
+  {
+   "group": "Bundles",
+   "title": "Pokemon Japanese 151 Mewtwo ex Mew ex SAR Set 2 Cards",
+   "expect": {
+    "lot": true
+   }
+  },
+  {
+   "group": "Bundles",
+   "title": "Venusaur ex Mega Venusaur ex Bulbasaur AR Set Japanese Pokemon",
+   "expect": {
+    "lot": true
+   }
+  },
+  {
+   "group": "Bundles",
+   "title": "Pikachu ex SAR 132/106 & Pikachu AR 117/106 Japanese Pokemon",
+   "expect": {
+    "lot": true
+   }
+  },
+  {
+   "group": "Bundles",
+   "title": "Mew ex Mewtwo ex SAR set Japanese 151 PSA",
+   "expect": {
+    "lot": true
+   }
+  },
+  {
+   "group": "Bundles",
+   "title": "Sylveon ex SAR 2 card set Simplified Chinese Pokemon",
+   "expect": {
+    "lot": true
+   }
+  },
+  {
+   "group": "Bundles",
+   "title": "Sol Ring Commander Staples Lot of 3 MTG",
+   "hint": "mtg",
+   "expect": {
+    "lot": true
+   }
+  },
+  {
+   "group": "Bundles",
+   "title": "Pokemon Japanese 3pcs set Gardevoir ex SAR Mega Gardevoir",
+   "expect": {
+    "lot": true
+   }
+  },
+  {
+   "group": "Bundles",
+   "title": "Pokemon Charizard 4/102 Base Set PSA 8 pop 1/50",
+   "hint": "pokemon",
+   "expect": {
+    "lot": false
+   }
+  },
+  {
+   "group": "Bundles",
+   "title": "Pokemon Charizard ex 223/197 Obsidian Flames 223/197 Special Illustration",
+   "hint": "pokemon",
+   "expect": {
+    "lot": false
+   }
+  },
+  {
+   "group": "Bundles",
+   "title": "MTG The One Ring Serialized 001/001 Lord of the Rings 451/451",
+   "hint": "mtg",
+   "expect": {
+    "lot": false
+   }
+  },
+  {
+   "group": "Singles kept",
+   "title": "Charizard VMAX SWSH261 Ultra Premium Collection Promo Pokemon",
+   "hint": "pokemon",
+   "expect": {
+    "lot": false,
+    "proxy": false
+   }
+  },
+  {
+   "group": "Singles kept",
+   "title": "Charizard VMAX SWSH261 Black Star Promo from Ultra Premium Collection",
+   "hint": "pokemon",
+   "expect": {
+    "lot": false,
+    "proxy": false
+   }
+  },
+  {
+   "group": "Singles kept",
+   "title": "Umbreon ex SVP 052 Sealed Promo Pokemon",
+   "hint": "pokemon",
+   "expect": {
+    "lot": false,
+    "proxy": false
+   }
+  },
+  {
+   "group": "Singles kept",
+   "title": "Umbreon ex Premium Deck single 161/131 Pokemon",
+   "hint": "pokemon",
+   "expect": {
+    "lot": false,
+    "proxy": false
+   }
+  },
+  {
+   "group": "Singles kept",
+   "title": "Sol Ring Sealed Promo MTG Foil",
+   "hint": "mtg",
+   "expect": {
+    "lot": false,
+    "proxy": false
+   }
+  },
+  {
+   "group": "Singles kept",
+   "title": "Doubling Season Pack Fresh Ravnica Rare MTG",
+   "hint": "mtg",
+   "expect": {
+    "lot": false,
+    "proxy": false
+   }
+  },
+  {
+   "group": "Singles kept",
+   "title": "Sheoldred the Apocalypse Promo Pack Foil MTG",
+   "hint": "mtg",
+   "expect": {
+    "lot": false,
+    "proxy": false
+   }
+  },
+  {
+   "group": "Singles kept",
+   "title": "The One Ring Borderless Poster Foil Lord of the Rings MTG",
+   "hint": "mtg",
+   "expect": {
+    "lot": false,
+    "proxy": false
+   }
+  },
+  {
+   "group": "Singles kept",
+   "title": "Pikachu ex Prize Pack Stamped 057/191 Holo",
+   "hint": "pokemon",
+   "expect": {
+    "lot": false,
+    "proxy": false
+   }
+  },
+  {
+   "group": "Singles kept",
+   "title": "Greninja ex SVP 160 Collection Promo Pokemon",
+   "hint": "pokemon",
+   "expect": {
+    "lot": false,
+    "proxy": false
+   }
+  },
+  {
+   "group": "Singles kept",
+   "title": "Mew ex 232/091 Paldean Fates Full Art Card",
+   "hint": "pokemon",
+   "expect": {
+    "lot": false,
+    "proxy": false
+   }
+  },
+  {
+   "group": "Singles kept",
+   "title": "Pokemon Ultra Premium Collection Charizard Sealed Box",
+   "expect": {
+    "lot": true
+   }
+  },
+  {
+   "group": "Singles kept",
+   "title": "Pokemon 151 Booster Pack Sealed",
+   "expect": {
+    "lot": true
+   }
+  },
+  {
+   "group": "Special printings",
+   "title": "Rona, Sheoldred's Faithful 58 - March of the Machine: Multiverse Legends - NM",
+   "hint": "mtg",
+   "expect": {
+    "rarity": null
+   }
+  },
+  {
+   "group": "Special printings",
+   "title": "Jeska, Thrice Reborn Commander Legends Foil MTG",
+   "hint": "mtg",
+   "expect": {
+    "rarity": null
+   }
+  },
+  {
+   "group": "Special printings",
+   "title": "MTG Legends Chains of Mephistopheles Rare",
+   "hint": "mtg",
+   "expect": {
+    "rarity": "vintage"
+   }
   }
  ]
 }
