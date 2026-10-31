@@ -6,7 +6,6 @@ The single list of work that's finished or in progress but **not live yet**. The
 
 | # | What | Agent | Status | Files | Extra deploy step |
 |---|---|---|---|---|---|
-| SIS | Foils & Fables (at /fables): engine (lib/tcg, /api/tcg-search, side column) + Night foil UI, switch, shared watchlist, app chooser | Engine + Design | 🟢 Built, committed locally (b15a3c5, 4bcd322, 6f506e7). Needs: Landon runs sides SQL → push → poller deploy | lib/tcg/*, app/api/tcg-*, app/fables/*, header, globals.css, migration 20261030 | SQL for Landon |
 | 7 | eBay Partner Network affiliate links | CFO | ⏸ Plan approved. Waiting on Landon's sign-up + Campaign ID; code held until batch ships | SiteTour.js, guides, reading-list copy + link tagging | — |
 | L05 | Proof strip | Landing | ⏹ Skipped: no honest live number yet (no fake figures) | — | — |
 | S-poll | Lock down the alert checker: it can be triggered by anyone holding the public key; require a private secret header from the cron jobs instead | Debugger | ⚪ Follow-up (low risk today: it only re-runs checks and never re-sends) | poller, both cron jobs | poller deploy + Landon edits 2 cron jobs |
@@ -17,6 +16,7 @@ The single list of work that's finished or in progress but **not live yet**. The
 
 | When | What | Commit |
 |---|---|---|
+| 2026-10-31 | Foils & Fables at /fables: card-game search (5 games), Night foil look, side switch, shared watchlist, app chooser; eBay token cache fix | 6f506e7 |
 | 2026-10-30 | Rarity lists: Prizm Basketball 25-26, Topps Series 2 2026, Mosaic Basketball 24-25, UD Series 2 Hockey; Common print runs label on phones | fb93bfc |
 | 2026-10-30 | Sign-up page benefits; signed-out sign-up prompt after the 4th result (Option B) | bf6a5ae |
 | 2026-10-26 | Free early access (no payments; everyone 5 alerts; plans/pricing hidden behind NEXT_PUBLIC_PAYMENTS_LIVE); "Common print runs" wording | a5180af + poller deployed |
