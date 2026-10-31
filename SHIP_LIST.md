@@ -6,7 +6,7 @@ The single list of work that's finished or in progress but **not live yet**. The
 
 | # | What | Agent | Status | Files | Extra deploy step |
 |---|---|---|---|---|---|
-| SIS | Foils & Fables (at /fables): engine (lib/tcg, /api/tcg-search, side column) + Night foil UI, switch, shared watchlist, app chooser | Engine + Design | 🟡 Building | lib/tcg/*, app/api/tcg-*, app/fables/*, header, globals.css, migration 20261030 | SQL for Landon |
+| SIS | Foils & Fables (at /fables): engine (lib/tcg, /api/tcg-search, side column) + Night foil UI, switch, shared watchlist, app chooser | Engine + Design | 🟢 Built, committed locally (b15a3c5, 4bcd322, 6f506e7). Needs: Landon runs sides SQL → push → poller deploy | lib/tcg/*, app/api/tcg-*, app/fables/*, header, globals.css, migration 20261030 | SQL for Landon |
 | 7 | eBay Partner Network affiliate links | CFO | ⏸ Plan approved. Waiting on Landon's sign-up + Campaign ID; code held until batch ships | SiteTour.js, guides, reading-list copy + link tagging | — |
 | L05 | Proof strip | Landing | ⏹ Skipped: no honest live number yet (no fake figures) | — | — |
 | S-poll | Lock down the alert checker: it can be triggered by anyone holding the public key; require a private secret header from the cron jobs instead | Debugger | ⚪ Follow-up (low risk today: it only re-runs checks and never re-sends) | poller, both cron jobs | poller deploy + Landon edits 2 cron jobs |
