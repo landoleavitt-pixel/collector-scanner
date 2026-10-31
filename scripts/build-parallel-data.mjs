@@ -53,6 +53,8 @@ function build(set, secs) {
   for (const h of set.sections) {
     for (const p of find(h).parallels) {
       if (NOT_A_PARALLEL.test(p.name) || p.name.length > 45) continue;
+      // Series 2 lists "Gold /2025" as a colour: that number is the year, not a run.
+      if (set.skipYearRuns && p.run >= 2000 && p.run <= 2100) continue;
       let key = p.key;
       // The same name at two print runs (a source typo or two versions): keep both.
       if (byKey.has(key) && byKey.get(key).run !== p.run) key = `${key}-${p.run || 'unnumbered'}`;

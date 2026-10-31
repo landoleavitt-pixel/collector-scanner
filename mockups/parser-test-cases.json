@@ -578,6 +578,115 @@
       "group": "First table (2026-10-19), rechecked",
       "title": "2024-25 Panini Prizm Fast Break Neon Green /5 Castle",
       "expect": "2024-25-panini-prizm-basketball:fast-break-neon-green"
+    },
+    {
+      "group": "New sets (2026-10-30): Prizm Basketball 2025-26, Topps Series 2 2026, Mosaic Basketball 2024-25, Upper Deck Series 2 Hockey 2025-26",
+      "title": "2025-26 Panini Prizm Basketball Olivia Miles Silver Prizm #123",
+      "expect": "2025-26-panini-prizm-basketball:silver-prizms"
+    },
+    {
+      "group": "New sets (2026-10-30): Prizm Basketball 2025-26, Topps Series 2 2026, Mosaic Basketball 2024-25, Upper Deck Series 2 Hockey 2025-26",
+      "title": "AZZI FUDD 2025-26 Panini Prizm Basketball SILVER PRIZM NIL Fearless Insert RC",
+      "expect": "none",
+      "why": "NIL insert, not the base silver"
+    },
+    {
+      "group": "New sets (2026-10-30): Prizm Basketball 2025-26, Topps Series 2 2026, Mosaic Basketball 2024-25, Upper Deck Series 2 Hockey 2025-26",
+      "title": "2025-26 Panini Prizm Basketball - NIL Recruits Darius Acuff Jr. #18 Silver Prizm",
+      "expect": "none",
+      "why": "recruits insert"
+    },
+    {
+      "group": "New sets (2026-10-30): Prizm Basketball 2025-26, Topps Series 2 2026, Mosaic Basketball 2024-25, Upper Deck Series 2 Hockey 2025-26",
+      "title": "2025-26 Panini Prizm Basketball Fireworks Silver Prizm UConn Wings #16",
+      "expect": "none",
+      "why": "fireworks insert"
+    },
+    {
+      "group": "New sets (2026-10-30): Prizm Basketball 2025-26, Topps Series 2 2026, Mosaic Basketball 2024-25, Upper Deck Series 2 Hockey 2025-26",
+      "title": "2026 Angels 476 Topps Series 2 /99 Green Parallel Baseball Card",
+      "expect": "2026-topps-series-2-baseball:green"
+    },
+    {
+      "group": "New sets (2026-10-30): Prizm Basketball 2025-26, Topps Series 2 2026, Mosaic Basketball 2024-25, Upper Deck Series 2 Hockey 2025-26",
+      "title": "2026 TOPPS SERIES 2 BASEBALL BRYCE JOHNSON PURPLE RAINBOW FOIL PARALLEL /250",
+      "expect": "2026-topps-series-2-baseball:purple-rainbow-foil"
+    },
+    {
+      "group": "New sets (2026-10-30): Prizm Basketball 2025-26, Topps Series 2 2026, Mosaic Basketball 2024-25, Upper Deck Series 2 Hockey 2025-26",
+      "title": "2026 Topps Series 2 Baseball JJ Bleday #671 Holo Foil Parallel Reds",
+      "expect": "2026-topps-series-2-baseball:holo-foil"
+    },
+    {
+      "group": "New sets (2026-10-30): Prizm Basketball 2025-26, Topps Series 2 2026, Mosaic Basketball 2024-25, Upper Deck Series 2 Hockey 2025-26",
+      "title": "2026 Topps Series 2 Baseball - #457 Nick Yorke Gold Border Parallel /2026",
+      "expect": "none",
+      "why": "Gold /2026 is the year, not a run"
+    },
+    {
+      "group": "New sets (2026-10-30): Prizm Basketball 2025-26, Topps Series 2 2026, Mosaic Basketball 2024-25, Upper Deck Series 2 Hockey 2025-26",
+      "title": "2026 Topps Series 2 Baseball #491 Minnesota Twins Green Diamante Parallel Card",
+      "expect": "none",
+      "why": "no serial, and Green Diamante has a run"
+    },
+    {
+      "group": "New sets (2026-10-30): Prizm Basketball 2025-26, Topps Series 2 2026, Mosaic Basketball 2024-25, Upper Deck Series 2 Hockey 2025-26",
+      "title": "2026 Topps Series 2 Baseball Ryan Feltner Pink Diamante Parallel #432 Rockies",
+      "expect": "none",
+      "why": "Pink Diamante not in the list"
+    },
+    {
+      "group": "New sets (2026-10-30): Prizm Basketball 2025-26, Topps Series 2 2026, Mosaic Basketball 2024-25, Upper Deck Series 2 Hockey 2025-26",
+      "title": "2026 Topps Series 2 Baseball Parallel Card Pete Alonso #B Orioles",
+      "expect": "none",
+      "why": "colour not named; bare parallel"
+    },
+    {
+      "group": "New sets (2026-10-30): Prizm Basketball 2025-26, Topps Series 2 2026, Mosaic Basketball 2024-25, Upper Deck Series 2 Hockey 2025-26",
+      "title": "RJ BARRETT 2024-25 PANINI MOSAIC BASKETBALL BLUE CHOICE /45 #158 RAPTORS Q8368",
+      "expect": "2024-25-panini-mosaic-basketball:choice-blue-mosaic"
+    },
+    {
+      "group": "New sets (2026-10-30): Prizm Basketball 2025-26, Topps Series 2 2026, Mosaic Basketball 2024-25, Upper Deck Series 2 Hockey 2025-26",
+      "title": "2024-25 Panini Mosaic Basketball James Harden Los Angeles Clippers Reactive Blue",
+      "expect": "2024-25-panini-mosaic-basketball:reactive-blue-mosaic",
+      "why": "unnumbered colour"
+    },
+    {
+      "group": "New sets (2026-10-30): Prizm Basketball 2025-26, Topps Series 2 2026, Mosaic Basketball 2024-25, Upper Deck Series 2 Hockey 2025-26",
+      "title": "2024-25 Panini Mosaic #96 Grayson Allen Reactive Blue Prizm Suns NBA Basketball",
+      "expect": "none",
+      "why": "a Prizm card, not Mosaic"
+    },
+    {
+      "group": "New sets (2026-10-30): Prizm Basketball 2025-26, Topps Series 2 2026, Mosaic Basketball 2024-25, Upper Deck Series 2 Hockey 2025-26",
+      "title": "2024-25 Panini Mosaic Complete Your Set You Pick Basketball Card #1-200 NBA",
+      "expect": "none",
+      "why": "lot listing"
+    },
+    {
+      "group": "New sets (2026-10-30): Prizm Basketball 2025-26, Topps Series 2 2026, Mosaic Basketball 2024-25, Upper Deck Series 2 Hockey 2025-26",
+      "title": "2024-25 Panini Mosaic Basketball, Inserts, Mosaics, Blue Reactives, etc",
+      "expect": "none",
+      "why": "lot listing"
+    },
+    {
+      "group": "New sets (2026-10-30): Prizm Basketball 2025-26, Topps Series 2 2026, Mosaic Basketball 2024-25, Upper Deck Series 2 Hockey 2025-26",
+      "title": "2025-26 Upper Deck Series 2 Hockey cards Complete Your Set!",
+      "expect": "none",
+      "why": "lot listing"
+    },
+    {
+      "group": "New sets (2026-10-30): Prizm Basketball 2025-26, Topps Series 2 2026, Mosaic Basketball 2024-25, Upper Deck Series 2 Hockey 2025-26",
+      "title": "2025-26 Upper Deck Series 2 Hockey Ben Kindel Outburst Young Guns RC #453 PSA 10",
+      "expect": "none",
+      "why": "Outburst is an insert"
+    },
+    {
+      "group": "New sets (2026-10-30): Prizm Basketball 2025-26, Topps Series 2 2026, Mosaic Basketball 2024-25, Upper Deck Series 2 Hockey 2025-26",
+      "title": "2025-26 Upper Deck Hockey Series 2 Emmitt Finnie Exclusives /100",
+      "expect": "none",
+      "why": "UD Exclusives needs 'UD'"
     }
   ]
 }

@@ -352,7 +352,7 @@ function TreeStyles() {
         .rt-head { padding: 14px 14px 10px; }
         .rt-big { font-size: 26px; }
         .rt-key { padding: 8px 14px; }
-        .rt-key span:last-child { display: none; }
+        .rt-key span + span { display: none; }
         .rt-ladder { padding: 4px 6px 8px; }
         .rt-made { min-width: 78px; }
         .rt-thumb { width: 30px; height: 42px; }

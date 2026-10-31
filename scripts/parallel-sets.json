@@ -517,6 +517,55 @@
         "Hobby": "1:2"
       },
       "note": "Young Guns rookies fall 1:2 Hobby packs."
+    },
+    {
+      "key": "2025-26-panini-prizm-basketball",
+      "label": "2025-26 Panini Prizm Basketball",
+      "sport": "basketball",
+      "year": 2025,
+      "season": true,
+      "brand": "panini-prizm",
+      "page": "2025-26-panini-prizm-basketball",
+      "sections": [
+        "Base & Parallel Details"
+      ]
+    },
+    {
+      "key": "2026-topps-series-2-baseball",
+      "label": "2026 Topps Series 2",
+      "sport": "baseball",
+      "year": 2026,
+      "brand": "topps-series-2",
+      "page": "2026-topps-series-2-baseball",
+      "sections": [
+        "Base & Parallel Details"
+      ],
+      "note": "Series 2 base cards. Series 1 is a separate release.",
+      "skipYearRuns": true
+    },
+    {
+      "key": "2024-25-panini-mosaic-basketball",
+      "label": "2024-25 Panini Mosaic Basketball",
+      "sport": "basketball",
+      "year": 2024,
+      "season": true,
+      "brand": "panini-mosaic",
+      "page": "2024-25-panini-mosaic-basketball",
+      "sections": [
+        "Base & Parallel Details"
+      ]
+    },
+    {
+      "key": "2025-26-ud-series-2-hockey",
+      "label": "2025-26 Upper Deck Series 2 Hockey",
+      "sport": "hockey",
+      "year": 2025,
+      "season": true,
+      "brand": "ud-series-2",
+      "page": "2025-26-upper-deck-series-2-hockey",
+      "sections": [
+        "Base & Parallel Details"
+      ]
     }
   ]
 }
