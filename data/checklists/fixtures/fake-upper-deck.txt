@@ -1,0 +1,5 @@
+FAKE UPPER DECK CHECKLIST (test data, not a real export)
+#1    FAKE PLAYER NINE          FAKE TEAM I
+#2    FAKE PLAYER TEN           FAKE TEAM J      RC
+#3    FAKE PLAYER ELEVEN        FAKE TEAM K
+#4    FAKE PLAYER TWELVE        FAKE TEAM L      RC

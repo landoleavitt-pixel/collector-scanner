@@ -8,3 +8,8 @@ out
 *.log
 .vercel
 .env.local.save
+
+# Maker checklist files (Landon downloads these; they stay out of git). Fake fixtures are kept.
+data/checklists/*
+!data/checklists/.gitkeep
+!data/checklists/fixtures/
