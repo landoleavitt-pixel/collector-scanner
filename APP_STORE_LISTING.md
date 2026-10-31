@@ -63,7 +63,7 @@ FIELDS & FLOORS: SPORTS CARDS
 Type a player, team or set and see live eBay listings sorted rarest first, so a /5 shows up before a /299. Every result is tagged by print run: Grail (/1 to /25), Ultra (/26 to /99), Rare (/100 to /249) and Scarce (/250 and up). Open any card to see how rare its print run is.
 
 FOILS & FABLES: TRADING CARD GAMES
-Search a card or character and see live eBay listings ranked by the rarity printed on the card, with numbered cards first. Filter by game, rarity, language and grade.
+Search a card or character and see live eBay listings ranked by the rarity printed on the card, with numbered cards first. Filter by game, rarity, language, grade, 1st edition and serial-numbered cards.
 
 ON BOTH SIDES
 - Filter by price and condition
@@ -84,9 +84,9 @@ Sign in with Apple or email. You can delete your account at any time from the Ac
 ```
 
 > **Check before pasting:**
-> - The Foils & Fables lines describe what DECISIONS.md says it will have at launch (rarity printed on the card, numbered first, game / rarity / language / grade filters). Cut anything that hasn't shipped by submission day.
-> - "Alerts on up to 5 saved searches" assumes the 5 are shared across both sides (one account). If each side gets its own 5, change it to "on each side".
-> - If the card checklist ("mark which ones you own") ships before submission, add one line under ON BOTH SIDES: "Browse every version of a card and mark the ones you own".
+> - The Foils & Fables filters match what's live on /fables (confirmed by the Boss, 2026-10-31): Game, Rarity, Language, Graded/Grader/Grade, 1st Edition, Serial-numbered and Price, with sealed, lots and proxies hidden.
+> - The 5 free alerts are shared across both sides (one account, one limit), which is what the copy says.
+> - Don't mention "every version of a card" or the card checklist until they are live. If they ship before submission, add one line under ON BOTH SIDES.
 > - No game names on purpose, even here. Many card apps name games in the description, but Apple can still ask for proof of permission, and nothing is lost by saying "trading card games".
 
 ### Keywords (100 max, 98 used)
@@ -141,7 +141,7 @@ If Foils & Fables gets its own domain before submission, the privacy policy must
 ### Other fields
 - **Copyright:** `2026 Fields & Floors Collectors`
 - **Price:** Free. **In-App Purchases:** none for this version.
-- **Content rights:** "Does your app contain, show, or access third-party content?" → **Yes**. It shows eBay listings through eBay's official Browse API, under eBay's developer terms. If card lists from outside sources are shown (for "find every version of a card"), they are used under those sources' terms; list them in the review notes.
+- **Content rights:** "Does your app contain, show, or access third-party content?" → **Yes**. It shows eBay listings through eBay's official Browse API, under eBay's developer terms. If card lists from outside sources are added later, list them in the review notes.
 
 ---
 
@@ -160,7 +160,7 @@ Then tick these data types. For every one: **Used for tracking: No.** We share n
 | **Identifiers → Device ID** | The push notification token Apple gives the device, so we can send alerts | **Yes** | App Functionality |
 | **Usage Data → Product Interaction** | Funnel steps (visited, searched, opened a card, starred, signed up), plus page-view counts | **Yes** (see note) | Analytics |
 | **Search History** | The words and filters in searches a member **saves**, so we can alert them | **Yes** | App Functionality |
-| **User Content → Other User Content** | The watchlist (starred listings), bid reminder settings, and (if it ships) "I own this" marks on card checklists | **Yes** | App Functionality |
+| **User Content → Other User Content** | The watchlist (starred listings), bid reminder settings (add "I own this" marks here when the card checklist ships) | **Yes** | App Functionality |
 
 **Do not tick:** Purchases, Financial Info, Location, Contacts, Health, Photos, Name, Phone Number, Physical Address, Browsing History, Advertising Data, Sensitive Info.
 
@@ -169,7 +169,7 @@ Then tick these data types. For every one: **Used for tracking: No.** We share n
 ### Things to know (flagged)
 
 1. **Product Interaction: we chose "linked", the cautious answer.** Most funnel events are anonymous (a random ID on the device, no name, email or search words). But "signed up" and "started a trial" are stored with the account ID, so "linked" is the honest answer.
-2. **Search History and Other User Content** are declared because the app stores saved search words, the watchlist and owned-card marks against the account. One-off searches that aren't saved are sent to eBay to get results and not kept with the account.
+2. **Search History and Other User Content** are declared because the app stores saved search words and the watchlist against the account. One-off searches that aren't saved are sent to eBay to get results and not kept with the account.
 3. **Push token as "Device ID".** Apple has no category made for push tokens. Device ID is the cautious choice.
 4. **Server logs.** Hosting (Vercel, Supabase) keeps short-lived technical logs with IP addresses, for security and fixing errors. Not declared. To be fully cautious, add **Diagnostics → Other Diagnostic Data**, not linked, App Functionality.
 5. **RevenueCat is built into the app but switched off** (its key isn't set during early access), so it collects nothing. Update the label when it's switched on.
@@ -218,7 +218,7 @@ Privacy policy and terms are linked at the bottom of every page and at https://f
 
 ## 5. Screenshots
 
-Shot list and status are in `appstore/screenshots/README.md`. Short version: **8 shots**, both sides, starting with the side chooser. The 3 sports shots taken on 2026-10-26 are from the one-sided app and will be retaken once the two-sided app is live (the switch at the top will be missing from them otherwise).
+Shot list and status are in `appstore/screenshots/README.md`. Short version: **7 shots**, both sides, starting with the side chooser. The 3 sports shots taken on 2026-10-26 are from the one-sided app and will be retaken once the two-sided app is live (the switch at the top will be missing from them otherwise).
 
 | Folder | App Store Connect slot | Size |
 |---|---|---|
