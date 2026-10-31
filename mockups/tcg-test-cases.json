@@ -1237,6 +1237,38 @@
     "language": "other",
     "rarity": "hr"
    }
+  },
+  {
+   "group": "One Piece",
+   "title": "One Piece Trafalgar Law Championship Event Pk. 2024 Promo P-038 BGS 10 Pristine",
+   "expect": {
+    "game": "onepiece",
+    "rarity": null
+   }
+  },
+  {
+   "group": "One Piece",
+   "title": "One Piece Jewelry Bonney Championship 2023 Celebration Coll. 007 PSA 10 Gem Mint",
+   "expect": {
+    "game": "onepiece",
+    "rarity": null
+   }
+  },
+  {
+   "group": "One Piece",
+   "title": "2026 One Piece Treasure Cup Top 16 Roronoa Zoro #OP15-113 PSA 10 GEM MINT",
+   "expect": {
+    "game": "onepiece",
+    "rarity": "prize"
+   }
+  },
+  {
+   "group": "One Piece",
+   "title": "2023 ONE PIECE PROMOS STORE CHAMPIONSHIP-WINNER EUSTASS \"CAPTAIN\" KID PSA 10",
+   "expect": {
+    "game": "onepiece",
+    "rarity": "prize"
+   }
   }
  ]
 }
