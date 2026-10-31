@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { toParams } from '../fables/data';
 import { useRouter } from 'next/navigation';
 import { buildShareUrl } from '../../lib/shareLink';
 import { brandFilterLabels } from '../../lib/cardBrands';
@@ -226,15 +227,18 @@ export default function WatchlistRow({ search, canUseAlerts }) {
     }
   }
 
+  // Foils & Fables searches run on their own side, straight from the saved criteria.
+  const fablesUrl = () => `/fables?${toParams(search.query, search.filters || {})}`;
+
   function handleView() {
-    router.push(`/?savedSearch=${search.id}`);
+    router.push(search.side === 'fables' ? fablesUrl() : `/?savedSearch=${search.id}`);
   }
 
   async function handleShare() {
     // Share the saved search's CRITERIA (not its id) so the recipient gets
     // a link that runs the same search under their own account.
-    const url = buildShareUrl(search.query, search.filters || {});
-    const text = `Check out this ${search.name} search on Fields & Floors`;
+    const url = search.side === 'fables' ? `${window.location.origin}${fablesUrl()}` : buildShareUrl(search.query, search.filters || {});
+    const text = `Check out this ${search.name} search on ${search.side === 'fables' ? 'Foils & Fables' : 'Fields & Floors'}`;
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
         await navigator.share({ title: search.name, text, url });
@@ -254,7 +258,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
   }
 
   function handleEdit() {
-    router.push(`/?editSearch=${search.id}`);
+    router.push(search.side === 'fables' ? fablesUrl() : `/?editSearch=${search.id}`);
   }
 
   return (
@@ -285,6 +289,11 @@ export default function WatchlistRow({ search, canUseAlerts }) {
             style={{ color: 'var(--ink-200)' }}
           >
             {search.name}
+          </div>
+          <div className="flex items-center gap-1.5 text-[11px] mb-1.5" style={{ color: 'var(--ink-400)' }}>
+            <span className="w-[7px] h-[7px] rounded-full inline-block" aria-hidden="true"
+                  style={{ background: search.side === 'fables' ? 'linear-gradient(135deg,#9fe3f5,#b6a8f0,#f0b3d0,#f3d9a0)' : '#e6b96b' }} />
+            {search.side === 'fables' ? 'Foils & Fables' : 'Sports'}
           </div>
           <div
             className="text-[13px] font-serif italic mb-2.5 truncate"

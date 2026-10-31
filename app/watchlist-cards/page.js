@@ -55,6 +55,7 @@ export default function WatchlistCardsPage() {
   const router = useRouter();
 
   const [tab, setTab] = useState('active'); // 'active' | 'sold'
+  const [sideFilter, setSideFilter] = useState('all'); // 'all' | 'sports' | 'fables'
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [checking, setChecking] = useState(false);
@@ -69,6 +70,9 @@ export default function WatchlistCardsPage() {
   const [selectedExpired, setSelectedExpired] = useState(false);
 
   function openCard(listing) {
+    // Foils & Fables cards don't use the sports card popup (its rarity tree is
+    // sports-only); open the eBay listing instead.
+    if (listing.side === 'fables') { if (listing.listing_url) window.open(listing.listing_url, '_blank', 'noopener'); return; }
     const item = listingToItem(listing);
     if (!item) return;
     setSelectedItem(item);
@@ -180,6 +184,23 @@ export default function WatchlistCardsPage() {
           )}
         </div>
 
+        {/* Which side: both sides share one watchlist. */}
+        {!loading && listings.length > 0 && (
+          <div className="flex flex-wrap gap-2 -mt-3 mb-6">
+            {[['all', 'All'], ['sports', 'Sports'], ['fables', 'Foils & Fables']].map(([k, label]) => {
+              const n = k === 'all' ? listings.length : listings.filter((l) => (l.side || 'sports') === k).length;
+              const on = sideFilter === k;
+              return (
+                <button key={k} type="button" onClick={() => setSideFilter(k)} aria-pressed={on}
+                        className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px]"
+                        style={on ? { background: 'var(--bg-elev-2)', color: 'var(--ink-100)', boxShadow: 'inset 0 0 0 1px var(--gold)' } : { color: 'var(--ink-200)', border: '1px solid var(--line)' }}>
+                  {k !== 'all' && <SideDot side={k} />}{label} · {n}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         {/* Grid / states */}
         {loading ? (
           <p className="text-sm" style={{ color: 'var(--ink-400)' }}>Loading…</p>
@@ -187,7 +208,7 @@ export default function WatchlistCardsPage() {
           <EmptyState tab={tab} onBrowse={() => router.push('/')} />
         ) : (
           <div className="grid grid-cols-2 gap-4">
-            {listings.map((l) => (
+            {listings.filter((l) => sideFilter === 'all' || (l.side || 'sports') === sideFilter).map((l) => (
               <WatchlistTile key={l.id} listing={l} onRemove={() => handleRemove(l.listing_id)} onToast={setToast} onCardClick={openCard} />
             ))}
           </div>
@@ -335,7 +356,18 @@ function WatchlistTile({ listing, onRemove, onToast, onCardClick }) {
         <div className="text-[13px] leading-snug mb-2" style={{ color: 'var(--ink-100)', minHeight: 34 }}>
           {listing.title}
         </div>
+        <div className="flex items-center gap-1.5 text-[11px] mb-1.5" style={{ color: 'var(--ink-400)' }}>
+          <SideDot side={listing.side || 'sports'} />{listing.side === 'fables' ? 'Foils & Fables' : 'Sports'}
+        </div>
         <div className="flex flex-wrap gap-1 mb-2.5">
+          {listing.side === 'fables' && b.serial && (
+            <span className="text-[11px] font-bold px-1.5 py-0.5 rounded" style={FABLES_CHIP.grail}>/{b.serial}</span>
+          )}
+          {listing.side === 'fables' && !b.serial && b.rarity && (
+            <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded" style={FABLES_CHIP[b.tier] || outChip}>{b.rarity}</span>
+          )}
+          {listing.side === 'fables' && b.grade && <span className="text-[11px] px-1.5 py-0.5 rounded" style={outChip}>{b.grade}</span>}
+          {listing.side === 'fables' && b.language && b.language !== 'English' && <span className="text-[11px] px-1.5 py-0.5 rounded" style={outChip}>{b.language}</span>}
           {b.printRun && b.tier && (
             <span className="text-[10px] uppercase tracking-[0.08em] px-1.5 py-0.5 rounded" style={TIER_CHIP[b.tier]}>/{b.printRun}</span>
           )}
@@ -581,3 +613,19 @@ function BidReminderModal({ listing, initialPrice, initialOffsets, isSet, onSubm
     </div>
   );
 }
+
+// Side marker: gold for sports, foil for Foils & Fables.
+function SideDot({ side }) {
+  return (
+    <span className="w-[7px] h-[7px] rounded-full flex-none inline-block" aria-hidden="true"
+          style={{ background: side === 'fables' ? 'linear-gradient(135deg,#9fe3f5,#b6a8f0,#f0b3d0,#f3d9a0)' : '#e6b96b' }} />
+  );
+}
+
+// Foils & Fables rarity chips keep their own colours on either side's page.
+const FABLES_CHIP = {
+  grail: { background: 'linear-gradient(100deg,#9fe3f5,#b6a8f0,#f0b3d0,#f3d9a0)', color: '#0b0f1a' },
+  ultra: { background: 'linear-gradient(180deg,#c9d3f5,#8b97c7)', color: '#0b0f1a' },
+  rare: { background: 'linear-gradient(180deg,#9fe3f5,#4b98ad)', color: '#071018' },
+  scarce: { background: 'linear-gradient(180deg,#7a8199,#4a5068)', color: '#eef0f7' },
+};

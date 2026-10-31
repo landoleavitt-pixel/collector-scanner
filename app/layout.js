@@ -5,6 +5,7 @@ import { Analytics } from '@vercel/analytics/react';
 import ImageBlockNotice from './components/ImageBlockNotice';
 import NativeBridge from './components/NativeBridge';
 import TabBar from './components/TabBar';
+import SideChooser from './components/SideChooser';
 import FunnelTracker from './components/FunnelTracker';
 import SiteTour from './components/SiteTour';
 import { PAYMENTS_LIVE } from '../lib/payments';
@@ -143,6 +144,8 @@ export default function RootLayout({ children }) {
         <NativeBridge />
         {/* iOS app only: bottom tab bar. Renders nothing on the website. */}
         <TabBar />
+        {/* iOS app only: choose Sports or Foils & Fables on each cold launch. */}
+        <SideChooser />
         {/* Anonymous funnel events (landed). See lib/track.js. */}
         <FunnelTracker />
         {/* First-visit walkthrough (web + iOS app variants); replay at /?tour=1. */}

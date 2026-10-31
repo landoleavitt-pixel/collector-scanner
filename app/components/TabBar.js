@@ -39,8 +39,10 @@ export default function TabBar() {
 
   // Signed-out visitors land on sign-in for the account-only tabs.
   const gate = (href) => (user ? href : `/login?next=${encodeURIComponent(href)}`);
+  // Search goes home on whichever side you're on (Foils & Fables lives at /fables).
+  const home = pathname?.startsWith('/fables') ? '/fables' : '/';
   const tabs = [
-    { key: 'search', label: 'Search', icon: 'search', href: '/', active: pathname === '/' },
+    { key: 'search', label: 'Search', icon: 'search', href: home, active: pathname === home },
     { key: 'watch', label: 'Watchlist', icon: 'star', href: gate('/watchlist-cards'), active: pathname === '/watchlist-cards' },
     { key: 'alerts', label: 'Alerts', icon: 'bell', href: gate('/watchlist'), active: pathname === '/watchlist' },
     { key: 'account', label: 'Account', icon: 'user', href: user ? null : '/login', active: pathname === '/login' || pathname === '/subscribe' },
@@ -81,11 +83,11 @@ export default function TabBar() {
           return (
             <Link
               key={t.key}
-              href="/"
+              href={home}
               className={cls}
               style={style}
               aria-current={t.active ? 'page' : undefined}
-              onClick={(e) => { if (pathname === '/') { e.preventDefault(); window.location.assign('/'); } }}
+              onClick={(e) => { if (pathname === home) { e.preventDefault(); window.location.assign(home); } }}
             >
               {inner}
             </Link>

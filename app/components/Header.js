@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
 import Seal from './Seal';
+import SideSwitch from './SideSwitch';
 import { useUser } from '../../lib/useUser';
 import { createClient } from '../../lib/supabaseClient';
 import { isNativeApp, unregisterPush, openAppleSubscriptions } from '../../lib/native';
@@ -14,6 +15,7 @@ export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const isHome = pathname === '/';
+  const isFables = pathname?.startsWith('/fables');
   const { user, loading } = useUser();
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -118,6 +120,18 @@ export default function Header() {
   return (
     <header className="relative z-20 border-b border-[var(--line-soft)]">
       <div className="max-w-[1200px] mx-auto px-6 lg:px-10 py-7 flex items-center justify-between">
+        <div className="flex items-center gap-5 min-w-0">
+        {isFables ? (
+          <Link href="/fables" className="flex items-center gap-3 group" onClick={(e) => {
+            // Same as the sports logo: always back to a fresh search.
+            if (pathname === '/fables') { e.preventDefault(); window.location.assign('/fables'); }
+          }}>
+            <span className="w-8 h-8 rounded-full grid place-items-center font-display italic text-[15px] ff-foil-edge" style={{ color: 'var(--gold)' }} aria-hidden="true">F</span>
+            <span className="font-display text-2xl md:text-3xl tracking-tight leading-none">
+              Foils <em className="ff-foil-text not-italic">&amp;</em> Fables
+            </span>
+          </Link>
+        ) : (
         <Link
           href="/"
           className="flex items-center gap-4 group"
@@ -143,6 +157,9 @@ export default function Header() {
             <em data-ff-collectors className="text-[var(--gold)] not-italic">Collectors</em>
           </span>
         </Link>
+        )}
+        <SideSwitch fables={isFables} className="hidden lg:inline-flex" />
+        </div>
 
         <div className="flex items-center gap-6">
           {/* Primary nav. These three are the whole product for a signed-in
@@ -203,7 +220,7 @@ export default function Header() {
                 ))}
               </nav>
             )
-          ) : (
+          ) : isFables ? null : (
             <Link
               href="/"
               className="text-[11px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
@@ -341,6 +358,11 @@ export default function Header() {
             </>
           )}
         </div>
+      </div>
+
+      {/* Side switch on smaller screens: its own row, never hidden in a menu. */}
+      <div className="lg:hidden flex justify-center px-4 pb-3 -mt-3">
+        <SideSwitch fables={isFables} />
       </div>
 
       {/* Mobile nav — a scrollable pill row rather than a hamburger. Three

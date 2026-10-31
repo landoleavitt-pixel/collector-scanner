@@ -1,6 +1,6 @@
 # Sister site for card games: games, filters, "rarest first", eBay set-up, legal, names
 
-Research only. No code was changed. Written 2026-10-30.
+Research only. No code was changed. Written 2026-10-30. **Updated 2026-10-31** with a new section 0 that answers the "card-family search" strategy memo.
 
 **Words used in this report**
 - **Singles**: one card sold on its own (not a pack, box or lot).
@@ -14,6 +14,7 @@ Research only. No code was changed. Written 2026-10-30.
 
 ## The short version
 
+0. **New (2026-10-31): make Foils & Fables the place to find every version of a card.** One search covers every set, language and finish, saved once and alerted on. Build it on free card catalogs, Magic and English Pokémon first, on top of the 5-game launch. Two memo ideas ("hasn't appeared in months", price comparisons over time) conflict with the price-history hold. See section 0.
 1. **Launch with 5 games: Pokémon, Magic: The Gathering, Yu-Gi-Oh!, One Piece and Disney Lorcana.** Together they make up about 98% of card-game singles listed on eBay right now. Pokémon alone is about 59%.
 2. **Next:** Dragon Ball Super, Weiss Schwarz, Star Wars (Unlimited and older games), Flesh and Blood and Riftbound. **Easiest extra:** licensed non-sport sets (Topps Star Wars, Marvel, Garbage Pail Kids). They use the same serial numbers (/99, /25, /1) as sports cards, so our current engine already works on them.
 3. **"Rarest first" can't use print runs for most of these games**, because the companies don't number most cards. Instead we rank by the **rarity tier printed on the card**, using each company's own rarity ladder. Where a card **is** serial-numbered (Magic "serialized" cards, non-sport sets), we put it at the top using the existing /N logic.
@@ -21,6 +22,63 @@ Research only. No code was changed. Written 2026-10-30.
 5. **eBay's own fields only reliably give us the game.** Rarity and set fields are coarse or wrong too often. Rarity tiers, serial numbers, 1st Edition and similar details should come from **title parsing** (as on the sports site), with eBay's fields as a backup.
 6. **Legal:** naming games in plain text to say what cards we search ("Search Pokémon cards") is generally allowed as factual use. **No logos, official fonts, mascot art or game names in our brand, domain or app name.** Apple's App Store rules are stricter than the law. That is the biggest real risk, covered in section 5.
 7. **Name picks:** **Foils & Fables**, **Realms & Rares** and **Spells & Sleeves**. All three .coms were unregistered on 2026-10-30, and quick US and Canadian trademark searches found no matching marks.
+
+---
+
+## 0. Product direction: "find every version of a card" (update, 2026-10-31)
+
+A strategy memo proposed that Foils & Fables should be more than a copy of Fields & Floors. Its idea: help collectors find **every version of one card** (every set, language, finish and edition) with one search, and alert them when a version they want is listed. This section checks that idea against facts and against what's already decided.
+
+### The verdict
+**The idea is right, and it fits what we already have.** Sports collectors hunt one card across print runs. Card-game collectors hunt one card across versions. The same search, save and alert system works for both. What's new is a **card catalog**: a list of every printing of every card, so the site knows that "Charizard" has many versions and what each one is called in listing titles.
+
+Three things change the memo's plan:
+1. **A catalog exists for some games, not all.** Free, good catalogs exist for Magic, Yu-Gi-Oh! and English Pokémon. Japanese Pokémon and One Piece are weaker (table below).
+2. **Two of the memo's ideas break our existing rules.** "A rare printing that hasn't appeared in several months" and "compare asking prices" over time both need us to **store eBay listing history**. DECISIONS.md puts price history and stored eBay data **on hold** because eBay's licence likely forbids it. Comparing *live* listings side by side is fine.
+3. **Five launch games are already decided.** The memo says start with one game. We can keep the five: every game gets the title-aware filters from sections 2–3 on day one. The extra "every version" view switches on game by game as each catalog is ready (Magic and Pokémon first).
+
+### What a "card family" search is, in plain terms
+1. The collector types or picks a card, for example "Charizard".
+2. The site looks the card up in the catalog and shows its versions in groups: English or Japanese, set, rarity, finish (holo, reverse holo, foil) and promo.
+3. The collector ticks what they want, for example "Japanese and English, Special Illustration Rare and Hyper Rare, no plain non-holo".
+4. The site builds **one eBay search** from that choice. It then checks each listing title against the ticked versions and labels every result with **why it matched** (for example "Charizard ex · 151 · Special Illustration Rare · Japanese").
+5. The collector saves it once and alerts follow the same rules. That means no alerts for versions they didn't tick.
+
+The **"why it matched"** label fits our accuracy rule well. It shows exactly what we read from the title, and the existing line "our labels come from listing titles and can be wrong" still applies.
+
+### Card catalogs per game (facts, checked 2026-10-31)
+
+| Game | Best catalog | Cost | What it knows | Catch |
+|---|---|---|---|---|
+| **Magic** | **Scryfall** | Free | Every printing; finish (foil, nonfoil, etched); frame effects (showcase, extended art…); borderless; promo types; **Reserved List flag**; one ID that links all printings of the same card ([Scryfall card fields](https://scryfall.com/docs/api/cards)) | Scryfall's rules: *"You may not 'paywall' access to Scryfall data… end-users should be able to access card data anonymously or with free accounts."* ([Scryfall API rules](https://scryfall.com/docs/api)). Card lists must stay free. Paid alerts are probably fine but should be confirmed (question below). |
+| **Yu-Gi-Oh!** | **YGOPRODeck** | Free | Every printing with set code (e.g. MRD-EN082) and rarity per printing | 20 requests a second; we must download and store data and images, not hotlink them ([YGOPRODeck guide](https://ygoprodeck.com/api-guide/)) |
+| **Pokémon (English)** | **TCGdex** | Free, open source (MIT licence) | Sets, card numbers, rarity, and which versions exist (normal, reverse holo, holo, 1st Edition) ([TCGdex card fields](https://tcgdex.dev/reference/card)) | Run by volunteers. **Japanese coverage is listed but incomplete** ("each language has different completion levels") |
+| Pokémon (old standard) | Pokémon TCG API | — | — | **Deprecated.** No new sign-ups, keys stop on March 1, 2027, and it points users to the paid Scrydex ([notice](https://docs.pokemontcg.io/)). **Don't build on it.** |
+| Pokémon / several games (paid) | Scrydex | Paid. A third-party comparison says from about $29/month; not confirmed on Scrydex's own page | Pokémon, Magic, Lorcana, One Piece and more | Cost, and Japanese coverage unconfirmed. Only worth it if the free catalogs fall short |
+| **Lorcana** | Community catalogs (e.g. Lorcast) | Free | Sets, rarities and foil versions | Small game, small catalogs. Not checked in depth |
+| **One Piece** | No strong free catalog found | — | Bandai's own card list shows rarity codes | We must not scrape it. One Piece stays on title-aware filters only until a proper source exists |
+
+**Card pictures:** catalog images are the game companies' artwork. On the site we should keep showing the **eBay seller's own photo** for every listing, as on sports. The catalog should power the version list as text (set · number · rarity · finish). This avoids a copyright question.
+
+### What to build, in order
+1. **Day one, all 5 games:** title-aware filters and "rarest first" (sections 2–3). This needs no catalog and matches what's decided.
+2. **Card family search for Magic and Pokémon (English).** These have the best free catalogs, and Magic serialized cards plug straight into our /N engine.
+3. **Yu-Gi-Oh! next**, then Lorcana. Japanese Pokémon versions as TCGdex coverage allows. One Piece only when a legitimate catalog exists.
+4. **Later, a "want list"** (the memo's idea of watching 50 cards at once, with a daily summary). It fits the already-noted option of daily-summary alerts. It must count only listings live *now*, never "hasn't appeared in months".
+
+**Not building** (agree with the memo): a marketplace, collection or portfolio tracker, deck builder, grading database, social features or photo card recognition.
+
+### Alert speed and eBay quota
+- Our alert poller runs **hourly** today, with a separate 5-minute check for bid reminders (supabase/functions/poller/index.ts). The memo's "every 15 minutes" means running the poller four times as often.
+- A card family should cost **one eBay search per check**, not one per version. The eBay search box accepts "either of these words" groups, so we fetch broadly once and filter titles ourselves.
+- More frequent checks move us toward the quota-increase threshold already in DECISIONS (~3,000 calls a day). That's a cost and quota call for the Boss and CFO, not a blocker.
+
+### The memo's test, made concrete (needs Boss go-ahead)
+The memo suggests testing 20 Pokémon and 20 Magic cards before building. I agree. It needs our eBay keys, which this research was told not to use, so it's a next step, not done here.
+- **Pick:** 20 high-demand Pokémon cards (e.g. Charizard, Pikachu, Umbreon, Gengar, Mew; GemRate and Collectr name the top characters) and 20 Magic cards (mix of serialized, Reserved List, borderless and foil chase cards).
+- **For each:** pull the versions from the catalog, build one search, and read 100 live listings.
+- **Score by hand:** of the listings we label as a version, how many are right (**aim: 95%+ correct**)? Of the right listings in those 100, how many did we catch (**aim: 90%+**)?
+- **Pass** = both aims met on at least 35 of 40 cards. **Fail on Japanese or Pokémon promos** = launch those as filters only.
 
 ---
 
@@ -293,7 +351,14 @@ These quick searches are a first screen, not clearance. A proper trademark searc
 
 ---
 
-## Questions for Landon
+## Questions for Landon (added 2026-10-31, from section 0)
+
+A. **Card family search:** make "find every version of a card" the main idea of Foils & Fables, added game by game (Magic and Pokémon first) on top of the 5-game launch that's already decided?
+B. **Run the 40-card test** (20 Pokémon, 20 Magic) with our eBay keys before building it?
+C. **Scryfall's free-data rule:** OK for the Boss to email Scryfall to confirm that paid alerts are fine as long as card lists stay free?
+D. **Faster alerts:** do you want 15-minute alerts as a paid perk? That means checking 4× as often and likely the eBay quota increase sooner (CFO to cost it).
+
+## Questions for Landon (original, 2026-10-30; several are now answered in DECISIONS.md)
 
 1. **Launch games:** OK to launch with the five (Pokémon, Magic, Yu-Gi-Oh!, One Piece, Lorcana) and add the rest later?
 2. **Non-sport sets** (Topps Star Wars, Marvel, Garbage Pail Kids): put them on the sports side (they're serial-numbered like sports cards), on the new side, or skip for now?
@@ -325,3 +390,8 @@ These quick searches are a first screen, not clearance. A proper trademark searc
 - [Smart & Biggar on Veuve Clicquot (Canada s.22)](https://www.smartbiggar.ca/insights/publication/barbie-and-veuve-clicquot----supreme-court-of-canada-clarifies-protection-for-famous-trademarks-in-canada)
 - USPTO trademark search (tmsearch.uspto.gov) and CIPO Canadian Trademarks Database, searched 2026-10-30
 - Verisign .com WHOIS, 2026-10-30
+- [Scryfall API rules](https://scryfall.com/docs/api) · [Scryfall card fields](https://scryfall.com/docs/api/cards)
+- [YGOPRODeck API guide](https://ygoprodeck.com/api-guide/)
+- [TCGdex card fields](https://tcgdex.dev/reference/card) · [TCGdex database (MIT licence)](https://github.com/tcgdex/cards-database)
+- [Pokémon TCG API deprecation notice](https://docs.pokemontcg.io/)
+- [Scrydex pricing](https://scrydex.com/pricing) (tiers as reported by [ScrapingBee's comparison](https://www.scrapingbee.com/blog/pokemon-card-api/); not confirmed)

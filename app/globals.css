@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
@@ -428,3 +429,39 @@ html.native-app [data-ff-footer] { margin-top: 2rem; }
 html.native-app [data-ff-footer] > div { padding-top: 1.25rem; padding-bottom: 1.25rem; }
 html.native-app [data-ff-footer-main] { display: none; }
 html.native-app [data-ff-footer-legal] { padding-top: 0; border-top: 0; }
+
+/* ── Foils & Fables (Night foil) ─────────────────────────────────────────
+   The sister side reuses every F&F component; it only swaps the values of
+   the same tokens. Scoped to [data-side="fables"] (set on <html> by
+   app/fables/layout.js), so Fields & Floors is untouched. "gold" names keep
+   their role (accent / highlight / deep) but hold moonlight-blue values. */
+[data-side="fables"] {
+  --ink-100: #eef0f7;
+  --ink-200: #d5d9e8;
+  --ink-400: #9198b0;
+  --ink-600: #5d6480;
+  --bg-base: #080a12;
+  --bg-elev: #10131f;
+  --bg-elev-2: #161a29;
+  --line: #242a3d;
+  --line-soft: #1a1f2f;
+  --gold: #8fd3e8;
+  --gold-bright: #b9e6f2;
+  --gold-deep: #4b7f93;
+  --ink-on-gold: #071018;
+  --gold-fill-top: #c9eef8;
+  --gold-fill-bottom: #7fbfd4;
+  /* The signature: holo foil, used sparingly (edges, top rarity, one headline word). */
+  --foil: linear-gradient(100deg, #9fe3f5 0%, #b6a8f0 28%, #f0b3d0 52%, #f3d9a0 76%, #9fe3f5 100%);
+}
+[data-side="fables"] body {
+  background: radial-gradient(1200px 520px at 70% -10%, rgba(143, 211, 232, 0.06), transparent 60%), var(--bg-base);
+}
+[data-side="fables"] .font-display { font-family: 'Fraunces', serif; }
+[data-side="fables"] ::selection { background: rgba(143, 211, 232, 0.25); }
+/* Foil helpers */
+.ff-foil-text { background: var(--foil); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.ff-foil-edge { border: 1px solid transparent !important; background: linear-gradient(var(--bg-elev), var(--bg-elev)) padding-box, var(--foil) border-box !important; }
+/* Only on one side or the other (footer line, etc.) */
+html:not([data-side="fables"]) [data-fables-only] { display: none !important; }
+[data-side="fables"] [data-sports-only] { display: none !important; }
