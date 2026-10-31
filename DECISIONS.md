@@ -60,6 +60,12 @@ Everything Landon has decided, so no agent ever asks him the same thing twice. O
 
 - Signed-out visitors see a **"why sign up" prompt when they search for a card**, listing the account benefits, with "Not now" to keep searching without an account. **Option B approved**: a card inside the results after the 4th card, on each search until "Not now" for that visit. The sign-up page benefits are approved as mocked (mockups/signup-benefits.html). (2026-10-26, 2026-10-29)
 
+## Non-sports sister site (2026-10-30)
+- A **sister site for non-sports collector cards** (Pokémon, Magic: The Gathering and the other biggest games). It copies most of the F&F format but has its **own, more magical look and colours**: it complements F&F but is clearly distinct.
+- A **button at the top switches** between the two sites. **One account**: saved searches and starred cards from both sides show together.
+- The **iPhone app gets a new name (TBD)** with both sides inside it.
+- Filters for the non-sports side come from research. The name is TBD (ideas coming).
+
 ## Search
 - Spelling suggestions cover pro players **and college players**. The roster refresh is run by hand once a quarter. (2026-10-20, 2026-10-21)
 - Card company filter, including Leaf and the listed product lines. (2026-10-20)
