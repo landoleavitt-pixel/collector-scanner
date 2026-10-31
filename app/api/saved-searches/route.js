@@ -4,6 +4,7 @@ import { recordOnce } from '../../../lib/trackServer';
 import { brandFilterLabels } from '../../../lib/cardBrands';
 import { teamFilterLabels } from '../../../lib/teams';
 import { PAYMENTS_LIVE } from '../../../lib/payments';
+import { savedSearchParams } from '../../../lib/tcg/search';
 
 // Max searches that can be actively notifying at once (Base tier).
 // Must match MAX_ACTIVE_WATCHES in app/api/saved-searches/[id]/route.js.
@@ -11,8 +12,14 @@ const MAX_ACTIVE_WATCHES = 5;
 // Free accounts get a taste: one live alert.
 const FREE_ACTIVE_WATCHES = 1;
 
-// List all saved searches for the current user
-export async function GET() {
+// Which side of the site a saved search belongs to: 'sports' (Fields &
+// Floors) or 'fables' (Foils & Fables). Rows saved before the sides
+// migration have no side and are sports.
+const SIDES = ['sports', 'fables'];
+const withSide = (row) => (row ? { ...row, side: row.side ?? 'sports' } : row);
+
+// List all saved searches for the current user. Optional ?side=sports|fables.
+export async function GET(request) {
   const supabase = createServerSupabase();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -20,15 +27,19 @@ export async function GET() {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   }
 
-  const { data, error } = await supabase
+  const side = new URL(request.url).searchParams.get('side');
+  let q = supabase
     .from('saved_searches')
     .select('*')
     .order('created_at', { ascending: false });
+  if (SIDES.includes(side)) q = q.eq('side', side);
+
+  const { data, error } = await q;
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-  return NextResponse.json({ searches: data });
+  return NextResponse.json({ searches: (data ?? []).map(withSide) });
 }
 
 // Create a new saved search
@@ -42,9 +53,13 @@ export async function POST(request) {
 
   const body = await request.json();
   const { name, query, filters, notify_enabled = true } = body;
+  const side = body.side ?? 'sports';
 
   if (!name?.trim() || !query?.trim()) {
     return NextResponse.json({ error: 'Name and query are required' }, { status: 400 });
+  }
+  if (!SIDES.includes(side)) {
+    return NextResponse.json({ error: "side must be 'sports' or 'fables'" }, { status: 400 });
   }
 
   // Saving is unlimited; only ACTIVE watching is capped. Decide here whether
@@ -90,6 +105,9 @@ export async function POST(request) {
       query: query.trim(),
       filters: filters ?? {},
       notify_enabled: effectiveNotify,
+      // Sports rows leave side to the column default, so saving sports
+      // searches still works before the sides migration has run.
+      ...(side === 'fables' ? { side } : {}),
     })
     .select()
     .single();
@@ -114,7 +132,7 @@ export async function POST(request) {
     console.error('Confirmation email failed for search', newSearch.id, err);
   });
 
-  return NextResponse.json({ search: newSearch, watchLimited, limit: MAX_ACTIVE_WATCHES });
+  return NextResponse.json({ search: withSide(newSearch), watchLimited, limit: MAX_ACTIVE_WATCHES });
 }
 
 // Build a compact, human-readable one-line summary of the search's filters.
@@ -218,9 +236,16 @@ async function sendConfirmationEmail(email, savedSearch, filters) {
 // poller skips them. Runs after the save returns; user never sees it.
 async function primeNotifications(request, savedSearch, filters) {
   const supabase = createServerSupabase();
+  const origin = new URL(request.url).origin;
+
+  // Card-game searches run through /api/tcg-search, the way the poller does.
+  if (savedSearch.side === 'fables') {
+    const res = await fetch(`${origin}/api/tcg-search?${savedSearchParams(savedSearch.query, filters)}`);
+    if (!res.ok) throw new Error(`Prime search returned ${res.status}`);
+    return insertPrimed(supabase, savedSearch, (await res.json()).items ?? []);
+  }
 
   // Build the search body the way the poller does
-  const origin = new URL(request.url).origin;
   const searchBody = {
     keywords: savedSearch.query,
     autoCards: filters.autoCards ?? false,
@@ -251,7 +276,10 @@ async function primeNotifications(request, savedSearch, filters) {
   }
 
   const data = await res.json();
-  const items = data.items ?? [];
+  return insertPrimed(supabase, savedSearch, data.items ?? []);
+}
+
+async function insertPrimed(supabase, savedSearch, items) {
   if (items.length === 0) return;
 
   // Insert sent_notifications rows so the poller skips these listings

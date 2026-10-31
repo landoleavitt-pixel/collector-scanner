@@ -36,6 +36,7 @@ interface SavedSearch {
   filters: Record<string, unknown>;
   notify_enabled: boolean;
   created_at?: string;
+  side?: "sports" | "fables"; // missing before the sides migration = sports
 }
 
 interface Listing {
@@ -48,6 +49,13 @@ interface Listing {
   condition?: string;
   isAuction?: boolean;
   isBuyItNow?: boolean;
+  // Foils & Fables results (/api/tcg-search)
+  side?: "sports" | "fables";
+  rarity?: string | null;
+  tier?: string | null;
+  serial?: { n: number | null; of: number } | null;
+  gradeLabel?: string | null;
+  buyingOptions?: string[];
 }
 
 interface UserDigest {
@@ -143,10 +151,13 @@ Deno.serve(async (_req) => {
 
     for (const [_signature, group] of groups) {
       try {
-        const { query, filters, searches: searchesInGroup } = group;
+        const { query, filters, side, searches: searchesInGroup } = group;
 
         // 3. Hit our own /api/search endpoint so verification pipeline stays in one place
-        const results = await callAppSearch(query, filters);
+        //    (card-game searches use /api/tcg-search)
+        const results = side === "fables"
+          ? await callTcgSearch(query, filters)
+          : await callAppSearch(query, filters);
         searchesChecked += searchesInGroup.length;
 
         if (!results || results.length === 0) continue;
@@ -568,12 +579,13 @@ function jsonResponse(body: unknown, status = 200) {
 function groupBySignature(searches: SavedSearch[]) {
   const groups = new Map<
     string,
-    { query: string; filters: Record<string, unknown>; searches: SavedSearch[] }
+    { query: string; filters: Record<string, unknown>; side: string; searches: SavedSearch[] }
   >();
   for (const s of searches) {
-    const sig = JSON.stringify({ q: s.query.trim().toLowerCase(), f: s.filters });
+    const side = s.side ?? "sports";
+    const sig = JSON.stringify({ q: s.query.trim().toLowerCase(), f: s.filters, side });
     if (!groups.has(sig)) {
-      groups.set(sig, { query: s.query, filters: s.filters, searches: [] });
+      groups.set(sig, { query: s.query, filters: s.filters, side, searches: [] });
     }
     groups.get(sig)!.searches.push(s);
   }
@@ -626,6 +638,37 @@ async function callAppSearch(query: string, filters: Record<string, unknown>): P
     return data.items ?? [];
   }
   throw new Error("Search API rate-limited the alert checker twice");
+}
+
+// Foils & Fables saved searches: GET /api/tcg-search with the saved filters
+// (same names as its query string). Mirrors savedSearchParams in
+// lib/tcg/search.js: newest listings, the whole filtered pool.
+const TCG_FILTER_KEYS = ["game", "rarity", "lang", "graded", "grader", "grade", "firstEd", "serialOnly", "priceMin", "priceMax", "listing"];
+async function callTcgSearch(query: string, filters: Record<string, unknown>): Promise<Listing[]> {
+  const params = new URLSearchParams({ q: query || "", sort: "newest", limit: "1000" });
+  for (const k of TCG_FILTER_KEYS) {
+    const v = filters?.[k];
+    if (v == null || v === "" || v === false) continue;
+    params.set(k, Array.isArray(v) ? v.join(",") : v === true ? "1" : String(v));
+  }
+  const url = `${APP_BASE_URL}/api/tcg-search?${params}`;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const res = await fetch(url, { headers: await pollerSignature() });
+    if (res.status === 429 && attempt === 0) {
+      const wait = Math.min(60, Number(res.headers.get("Retry-After")) || 10);
+      await new Promise((r) => setTimeout(r, wait * 1000));
+      continue;
+    }
+    if (!res.ok) throw new Error(`TCG search API returned ${res.status}`);
+    const data = await res.json();
+    return (data.items ?? []).map((it: Listing) => ({
+      ...it,
+      side: "fables" as const,
+      isAuction: it.buyingOptions?.includes("AUCTION") ?? false,
+      isBuyItNow: it.buyingOptions?.includes("FIXED_PRICE") ?? false,
+    }));
+  }
+  throw new Error("TCG search API rate-limited the alert checker twice");
 }
 
 // "poller:<unix seconds>" signed with POLLER_SECRET (or the service role key),
@@ -864,8 +907,9 @@ function renderListingCard(l: Listing): string {
   // preserves our ability to attach affiliate tracking later.
   // utm_source lets Vercel Analytics attribute the visit to alert emails.
   // Fallback to the raw eBay url only if the listing id is somehow missing.
+  const fables = l?.side === "fables";
   const viewUrl = l?.id
-    ? `${APP_BASE_URL}/?card=${encodeURIComponent(l.id)}&utm_source=alert_email`
+    ? `${APP_BASE_URL}/${fables ? "fables" : ""}?card=${encodeURIComponent(l.id)}&utm_source=alert_email`
     : (l?.url ?? "#");
 
   // Derive chips from the listing — print run + tier, auto, rookie, grading, listing type
@@ -886,7 +930,8 @@ function renderListingCard(l: Listing): string {
     rare:   { bg: "linear-gradient(90deg, rgba(200,90,30,0.12) 0%, rgba(220,110,50,0.03) 22%, transparent 45%)", border: "#d6722d" },
     scarce: { bg: "linear-gradient(90deg, rgba(80,90,100,0.09) 0%, transparent 24%)", border: "#5a6470" },
   };
-  const rowStyle = tier ? TIER_ROW_STYLES[tier] : null;
+  const rowTier = fables ? (l.tier ?? null) : tier;
+  const rowStyle = rowTier ? TIER_ROW_STYLES[rowTier] ?? null : null;
   const rowBg = rowStyle ? `background:#1a1614;background-image:${rowStyle.bg};border-left:2px solid ${rowStyle.border};` : `background:#1a1614;border-left:2px solid rgba(232,226,213,0.08);`;
 
   // Tier-gradient chips for print runs (matches the Badge component on the live site)
@@ -900,6 +945,18 @@ function renderListingCard(l: Listing): string {
   const auctionChipStyle = "color:#e6a86b;background:rgba(201,122,58,0.10);border:0.5px solid #c97a3a;";
 
   const chips: string[] = [];
+  // Card games: card numbers ("025/165") aren't print runs, so the chips come
+  // from /api/tcg-search (printed rarity, stamped serial, grade) instead.
+  if (fables) {
+    const chip = (text: string, style: string) =>
+      `<span style="display:inline-block;padding:3px 8px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;${style}margin-right:4px;">${escapeHtml(text)}</span>`;
+    const fTier = l.tier && TIER_CHIP_STYLES[l.tier] ? l.tier : null;
+    if (l.serial?.of) chips.push(chip(`/${l.serial.of}`, fTier ? TIER_CHIP_STYLES[fTier] : defaultChipStyle));
+    if (l.rarity) chips.push(chip(l.rarity, fTier && !l.serial?.of ? TIER_CHIP_STYLES[fTier] : defaultChipStyle));
+    if (l.gradeLabel) chips.push(chip(l.gradeLabel, defaultChipStyle));
+    if (l.isAuction) chips.push(chip("Auction", auctionChipStyle));
+    else if (l.isBuyItNow) chips.push(chip("Buy It Now", defaultChipStyle));
+  } else {
   if (printRun && tier) {
     chips.push(`<span style="display:inline-block;padding:3px 8px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;${TIER_CHIP_STYLES[tier]}margin-right:4px;">/${printRun}</span>`);
   }
@@ -913,6 +970,7 @@ function renderListingCard(l: Listing): string {
     chips.push(`<span style="display:inline-block;padding:3px 8px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;${auctionChipStyle}margin-right:4px;">Auction</span>`);
   } else if (l?.isBuyItNow) {
     chips.push(`<span style="display:inline-block;padding:3px 8px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;${defaultChipStyle}margin-right:4px;">Buy It Now</span>`);
+  }
   }
 
   return `

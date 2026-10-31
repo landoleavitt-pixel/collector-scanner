@@ -53,6 +53,9 @@ export async function PATCH(request, { params }) {
   if (body.filters && typeof body.filters === 'object') {
     updates.filters = body.filters;
   }
+  if (body.side === 'sports' || body.side === 'fables') {
+    updates.side = body.side;
+  }
 
   if (Object.keys(updates).length === 0) {
     return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 });

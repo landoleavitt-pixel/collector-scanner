@@ -1,0 +1,1242 @@
+{
+ "_readme": "Real-looking eBay card-game titles across the 5 launch games (written 2026-10-31, modelled on listing styles in research/non-sports-filters.md). hint = the game the search asked for. expect lists only the fields checked. Run: node scripts/test-tcg-parser.mjs",
+ "cases": [
+  {
+   "group": "Pokémon",
+   "title": "2023 Pokemon Scarlet Violet 151 Charizard ex SIR 199/165 Special Illustration Rare",
+   "expect": {
+    "game": "pokemon",
+    "rarity": "sir",
+    "serial": null,
+    "language": "en",
+    "lot": false
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokémon TCG Umbreon ex 161/131 Prismatic Evolutions Special Illustration Rare NM",
+   "expect": {
+    "game": "pokemon",
+    "rarity": "sir"
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pikachu ex 238/191 Surging Sparks Hyper Rare Gold Pokemon Card",
+   "expect": {
+    "game": "pokemon",
+    "rarity": "hr"
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Mega Charizard X ex 125/094 Phantasmal Flames Mega Hyper Rare MHR Pokemon",
+   "expect": {
+    "game": "pokemon",
+    "rarity": "mhr"
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Black Bolt Zekrom ex 172/086 Black White Rare BWR",
+   "expect": {
+    "game": "pokemon",
+    "rarity": "hr"
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Paldean Fates Mew ex 232/091 Gold Shiny Hyper Rare NM/M",
+   "expect": {
+    "game": "pokemon",
+    "rarity": "hr"
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Gardevoir 245/198 Scarlet & Violet Illustration Rare IR Pokemon TCG",
+   "expect": {
+    "game": "pokemon",
+    "rarity": "ir"
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Temporal Forces Iron Leaves ex 203/162 Ultra Rare Full Art",
+   "expect": {
+    "game": "pokemon",
+    "rarity": "ultra"
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Miraidon ex 081/198 Double Rare Scarlet Violet Base",
+   "expect": {
+    "game": "pokemon",
+    "rarity": "dr"
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Master Ball 153/167 ACE SPEC Twilight Masquerade",
+   "expect": {
+    "game": "pokemon",
+    "rarity": "dr"
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Gengar 5/62 Fossil Holo Rare Unlimited LP",
+   "expect": {
+    "game": "pokemon",
+    "rarity": "holo",
+    "firstEdition": false
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Charmeleon 24/102 Base Set Uncommon NM",
+   "expect": {
+    "game": "pokemon",
+    "rarity": "uncommon"
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Pidgey Reverse Holo 016/165 Common 151",
+   "expect": {
+    "game": "pokemon",
+    "rarity": "common"
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "PSA 10 Pokemon Charizard ex 199/165 SIR 151 Gem Mint",
+   "expect": {
+    "game": "pokemon",
+    "rarity": "sir",
+    "grade": {
+     "grader": "PSA",
+     "grade": 10
+    },
+    "serial": null
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "CGC 9.5 Pokemon Umbreon VMAX 215/203 Evolving Skies Secret Rare",
+   "expect": {
+    "game": "pokemon",
+    "rarity": "secret",
+    "grade": {
+     "grader": "CGC",
+     "grade": 9.5
+    }
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Moonbreon Umbreon VMAX 215/203 Evolving Skies Alt Art",
+   "expect": {
+    "game": "pokemon",
+    "rarity": "secret"
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "BGS 9.5 Pokemon Lugia V 186/195 Silver Tempest Alt Art",
+   "expect": {
+    "game": "pokemon",
+    "rarity": null,
+    "grade": {
+     "grader": "BGS",
+     "grade": 9.5
+    }
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "TAG 10 Pokemon Pikachu Illustrator style Promo",
+   "expect": {
+    "game": "pokemon",
+    "grade": {
+     "grader": "TAG",
+     "grade": 10
+    }
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "1999 Pokemon Base Set 1st Edition Charizard 4/102 Holo PSA 8",
+   "expect": {
+    "game": "pokemon",
+    "firstEdition": true,
+    "shadowless": false,
+    "rarity": "holo",
+    "grade": {
+     "grader": "PSA",
+     "grade": 8
+    }
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "1999 Pokemon Base Set Shadowless Blastoise 2/102 Holo Rare",
+   "expect": {
+    "game": "pokemon",
+    "shadowless": true,
+    "firstEdition": false,
+    "rarity": "holo"
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon 1st Edition Shadowless Venusaur 15/102 Base Set Holo",
+   "expect": {
+    "game": "pokemon",
+    "shadowless": true,
+    "firstEdition": true
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Rayquaza Gold Star 107/107 EX Deoxys",
+   "expect": {
+    "game": "pokemon",
+    "rarity": "star"
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Shining Charizard 107/105 Neo Destiny Secret Rare",
+   "expect": {
+    "game": "pokemon",
+    "rarity": "star"
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Shining Fates Charizard VMAX SV107/SV122 Shiny Vault",
+   "expect": {
+    "game": "pokemon",
+    "rarity": null
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Crystal Lugia 149/147 Aquapolis Holo",
+   "expect": {
+    "game": "pokemon",
+    "rarity": "star"
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Neo Genesis Lugia 9/111 Holo Rare 1st Edition",
+   "expect": {
+    "game": "pokemon",
+    "firstEdition": true,
+    "rarity": "holo"
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Japanese Pikachu ex SAR 132/106 Super Electric Breaker",
+   "expect": {
+    "game": "pokemon",
+    "rarity": "sir",
+    "language": "ja"
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Card Japanese Mega Gengar ex MUR 117/080 Inferno X",
+   "expect": {
+    "game": "pokemon",
+    "rarity": "mhr",
+    "language": "ja"
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon JP Charizard ex UR 349/190 Shiny Treasure ex",
+   "expect": {
+    "game": "pokemon",
+    "rarity": "hr",
+    "language": "ja"
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon JPN Ceruledge ex AR 077/066 Japanese",
+   "expect": {
+    "game": "pokemon",
+    "rarity": "ir",
+    "language": "ja"
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Japanese Terapagos ex RR 054/102 Stellar Miracle",
+   "expect": {
+    "game": "pokemon",
+    "rarity": "dr",
+    "language": "ja"
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Chinese Simplified Pikachu Promo Card",
+   "expect": {
+    "game": "pokemon",
+    "language": "other"
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Korean Umbreon VMAX 095/069 HR Eevee Heroes",
+   "expect": {
+    "game": "pokemon",
+    "language": "other"
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Charizard Proxy Custom Card Holo Gold",
+   "expect": {
+    "game": "pokemon",
+    "proxy": true
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Orica Umbreon Custom Fan Art Full Art",
+   "expect": {
+    "game": "pokemon",
+    "proxy": true
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Charizard Gold Metal Card Replica Not Real",
+   "expect": {
+    "game": "pokemon",
+    "proxy": true
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon 50 Card Lot Holos Rares Guaranteed",
+   "expect": {
+    "game": "pokemon",
+    "lot": true
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Bulk Lot 100 Cards Commons Uncommons",
+   "expect": {
+    "game": "pokemon",
+    "lot": true
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Prismatic Evolutions Elite Trainer Box ETB Sealed",
+   "expect": {
+    "game": "pokemon",
+    "lot": true
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Surging Sparks Booster Pack Sealed",
+   "expect": {
+    "game": "pokemon",
+    "lot": true
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Pikachu ex 247/191 SIR Pack Fresh",
+   "expect": {
+    "game": "pokemon",
+    "lot": false,
+    "rarity": "sir"
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Eevee SVP 173 ETB Promo Prismatic Evolutions",
+   "expect": {
+    "game": "pokemon",
+    "lot": false
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Mew SWSH Box Topper Promo Card",
+   "expect": {
+    "game": "pokemon",
+    "lot": false
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Charizard ex 223/197 Obsidian Flames SIR 4x Playset",
+   "expect": {
+    "game": "pokemon",
+    "lot": true
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Pikachu with Grey Felt Hat SVP 085 Van Gogh Promo PSA 10",
+   "expect": {
+    "game": "pokemon",
+    "grade": {
+     "grader": "PSA",
+     "grade": 10
+    },
+    "lot": false
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pikachu & Zekrom GX Tag Team 33/181 Team Up Ultra Rare",
+   "expect": {
+    "game": "pokemon",
+    "grade": null,
+    "rarity": "ultra"
+   },
+   "hint": "pokemon"
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Celebrations Charizard 4/102 Classic Collection 1st Place Trophy style",
+   "expect": {
+    "game": "pokemon",
+    "firstEdition": false
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Charizard ex 054/091 Paldean Fates Double Rare",
+   "hint": "pokemon",
+   "expect": {
+    "game": "pokemon",
+    "rarity": "dr"
+   }
+  },
+  {
+   "group": "Magic",
+   "title": "MTG The One Ring Serialized 0001/0001 Lord of the Rings Tales of Middle-earth",
+   "expect": {
+    "game": "mtg",
+    "rarity": "serialized",
+    "serial": {
+     "n": 1,
+     "of": 1
+    }
+   }
+  },
+  {
+   "group": "Magic",
+   "title": "Magic the Gathering Edgar Markov Serialized 123/500 Innistrad Remastered",
+   "expect": {
+    "game": "mtg",
+    "rarity": "serialized",
+    "serial": {
+     "n": 123,
+     "of": 500
+    }
+   }
+  },
+  {
+   "group": "Magic",
+   "title": "MTG Sol Ring Serial Numbered 045/500 Commander Masters Double Rainbow Foil",
+   "expect": {
+    "game": "mtg",
+    "rarity": "serialized",
+    "serial": {
+     "n": 45,
+     "of": 500
+    }
+   }
+  },
+  {
+   "group": "Magic",
+   "title": "MTG Black Lotus Alpha PSA 7",
+   "expect": {
+    "game": "mtg",
+    "rarity": "vintage",
+    "grade": {
+     "grader": "PSA",
+     "grade": 7
+    }
+   }
+  },
+  {
+   "group": "Magic",
+   "title": "Magic: The Gathering Mox Sapphire Beta BGS 8.5",
+   "expect": {
+    "game": "mtg",
+    "rarity": "vintage",
+    "grade": {
+     "grader": "BGS",
+     "grade": 8.5
+    }
+   }
+  },
+  {
+   "group": "Magic",
+   "title": "MTG Time Walk Unlimited Edition Power Nine",
+   "expect": {
+    "game": "mtg",
+    "rarity": "vintage"
+   }
+  },
+  {
+   "group": "Magic",
+   "title": "MTG Library of Alexandria Arabian Nights",
+   "expect": {
+    "game": "mtg",
+    "rarity": "vintage"
+   }
+  },
+  {
+   "group": "Magic",
+   "title": "MTG Sheoldred the Apocalypse Textured Foil Dominaria United Mythic",
+   "expect": {
+    "game": "mtg",
+    "rarity": "special-foil"
+   }
+  },
+  {
+   "group": "Magic",
+   "title": "MTG Ragavan Nimble Pilferer Etched Foil Modern Horizons 2",
+   "expect": {
+    "game": "mtg",
+    "rarity": "special-foil"
+   }
+  },
+  {
+   "group": "Magic",
+   "title": "MTG Elesh Norn Step-and-Compleat Foil Phyrexia",
+   "expect": {
+    "game": "mtg",
+    "rarity": "special-foil"
+   }
+  },
+  {
+   "group": "Magic",
+   "title": "MTG Ojer Taq Surge Foil Lost Caverns Ixalan",
+   "expect": {
+    "game": "mtg",
+    "rarity": "special-foil"
+   }
+  },
+  {
+   "group": "Magic",
+   "title": "MTG Atraxa Grand Unifier Borderless Mythic Rare Phyrexia All Will Be One",
+   "expect": {
+    "game": "mtg",
+    "rarity": "mythic-treatment"
+   }
+  },
+  {
+   "group": "Magic",
+   "title": "MTG Ugin the Ineffable Showcase Mythic Fate Reforged",
+   "expect": {
+    "game": "mtg",
+    "rarity": "mythic-treatment"
+   }
+  },
+  {
+   "group": "Magic",
+   "title": "MTG Wrenn and Six Mythic Rare Modern Horizons NM",
+   "expect": {
+    "game": "mtg",
+    "rarity": "mythic"
+   }
+  },
+  {
+   "group": "Magic",
+   "title": "MTG Fable of the Mirror-Breaker Rare Kamigawa Neon Dynasty",
+   "expect": {
+    "game": "mtg",
+    "rarity": "rare"
+   }
+  },
+  {
+   "group": "Magic",
+   "title": "MTG Counterspell Uncommon Dominaria Remastered",
+   "expect": {
+    "game": "mtg",
+    "rarity": "uncommon"
+   }
+  },
+  {
+   "group": "Magic",
+   "title": "MTG Lightning Bolt Common Magic 2010 NM",
+   "expect": {
+    "game": "mtg",
+    "rarity": "common"
+   }
+  },
+  {
+   "group": "Magic",
+   "title": "MTG Japanese Jace the Mind Sculptor Borderless Foil",
+   "expect": {
+    "game": "mtg",
+    "language": "ja"
+   }
+  },
+  {
+   "group": "Magic",
+   "title": "MTG Japanese Alt Art Liliana Mythic WAR",
+   "expect": {
+    "game": "mtg",
+    "language": "ja",
+    "rarity": "mythic"
+   }
+  },
+  {
+   "group": "Magic",
+   "title": "MTG German Force of Will Alliances",
+   "expect": {
+    "game": "mtg",
+    "language": "other"
+   }
+  },
+  {
+   "group": "Magic",
+   "title": "MTG Proxy Black Lotus Custom Alt Art",
+   "expect": {
+    "game": "mtg",
+    "proxy": true
+   }
+  },
+  {
+   "group": "Magic",
+   "title": "MTG 1000 Card Bulk Lot Commons Uncommons",
+   "expect": {
+    "game": "mtg",
+    "lot": true
+   }
+  },
+  {
+   "group": "Magic",
+   "title": "MTG Collector Booster Box Sealed Duskmourn",
+   "expect": {
+    "game": "mtg",
+    "lot": true
+   }
+  },
+  {
+   "group": "Magic",
+   "title": "MTG Ragavan Playset 4x Modern Horizons 2",
+   "expect": {
+    "game": "mtg",
+    "lot": true
+   }
+  },
+  {
+   "group": "Magic",
+   "title": "Magic Gathering Mana Crypt Mythic Rare Commander",
+   "hint": "mtg",
+   "expect": {
+    "game": "mtg",
+    "rarity": "mythic"
+   }
+  },
+  {
+   "group": "Magic",
+   "title": "CGC 9 MTG Lord of the Rings The One Ring Borderless Poster",
+   "expect": {
+    "game": "mtg",
+    "grade": {
+     "grader": "CGC",
+     "grade": 9
+    }
+   }
+  },
+  {
+   "group": "Yu-Gi-Oh!",
+   "title": "Yu-Gi-Oh! Blue-Eyes White Dragon LOB-001 1st Edition Ultra Rare PSA 9",
+   "expect": {
+    "game": "yugioh",
+    "rarity": "ultra",
+    "firstEdition": true,
+    "grade": {
+     "grader": "PSA",
+     "grade": 9
+    }
+   }
+  },
+  {
+   "group": "Yu-Gi-Oh!",
+   "title": "Yugioh Dark Magician Girl MP24-EN001 Quarter Century Secret Rare",
+   "expect": {
+    "game": "yugioh",
+    "rarity": "starlight"
+   }
+  },
+  {
+   "group": "Yu-Gi-Oh!",
+   "title": "YuGiOh Accesscode Talker ETCO-EN046 Starlight Rare 1st Edition",
+   "expect": {
+    "game": "yugioh",
+    "rarity": "starlight",
+    "firstEdition": true
+   }
+  },
+  {
+   "group": "Yu-Gi-Oh!",
+   "title": "Yu-Gi-Oh Stardust Dragon TDGS-EN040 Ghost Rare Unlimited",
+   "expect": {
+    "game": "yugioh",
+    "rarity": "ghost",
+    "firstEdition": false
+   }
+  },
+  {
+   "group": "Yu-Gi-Oh!",
+   "title": "Yu-Gi-Oh! Ash Blossom Collector's Rare RA01-EN008",
+   "expect": {
+    "game": "yugioh",
+    "rarity": "collectors"
+   }
+  },
+  {
+   "group": "Yu-Gi-Oh!",
+   "title": "Yugioh Baby Dragon Ultimate Rare 1st Edition",
+   "expect": {
+    "game": "yugioh",
+    "rarity": "collectors",
+    "firstEdition": true
+   }
+  },
+  {
+   "group": "Yu-Gi-Oh!",
+   "title": "Yu-Gi-Oh! Snake-Eye Ash Platinum Secret Rare RA03-EN015",
+   "expect": {
+    "game": "yugioh",
+    "rarity": "collectors"
+   }
+  },
+  {
+   "group": "Yu-Gi-Oh!",
+   "title": "Yu-Gi-Oh Maxx C Prismatic Secret Rare",
+   "expect": {
+    "game": "yugioh",
+    "rarity": "collectors"
+   }
+  },
+  {
+   "group": "Yu-Gi-Oh!",
+   "title": "YuGiOh Ghost Ogre Snow Rabbit Secret Rare RA01",
+   "expect": {
+    "game": "yugioh",
+    "rarity": "secret"
+   }
+  },
+  {
+   "group": "Yu-Gi-Oh!",
+   "title": "Yu-Gi-Oh Pot of Greed LOB-119 Rare 1st",
+   "expect": {
+    "game": "yugioh",
+    "rarity": "rare",
+    "firstEdition": true
+   }
+  },
+  {
+   "group": "Yu-Gi-Oh!",
+   "title": "Yu-Gi-Oh! Raigeki Super Rare SDK",
+   "expect": {
+    "game": "yugioh",
+    "rarity": "super"
+   }
+  },
+  {
+   "group": "Yu-Gi-Oh!",
+   "title": "Yu-Gi-Oh! Mystical Space Typhoon Common",
+   "expect": {
+    "game": "yugioh",
+    "rarity": "common"
+   }
+  },
+  {
+   "group": "Yu-Gi-Oh!",
+   "title": "Blue-Eyes White Dragon SDK-001 Ultra Rare",
+   "expect": {
+    "game": "yugioh",
+    "rarity": "ultra"
+   }
+  },
+  {
+   "group": "Yu-Gi-Oh!",
+   "title": "Yu-Gi-Oh Japanese Dark Magician Girl 20th Secret Rare 20TH-JPC55",
+   "expect": {
+    "game": "yugioh",
+    "language": "ja",
+    "rarity": "secret"
+   }
+  },
+  {
+   "group": "Yu-Gi-Oh!",
+   "title": "Yugioh Ash Blossom MP24-JP010 Quarter Century",
+   "expect": {
+    "game": "yugioh",
+    "language": "ja",
+    "rarity": "starlight"
+   }
+  },
+  {
+   "group": "Yu-Gi-Oh!",
+   "title": "Yu-Gi-Oh! Blue-Eyes LOB-DE001 German 1st Edition",
+   "expect": {
+    "game": "yugioh",
+    "language": "other",
+    "firstEdition": true
+   }
+  },
+  {
+   "group": "Yu-Gi-Oh!",
+   "title": "Yu-Gi-Oh Korean Accesscode Talker Ultra Rare",
+   "expect": {
+    "game": "yugioh",
+    "language": "other"
+   }
+  },
+  {
+   "group": "Yu-Gi-Oh!",
+   "title": "Yugioh Orica Exodia Custom Card",
+   "expect": {
+    "game": "yugioh",
+    "proxy": true
+   }
+  },
+  {
+   "group": "Yu-Gi-Oh!",
+   "title": "Yu-Gi-Oh 100 Card Lot Holos Rares",
+   "expect": {
+    "game": "yugioh",
+    "lot": true
+   }
+  },
+  {
+   "group": "Yu-Gi-Oh!",
+   "title": "Yugioh Rarity Collection Booster Box Sealed",
+   "expect": {
+    "game": "yugioh",
+    "lot": true
+   }
+  },
+  {
+   "group": "Yu-Gi-Oh!",
+   "title": "BGS 10 Pristine Yu-Gi-Oh Dark Magician SDY-006 1st Edition",
+   "expect": {
+    "game": "yugioh",
+    "grade": {
+     "grader": "BGS",
+     "grade": 10
+    },
+    "firstEdition": true
+   }
+  },
+  {
+   "group": "Yu-Gi-Oh!",
+   "title": "Yu-Gi-Oh Blue Eyes LOB-EN001 1st Place Tournament Prize",
+   "expect": {
+    "game": "yugioh",
+    "firstEdition": false
+   }
+  },
+  {
+   "group": "One Piece",
+   "title": "One Piece Card Game Monkey D. Luffy OP05-119 SEC Manga Rare Awakening",
+   "expect": {
+    "game": "onepiece",
+    "rarity": "manga"
+   }
+  },
+  {
+   "group": "One Piece",
+   "title": "One Piece Shanks OP01-120 SEC Super Parallel",
+   "expect": {
+    "game": "onepiece",
+    "rarity": "manga"
+   }
+  },
+  {
+   "group": "One Piece",
+   "title": "One Piece Roronoa Zoro OP06-118 TR Treasure Rare",
+   "expect": {
+    "game": "onepiece",
+    "rarity": "tr"
+   }
+  },
+  {
+   "group": "One Piece",
+   "title": "One Piece Nami SP OP07 Special Card",
+   "expect": {
+    "game": "onepiece",
+    "rarity": "tr"
+   }
+  },
+  {
+   "group": "One Piece",
+   "title": "One Piece Boa Hancock OP07-051 SEC Parallel Alt Art",
+   "expect": {
+    "game": "onepiece",
+    "rarity": "sec-parallel"
+   }
+  },
+  {
+   "group": "One Piece",
+   "title": "One Piece Gol D. Roger OP09-118 SEC Secret Rare",
+   "expect": {
+    "game": "onepiece",
+    "rarity": "sec"
+   }
+  },
+  {
+   "group": "One Piece",
+   "title": "One Piece Yamato OP06-022 SR Alternate Art Parallel",
+   "expect": {
+    "game": "onepiece",
+    "rarity": "sr-parallel"
+   }
+  },
+  {
+   "group": "One Piece",
+   "title": "One Piece Trafalgar Law OP01-047 SR Super Rare",
+   "expect": {
+    "game": "onepiece",
+    "rarity": "sr"
+   }
+  },
+  {
+   "group": "One Piece",
+   "title": "One Piece Luffy OP01-003 Leader Parallel Alt Art",
+   "expect": {
+    "game": "onepiece",
+    "rarity": "leader-parallel"
+   }
+  },
+  {
+   "group": "One Piece",
+   "title": "One Piece Card Game Kaido ST04-001 L",
+   "expect": {
+    "game": "onepiece",
+    "rarity": "leader"
+   }
+  },
+  {
+   "group": "One Piece",
+   "title": "One Piece Nico Robin OP01-017 R",
+   "expect": {
+    "game": "onepiece",
+    "rarity": "rare"
+   }
+  },
+  {
+   "group": "One Piece",
+   "title": "One Piece Usopp OP01-004 UC",
+   "expect": {
+    "game": "onepiece",
+    "rarity": "uncommon"
+   }
+  },
+  {
+   "group": "One Piece",
+   "title": "One Piece Kid OP01-051 C Common",
+   "expect": {
+    "game": "onepiece",
+    "rarity": "common"
+   }
+  },
+  {
+   "group": "One Piece",
+   "title": "One Piece Championship 2024 Luffy Prize Card Promo",
+   "expect": {
+    "game": "onepiece",
+    "rarity": "prize"
+   }
+  },
+  {
+   "group": "One Piece",
+   "title": "One Piece Treasure Cup Zoro Promo Card",
+   "expect": {
+    "game": "onepiece",
+    "rarity": "prize"
+   }
+  },
+  {
+   "group": "One Piece",
+   "title": "OP05-119 Luffy SEC Manga",
+   "expect": {
+    "game": "onepiece",
+    "rarity": "manga"
+   }
+  },
+  {
+   "group": "One Piece",
+   "title": "One Piece Japanese Luffy OP05-119 SEC Manga Rare",
+   "expect": {
+    "game": "onepiece",
+    "language": "ja",
+    "rarity": "manga"
+   }
+  },
+  {
+   "group": "One Piece",
+   "title": "One Piece Card JP Shanks OP09-004 Leader Parallel",
+   "expect": {
+    "game": "onepiece",
+    "language": "ja",
+    "rarity": "leader-parallel"
+   }
+  },
+  {
+   "group": "One Piece",
+   "title": "PSA 10 One Piece Zoro OP01-025 SR Parallel Alt Art",
+   "expect": {
+    "game": "onepiece",
+    "grade": {
+     "grader": "PSA",
+     "grade": 10
+    },
+    "rarity": "sr-parallel"
+   }
+  },
+  {
+   "group": "One Piece",
+   "title": "One Piece Custom Proxy Gear 5 Luffy Manga",
+   "expect": {
+    "game": "onepiece",
+    "proxy": true
+   }
+  },
+  {
+   "group": "One Piece",
+   "title": "One Piece Romance Dawn OP01 Booster Box Sealed",
+   "expect": {
+    "game": "onepiece",
+    "lot": true
+   }
+  },
+  {
+   "group": "One Piece",
+   "title": "One Piece 20 Card Lot Rares",
+   "expect": {
+    "game": "onepiece",
+    "lot": true
+   }
+  },
+  {
+   "group": "Lorcana",
+   "title": "Disney Lorcana Fabled Iconic Mickey Mouse",
+   "expect": {
+    "game": "lorcana",
+    "rarity": "iconic"
+   }
+  },
+  {
+   "group": "Lorcana",
+   "title": "Disney Lorcana Elsa Spirit of Winter Enchanted 207/204 The First Chapter",
+   "expect": {
+    "game": "lorcana",
+    "rarity": "enchanted",
+    "firstEdition": false,
+    "serial": null
+   }
+  },
+  {
+   "group": "Lorcana",
+   "title": "Lorcana Stitch Epic Fabled Set 9",
+   "expect": {
+    "game": "lorcana",
+    "rarity": "epic"
+   }
+  },
+  {
+   "group": "Lorcana",
+   "title": "Disney Lorcana Maleficent Monstrous Dragon Legendary Cold Foil",
+   "expect": {
+    "game": "lorcana",
+    "rarity": "legendary"
+   }
+  },
+  {
+   "group": "Lorcana",
+   "title": "Disney Lorcana Belle Strange but Special Super Rare",
+   "expect": {
+    "game": "lorcana",
+    "rarity": "super"
+   }
+  },
+  {
+   "group": "Lorcana",
+   "title": "Lorcana Mickey Mouse Brave Little Tailor Rare",
+   "expect": {
+    "game": "lorcana",
+    "rarity": "rare"
+   }
+  },
+  {
+   "group": "Lorcana",
+   "title": "Disney Lorcana Hades Uncommon Foil",
+   "expect": {
+    "game": "lorcana",
+    "rarity": "uncommon"
+   }
+  },
+  {
+   "group": "Lorcana",
+   "title": "Lorcana Pumbaa Common",
+   "expect": {
+    "game": "lorcana",
+    "rarity": "common"
+   }
+  },
+  {
+   "group": "Lorcana",
+   "title": "Disney Lorcana Japanese Enchanted Elsa",
+   "expect": {
+    "game": "lorcana",
+    "language": "ja",
+    "rarity": "enchanted"
+   }
+  },
+  {
+   "group": "Lorcana",
+   "title": "CGC 10 Pristine Disney Lorcana Enchanted Mickey",
+   "expect": {
+    "game": "lorcana",
+    "grade": {
+     "grader": "CGC",
+     "grade": 10
+    },
+    "rarity": "enchanted"
+   }
+  },
+  {
+   "group": "Lorcana",
+   "title": "Disney Lorcana D23 Promo Mickey Mouse Foil",
+   "expect": {
+    "game": "lorcana"
+   }
+  },
+  {
+   "group": "Lorcana",
+   "title": "Lorcana Proxy Enchanted Elsa Custom",
+   "expect": {
+    "game": "lorcana",
+    "proxy": true
+   }
+  },
+  {
+   "group": "Lorcana",
+   "title": "Disney Lorcana Booster Box Sealed Rise of the Floodborn",
+   "expect": {
+    "game": "lorcana",
+    "lot": true
+   }
+  },
+  {
+   "group": "Lorcana",
+   "title": "Lorcana 50 Card Bundle Foils",
+   "expect": {
+    "game": "lorcana",
+    "lot": true
+   }
+  },
+  {
+   "group": "Edge cases",
+   "title": "Charizard 4/102 Holo Rare",
+   "hint": "pokemon",
+   "expect": {
+    "game": "pokemon",
+    "rarity": "holo",
+    "serial": null
+   }
+  },
+  {
+   "group": "Edge cases",
+   "title": "Monkey D Luffy Manga Rare",
+   "hint": "onepiece",
+   "expect": {
+    "game": "onepiece",
+    "rarity": "manga"
+   }
+  },
+  {
+   "group": "Edge cases",
+   "title": "Black Lotus Alpha",
+   "hint": "mtg",
+   "expect": {
+    "game": "mtg",
+    "rarity": "vintage"
+   }
+  },
+  {
+   "group": "Edge cases",
+   "title": "Pokemon Charizard 2023/24 promo",
+   "expect": {
+    "game": "pokemon",
+    "serial": null
+   }
+  },
+  {
+   "group": "Edge cases",
+   "title": "MTG Serialized Elesh Norn #'d 078/250 Double Rainbow",
+   "expect": {
+    "game": "mtg",
+    "serial": {
+     "n": 78,
+     "of": 250
+    },
+    "rarity": "serialized"
+   }
+  },
+  {
+   "group": "Edge cases",
+   "title": "Pikachu & Zekrom GX 33/181 Ultra Rare",
+   "expect": {
+    "game": null,
+    "rarity": null
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Charizard Celebrations Ultra-Premium Coll. Gold Metal Promo 4/102 PSA 9",
+   "expect": {
+    "game": "pokemon",
+    "rarity": null,
+    "grade": {
+     "grader": "PSA",
+     "grade": 9
+    }
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "1999 Burger King Pokemon Charizard Gold Card PSA 6",
+   "expect": {
+    "game": "pokemon",
+    "rarity": null
+   }
+  },
+  {
+   "group": "Pokémon",
+   "title": "Pokemon Mega Charizard EX UR #108 RUSSIAN PSA 7",
+   "expect": {
+    "game": "pokemon",
+    "language": "other",
+    "rarity": "hr"
+   }
+  }
+ ]
+}
