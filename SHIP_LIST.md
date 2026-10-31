@@ -6,7 +6,6 @@ The single list of work that's finished or in progress but **not live yet**. The
 
 | # | What | Agent | Status | Files | Extra deploy step |
 |---|---|---|---|---|---|
-| S-ben | Sign-up page benefits + gentle "why sign up / Not now" prompt for signed-out searchers | Design | 🟡 Building (Option B approved) | signup, login, page.js, new prompt component | — |
 | 7 | eBay Partner Network affiliate links | CFO | ⏸ Plan approved. Waiting on Landon's sign-up + Campaign ID; code held until batch ships | SiteTour.js, guides, reading-list copy + link tagging | — |
 | L05 | Proof strip | Landing | ⏹ Skipped: no honest live number yet (no fake figures) | — | — |
 | S-poll | Lock down the alert checker: it can be triggered by anyone holding the public key; require a private secret header from the cron jobs instead | Debugger | ⚪ Follow-up (low risk today: it only re-runs checks and never re-sends) | poller, both cron jobs | poller deploy + Landon edits 2 cron jobs |
@@ -17,6 +16,7 @@ The single list of work that's finished or in progress but **not live yet**. The
 
 | When | What | Commit |
 |---|---|---|
+| 2026-10-30 | Sign-up page benefits; signed-out sign-up prompt after the 4th result (Option B) | bf6a5ae |
 | 2026-10-26 | Free early access (no payments; everyone 5 alerts; plans/pricing hidden behind NEXT_PUBLIC_PAYMENTS_LIVE); "Common print runs" wording | a5180af + poller deployed |
 | 2026-10-26 | "How it works" header link jumps to its section (or opens the page) | 1fe3a45 |
 | 2026-10-25 | Rarity colour lists: 27 sets + 19 autograph lists | 19a92e3 |
