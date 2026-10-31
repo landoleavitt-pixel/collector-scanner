@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sister Site Looks</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400;1,9..144,500&family=Cormorant+Garamond:ital,wght@0,500;1,500;1,600&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap');
+
+/* ── Themes. Same token names, different values: that's the sibling rule. ── */
+.t-ff{ --bg:#0a0907; --elev:#14110c; --elev2:#1a160f; --line:#2a251c; --soft:#1f1c16;
+  --ink:#f7f1e1; --ink2:#e8dfc9; --ink4:#a99e85; --ink6:#6b6354;
+  --acc:#c9954a; --acc2:#e6b96b; --accdeep:#8f6a32; --on:#1a1612;
+  --display:'Instrument Serif',serif; --dw:400; --sheen:linear-gradient(115deg,transparent 30%,rgba(255,230,168,.25) 50%,transparent 70%);
+  --edge:var(--acc2); }
+/* A · Night foil: midnight ink, a holo-foil edge as the signature, moonlight text */
+.t-a{ --bg:#080a12; --elev:#10131f; --elev2:#161a29; --line:#242a3d; --soft:#1a1f2f;
+  --ink:#eef0f7; --ink2:#d5d9e8; --ink4:#9198b0; --ink6:#5d6480;
+  --acc:#8fd3e8; --acc2:#b9e6f2; --accdeep:#4b7f93; --on:#071018;
+  --display:'Fraunces',serif; --dw:400;
+  --foil:linear-gradient(100deg,#9fe3f5 0%,#b6a8f0 28%,#f0b3d0 52%,#f3d9a0 76%,#9fe3f5 100%);
+  --sheen:linear-gradient(115deg,transparent 25%,rgba(185,230,242,.18) 40%,rgba(240,179,208,.18) 55%,rgba(243,217,160,.16) 68%,transparent 80%);
+  --edge:var(--foil); }
+/* B · Verdigris: deep spruce, aged-copper accent, engraved frame lines as the signature */
+.t-b{ --bg:#08100e; --elev:#0f1a17; --elev2:#14231f; --line:#223631; --soft:#182824;
+  --ink:#efe9dc; --ink2:#ddd5c4; --ink4:#98a79f; --ink6:#5f6f68;
+  --acc:#6fc4a4; --acc2:#9ad8bf; --accdeep:#3d7c66; --on:#06130f; --copper:#c98a5e;
+  --display:'Cormorant Garamond',serif; --dw:600;
+  --sheen:linear-gradient(115deg,transparent 30%,rgba(154,216,191,.16) 50%,transparent 70%);
+  --edge:var(--acc2); }
+
+*{box-sizing:border-box}
+body{margin:0;background:#030303;color:#efe9dc;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.page{max-width:1240px;margin:0 auto;padding:40px 16px 80px}
+.eyebrow{font:500 11px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#c9954a}
+h1.t{font:italic 400 46px/1.02 'Instrument Serif',serif;margin:10px 0 10px}
+.lede{color:#a99e85;font-size:15px;max-width:760px;line-height:1.6;margin:0 0 30px}
+.sec{border-top:1px solid #3a3226;padding-top:20px;margin:60px 0 22px}
+.sec .n{font:600 12px 'Geist Mono',monospace;color:#e6b96b;letter-spacing:.14em}
+.sec h2{font:italic 400 32px/1.1 'Instrument Serif',serif;margin:6px 0 6px}
+.sec p{margin:0;color:#a99e85;font-size:14px;max-width:760px;line-height:1.55}
+.ic{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* palette strip */
+.looks{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.look{border-radius:12px;padding:18px;background:var(--bg);border:1px solid var(--line);color:var(--ink)}
+.look h3{margin:0 0 2px;font:var(--dw) 26px var(--display);font-style:italic}
+.look .why{font-size:13px;color:var(--ink4);margin:0 0 14px;line-height:1.5}
+.sw{display:flex;gap:6px;margin-bottom:12px}
+.sw i{flex:1;height:34px;border-radius:6px;border:1px solid rgba(255,255,255,.06)}
+.type{font-size:13px;color:var(--ink2);line-height:1.6}
+.type b{font:var(--dw) 20px var(--display);font-style:italic;color:var(--ink)}
+.motif{margin-top:12px;font-size:12px;color:var(--ink4)}
+.foilbar{height:6px;border-radius:999px;background:var(--edge);margin:10px 0 4px}
+
+/* ── shared UI built once, themed by wrapper ── */
+.site{background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:14px;overflow:hidden;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.t-a .site,.site.t-a{background:radial-gradient(1200px 500px at 70% -10%,rgba(143,211,232,.06),transparent 60%),var(--bg)}
+.t-b .site,.site.t-b{background:var(--bg)}
+.hdr{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 26px;border-bottom:1px solid var(--soft)}
+.brand{display:flex;align-items:center;gap:10px;font:var(--dw) 21px var(--display);white-space:nowrap}
+.brand em{color:var(--acc);font-style:normal}
+.mark{width:26px;height:26px;border-radius:50%;border:1px solid var(--accdeep);display:grid;place-items:center;font:italic 11px var(--display);color:var(--acc)}
+.t-a .mark{border:1px solid transparent;background:linear-gradient(var(--bg),var(--bg)) padding-box,var(--foil) border-box}
+.t-b .mark{border-radius:6px;transform:rotate(45deg)} .t-b .mark span{transform:rotate(-45deg)}
+.nav{display:flex;align-items:center;gap:22px;font:500 11px Geist,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--ink4)}
+.cta{font:600 11px Geist,sans-serif;letter-spacing:.14em;text-transform:uppercase;background:var(--acc2);color:var(--on);border-radius:999px;padding:8px 14px;white-space:nowrap}
+/* the switch */
+.switch{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--elev);gap:2px}
+.switch span{font:500 12px Geist,sans-serif;padding:6px 12px;border-radius:999px;color:var(--ink4);white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.switch span.on{background:var(--elev2);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+.dot{width:7px;height:7px;border-radius:50%;flex:none}
+.dot.ff{background:#e6b96b}.dot.a{background:linear-gradient(135deg,#9fe3f5,#b6a8f0,#f0b3d0,#f3d9a0)}.dot.b{background:#9ad8bf}
+
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:30px;align-items:center;padding:46px 40px 36px}
+.hero h1{font:var(--dw) 64px/.98 var(--display);font-style:italic;margin:0 0 14px;letter-spacing:-.01em}
+.hero h1 em{color:var(--acc2)}
+.t-a .hero h1 em{background:var(--foil);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .sub{font:italic 400 18px var(--display);color:var(--acc);margin-bottom:12px}
+.search{display:flex;align-items:center;gap:10px;border:1px solid var(--accdeep);border-radius:12px;padding:7px 7px 7px 16px;background:var(--elev)}
+.t-a .search{border:1px solid transparent;background:linear-gradient(var(--elev),var(--elev)) padding-box,var(--foil) border-box}
+.search span{flex:1;color:var(--ink6);font-size:16px}
+.search b{font:600 12px Geist,sans-serif;letter-spacing:.06em;background:var(--acc2);color:var(--on);border-radius:8px;padding:11px 14px;display:inline-flex;gap:6px;align-items:center;white-space:nowrap}
+.hunts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.hunts span{font-size:13px;color:var(--ink2);border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+.fine{font-size:12px;color:var(--ink6);margin-top:10px}
+/* the featured card object */
+.slab{width:220px;aspect-ratio:2.6/4;border-radius:12px;padding:20px 12px 12px;margin:0 auto;position:relative;transform:rotate(-4deg);background:linear-gradient(160deg,var(--elev2),var(--bg));border:1px solid var(--line);box-shadow:0 30px 60px rgba(0,0,0,.6)}
+.slab::before{content:'';position:absolute;top:8px;left:12px;right:12px;height:12px;border-radius:3px;background:var(--elev)}
+.art{display:block;height:100%;border-radius:6px;position:relative;overflow:hidden;padding:4px}
+.art::after{content:'';position:absolute;inset:0;background:var(--sheen)}
+.t-a .slab{border:1px solid transparent;background:linear-gradient(160deg,var(--elev2),var(--bg)) padding-box,var(--foil) border-box}
+.t-b .slab{box-shadow:0 30px 60px rgba(0,0,0,.6),inset 0 0 0 4px var(--bg),inset 0 0 0 5px var(--accdeep)}
+.liverow{display:flex;justify-content:center;gap:8px;align-items:center;margin-top:18px;font-size:12px;color:var(--ink4)}
+.liverow i{width:6px;height:6px;border-radius:50%;background:#7fd49a}
+
+.strip{padding:6px 40px 40px}
+.strip h3{font:var(--dw) 26px var(--display);font-style:italic;margin:0 0 14px}
+.strip h3 em{color:var(--acc2)}
+.cards{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.cc{border-radius:8px;background:var(--elev);border:1px solid var(--soft);padding:8px}
+.cc .art{aspect-ratio:3/4;height:auto;margin-bottom:8px}
+.cc .tt{font-size:12px;color:var(--ink2);line-height:1.3;height:31px;overflow:hidden}
+.cc .p{font:500 14px Geist,sans-serif;margin-top:4px}
+
+/* tier chips per theme */
+.chip{display:inline-block;font:700 10px 'Geist Mono',monospace;letter-spacing:.04em;padding:2px 6px;border-radius:4px;color:#0a0a0a;margin:4px 4px 0 0}
+.t-ff .c1{background:linear-gradient(180deg,#ffd97a,#d99c14)}.t-ff .c2{background:linear-gradient(180deg,#e0e8f0,#98a5b3)}.t-ff .c3{background:linear-gradient(180deg,#d6884a,#8e4f1f)}.t-ff .c4{background:linear-gradient(180deg,#8a96a4,#4a5360)}
+.t-a .c1{background:var(--foil)}.t-a .c2{background:linear-gradient(180deg,#c9d3f5,#8b97c7)}.t-a .c3{background:linear-gradient(180deg,#9fe3f5,#4b98ad)}.t-a .c4{background:linear-gradient(180deg,#7a8199,#4a5068)}
+.t-b .c1{background:linear-gradient(180deg,#e8b88f,#a8673c)}.t-b .c2{background:linear-gradient(180deg,#bfe6d4,#6fa58d)}.t-b .c3{background:linear-gradient(180deg,#9ab8cf,#55758f)}.t-b .c4{background:linear-gradient(180deg,#8d9a94,#56645e)}
+.ochip{display:inline-block;font:500 11px Geist,sans-serif;padding:2px 7px;border-radius:4px;color:var(--acc2);border:.5px solid var(--accdeep);margin:4px 4px 0 0}
+
+/* results */
+.res{display:grid;grid-template-columns:230px 1fr;min-height:540px}
+.side{border-right:1px solid var(--soft);padding:22px 20px}
+.side .k{font:500 10px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--ink4);margin:16px 0 8px}
+.side .k:first-child{margin-top:0}
+.opts{display:flex;flex-wrap:wrap;gap:6px}
+.opts span{font-size:12px;color:var(--ink2);border:1px solid var(--line);border-radius:999px;padding:5px 10px}
+.opts span.on{background:var(--acc2);color:var(--on);border-color:var(--acc2)}
+.list{padding:20px 26px}
+.list .q{font:var(--dw) 34px var(--display);font-style:italic;margin:2px 0 6px}
+.list .cnt{font-size:13px;color:var(--ink4);margin-bottom:6px}
+.row{display:grid;grid-template-columns:72px 1fr auto;gap:16px;align-items:center;padding:14px 0 14px 12px;border-bottom:1px solid var(--soft);position:relative}
+.row.rare::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--edge)}
+.row .art{width:72px;aspect-ratio:3/4;height:auto}
+.row .tt{font:var(--dw) 18px/1.2 var(--display);font-style:italic}
+.row .m{font-size:12px;color:var(--ink4);margin-top:4px}
+.row .p{font:500 20px Geist,sans-serif;text-align:right}
+
+/* watchlist */
+.wl{padding:24px 28px}
+.wl h2{font:var(--dw) 36px var(--display);font-style:italic;margin:0 0 14px}
+.tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.tabs span{font-size:13px;padding:7px 13px;border-radius:999px;border:1px solid var(--line);color:var(--ink2);display:inline-flex;align-items:center;gap:7px}
+.tabs span.on{background:var(--elev2);color:var(--ink);box-shadow:inset 0 0 0 1px var(--acc)}
+.wgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.wc{border-radius:12px;padding:10px;background:var(--elev);border:1px solid var(--soft);position:relative}
+.wc .art{aspect-ratio:3/4;height:auto;margin-bottom:9px}
+.wc .side-tag{position:absolute;top:16px;left:16px;font:500 11px Geist,sans-serif;padding:3px 8px;border-radius:999px;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);color:#f2f2f2;display:inline-flex;gap:6px;align-items:center}
+.wc .tt{font-size:13px;color:var(--ink2);line-height:1.3;height:34px;overflow:hidden}
+.wc .p{font:500 16px Geist,sans-serif;margin-top:4px}
+.wc .m{font-size:12px;color:var(--ink4)}
+.wc.ff{box-shadow:inset 0 2px 0 #c9954a}.wc.a{box-shadow:inset 0 2px 0 #b6a8f0}.wc.b{box-shadow:inset 0 2px 0 #6fc4a4}
+
+/* phones */
+.phones{display:flex;gap:24px;flex-wrap:wrap;justify-content:center}
+.phone{width:375px;max-width:100%;height:812px;border:10px solid #18160f;border-radius:50px;overflow:hidden;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.6);background:var(--bg);color:var(--ink)}
+.status{height:44px;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font:600 14px Geist,sans-serif}
+.phone .hdr{padding:10px 16px}
+.phone .brand{font-size:17px}
+.phone .hero{grid-template-columns:1fr;padding:22px 18px 10px;gap:12px}
+.phone .hero h1{font-size:44px}
+.phone .slab{width:150px}
+.phone .strip{padding:6px 18px 18px}.phone .cards{grid-template-columns:repeat(3,1fr)}
+.tabbar{position:absolute;left:14px;right:14px;bottom:14px;height:62px;display:grid;grid-template-columns:repeat(4,1fr);background:color-mix(in srgb,var(--elev2) 85%,transparent);backdrop-filter:blur(18px);border:1px solid var(--line);border-radius:22px;box-shadow:0 16px 40px rgba(0,0,0,.6)}
+.tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--ink4);font:500 11px Geist,sans-serif}
+.tab .w{width:48px;height:30px;border-radius:999px;display:grid;place-items:center}
+.tab.on{color:var(--acc2)}.tab.on .w{background:color-mix(in srgb,var(--acc) 18%,transparent)}
+.caption{text-align:center;color:#a99e85;font-size:13px;margin:12px auto 0;max-width:370px;line-height:1.45}
+.launch{position:absolute;inset:44px 0 0;display:grid;grid-template-rows:1fr 1fr}
+.launch > div{position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:26px 24px;overflow:hidden}
+.launch h4{margin:0;font:var(--dw) 38px/1 var(--display);font-style:italic}
+.launch p{margin:6px 0 0;font-size:13px;color:var(--ink4)}
+.launch .go{position:absolute;right:22px;bottom:28px;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--acc2);color:var(--on)}
+.minicards{position:absolute;top:26px;right:-10px;display:flex;gap:10px;transform:rotate(-6deg)}
+.minicards .art{width:84px;aspect-ratio:3/4;height:auto;box-shadow:0 14px 30px rgba(0,0,0,.6)}
+.hint{position:absolute;left:0;right:0;bottom:18px;text-align:center;font-size:12px;color:#8a8a8a}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.note{border:1px solid #2a251c;border-radius:10px;padding:16px;background:#100e0b}
+.note h3{margin:0 0 6px;font:500 11px 'Geist Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:#c9954a}
+.note p{margin:0;font-size:14px;line-height:1.55;color:#ddd5c4}
+.rec{display:inline-block;font:600 10px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#1a1612;background:#e6b96b;padding:2px 7px;border-radius:4px;margin-left:8px;vertical-align:5px}
+@media (max-width:980px){.looks{grid-template-columns:1fr}.hero{grid-template-columns:1fr}.cards{grid-template-columns:repeat(3,1fr)}.res{grid-template-columns:1fr}.side{display:none}.wgrid{grid-template-columns:repeat(2,1fr)}.nav{display:none}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="eyebrow">Fields &amp; Floors · Sister site</div>
+  <h1 class="t">Two sides, one family</h1>
+  <p class="lede">The sister side keeps F&amp;F's skeleton: the same layout, spacing, 4/8/12/full corners, search bar, chips, result rows and floating tab bar. What changes is colour, type and one signature detail, so the two sides read as siblings, not twins. Two looks to choose from. "[Sister name]" is a placeholder, and the filters are placeholders until the research report lands. Card art is generic, with no game logos or trademarks.</p>
+
+  <div class="sec"><div class="n">1</div><h2>The two looks</h2><p>F&amp;F on the left for reference. Each sister look has one signature it owns, the way gold and the slab are F&amp;F's.</p></div>
+  <div class="looks">
+    <div class="look t-ff"><h3>Fields &amp; Floors</h3><p class="why">Reference. Warm black, gold, Instrument Serif. The signature is the gold slab and the grail-gold chip.</p>
+      <div class="sw"><i style="background:#0a0907"></i><i style="background:#14110c"></i><i style="background:#c9954a"></i><i style="background:#e6b96b"></i><i style="background:#f7f1e1"></i></div>
+      <div class="type"><b>Instrument Serif</b> · Geist · Geist Mono</div><div class="foilbar"></div><div class="motif">Signature: gold</div></div>
+    <div class="look t-a"><h3>A · Night foil</h3><p class="why">Midnight blue-black with moonlight text. The signature is a holographic foil used sparingly, only on edges, the top rarity chip and one headline word, the way foil sits on a real card.</p>
+      <div class="sw"><i style="background:#080a12"></i><i style="background:#10131f"></i><i style="background:#8fd3e8"></i><i style="background:linear-gradient(100deg,#9fe3f5,#b6a8f0,#f0b3d0,#f3d9a0)"></i><i style="background:#eef0f7"></i></div>
+      <div class="type"><b>Fraunces</b> · Geist · Geist Mono</div><div class="foilbar"></div><div class="motif">Signature: holo foil edge and shimmer</div></div>
+    <div class="look t-b"><h3>B · Verdigris</h3><p class="why">Deep spruce with parchment text and aged-copper highlights. The signature is engraved double frame lines and a diamond mark, like an old card border or a book plate.</p>
+      <div class="sw"><i style="background:#08100e"></i><i style="background:#0f1a17"></i><i style="background:#6fc4a4"></i><i style="background:#c98a5e"></i><i style="background:#efe9dc"></i></div>
+      <div class="type"><b>Cormorant Garamond</b> · Geist · Geist Mono</div><div class="foilbar"></div><div class="motif">Signature: engraved frame lines and copper</div></div>
+  </div>
+
+  <div class="sec"><div class="n">2</div><h2>Look A · Night foil</h2><p>Signed-out home, then a results list with rarity chips. The switch is in the header.</p></div>
+  <div class="site t-a" data-home="a"></div>
+  <div style="height:18px"></div>
+  <div class="site t-a" data-results="a"></div>
+
+  <div class="sec"><div class="n">3</div><h2>Look B · Verdigris</h2></div>
+  <div class="site t-b" data-home="b"></div>
+  <div style="height:18px"></div>
+  <div class="site t-b" data-results="b"></div>
+
+  <div class="sec"><div class="n">4</div><h2>The switch</h2><p>A two-part pill beside the logo: Sports · [Sister name]. It's always in the same spot on both sides, the active side is filled, and each side has its own coloured dot. Tapping it keeps you signed in and keeps the same search if it makes sense on the other side.</p></div>
+  <div class="site t-ff" data-hdr="ff"></div><div style="height:10px"></div>
+  <div class="site t-a" data-hdr="a"></div><div style="height:10px"></div>
+  <div class="site t-b" data-hdr="b"></div>
+  <div class="phones" style="margin-top:22px">
+    <div><div class="phone t-ff" data-phonehdr="ff"></div><p class="caption">Phone, Sports side. The switch sits right under the header so it's never hidden in a menu.</p></div>
+    <div><div class="phone t-a" data-phonehdr="a"></div><p class="caption">Phone, [Sister name] side, look A</p></div>
+  </div>
+
+  <div class="sec"><div class="n">5</div><h2>One watchlist, both kinds of cards</h2><p>A single watchlist and set of saved searches across both sides. A filter row shows All · Sports · [Sister name] with counts, and every card carries a small side tag and a top edge in its side's colour. The page takes the look of whichever side you're on.</p></div>
+  <div class="site t-a" data-wl="a"></div>
+
+  <div class="sec"><div class="n">6</div><h2>The app with two sides</h2><p>One app, both sides, and the same floating tab bar. Two ways to move between them.</p></div>
+  <div class="phones">
+    <div><div class="phone t-a" data-app1="a"></div><p class="caption"><b style="color:#e6b96b">Idea 1 · Switch at the top</b> <span class="rec">Recommended</span><br>The same pill as the website, under the logo. One tap flips the whole app's look. Watchlist and Alerts show both sides with the filter.</p></div>
+    <div><div class="phone" data-app2 style="background:#050505"></div><p class="caption"><b style="color:#e6b96b">Idea 2 · Choose on launch</b><br>The first screen asks which side, then the app opens there. Switch later from Account. It's clearer for new users, but slower for people who collect both.</p></div>
+  </div>
+
+  <div class="sec"><div class="n">7</div><h2>Recommendation</h2></div>
+  <div class="notes">
+    <div class="note"><h3>Look</h3><p><b>A · Night foil.</b> Foil is what non-sports collectors chase (holos, foils, secret rares), so the signature means something. It's magical through material rather than clip-art. Midnight blue sits opposite F&amp;F's warm black, so the two sides never get confused. B is quieter and more literary. Pick it if A feels too bright.</p></div>
+    <div class="note"><h3>Switch</h3><p>A two-part pill beside the logo, in the same place on both sides. It reads as "same company, other side", and it never hides in a menu.</p></div>
+    <div class="note"><h3>App</h3><p><b>Idea 1</b>, the switch at the top. Collectors of both get one tap, and the tab bar stays identical. A first-launch question can come later if the data shows people are confused.</p></div>
+    <div class="note"><h3>Rules kept</h3><p>Same layout, spacing, radii and type scale, with one accent family per side. Foil only appears on edges and the top rarity: never full backgrounds and never purple gradients. All copy is plain.</p></div>
+  </div>
+</div>
+
+<script>
+const I = {
+  search:'<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>', arrow:'<path d="M5 12h14M12 5l7 7-7 7"/>',
+  star:'<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.6l1-5.8L3.5 9.7l5.9-.9z"/>',
+  bell:'<path d="M6 16.5V11a6 6 0 0112 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 004 0"/>',
+  user:'<circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.3-3.6 4.2-5.5 7.5-5.5s6.2 1.9 7.5 5.5"/>',
+};
+const ic = (n,s='') => `<svg class="ic" viewBox="0 0 24 24" ${s}>${I[n]}</svg>`;
+
+// Generic card art: abstract scenes, no characters, no logos.
+const ARTS = {
+  ff:[['#ff9842','#cc5e0d'],['#e6c14d','#a8851e'],['#cc3340','#8a1c25'],['#5694ff','#2a5db8'],['#86d957','#3fa61c'],['#8a4dd9','#5d2da3']],
+  tcg:[
+    'radial-gradient(60% 50% at 30% 30%,#f7d58a,transparent 60%),radial-gradient(70% 60% at 70% 80%,#d0503c,transparent 60%),linear-gradient(160deg,#3a1d2a,#120a10)',
+    'radial-gradient(50% 40% at 70% 25%,#bdf0ff,transparent 60%),linear-gradient(180deg,#2b6c9e 0%,#16304f 60%,#0a1424 100%)',
+    'radial-gradient(60% 50% at 50% 70%,#7fe0a8,transparent 60%),linear-gradient(170deg,#1c3b2b,#0b1712)',
+    'radial-gradient(40% 40% at 30% 40%,#ffe9a8,transparent 60%),radial-gradient(60% 60% at 80% 70%,#a77bd8,transparent 60%),linear-gradient(160deg,#241a3d,#0d0a18)',
+    'linear-gradient(180deg,#e9c7a0 0%,#b9763f 45%,#5a3018 100%)',
+    'radial-gradient(70% 50% at 50% 30%,#c8d2e8,transparent 60%),linear-gradient(170deg,#3c4660,#151a26)',
+  ],
+};
+const ffArt = i => `<span class="art" style="background:linear-gradient(135deg,${ARTS.ff[i%6][0]},${ARTS.ff[i%6][1]})"><span style="display:block;height:100%;border-radius:3px;background:radial-gradient(ellipse at 50% 30%,#4a3524,#120d08 70%)"></span></span>`;
+const tcgArt = (i, frame) => `<span class="art" style="background:${frame}"><span style="display:block;height:100%;border-radius:3px;background:${ARTS.tcg[i%6]}"></span></span>`;
+const FRAME = { a:'linear-gradient(135deg,#c9d3f5,#7a86b5)', b:'linear-gradient(135deg,#c98a5e,#6b4127)' };
+const art = (side,i) => side==='ff' ? ffArt(i) : tcgArt(i, FRAME[side]);
+
+const NAME = { ff:'Fields <em>&amp;</em> Floors', a:'[Sister name]', b:'[Sister name]' };
+const sw = side => `<span class="switch"><span class="${side==='ff'?'on':''}"><i class="dot ff"></i>Sports</span><span class="${side!=='ff'?'on':''}"><i class="dot ${side==='ff'?'a':side}"></i>[Sister name]</span></span>`;
+const hdr = side => `<div class="hdr"><div style="display:flex;align-items:center;gap:18px"><div class="brand"><span class="mark"><span>${side==='ff'?'F':'S'}</span></span>${NAME[side]}</div>${sw(side)}</div>
+  <div style="display:flex;align-items:center;gap:22px"><div class="nav"><span>How it works</span><span>Sign in</span></div><span class="cta">Get alerts</span></div></div>`;
+
+const CARDS = [['Secret rare alt art','$1,450','c1','Secret'],['Full-art trainer, 1st edition','$620','c1','Ultra'],['Foil mythic, borderless','$310','c2','Mythic'],['Holo rare, shadowless','$240','c2','Holo'],['Showcase foil, extended art','$95','c3','Rare'],['Reverse holo, misprint','$60','c4','Uncommon']];
+
+const home = side => hdr(side) + `<div class="hero"><div>
+    <h1>${side==='a'?'Chase the <em>shine</em>.':'Find the <em>rare</em> one.'}</h1>
+    <div class="sub">Just try it.</div>
+    <div class="search">${ic('search','style="color:var(--ink4)"')}<span>Search a card, set or character</span><b>Show cards ${ic('arrow','style="width:14px;height:14px"')}</b></div>
+    <div class="hunts"><span>Secret rares</span><span>Alt art</span><span>1st edition</span><span>Graded 10s</span></div>
+    <div class="fine">Not affiliated with eBay or any game publisher.</div></div>
+  <div><div class="slab">${art(side,0)}</div><div class="liverow"><i></i>Live on eBay · $1,450</div></div></div>
+  <div class="strip"><h3>One search. <em>Rarest first.</em></h3><div class="cards">${CARDS.map((c,i)=>`<div class="cc">${art(side,i)}<div class="tt"><span class="chip ${c[2]}">${c[3]}</span>${c[0]}</div><div class="p">${c[1]}</div></div>`).join('')}</div></div>`;
+
+const results = side => hdr(side) + `<div class="res"><div class="side">
+    <div class="k">Game</div><div class="opts"><span class="on">Any</span><span>Game one</span><span>Game two</span><span>Game three</span></div>
+    <div class="k">Set</div><div class="opts"><span>Any set</span><span>Base set</span><span>Latest</span></div>
+    <div class="k">Rarity</div><div class="opts"><span class="on">Secret</span><span class="on">Ultra</span><span>Holo</span><span>Rare</span></div>
+    <div class="k">Language</div><div class="opts"><span class="on">English</span><span>Japanese</span><span>Other</span></div>
+    <div class="k">Grade</div><div class="opts"><span>Raw</span><span class="on">Graded</span><span>10 only</span></div></div>
+  <div class="list"><div class="cnt">Searching for</div><div class="q">Dragon alt art</div><div class="cnt">214 listings</div>
+    ${CARDS.slice(0,5).map((c,i)=>`<div class="row ${i<2?'rare':''}">${art(side,i)}<div><div class="tt">${c[0]}</div><div><span class="chip ${c[2]}">${c[3]}</span><span class="ochip">${i%2?'English':'Japanese'}</span><span class="ochip">${i<3?'PSA 10':'Raw'}</span></div><div class="m">${i%2?'Buy it now':'Auction · 6 bids · 14h'}</div></div><div class="p">${c[1]}</div></div>`).join('')}
+  </div></div>`;
+
+document.querySelectorAll('[data-home]').forEach(el => el.innerHTML = home(el.dataset.home));
+document.querySelectorAll('[data-results]').forEach(el => el.innerHTML = results(el.dataset.results));
+document.querySelectorAll('[data-hdr]').forEach(el => el.innerHTML = hdr(el.dataset.hdr));
+
+const status = '<div class="status"><span>9:41</span><span>●●●</span></div>';
+const phHdr = side => `<div class="hdr"><div class="brand"><span class="mark"><span>${side==='ff'?'F':'S'}</span></span>${NAME[side]}</div><span class="cta">Get alerts</span></div>
+  <div style="padding:10px 16px;border-bottom:1px solid var(--soft);display:flex;justify-content:center">${sw(side)}</div>`;
+document.querySelectorAll('[data-phonehdr]').forEach(el => { const s=el.dataset.phonehdr; el.innerHTML = status + phHdr(s) + `<div class="hero"><div><h1>${s==='ff'?'The <em>Grail</em> Hunter.':'Chase the <em>shine</em>.'}</h1><div class="search">${ic('search','style="color:var(--ink4)"')}<span>${s==='ff'?'Search a player':'Search a card or set'}</span><b>${ic('arrow','style="width:14px;height:14px"')}</b></div></div><div class="slab">${art(s,0)}</div></div>`; });
+
+const WL = [['ff',0,'2024 Topps Chrome Holliday Orange Wave /25','$1,240','Buy it now'],['a',0,'Secret rare alt art, PSA 10','$1,450','Auction · 3h'],['ff',2,'2024 Prizm Clark Red Auto /5','$4,200','Buy it now'],['a',3,'Holo rare, shadowless','$240','Sold'],['a',1,'Full-art trainer, 1st edition','$620','Buy it now'],['ff',3,'2025 Topps Flagg Blue /150','$310','Auction · 9h'],['a',4,'Showcase foil, extended art','$95','Buy it now'],['ff',4,'2023 Bowman Skenes Green Auto','$880','Buy it now']];
+document.querySelectorAll('[data-wl]').forEach(el => { const s=el.dataset.wl; el.innerHTML = hdr(s) + `<div class="wl"><h2>Watchlist</h2>
+  <div class="tabs"><span class="on">All · 8</span><span><i class="dot ff"></i>Sports · 4</span><span><i class="dot a"></i>[Sister name] · 4</span><span style="margin-left:auto">Active</span><span>Sold</span></div>
+  <div class="wgrid">${WL.map(w=>`<div class="wc ${w[0]}">${art(w[0],w[1])}<span class="side-tag"><i class="dot ${w[0]}"></i>${w[0]==='ff'?'Sports':'[Sister name]'}</span><div class="tt">${w[2]}</div><div class="p">${w[3]}</div><div class="m">${w[4]}</div></div>`).join('')}</div></div>`; });
+
+const tabbar = `<div class="tabbar">${[['search','Search',1],['star','Watchlist'],['bell','Alerts'],['user','Account']].map(t=>`<div class="tab${t[2]?' on':''}"><span class="w">${ic(t[0],'style="width:22px;height:22px;stroke-width:1.6"')}</span>${t[1]}</div>`).join('')}</div>`;
+document.querySelectorAll('[data-app1]').forEach(el => { const s=el.dataset.app1; el.innerHTML = status + `<div style="display:flex;justify-content:center;padding:6px 0 10px;border-bottom:1px solid var(--soft)">${sw(s)}</div>
+  <div style="padding:18px 16px"><div class="search">${ic('search','style="color:var(--ink4)"')}<span>Search a card or set</span><b>${ic('arrow','style="width:14px;height:14px"')}</b></div>
+  <div class="hunts"><span>Secret rares</span><span>Alt art</span><span>Graded 10s</span></div>
+  <div style="font:var(--dw) 22px var(--display);font-style:italic;margin:24px 0 10px">Live right now</div>
+  <div style="display:flex;gap:10px;overflow:hidden">${CARDS.slice(0,3).map((c,i)=>`<div class="cc" style="width:118px;flex:none">${art(s,i)}<div class="tt"><span class="chip ${c[2]}">${c[3]}</span>${c[0]}</div><div class="p">${c[1]}</div></div>`).join('')}</div></div>` + tabbar; });
+document.querySelectorAll('[data-app2]').forEach(el => { el.innerHTML = status + `<div class="launch">
+  <div class="t-ff" style="background:linear-gradient(180deg,#14110c,#0a0907);color:#f7f1e1"><div class="minicards">${ffArt(0)}${ffArt(1)}</div><h4>Sports</h4><p>Numbered, autographed and rookie cards</p><span class="go">${ic('arrow')}</span></div>
+  <div class="t-a" style="background:radial-gradient(400px 300px at 70% 20%,rgba(143,211,232,.12),transparent 60%),linear-gradient(180deg,#10131f,#080a12);color:#eef0f7;border-top:1px solid #242a3d"><div class="minicards">${tcgArt(0,FRAME.a)}${tcgArt(3,FRAME.a)}</div><h4>[Sister name]</h4><p>Trading card games and collectible cards</p><span class="go">${ic('arrow')}</span></div>
+  </div><div class="hint">You can switch any time in Account</div>`; });
+</script>
+</body>
+</html>

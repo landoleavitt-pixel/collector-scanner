@@ -64,7 +64,13 @@ Everything Landon has decided, so no agent ever asks him the same thing twice. O
 - A **sister site for non-sports collector cards** (Pokémon, Magic: The Gathering and the other biggest games). It copies most of the F&F format but has its **own, more magical look and colours**: it complements F&F but is clearly distinct.
 - A **button at the top switches** between the two sites. **One account**: saved searches and starred cards from both sides show together.
 - The **iPhone app gets a new name (TBD)** with both sides inside it.
-- Filters for the non-sports side come from research. The name is TBD (ideas coming).
+- Sister look is **A · Night foil** (mockups/sister-site.html): midnight blue-black, moonlight text, Fraunces headlines, holo foil used sparingly (edges, the top rarity chip, one headline word). Landon: "Beautiful mock ups. I like Night foil." (2026-10-30)
+- App: **choose a side on launch, then a switch at the top**. Every cold launch opens a Sports / [Sister name] chooser showing both sides equally, with **no last-used highlight**; either side is one tap (Landon: "don't worry about highlighting one. Just make it one tap anyways."). It's skipped when returning from the background and when opening from an alert (which goes straight to the right side). Inside the app, the switch pill sits at the top and there's one shared tab bar. Landon: "I want both. I like the Choose on launch, but once you launch you have the switch at the top." (2026-10-30)
+- Name: **Foils & Fables**. Hold off on buying foilsandfables.com for now. **No trademark lawyer** before launch (Landon's call, made knowing the name check was only a quick first look). (2026-10-30)
+- Launch games: **Pokémon, Magic: The Gathering, Yu-Gi-Oh!, One Piece, Disney Lorcana**. Later: Dragon Ball Super, Star Wars Unlimited, Weiss Schwarz, Flesh and Blood, Riftbound. Non-sport Topps/Marvel sets are skipped for now. (Boss default, 2026-10-30)
+- Filters and rarest-first order as in research/non-sports-filters.md: serial /N first, then each game's official rarity ladder, then grade. Copy says **"ranked by the rarity printed on the card"** (no print runs are published). (2026-10-30)
+- **All languages shown by default**, with a Language filter. Sealed, lots and proxies are hidden by default, same as sports; a sealed-box mode may come later. (2026-10-30)
+- No game names, logos or mascots in our brand, domain or app name, subtitle or keywords. Game names appear only as plain text in filters and copy, with a "Not affiliated with eBay or any game publisher" line. (2026-10-30)
 
 ## Search
 - Spelling suggestions cover pro players **and college players**. The roster refresh is run by hand once a quarter. (2026-10-20, 2026-10-21)
