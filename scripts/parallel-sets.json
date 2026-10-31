@@ -258,9 +258,11 @@
       "brand": "topps-chrome",
       "page": "2025-topps-chrome-football",
       "sections": [
-        "Base & Parallel Details"
+        "Base & Parallel Details",
+        "Base Rookies Checklist"
       ],
-      "oddsFrom": "Base Rookies Checklist"
+      "oddsFrom": "Base Rookies Checklist",
+      "note": "Rookie-only colours (Football Leather Blue, Teal Wave...) come from the rookie list."
     },
     {
       "key": "2024-topps-chrome-football-rookie-autos",
@@ -291,6 +293,34 @@
         "Rookies Autographs Checklist"
       ],
       "baseAuto": true
+    },
+    {
+      "key": "2026-topps-chrome-football",
+      "label": "2026 Topps Chrome Football",
+      "sport": "football",
+      "year": 2026,
+      "brand": "topps-chrome",
+      "page": "2026-topps-chrome-football",
+      "sections": [
+        "Base Checklist"
+      ],
+      "note": "Base colours; rookies and veterans share the list."
+    },
+    {
+      "key": "2026-topps-chrome-football-rookie-autos",
+      "kind": "auto",
+      "line": "rookie-auto",
+      "parent": "2026-topps-chrome-football",
+      "label": "2026 Topps Chrome Football Rookie Autographs",
+      "sport": "football",
+      "year": 2026,
+      "brand": "topps-chrome",
+      "page": "2026-topps-chrome-football",
+      "sections": [
+        "Rookie Variation Autographs Checklist"
+      ],
+      "baseAuto": true,
+      "note": "Rookie Variation autographs. Not every player comes in every colour."
     },
     {
       "key": "2025-panini-prizm-football",

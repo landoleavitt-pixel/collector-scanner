@@ -42,6 +42,50 @@ const GENERIC = new Set(['the', 'base', 'rookie', 'rookies', 'prospect', 'prospe
 
 const NOT_A_PARALLEL = /checklist|\bbox\b|\bpacks?\b|\bcards?\b|^(?:breaker|hobby|retail|mega|jumbo|blaster)[\w' ]*exclusives?$|^(?:odds|versions)$/i;
 
+// Headings that describe autographs, relics, inserts and product types. Their
+// colours aren't the base card's, so they don't decide a colour's scope.
+const NOT_CARD_HEADING = /auto|signature|relic|patch|jersey|memorab|swatch|insert|box\s*break|dual|legend|fanatical|paper|retail|hanger|blaster|mega|bang|choice|tecmo|1975|1990|1991|1989|hall\s+of|chromograph|helix|kaiju|game\s+genie|let'?s\s+go|shadow|ultraviolet|urban|fortune|power|first\s+year|hidden|lightning|radiating|all[-\s]chrome|team/i;
+const VARIATION_HEADING = /variation|image|etch|short\s+print|\bsp\b/i;
+const ROOKIE_HEADING = /rookie/i;
+
+/**
+ * Where a colour can be found: in the base list, the rookie list, or only in
+ * variation lists. Read from every card list on the checklist page, not only
+ * the sections this set uses, so a rookie-only colour is caught. Autograph,
+ * relic and insert lists are ignored. A rookie or veteran tag only appears when
+ * the page has both kinds of base list, so a page without a rookie list never
+ * tags its colours as veteran-only.
+ */
+function scopeFlags(name, secs) {
+  // Only "Base ... Rookies" counts as the rookie card list. Rookie insert lists
+  // ("Rockstar Rookies", "ROY Favorites") are inserts, not the base card.
+  const isRookieList = (h) => /^base\b.*\brookies?\b/i.test(h) && !VARIATION_HEADING.test(h);
+  const isBaseList = (h) => /^base\b/i.test(h) && !/\brookies?\b/i.test(h) && !VARIATION_HEADING.test(h);
+  const cardList = (h) => !NOT_CARD_HEADING.test(h.replace(/rookies?/gi, ''));
+  const hasRookieList = secs.some((s) => cardList(s.heading) && isRookieList(s.heading));
+  const hasBaseList = secs.some((s) => cardList(s.heading) && isBaseList(s.heading));
+  let base = false, rookie = false, variation = false, anyCard = false;
+  for (const s of secs) {
+    // Page names can carry a backwards run ("FrozenFractor /-5"); compare without it.
+    const same = (q) => q.name.replace(/\s*\/-?\d+$/, '') === name;
+    if (!s.parallels.some(same)) continue;
+    if (VARIATION_HEADING.test(s.heading)) { if (cardList(s.heading)) variation = true; continue; }
+    if (!cardList(s.heading)) continue;
+    anyCard = true;
+    if (isRookieList(s.heading)) rookie = true;
+    else if (isBaseList(s.heading)) base = true;
+  }
+  const flags = {};
+  if (hasRookieList && hasBaseList) {
+    if (rookie && !base) flags.cards = 'rookies';
+    else if (base && !rookie) flags.cards = 'veterans';
+  }
+  // Only a colour that exists solely as a variation card gets the flag. A base
+  // colour that also has an image variation isn't one.
+  if (variation && !anyCard) flags.variation = true;
+  return flags;
+}
+
 function build(set, secs) {
   const find = (h) => {
     const s = secs.find((x) => x.heading === h);
@@ -79,6 +123,17 @@ function build(set, secs) {
     if (p.odds && !Object.keys(p.odds).length) delete p.odds;
     // "Snack Pack Parallels:" / "1 per Variety pack" read as the box name.
     if (p.exclusive === 'Snack' || p.exclusive === 'Variety') p.exclusive = `${p.exclusive} pack`;
+  }
+
+  // Which card list each colour is on, and which boxes it's packed in. Auto
+  // lists are one card type already, so they skip the card-list check.
+  if (set.kind !== 'auto') {
+    for (const p of list) Object.assign(p, scopeFlags(p.name, secs));
+  }
+  for (const p of list) {
+    const boxes = Object.keys(p.odds || {});
+    if (boxes.length) p.boxes = boxes.sort();
+    if (boxes.length === 1) p.boxOnly = boxes[0];
   }
 
   let baseKey = null;

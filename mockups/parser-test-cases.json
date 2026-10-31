@@ -687,6 +687,56 @@
       "title": "2025-26 Upper Deck Hockey Series 2 Emmitt Finnie Exclusives /100",
       "expect": "none",
       "why": "UD Exclusives needs 'UD'"
+    },
+    {
+      "group": "2026 Topps Chrome Football (added 2026-10-31); other 2026 Topps football releases stay unmatched",
+      "title": "Topps 2026 Topps Chrome Football Sonny Styles RC 35th Refractor #91TRC-47",
+      "expect": "2026-topps-chrome-football:refractor"
+    },
+    {
+      "group": "2026 Topps Chrome Football (added 2026-10-31); other 2026 Topps football releases stay unmatched",
+      "title": "2026 Topps Chrome Football Skyler Bell #91TRC-27 Geometric Refractor Raw",
+      "expect": "2026-topps-chrome-football:geometric-refractor"
+    },
+    {
+      "group": "2026 Topps Chrome Football (added 2026-10-31); other 2026 Topps football releases stay unmatched",
+      "title": "2026 Topps Chrome Football Jalen Hurts Pulsar Refractor Philadelphia Eagles #247",
+      "expect": "2026-topps-chrome-football:pulsar-refractor"
+    },
+    {
+      "group": "2026 Topps Chrome Football (added 2026-10-31); other 2026 Topps football releases stay unmatched",
+      "title": "Topps 2026 Chrome Football Carnell Tate Rookie #91TRC-18 Titans Refractor",
+      "expect": "2026-topps-chrome-football:refractor"
+    },
+    {
+      "group": "2026 Topps Chrome Football (added 2026-10-31); other 2026 Topps football releases stay unmatched",
+      "title": "2026 Topps Holiday Football Josh Allen chrome refractor",
+      "expect": "none",
+      "why": "Holiday is a different product"
+    },
+    {
+      "group": "2026 Topps Chrome Football (added 2026-10-31); other 2026 Topps football releases stay unmatched",
+      "title": "2026 Topps Heritage Football Malik Willis #248 orange Chrome Refractor /25",
+      "expect": "none",
+      "why": "Heritage is a different product"
+    },
+    {
+      "group": "2026 Topps Chrome Football (added 2026-10-31); other 2026 Topps football releases stay unmatched",
+      "title": "2026 Topps Redemption Chrome Football Denzel Boston Auto Blue Refractor /150",
+      "expect": "none",
+      "why": "redemption card, not the base list"
+    },
+    {
+      "group": "2026 Topps Chrome Football (added 2026-10-31); other 2026 Topps football releases stay unmatched",
+      "title": "2026 Topps Chrome Kaytron Allen Mojo Refractor #91TRC-21 RC Flagship Football",
+      "expect": "none",
+      "why": "Mojo is not on the base list"
+    },
+    {
+      "group": "2026 Topps Chrome Football (added 2026-10-31); other 2026 Topps football releases stay unmatched",
+      "title": "2026 Topps Chrome Football Greats of the Game John Elway Pink Refractor Broncos",
+      "expect": "none",
+      "why": "Greats of the Game is an insert"
     }
   ]
 }
