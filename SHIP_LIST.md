@@ -6,6 +6,13 @@ The single list of work that's finished or in progress but **not live yet**. The
 
 | # | What | Agent | Status | Files | Extra deploy step |
 |---|---|---|---|---|---|
+| P1 | F&F/Fables parity: refresh popup, spelling suggestions, full audit; then checklist mockup | Design | 🟡 Building | app/fables, shared components, app/page.js | — |
+| P2 | Card-family engine: Scryfall + TCGdex catalogs, /api/tcg-versions, family search, owned_cards table, re-test | Engine | 🟡 Building | lib/tcg, app/api/tcg-*, app/api/owned, migration | SQL for Landon |
+| P3 | Rarity: rookie-only / box-only parallel flags, new 2025-26 sets | Rarity | 🟡 Building | lib/parallelData*, scripts | — |
+| P4 | Foils & Fables emails (branding, filter summary, links) | Spelling agent | 🟡 Building | poller, email helpers | poller redeploy |
+| P5 | App name ideas + two-sided App Store listing | Listing agent | 🟡 Drafting | APP_STORE_LISTING.md, appstore/ | Landon picks name |
+| P6 | QA pass of live site, both sides | Team-search agent | 🟡 Testing | research/qa-2026-10-31.md | — |
+| P7 | Catalog research phase 2 (Japanese Pokémon, One Piece, YGO/Lorcana terms) | Research | 🟡 Researching | research/catalogs-phase-2.md | — |
 | 7 | eBay Partner Network affiliate links | CFO | ⏸ Plan approved. Waiting on Landon's sign-up + Campaign ID; code held until batch ships | SiteTour.js, guides, reading-list copy + link tagging | — |
 | L05 | Proof strip | Landing | ⏹ Skipped: no honest live number yet (no fake figures) | — | — |
 | S-poll | Lock down the alert checker: it can be triggered by anyone holding the public key; require a private secret header from the cron jobs instead | Debugger | ⚪ Follow-up (low risk today: it only re-runs checks and never re-sends) | poller, both cron jobs | poller deploy + Landon edits 2 cron jobs |
