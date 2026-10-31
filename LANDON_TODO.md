@@ -55,5 +55,4 @@ Full steps: [IOS_APP_SETUP.md](IOS_APP_SETUP.md). No in-app purchases, RevenueCa
 - [ ] Record the "Watch how it works" YouTube video, then send the boss the link.
 
 ## Foils & Fables (do these now, in order)
-1. Supabase → SQL Editor → paste and run `supabase/migrations/20261030000000_sides.sql`. Until then, saving a Foils & Fables search shows an error.
-2. Deploy the updated alert checker: `npx supabase functions deploy poller`
+1. Deploy the updated alert checker: `npx supabase functions deploy poller`
