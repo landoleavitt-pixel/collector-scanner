@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { PAYMENTS_LIVE } from '../../lib/payments';
 
 /* NotifyFrequency — account-wide control for how often alert digests arrive.
  *
@@ -20,6 +21,10 @@ const OPTIONS = [
   { value: 'daily',  label: 'Daily digest',     hint: 'One email, once a day',         pro: false },
   { value: 'weekly', label: 'Weekly digest',    hint: 'One email, once a week',        pro: false },
 ];
+
+// While payments are off nothing can be bought, so the paid option is hidden
+// rather than shown locked (App Review 2.1/3.1.1).
+const VISIBLE_OPTIONS = PAYMENTS_LIVE ? OPTIONS : OPTIONS.filter((o) => !o.pro);
 
 export default function NotifyFrequency({ initialFrequency = 'hourly', canUsePro = false }) {
   const router = useRouter();
@@ -73,8 +78,8 @@ export default function NotifyFrequency({ initialFrequency = 'hourly', canUsePro
         How often we email you about new matches. Applies to all your watched searches.
       </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-        {OPTIONS.map((opt) => {
+      <div className={`grid grid-cols-1 sm:grid-cols-2 ${VISIBLE_OPTIONS.length === 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-2`}>
+        {VISIBLE_OPTIONS.map((opt) => {
           const selected = frequency === opt.value;
           // The upgrade note vanishes for entitled users — they shouldn't be
           // reminded of a gate they've already cleared.
