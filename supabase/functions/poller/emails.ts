@@ -71,7 +71,7 @@ export function buildBidReminderEmail(
     ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(Number(currentPrice))
     : "—";
   const title = row.title || "Your watched auction";
-  const url = row.listing_url || "https://fieldsandfloors.com/watchlist-cards";
+  const url = safeUrl(row.listing_url, "https://fieldsandfloors.com/watchlist-cards");
 
   const subject = `Ending soon — ${title.slice(0, 60)}${title.length > 60 ? "…" : ""}`;
 
@@ -88,10 +88,10 @@ export function buildBidReminderEmail(
       An auction you're watching ends in about ${timeLeftLabel(msLeft)}.
     </div>
     <div style="border:0.5px solid #2a251c;border-radius:12px;background:#14110c;padding:18px;margin-bottom:22px;">
-      <div style="font-size:14px;line-height:1.4;color:#f7f1e1;margin-bottom:10px;">${title}</div>
+      <div style="font-size:14px;line-height:1.4;color:#f7f1e1;margin-bottom:10px;">${escapeHtml(title)}</div>
       <div style="font-style:italic;font-size:24px;color:#c9954a;">${priceStr}<span style="font-size:12px;color:#a99e85;font-style:normal;"> current bid</span></div>
     </div>
-    <a href="${url}" style="display:inline-block;background:#c9954a;color:#1a1612;text-decoration:none;font-family:ui-monospace,monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;padding:13px 26px;border-radius:999px;">
+    <a href="${escapeHtml(url)}" style="display:inline-block;background:#c9954a;color:#1a1612;text-decoration:none;font-family:ui-monospace,monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;padding:13px 26px;border-radius:999px;">
       View &amp; bid on eBay
     </a>
     <p style="font-size:12px;color:#6b6354;margin-top:24px;line-height:1.6;">
@@ -202,7 +202,7 @@ function renderListingCard(l: Listing): string {
   // Fallback to the raw eBay url only if the listing id is somehow missing.
   const viewUrl = l?.id
     ? `${APP_BASE_URL}/?card=${encodeURIComponent(l.id)}&utm_source=alert_email`
-    : (l?.url ?? "#");
+    : safeUrl(l?.url, "#");
 
   // Derive chips from the listing — print run + tier, auto, rookie, grading, listing type
   const lowerTitle = title.toLowerCase();
@@ -336,7 +336,13 @@ function printRunTier(runValue: string): string {
   return "scarce";
 }
 
-function escapeHtml(s: string | undefined | null): string {
+// Only plain web links go into emails; anything else (javascript:, data:)
+// falls back. Listing links come from eBay via our database.
+export function safeUrl(u: unknown, fallback: string): string {
+  return typeof u === "string" && /^https?:\/\//i.test(u.trim()) ? u.trim() : fallback;
+}
+
+export function escapeHtml(s: string | undefined | null): string {
   if (!s) return "";
   return String(s)
     .replace(/&/g, "&amp;")
@@ -444,7 +450,7 @@ function renderFablesCard(l: Listing): string {
   const img = (l?.image && typeof l.image === "string") ? l.image.replace(/\/s-l\d+\.(\w+)/, "/s-l500.$1") : "";
   const viewUrl = l?.id
     ? `${FABLES_URL}?card=${encodeURIComponent(l.id)}&utm_source=alert_email`
-    : (l?.url ?? "#");
+    : safeUrl(l?.url, "#");
 
   // The top rarity step wears the foil; everything else is a quiet outline.
   const top = l.tier === "grail";
@@ -496,7 +502,7 @@ function buildFablesBidReminder(
     ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(Number(currentPrice))
     : "—";
   const title = row.title || "Your watched auction";
-  const url = row.listing_url || FABLES_URL;
+  const url = safeUrl(row.listing_url, FABLES_URL);
   const subject = `Ending soon — ${title.slice(0, 60)}${title.length > 60 ? "…" : ""}`;
 
   const html = `
