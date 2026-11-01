@@ -2,7 +2,7 @@ import PageShell, { SectionHeading, Prose } from '../components/PageShell';
 
 export const metadata = {
   title: 'Privacy Policy',
-  description: 'How Fields & Floors collects, uses, and protects your information.',
+  description: 'How Fields & Floors, Foils & Fables and the Fields & Fables app collect, use, and protect your information.',
 };
 
 export default function PrivacyPage() {
@@ -10,14 +10,19 @@ export default function PrivacyPage() {
     <PageShell
       eyebrow="Legal"
       title="Privacy Policy."
-      lede="What we collect, why we collect it, and who we share it with. Last updated October 2026."
+      lede="What we collect, why we collect it, and who we share it with. Covers Fields & Floors, Foils & Fables and the Fields & Fables app. Last updated October 2026."
     >
       <Prose>
         <p>
           Fields &amp; Floors Collectors ("Fields &amp; Floors," "we," "us") operates
-          the website at fieldsandfloors.com. This policy explains what information
-          we handle when you use the service and the choices you have. We've tried to
-          write it plainly rather than in legalese.
+          the website at fieldsandfloors.com, including Fields &amp; Floors (sports
+          cards) and Foils &amp; Fables (trading card games), any other website we
+          operate for either of them, and the Fields &amp; Fables iPhone app
+          (together, the "service"). They are one service with one account, and this
+          policy applies to all of it. Fields &amp; Floors Collectors is responsible
+          for (the controller of) the personal information described here. This
+          policy explains what information we handle when you use the service and the
+          choices you have. We've tried to write it plainly rather than in legalese.
         </p>
       </Prose>
 
@@ -25,13 +30,14 @@ export default function PrivacyPage() {
         Information you give us, and a little we observe.
       </SectionHeading>
       <Prose>
-        <p>When you create an account or use Fields &amp; Floors, we may handle:</p>
+        <p>When you create an account or use the service, on either side, we may handle:</p>
         <ul>
           <li><strong>Account information</strong>: your email address, and (if you sign in with Google) your name and profile photo as provided by Google. If you use Sign in with Apple, we receive the email address Apple gives us, which may be Apple's private relay address.</li>
           <li><strong>Plan and billing status</strong>: which plan you're on, whether you're in a free trial, when your subscription renews or ends, and whether you pay through our website or the App Store. We don't store card numbers.</li>
           <li><strong>Saved searches</strong>: the search terms and filters you save so we can notify you of new matching cards.</li>
           <li><strong>Watchlist</strong>: the listings you star. We save a copy of each listing's title, price, photo link, and eBay link so your watchlist loads quickly, and we refresh the price and status while you're watching it.</li>
           <li><strong>Last visit and starred prices</strong>: when you last opened your signed-in home page, and each starred card's price at the moment you starred it. We use these only to show what changed since your last visit, such as new matches and price drops.</li>
+          <li><strong>Card collection lists (when this feature launches)</strong>: the cards and versions you mark as &ldquo;I own this&rdquo; on a card checklist. See &ldquo;Your card collection lists&rdquo; below.</li>
           <li><strong>Notification history</strong>: a record of which listings we've already alerted you about, so you never get the same one twice.</li>
           <li><strong>Push notification token (iOS app)</strong>: if you turn on notifications in the app, we store a code that Apple gives your device so we can send alerts to it. It is deleted when you sign out or delete your account.</li>
           <li><strong>Technical &amp; log data</strong>: information automatically recorded by our hosting and infrastructure providers, such as your IP address, browser and device type, access times, and error and security logs. This is used to operate, secure, and debug the service.</li>
@@ -41,6 +47,15 @@ export default function PrivacyPage() {
         <p>
           We do not collect payment card details directly. We do not sell your
           personal information to anyone.
+        </p>
+        <p>
+          <strong>Your card collection lists (when this feature launches).</strong>{' '}
+          If you mark cards or versions as &ldquo;I own this&rdquo;, that list is
+          stored against your account and is private to you by default. Other
+          members and visitors can&rsquo;t see it. You can remove any entry, or
+          delete the whole list, at any time, and it is deleted with your account.
+          We use it only to show you your own list. We never sell it, never share
+          it with anyone else, and never use it for advertising.
         </p>
       </Prose>
 
@@ -90,7 +105,7 @@ export default function PrivacyPage() {
       </SectionHeading>
       <Prose>
         <p>
-          We rely on trusted third parties to run Fields &amp; Floors. Each receives
+          We rely on trusted third parties to run the service. Each receives
           only the information needed to do its job, and may process it on servers
           located outside Canada (see cross-border transfers below):
         </p>
@@ -103,6 +118,7 @@ export default function PrivacyPage() {
           <li><strong>RevenueCat</strong>: confirms the status of App Store subscriptions for the iOS app. It receives your internal account ID and your purchase information from Apple (such as which plan and when it renews), and tells us whether your subscription is active.</li>
           <li><strong>Google</strong>: if you choose &quot;Sign in with Google,&quot; Google handles that authentication.</li>
           <li><strong>eBay</strong>: we use eBay's public Browse API to find listings. Your search words and filters are sent to eBay to get results (and, for saved searches, by us on a schedule), but never your name, email, or account details. We don't receive or store eBay user data such as buyer or seller account information. The only listing details we keep are the ones you star, described above.</li>
+          <li><strong>Card catalogs</strong> (Scryfall, TCGdex and others listed in our Terms, when card data launches): we download public card lists from them. We never send them any information about you.</li>
         </ul>
         <p>
           We may also disclose information if required by law, or to protect the
@@ -129,8 +145,8 @@ export default function PrivacyPage() {
       </SectionHeading>
       <Prose>
         <p>
-          You can update your saved searches and watchlist at any time from your
-          account. You can request access to, correction of, or deletion of your
+          You can update your saved searches, watchlist and (when this feature
+          launches) card collection lists at any time from your account. You can request access to, correction of, or deletion of your
           personal information by contacting us at the address below. You can stop
           receiving notification emails by pausing or deleting the relevant saved
           search, or by deleting your account. You can delete your account yourself
@@ -145,8 +161,8 @@ export default function PrivacyPage() {
         <p>
           We retain your account information and saved data while your account is
           active. If you delete your account from the account menu, we immediately
-          delete your account, saved searches, watchlist, notification history, and
-          push tokens, and cancel any website (Stripe) subscription. Anonymous usage
+          delete your account, saved searches, watchlist, card collection lists,
+          notification history, and push tokens, on both sides of the service, and cancel any website (Stripe) subscription. Anonymous usage
           events are kept but are no longer linked to you. Subscriptions bought in
           the iOS app are managed by Apple, so deleting your account does not cancel
           them: cancel those in your Apple ID subscription settings. Some data may
@@ -192,8 +208,13 @@ export default function PrivacyPage() {
           <a href="mailto:hello@fieldsandfloors.com">hello@fieldsandfloors.com</a>.
         </p>
         <p style={{ fontSize: '0.85em', color: 'var(--ink-400)' }}>
-          Fields &amp; Floors is an independent search tool. It is not affiliated
-          with, endorsed by, or sponsored by eBay Inc.
+          Fields &amp; Floors, Foils &amp; Fables and the Fields &amp; Fables app
+          are an independent search tool. They are not affiliated with, endorsed
+          by, or sponsored by eBay Inc. or any card maker or game publisher,
+          including The Pok&eacute;mon Company, Nintendo, Creatures Inc., GAME
+          FREAK inc., Wizards of the Coast, Konami, Bandai, Ravensburger or
+          Disney. All trademarks belong to their owners. See section 3 of our
+          Terms.
         </p>
       </Prose>
     </PageShell>

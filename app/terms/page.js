@@ -1,9 +1,14 @@
 import PageShell, { SectionHeading, Prose } from '../components/PageShell';
 import { PAYMENTS_LIVE } from '../../lib/payments';
 
+// Section 15 (card data sources and credits). Leave false until card names or
+// version lists from these catalogs are live on the site; while false, the
+// catalog credits show as "coming soon". Flip to true on the day they ship.
+const CARD_DATA_LIVE = false;
+
 export const metadata = {
   title: 'Terms of Service',
-  description: 'The terms that govern your use of Fields & Floors Collectors.',
+  description: 'The terms that govern your use of Fields & Floors, Foils & Fables and the Fields & Fables app.',
 };
 
 export default function TermsPage() {
@@ -11,26 +16,30 @@ export default function TermsPage() {
     <PageShell
       eyebrow="Legal"
       title="Terms of Service."
-      lede="The agreement between you and Fields & Floors. Last updated October 2026."
+      lede="The agreement between you and Fields & Floors Collectors, covering Fields & Floors, Foils & Fables and the Fields & Fables app. Last updated October 2026."
     >
       <Prose>
         <p>
-          These Terms govern your use of Fields &amp; Floors Collectors
-          (fieldsandfloors.com). By using the service, you agree to them. If you
-          don't agree, please don't use the service.
+          These Terms govern your use of the services operated by Fields &amp;
+          Floors Collectors: Fields &amp; Floors, for sports cards; Foils &amp;
+          Fables, for trading card games; the website at fieldsandfloors.com and
+          any other website we operate for either of them; and the Fields &amp;
+          Fables mobile application. They are one service with one account, and
+          these Terms apply to all of it. By using the service, you agree to them.
+          If you don't agree, please don't use the service.
         </p>
       </Prose>
 
       <SectionHeading number="01" label="What we are">
-        A search and notification tool for sports cards.
+        A search and notification tool for sports cards and trading card games.
       </SectionHeading>
       <Prose>
         <p>
-          Fields &amp; Floors is an independent tool that helps collectors search and
-          filter publicly available sports card listings and receive notifications
-          when new matching cards appear. We surface listings and link you to them.
-          We do not sell cards, hold inventory, process transactions, or take part in
-          any purchase.
+          Fields &amp; Floors and Foils &amp; Fables are independent tools that help
+          collectors search and filter publicly available listings of sports cards
+          and trading card game cards, and receive notifications when new matching
+          cards appear. We surface listings and link you to them. We do not sell
+          cards, hold inventory, process transactions, or take part in any purchase.
         </p>
       </Prose>
 
@@ -41,9 +50,18 @@ export default function TermsPage() {
         <p>
           <strong>2.1 Definitions.</strong> In these Terms, &ldquo;Fields &amp;
           Floors,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; and &ldquo;our&rdquo; mean
-          the operator of the website at fieldsandfloors.com and any related
-          mobile application (together, the &ldquo;Service&rdquo;). &ldquo;Third-Party
-          Marketplace&rdquo; means eBay. &ldquo;Sellers&rdquo; means the persons or
+          Fields &amp; Floors Collectors, the operator of the website at
+          fieldsandfloors.com, of the sports card service offered under the name
+          Fields &amp; Floors, of the trading card game service offered under the
+          name Foils &amp; Fables, of the mobile application offered under the
+          name Fields &amp; Fables, and of any related website or mobile
+          application (together, the &ldquo;Service&rdquo;). References in these
+          Terms to Fields &amp; Floors as a service include Foils &amp; Fables and
+          the Fields &amp; Fables application unless the context requires
+          otherwise. &ldquo;Third-Party Marketplace&rdquo; means eBay.
+          &ldquo;Card Data&rdquo; means card names, set, number, rarity, finish,
+          version, and similar catalog information about cards that the Service
+          obtains from the third-party sources listed in Section 15. &ldquo;Sellers&rdquo; means the persons or
           businesses that offer items for sale on a Third-Party Marketplace.
           &ldquo;Listings&rdquo; means the offers for sale, descriptions, images,
           prices, and other information published by Sellers that the Service
@@ -69,7 +87,8 @@ export default function TermsPage() {
           are provided &ldquo;AS IS&rdquo; and &ldquo;AS AVAILABLE.&rdquo; WE MAKE NO
           REPRESENTATIONS OR WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, REGARDING ANY
           ITEM OR LISTING, INCLUDING AS TO AUTHENTICITY, GENUINENESS, CONDITION,
-          GRADING, AUTOGRAPHS, PROVENANCE, PRINT RUN, TITLE, OR THAT THE ITEM
+          GRADING, AUTOGRAPHS, PROVENANCE, PRINT RUN, RARITY, EDITION, LANGUAGE,
+          VERSION, TITLE, OR THAT THE ITEM
           DELIVERED WILL MATCH ITS LISTING, OR AS TO THE ACCURACY, COMPLETENESS, OR
           TIMELINESS OF ANY LISTING DATA. TO THE EXTENT PERMITTED BY APPLICABLE LAW,
           WE DISCLAIM ALL IMPLIED WARRANTIES, INCLUDING IMPLIED WARRANTIES OF
@@ -78,8 +97,10 @@ export default function TermsPage() {
         <p>
           <strong>2.5 Automated labels.</strong> Classifications and labels that the
           Service displays, including print run, rarity tier and colour, autograph,
-          rookie, set, and parallel designations, are generated automatically from
-          text written by Sellers. They are provided for informational purposes only,
+          rookie, set, and parallel designations, and, for trading card games,
+          game, rarity, edition, language, finish, and version designations, are
+          generated automatically from text written by Sellers, in some cases by
+          comparing that text with Card Data. They are provided for informational purposes only,
           may be inaccurate or incomplete, and must not be relied on as a
           representation of fact about any item. You are responsible for reviewing
           the full Listing, its images, and the Seller before making any purchase.
@@ -114,18 +135,40 @@ export default function TermsPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="03" label="Not affiliated with eBay">
+      <SectionHeading number="03" label="Not affiliated with eBay or any game publisher">
         We're independent.
       </SectionHeading>
       <Prose>
         <p>
-          Fields &amp; Floors is not affiliated with, endorsed by, sponsored by, or
-          operated by eBay Inc. "eBay" is a trademark of its respective owner, used
-          here only to describe the source of listing data. All listings, prices, and
-          availability originate with eBay and its sellers, and all purchases happen
-          on eBay under eBay's own terms, not ours. Listing content and data belong
-          to eBay and its sellers; we only index and search publicly available
-          listing information to help you find cards.
+          <strong>3.1 No affiliation or endorsement.</strong> The Service is
+          independent. Fields &amp; Floors, Foils &amp; Fables, and the Fields
+          &amp; Fables application are not affiliated with, endorsed by, sponsored
+          by, licensed by, or operated by eBay Inc.; The Pok&eacute;mon Company,
+          Nintendo, Creatures Inc., or GAME FREAK inc.; Wizards of the Coast LLC
+          or Hasbro, Inc.; Konami Digital Entertainment; Bandai Co., Ltd. or Bandai
+          Namco; Ravensburger AG; The Walt Disney Company; or any other card
+          manufacturer, game publisher, or rights holder whose products appear in
+          Listings or Card Data. Nothing in the Service is intended to suggest any
+          such affiliation, endorsement, or sponsorship.
+        </p>
+        <p>
+          <strong>3.2 Trademarks.</strong> &ldquo;eBay,&rdquo; &ldquo;Pok&eacute;mon,&rdquo;
+          &ldquo;Magic: The Gathering,&rdquo; &ldquo;Yu-Gi-Oh!,&rdquo; &ldquo;One
+          Piece,&rdquo; &ldquo;Disney Lorcana,&rdquo; and all other product names,
+          game names, card names, character names, set names, and rarity names that
+          appear in the Service are trademarks or registered trademarks of their
+          respective owners. They are used in the Service only to identify and
+          describe the items in Listings and search results, and only to the extent
+          necessary for that purpose. We do not use any such owner&rsquo;s logos,
+          and no trademark owner has any responsibility for the Service.
+        </p>
+        <p>
+          <strong>3.3 Listing data.</strong> All listings, prices, and availability
+          originate with eBay and its Sellers, and all purchases happen on eBay
+          under eBay&rsquo;s own terms, not ours. Listing content and data belong to
+          eBay and its Sellers; we only index and search publicly available listing
+          information to help you find cards. Card images shown with Listings are
+          the Sellers&rsquo; own listing photographs supplied through eBay.
         </p>
       </Prose>
 
@@ -143,6 +186,7 @@ export default function TermsPage() {
           <li>Our print-run detection can make mistakes. It may miss a card's serial number, or misread other numbers (for example, a season like "22/23") as a print run.</li>
           <li>Listing titles are written by sellers and can be inaccurate, misleading, or mislabeled, and our parsing of them can be wrong.</li>
           <li>Grades, autographs, parallels, and other attributes we surface are derived from listing text and may not reflect the actual item.</li>
+          <li>For trading card games, our game, rarity, edition, language, and version labels are matched from listing text and may be wrong, and Card Data from third-party catalogs may itself be incomplete or inaccurate.</li>
         </ul>
         <p>
           Always confirm every detail on the eBay listing itself before buying. You
@@ -167,8 +211,9 @@ export default function TermsPage() {
       <Prose>
         <p>
           Fields &amp; Floors relies on third-party services to operate, including
-          eBay for listing data, and providers such as Supabase, Vercel, Resend, and
-          Google for hosting, database, email, and authentication. We don't control
+          eBay for listing data, the card catalogs listed in Section 15 for Card
+          Data, and providers such as Supabase, Vercel, Resend, Apple, and Google
+          for hosting, database, email, notifications, and authentication. We don't control
           these services and aren't responsible for their accuracy, availability, or
           performance. We are not liable for any downtime, delay, data loss, error, or
           interruption caused by eBay or any other external service, or for changes
@@ -196,8 +241,11 @@ export default function TermsPage() {
       </SectionHeading>
       <Prose>
         <p>
-          You're responsible for keeping your login credentials secure and for
-          activity under your account. Provide accurate information when you sign up.
+          One account works across the whole Service, including Fields &amp; Floors,
+          Foils &amp; Fables, and the Fields &amp; Fables application, and any plan,
+          limit, or feature that applies to your account applies across all of
+          them. You're responsible for keeping your login credentials secure and
+          for activity under your account. Provide accurate information when you sign up.
           Don't use the service to break the law, infringe others' rights, scrape or
           overload the service, attempt to bypass security, or resell access without
           our permission.
@@ -209,13 +257,16 @@ export default function TermsPage() {
       </SectionHeading>
       <Prose>
         <p>
-          The Fields &amp; Floors website, software, code, design, visual identity,
-          branding, and the logic of our search, filtering, and notification tools are
-          owned by Fields &amp; Floors and protected by intellectual property laws.
-          You may not copy, reproduce, modify, reverse-engineer, scrape, or reuse any
-          part of the service for your own product or commercial purpose without our
-          prior written permission. This does not apply to third-party listing data,
-          which belongs to eBay and its sellers as described above.
+          The Fields &amp; Floors and Foils &amp; Fables websites, the Fields &amp;
+          Fables application, and their software, code, design, visual identity,
+          branding, and the logic of our search, filtering, and notification tools
+          are owned by Fields &amp; Floors and protected by intellectual property
+          laws. You may not copy, reproduce, modify, reverse-engineer, scrape, or
+          reuse any part of the service for your own product or commercial purpose
+          without our prior written permission. This does not apply to third-party
+          listing data, which belongs to eBay and its sellers as described above,
+          to Card Data, which belongs to its respective sources and rights holders
+          as described in Section 15, or to the trademarks described in Section 3.
         </p>
       </Prose>
 
@@ -235,7 +286,8 @@ export default function TermsPage() {
           includes are listed on our pricing page and shown again at checkout. Paid
           features unlock additional functionality (such as automated alerts on
           saved searches and bid reminders), not access to third-party listing
-          data itself, which belongs to eBay and its sellers.
+          data itself, which belongs to eBay and its sellers, and not access to
+          Card Data, which remains free to view for every visitor.
         </p>
         <p>
           <strong>Prices.</strong> Prices are in Canadian dollars (CAD) and are
@@ -349,7 +401,63 @@ export default function TermsPage() {
         </p>
       </Prose>
 
-      <SectionHeading number="15" label="Changes &amp; contact">
+      <SectionHeading number="15" label="Data sources &amp; credits">
+        Where our information comes from.
+      </SectionHeading>
+      <Prose>
+        <p>
+          <strong>15.1 Listings.</strong> Listings are obtained from eBay through
+          eBay&rsquo;s public Browse API and are subject to eBay&rsquo;s terms, as
+          described in Section 3.
+        </p>
+        <p>
+          <strong>15.2 Card Data.</strong>{' '}
+          {!CARD_DATA_LIVE && (
+            <><em>Coming soon.</em> The sources below will apply once card name
+            suggestions and card version lists launch on Foils &amp; Fables. </>
+          )}
+          Card Data is obtained from the following third-party sources and is
+          used under each source&rsquo;s terms. None of these sources endorses or
+          is responsible for the Service.
+        </p>
+        <ul>
+          <li>
+            <strong>Magic: The Gathering:</strong> card data from{' '}
+            <a href="https://scryfall.com" target="_blank" rel="noopener noreferrer">Scryfall</a>.
+            Magic: The Gathering card names, text, and other card information are
+            the property of Wizards of the Coast LLC. Card Data from Scryfall is
+            available free of charge to every visitor and is never part of a paid
+            plan.
+          </li>
+          <li>
+            <strong>Pok&eacute;mon:</strong> card data from{' '}
+            <a href="https://tcgdex.dev" target="_blank" rel="noopener noreferrer">TCGdex</a>,
+            used under the MIT License reproduced below. Pok&eacute;mon card names
+            and other card information are the property of The Pok&eacute;mon
+            Company, Nintendo, Creatures Inc., and GAME FREAK inc.
+          </li>
+        </ul>
+        <p style={{ fontSize: '0.85em' }}>
+          MIT License. Copyright (c) 2021 TCGdex. Permission is hereby granted,
+          free of charge, to any person obtaining a copy of this software and
+          associated documentation files (the &ldquo;Software&rdquo;), to deal in
+          the Software without restriction, including without limitation the rights
+          to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+          copies of the Software, and to permit persons to whom the Software is
+          furnished to do so, subject to the following conditions: The above
+          copyright notice and this permission notice shall be included in all
+          copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED
+          &ldquo;AS IS&rdquo;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+          INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+          FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+          AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+          LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+          FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+          DEALINGS IN THE SOFTWARE.
+        </p>
+      </Prose>
+
+      <SectionHeading number="16" label="Changes &amp; contact">
         We'll post updates here.
       </SectionHeading>
       <Prose>
