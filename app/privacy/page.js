@@ -1,4 +1,5 @@
 import PageShell, { SectionHeading, Prose } from '../components/PageShell';
+import UsageStatsToggle from '../components/UsageStatsToggle';
 
 export const metadata = {
   title: 'Privacy Policy',
@@ -42,7 +43,8 @@ export default function PrivacyPage() {
           <li><strong>Push notification token (iOS app)</strong>: if you turn on notifications in the app, we store a code that Apple gives your device so we can send alerts to it. It is deleted when you sign out or delete your account.</li>
           <li><strong>Technical &amp; log data</strong>: information automatically recorded by our hosting and infrastructure providers, such as your IP address, browser and device type, access times, and error and security logs. This is used to operate, secure, and debug the service.</li>
           <li><strong>Usage analytics</strong>: aggregate, non-personal information about how pages are used (such as page views), collected through privacy-friendly analytics. It is usage-based only and does not identify you personally.</li>
-          <li><strong>Anonymous usage events</strong>: which steps of the service are used (such as visiting, running a search, or opening a card), stored in our own database under a random ID kept on your device, with no name, email, or search words. Two events, creating an account and starting a trial, are recorded against your account so we can count them correctly. No ads and no third-party tracking. We skip these events if your browser sends a Do Not Track or Global Privacy Control signal.</li>
+          <li><strong>Anonymous usage events</strong>: which steps of the service are used (such as visiting, running a search, or opening a card), stored in our own database under a random ID kept on your device, with no name, email, or search words. No ads and no third-party tracking. You can turn these off at any time with the &ldquo;Share anonymous usage stats&rdquo; switch under <a href="#usage-stats">Your choices</a>; when it&rsquo;s off, your device sends none of them and forgets its random ID. We also skip them if your browser sends a Do Not Track or Global Privacy Control signal.</li>
+          <li><strong>Account events</strong>: when you create an account, and when you start a trial, our server records that event against your account so we can count sign-ups and trials correctly. These are part of running your account, not usage stats, so the switch above doesn&rsquo;t turn them off. If you delete your account, they stay only as anonymous counts, no longer linked to you.</li>
         </ul>
         <p>
           We do not collect payment card details directly. We do not sell your
@@ -152,6 +154,11 @@ export default function PrivacyPage() {
           search, or by deleting your account. You can delete your account yourself
           from the account menu; contact us if you can't.
         </p>
+        <p>
+          Anonymous usage stats are on by default. You can turn them off here, on
+          each device or browser you use, signed in or not:
+        </p>
+        <UsageStatsToggle />
       </Prose>
 
       <SectionHeading number="07" label="Data retention &amp; security">
