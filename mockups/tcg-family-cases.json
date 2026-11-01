@@ -422,6 +422,112 @@
    "expect": {
     "kind": "unknown"
    }
+  },
+  {
+   "game": "pokemon",
+   "card": "charizard-vmax",
+   "title": "Charizard VMAX #261 SWSH Promo PSA 9 Full Art",
+   "expect": {
+    "kind": "exact",
+    "versions": [
+     "swshp:SWSH261:h"
+    ]
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "umbreon-ex",
+   "title": "Umbreon ex (SVP 176/296) Scarlet & Violet Black Star Promos Holo",
+   "expect": {
+    "kind": "exact",
+    "versions": [
+     "svp:176:h"
+    ]
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "venusaur",
+   "title": "PSA10 Venusaur Snivy GX SR 066/064 Remix Battle Japanese",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "pikachu-vmax",
+   "title": "PSA10 Surf Pikachu VMAX rrr 022/028 25th from Japan",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "charizard-ex",
+   "title": "2016 Pokemon Japanese 20th Anniversary 1st Edition Charizard EX PSA 8 090/087",
+   "expect": {
+    "kind": "reject",
+    "why": "XY era"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "umbreon-ex",
+   "title": "PSA 10 Umbreon EX Double Rare 042/078 Japanese Awakening Psychic King",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "charizard-ex",
+   "title": "Charizard ex 006/165 Double Rare Pokemon Card 151 Japanese Holo NM",
+   "expect": {
+    "kind": "language"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "rayquaza-vmax",
+   "title": "Rayquaza VMAX CSR Sword Shield High Class Pack VMAX Climax",
+   "expect": {
+    "kind": "language"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "gardevoir-ex",
+   "title": "Gardevoir Ex SSR Scarlet & Violet High-Class Pack Shiny Treasure",
+   "expect": {
+    "kind": "language"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "gaeas-cradle",
+   "title": "Gaea's Cradle : 1999 World Championships",
+   "expect": {
+    "why": "World Championship"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "cyclonic-rift",
+   "title": "Cyclonic Rift (JP Alternate Art) #79 Secrets of Strixhaven Mystical Archive",
+   "expect": {
+    "kind": "exact",
+    "versions": [
+     "soa:79:n"
+    ]
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "black-lotus",
+   "title": "Black Lotus Alpha CREDIT CARD SKIN",
+   "expect": {
+    "kind": "reject"
+   }
   }
  ]
 }

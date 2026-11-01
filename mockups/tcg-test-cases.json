@@ -2447,6 +2447,104 @@
    "expect": {
     "nonCard": true
    }
+  },
+  {
+   "group": "QA 13 rarity names",
+   "title": "Pokemon Neo Destiny Shining Charizard 107/105 Holo",
+   "expect": {
+    "rarity": "star",
+    "rarityName": "Shining"
+   }
+  },
+  {
+   "group": "QA 13 rarity names",
+   "title": "Pokemon Gold Star Rayquaza 107/107 EX Deoxys",
+   "expect": {
+    "rarity": "star",
+    "rarityName": "Gold Star"
+   }
+  },
+  {
+   "group": "QA 13 rarity names",
+   "title": "Yu-Gi-Oh Ash Blossom MP24-EN010 Quarter Century Secret Rare",
+   "expect": {
+    "rarity": "starlight",
+    "rarityName": "Quarter Century Secret Rare"
+   }
+  },
+  {
+   "group": "QA 13 rarity names",
+   "title": "Yu-Gi-Oh Blue-Eyes White Dragon Starlight Rare 1st Edition",
+   "expect": {
+    "rarity": "starlight",
+    "rarityName": "Starlight Rare"
+   }
+  },
+  {
+   "group": "QA 13 rarity names",
+   "title": "One Piece Shanks OP01-120 Manga Rare PSA 10",
+   "expect": {
+    "rarity": "manga",
+    "rarityName": "Manga Rare"
+   }
+  },
+  {
+   "group": "QA 13 rarity names",
+   "title": "MTG Black Lotus Beta CGC 8",
+   "expect": {
+    "rarity": "vintage",
+    "rarityName": "Beta"
+   }
+  },
+  {
+   "group": "QA 13 rarity names",
+   "title": "Pokemon Charizard ex 199/165 Special Illustration Rare",
+   "expect": {
+    "rarity": "sir",
+    "rarityName": "Special Illustration Rare"
+   }
+  },
+  {
+   "group": "Non-cards (sports list)",
+   "title": "Pokemon Charizard Base Set Framed Display Shadow Box",
+   "expect": {
+    "nonCard": true
+   }
+  },
+  {
+   "group": "Non-cards (sports list)",
+   "title": "Pokemon Pikachu Acrylic Stand Japan",
+   "expect": {
+    "nonCard": true
+   }
+  },
+  {
+   "group": "Non-cards (sports list)",
+   "title": "MTG Black Lotus Art Print Signed Christopher Rush",
+   "expect": {
+    "nonCard": true
+   }
+  },
+  {
+   "group": "Non-cards (sports list)",
+   "title": "MTG The One Ring Borderless Poster Foil LTR #748",
+   "expect": {
+    "nonCard": false
+   }
+  },
+  {
+   "group": "Non-cards (sports list)",
+   "title": "Mana Crypt The List Reprints EMA-225",
+   "expect": {
+    "nonCard": false
+   }
+  },
+  {
+   "group": "QA 3 set names as rarities",
+   "title": "2006 POKEMON JAPANESE MIRACLE CRYSTAL 1ST EDITION #032 CHARIZARD-HOLO PSA 9",
+   "expect": {
+    "rarity": "holo"
+   }
   }
  ]
 }
