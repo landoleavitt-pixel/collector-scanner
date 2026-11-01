@@ -16,7 +16,7 @@ function SignupForm() {
   // /pricing's CTA passes ?next=/subscribe so post-confirmation lands at checkout.
   const next = searchParams.get('next') || '/';
   // Which button sent them here (star | alert | banner | direct), for funnel tracking.
-  const src = ['star', 'alert', 'banner', 'prompt'].includes(searchParams.get('src')) ? searchParams.get('src') : 'direct';
+  const src = ['star', 'alert', 'banner', 'prompt', 'checklist'].includes(searchParams.get('src')) ? searchParams.get('src') : 'direct';
 
   // If the user is already logged in (e.g. they hit /signup?next=/subscribe
   // while already authenticated), skip the form and go straight to next.

@@ -10,7 +10,8 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Search, ArrowRight, ArrowLeft, Star, Bell, ListFilter, Clock, Crosshair, Bookmark } from 'lucide-react';
+import Link from 'next/link';
+import { Search, ArrowRight, ArrowLeft, Star, Bell, ListFilter, Clock, Crosshair, Bookmark, Layers } from 'lucide-react';
 import { useUser } from '../../lib/useUser';
 import { PAYMENTS_LIVE } from '../../lib/payments';
 import { track } from '../../lib/track';
@@ -446,6 +447,8 @@ export default function FablesHome() {
             </div>
           </div>
 
+          {applied?.q && (!appliedFilters?.game || appliedFilters.game === 'pokemon') && <EveryCardButton query={applied.q} />}
+
           <MobileFilterBar
             activeCount={countActiveFilters(filters)}
             onOpenFilters={() => setMobileFiltersOpen(true)}
@@ -515,6 +518,42 @@ export default function FablesHome() {
         : <SignedOut query={query} setQuery={setQuery} onSearch={handleSearch} error={error} onCardClick={openCard} />}
       {cardModal}
     </main>
+  );
+}
+
+/* ── "See every Charizard card" (opens the checklist) ────────────────── */
+
+const normName = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/['’.]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+
+// Shown above results when the search names a Pokémon we have a card list
+// for. The shortest catalog name inside the search is the family:
+// "charizard ex sir" → Charizard.
+function EveryCardButton({ query }) {
+  const [family, setFamily] = useState(null);
+  useEffect(() => {
+    let alive = true;
+    setFamily(null);
+    const q = ` ${normName(query)} `;
+    // The name lookup matches from the start of a name, so ask for each of the
+    // first few words ("charizard ex sir" → "charizard", "ex", "sir").
+    const words = [...new Set(normName(query).split(' ').filter((w) => w.length >= 3))].slice(0, 3);
+    Promise.all(words.map((w) => fetch(`/api/tcg-versions?game=pokemon&q=${encodeURIComponent(w)}`)
+      .then((r) => (r.ok ? r.json() : { cards: [] })).catch(() => ({ cards: [] }))))
+      .then((all) => {
+        const inside = all.flatMap((d) => d.cards || []).filter((c) => q.includes(` ${normName(c.name)} `));
+        inside.sort((a, b) => a.name.length - b.name.length);
+        if (alive) setFamily(inside[0]?.name || null);
+      })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, [query]);
+  if (!family) return null;
+  return (
+    <Link href={`/fables/checklist?name=${encodeURIComponent(family)}`}
+          className="w-full lg:w-auto lg:px-6 min-h-[56px] rounded-2xl inline-flex items-center justify-center gap-2 text-[16px] font-semibold mb-6"
+          style={{ border: '1.5px solid var(--gold-bright)', color: 'var(--gold-bright)' }}>
+      <Layers className="w-5 h-5" strokeWidth={2} aria-hidden="true" />See every {family} card
+    </Link>
   );
 }
 
