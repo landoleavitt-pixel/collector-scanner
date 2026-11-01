@@ -88,7 +88,7 @@ export default function Header() {
     if (native) {
       try {
         if (billingSource === 'apple') await openAppleSubscriptions(user.id);
-        else router.push('/subscribe');
+        else if (PAYMENTS_LIVE) router.push('/subscribe');
       } catch {
         window.location.assign('https://apps.apple.com/account/subscriptions');
       } finally {
@@ -116,6 +116,10 @@ export default function Header() {
   }
 
   const TIER_LABEL = { base: 'Base', founding: 'Founding', free: 'Free' };
+  // While payments are off (early access) the menu shows no plan or billing
+  // items (App Review 2.1 / 3.1.1). The one exception is someone who actually
+  // pays through Stripe or Apple: they keep a way to manage or cancel it.
+  const showBilling = PAYMENTS_LIVE || billingSource === 'stripe' || billingSource === 'apple';
 
   return (
     <header className="relative z-20 border-b border-[var(--line-soft)]">
@@ -273,6 +277,7 @@ export default function Header() {
 
                       {/* Nav moved to the bar — this menu now holds only the
                           things that are genuinely about the account. */}
+                      {showBilling && (
                       <div className="flex items-center justify-between px-4 py-2 text-[13px] text-[var(--ink-400)]">
                         <span>Plan</span>
                         {tier && (
@@ -287,7 +292,8 @@ export default function Header() {
                           </span>
                         )}
                       </div>
-                      {!(native && billingSource === 'stripe' && tier !== 'free') && (PAYMENTS_LIVE || (tier && tier !== 'free')) && (
+                      )}
+                      {!(native && billingSource === 'stripe' && tier !== 'free') && showBilling && (PAYMENTS_LIVE || (tier && tier !== 'free')) && (
                       <button
                         onClick={openPortal}
                         disabled={portalBusy}
@@ -296,7 +302,7 @@ export default function Header() {
                         Manage membership
                       </button>
                       )}
-                      {!native && (PAYMENTS_LIVE || (tier && tier !== 'free')) && (
+                      {!native && showBilling && (PAYMENTS_LIVE || (tier && tier !== 'free')) && (
                       <button
                         onClick={openPortal}
                         disabled={portalBusy}
