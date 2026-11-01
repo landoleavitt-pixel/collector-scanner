@@ -1,0 +1,607 @@
+{
+ "source": "TCGdex card database (https://github.com/tcgdex/cards-database, commit ddaf9e1, 2026-10-30), MIT licence",
+ "checked": "2026-10-31",
+ "scope": "Japanese trainer, item, tool and stadium card names -> official English card names. Pokémon cards are matched by Pokédex number instead.",
+ "methods": {
+  "tcgdex-bilingual": "TCGdex lists both names on the same card.",
+  "tcgdex-illustrator-match, hand-checked": "Japanese and English printings in the same era with the same illustrator and trainer type pointed to one English name; each pair was then checked by hand and doubtful ones dropped."
+ },
+ "highValue": "true when TCGdex lists at least one Japanese printing as Ultra Rare, Illustration/Special illustration rare, Hyper/Secret/Mega Hyper Rare, Character (Super) Rare, ACE SPEC or Shiny Ultra Rare.",
+ "names": [
+  {
+   "ja": "AZの安らぎ",
+   "en": "AZ's Tranquility",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "N",
+   "en": "N",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "Nの覚悟",
+   "en": "N's Resolve",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "おいわいファンファーレ",
+   "en": "Celebratory Fanfare",
+   "type": "Stadium",
+   "highValue": false,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "からておうの稽古",
+   "en": "Black Belt's Training",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "からぶりほけん",
+   "en": "Blunder Policy",
+   "type": "Tool",
+   "highValue": false,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ふしぎなアメ",
+   "en": "Rare Candy",
+   "type": "Item",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "アイリスの闘志",
+   "en": "Iris's Fighting Spirit",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "アクロマの実験",
+   "en": "Colress's Experiment",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "アセロラのいたずら",
+   "en": "Acerola's Mischief",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "アセロラの予感",
+   "en": "Acerola's Premonition",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "アンズの秘技",
+   "en": "Janine's Secret Art",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ウエートレス",
+   "en": "Waitress",
+   "type": "Supporter",
+   "highValue": false,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "エネルギーつけかえ",
+   "en": "Energy Switch",
+   "type": "Item",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "エネルギー循環装置",
+   "en": "Energy Recycle System",
+   "type": "Item",
+   "highValue": false,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "エリカの招待",
+   "en": "Erika's Invitation",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "エレキジェネレーター",
+   "en": "Electric Generator",
+   "type": "Item",
+   "highValue": false,
+   "method": "tcgdex-bilingual"
+  },
+  {
+   "ja": "オニオン",
+   "en": "Allister",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "オーキド博士のセッティング",
+   "en": "Professor Oak's Setup",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "カウンターキャッチャー",
+   "en": "Counter Catcher",
+   "type": "Item",
+   "highValue": true,
+   "method": "tcgdex-bilingual"
+  },
+  {
+   "ja": "カシオペア",
+   "en": "Cassiopeia",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "カツラの一発勝負",
+   "en": "Blaine's Last Stand",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "カナリィ",
+   "en": "Canari",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ガッツのつるはし",
+   "en": "Gutsy Pickaxe",
+   "type": "Item",
+   "highValue": false,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "キバナ",
+   "en": "Raihan",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "クラッシュハンマー",
+   "en": "Crushing Hammer",
+   "type": "Item",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "グズマ&ハラ",
+   "en": "Guzma & Hala",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "グルーシャ",
+   "en": "Grusha",
+   "type": "Supporter",
+   "highValue": false,
+   "method": "tcgdex-bilingual"
+  },
+  {
+   "ja": "サイトウ",
+   "en": "Bea",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "サビ組のしたっぱ",
+   "en": "Rust Syndicate Grunt",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "サーファー",
+   "en": "Surfer",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ザオボー",
+   "en": "Faba",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ザクロ",
+   "en": "Grant",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "シトロンの機転",
+   "en": "Clemont's Quick Wit",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "シロナ&カトレア",
+   "en": "Cynthia & Caitlin",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "シロナの覇気",
+   "en": "Cynthia's Ambition",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ジニア",
+   "en": "Jacq",
+   "type": "Supporter",
+   "highValue": false,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ジャッジマン",
+   "en": "Judge",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-bilingual"
+  },
+  {
+   "ja": "スイレン",
+   "en": "Lana",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "スイレンのお世話",
+   "en": "Lana's Aid",
+   "type": "Supporter",
+   "highValue": false,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "スーパーポケモン回収",
+   "en": "Super Scoop Up",
+   "type": "Item",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "チェレンの気くばり",
+   "en": "Cheren's Care",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ツツジ",
+   "en": "Roxanne",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "テクノレーダー",
+   "en": "Techno Radar",
+   "type": "Item",
+   "highValue": false,
+   "method": "tcgdex-bilingual"
+  },
+  {
+   "ja": "ナタネの活気",
+   "en": "Gardenia's Vigor",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ナナミの手助け",
+   "en": "Daisy's Help",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ナンジャモ",
+   "en": "Iono",
+   "type": "Supporter",
+   "highValue": false,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ニュートラルセンター",
+   "en": "Neutralization Zone",
+   "type": "Stadium",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ネズ",
+   "en": "Piers",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ネルケ",
+   "en": "Clive",
+   "type": "Supporter",
+   "highValue": false,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ハイパーボール",
+   "en": "Ultra Ball",
+   "type": "Item",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ハマナのバックアップ",
+   "en": "Roseanne's Backup",
+   "type": "Supporter",
+   "highValue": false,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ハヤト",
+   "en": "Falkner",
+   "type": "Supporter",
+   "highValue": false,
+   "method": "tcgdex-bilingual"
+  },
+  {
+   "ja": "バーベナとヘレナ",
+   "en": "Anthea & Concordia",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ヒスイの仲間たち",
+   "en": "Friends in Hisui",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ヒナツ",
+   "en": "Arezu",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ヒビキの冒険",
+   "en": "Ethan's Adventure",
+   "type": "Supporter",
+   "highValue": false,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ピクニックバスケット",
+   "en": "Picnic Basket",
+   "type": "Item",
+   "highValue": false,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ピーニャ",
+   "en": "Giacomo",
+   "type": "Supporter",
+   "highValue": false,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "フヨウ",
+   "en": "Phoebe",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ブライア",
+   "en": "Briar",
+   "type": "Supporter",
+   "highValue": false,
+   "method": "tcgdex-bilingual"
+  },
+  {
+   "ja": "プライムキャッチャー",
+   "en": "Prime Catcher",
+   "type": "Item",
+   "highValue": true,
+   "method": "tcgdex-bilingual"
+  },
+  {
+   "ja": "ホミカの演奏",
+   "en": "Roxie's Performance",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ボスの指令",
+   "en": "Boss's Orders",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ボスの指令（ゲーチス）",
+   "en": "Boss's Orders",
+   "type": "Supporter",
+   "highValue": false,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ボタン",
+   "en": "Penny",
+   "type": "Supporter",
+   "highValue": false,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ポケモンいれかえ",
+   "en": "Switch",
+   "type": "Item",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "マグマの滝壺",
+   "en": "Magma Basin",
+   "type": "Stadium",
+   "highValue": false,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "マスタード いちげきのかた",
+   "en": "Single Strike Style Mustard",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "マスタード れんげきのかた",
+   "en": "Rapid Strike Style Mustard",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "マチスの取引",
+   "en": "Lt. Surge's Bargain",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ミアレガレット",
+   "en": "Lumiose Galette",
+   "type": "Item",
+   "highValue": false,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ミカンのまなざし",
+   "en": "Jasmine's Gaze",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ミツルの思いやり",
+   "en": "Wally's Compassion",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "メロコ",
+   "en": "Mela",
+   "type": "Supporter",
+   "highValue": false,
+   "method": "tcgdex-bilingual"
+  },
+  {
+   "ja": "リセットスタンプ",
+   "en": "Reset Stamp",
+   "type": "Item",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "リップ",
+   "en": "Tulip",
+   "type": "Supporter",
+   "highValue": false,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "リーリエの全力",
+   "en": "Lillie's Full Force",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "リーリエの決心",
+   "en": "Lillie's Determination",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ロケット団のアテナ",
+   "en": "Team Rocket's Ariana",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "ロケット団のサカキ",
+   "en": "Team Rocket's Giovanni",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "博士の研究",
+   "en": "Professor's Research",
+   "type": "Supporter",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "改造ハンマー",
+   "en": "Enhanced Hammer",
+   "type": "Item",
+   "highValue": true,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "隠密フード",
+   "en": "Stealthy Hood",
+   "type": "Tool",
+   "highValue": false,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  },
+  {
+   "ja": "鬼の仮面",
+   "en": "Ogre's Mask",
+   "type": "Item",
+   "highValue": false,
+   "method": "tcgdex-illustrator-match, hand-checked"
+  }
+ ]
+}

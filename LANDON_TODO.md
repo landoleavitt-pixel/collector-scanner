@@ -33,7 +33,7 @@ Full steps: [IOS_APP_SETUP.md](IOS_APP_SETUP.md). No in-app purchases, RevenueCa
 - [ ] Add the push key to Supabase (the boss gives you the exact command; the key file never goes in chat).
 - [ ] Run the app on your iPhone from Xcode with the boss walking you through it; test sign-in, a search and an alert.
 - [ ] **Make a demo account for Apple's reviewers:** sign up on fieldsandfloors.com with a separate email (e.g. a new Gmail) and a password you don't use anywhere else, save 2 searches with alerts on, and star 1 auction. **Security note:** this login goes to Apple only, in the App Review notes, so never reuse a real password. Then tell the boss, so the last 2 screenshots can be taken (steps in appstore/screenshots/README.md).
-- [ ] App Store Connect: create the app (text, privacy answers and screenshots 1–3 are ready in APP_STORE_LISTING.md and appstore/screenshots/), fill in App Privacy (email, device ID for push, Product Interaction analytics), and add a demo account for reviewers. The boss drafts the text and screenshots.
+- [ ] App Store Connect: create the app, **named "Fields & Fables"**. Do this as soon as your developer account is active, because creating it is what reserves the name. (Text, privacy answers and screenshots 1–3 are ready in APP_STORE_LISTING.md and appstore/screenshots/), fill in App Privacy (email, device ID for push, Product Interaction analytics), and add a demo account for reviewers. The boss drafts the text and screenshots.
 - [ ] Before archiving, ask the boss to run `npx cap sync ios`; then submit.
 
 ## eBay Partner Network (affiliate commission)
