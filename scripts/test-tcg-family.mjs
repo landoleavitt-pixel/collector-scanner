@@ -60,6 +60,7 @@ const checks = [
   ['Family matches whole words only ("Mew" has no "Mewtwo ex")', () => !familyCards('pokemon', 'Mew').some((c) => c.name === 'Mewtwo ex')],
   ['Saved family search with picked versions hides unsure listings', () => { const p = familySavedParams({ game: 'pokemon', card: 'charizard-ex', versions: ['sv03.5:199:h'], needOnly: true }); return p.get('card') === 'charizard-ex' && p.get('versions') === 'sv03.5:199:h' && p.get('unsure') === 'hide' && p.get('sort') === 'newest' && !p.has('needOnly'); }],
   ['Saved family search with no versions keeps unsure listings', () => familySavedParams({ game: 'mtg', card: 'sol-ring' }).get('unsure') === 'show'],
+  ['Saved family search with a list of cards sends cards and q', () => { const p = familySavedParams({ game: 'pokemon', cards: ['charizard', 'charizard-ex'], needOnly: true }, 'Charizard'); return p.get('cards') === 'charizard,charizard-ex' && p.get('q') === 'Charizard'; }],
   ['Serialized One Ring is a grail', () => cardVersions('mtg', 'the-one-ring').sets.flatMap((s) => s.numbers.flatMap((n) => n.versions)).some((v) => v.rarityKey === 'serialized' && v.tier === 'grail')],
 ];
 for (const [name, fn] of checks) {

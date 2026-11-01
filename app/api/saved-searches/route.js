@@ -179,8 +179,8 @@ async function primeNotifications(request, savedSearch, filters) {
   // Card-game searches run through /api/tcg-search, the way the poller does.
   if (savedSearch.side === 'fables') {
     // A card-family search (filters.card) primes from the family search.
-    const res = await fetch(filters?.card
-      ? `${origin}/api/tcg-family-search?${familySavedParams(filters)}`
+    const res = await fetch(filters?.card || filters?.cards?.length
+      ? `${origin}/api/tcg-family-search?${familySavedParams(filters, savedSearch.query)}`
       : `${origin}/api/tcg-search?${savedSearchParams(savedSearch.query, filters)}`);
     if (!res.ok) throw new Error(`Prime search returned ${res.status}`);
     return insertPrimed(supabase, savedSearch, (await res.json()).items ?? []);

@@ -611,10 +611,16 @@ async function callAppSearch(query: string, filters: Record<string, unknown>): P
 const TCG_FILTER_KEYS = ["game", "rarity", "lang", "graded", "grader", "grade", "firstEd", "serialOnly", "priceMin", "priceMax", "listing"];
 // Saved searches with a `card` are card-family searches: GET
 // /api/tcg-family-search. Mirrors familySavedParams in lib/tcg/familySearch.js.
-const FAMILY_FILTER_KEYS = ["game", "card", "versions", "lang", "graded", "priceMin", "priceMax", "listing"];
+const FAMILY_FILTER_KEYS = ["game", "card", "cards", "versions", "lang", "graded", "priceMin", "priceMax", "listing"];
+function familyCardKeys(filters: Record<string, unknown>): string[] {
+  const list = Array.isArray(filters?.cards) ? (filters.cards as unknown[]).map(String) : [];
+  if (filters?.card) list.push(String(filters.card));
+  return [...new Set(list.filter(Boolean))].slice(0, 100);
+}
 function tcgSearchUrl(query: string, filters: Record<string, unknown>): string {
-  if (filters?.card) {
+  if (familyCardKeys(filters).length) {
     const params = new URLSearchParams({ sort: "newest", limit: "1000" });
+    if (query) params.set("q", query);
     for (const k of FAMILY_FILTER_KEYS) {
       const v = filters[k];
       if (v == null || v === "" || v === false || (Array.isArray(v) && !v.length)) continue;
@@ -653,14 +659,16 @@ async function callTcgSearch(query: string, filters: Record<string, unknown>): P
   throw new Error("TCG search API rate-limited the alert checker twice");
 }
 
-// The versions of a card-family search's card that the alert's owner has
-// marked as owned (table owned_cards). Only that member's rows for that card
-// are read. Returns null (no filtering) when the search isn't a need-only
+// The versions of a card-family search's cards that the alert's owner has
+// marked as owned (table owned_cards). Only that member's rows for those
+// cards are read. (Version keys are set:number:finish, so they don't collide
+// across cards.) Returns null (no filtering) when the search isn't a need-only
 // family search, or when the table is missing or the read fails. Nothing
 // about the member or the card is logged.
 async function ownedVersionsFor(search: SavedSearch): Promise<Set<string> | null> {
   const f = (search.filters ?? {}) as Record<string, unknown>;
-  if (!f.needOnly || !f.card || !f.game) return null;
+  const cards = familyCardKeys(f);
+  if (!f.needOnly || !cards.length || !f.game) return null;
   try {
     const { data, error } = await supabase
       .from("owned_cards")
@@ -668,7 +676,7 @@ async function ownedVersionsFor(search: SavedSearch): Promise<Set<string> | null
       .eq("user_id", search.user_id)
       .eq("side", "fables")
       .eq("game", String(f.game))
-      .eq("card_key", String(f.card));
+      .in("card_key", cards);
     if (error || !data) return null;
     return new Set(data.map((row: { version_key: string }) => row.version_key));
   } catch {

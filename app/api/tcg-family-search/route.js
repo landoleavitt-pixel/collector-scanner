@@ -5,7 +5,10 @@
 //
 // Query string:
 //   game        mtg | pokemon (required)
-//   card        card key or exact name (required), as from /api/tcg-versions
+//   card        card key or exact name, as from /api/tcg-versions; or
+//   cards       a family: card keys, comma-separated (up to 100), each listing
+//               matched to the card it fits best (items then carry cardKey)
+//   q           what to search eBay for (the family name); default: the first card's name
 //   versions    version keys to keep, comma-separated (empty = every version)
 //   lang        all | en,ja,other
 //   unsure      show | hide: listings we can't pin to a version (version not
