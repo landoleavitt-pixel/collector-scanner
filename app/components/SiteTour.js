@@ -258,8 +258,8 @@ const STEPS = [
   },
   {
     label: 'Filters',
-    title: 'Stack what eBay won’t.',
-    text: 'Autographed, rookie, numbered to 25 or lower, under $300, all at once. eBay can\u2019t combine those. We can.',
+    title: 'Stack it all in one search.',
+    text: 'Autographed, rookie, numbered to 25 or lower, under $300, all at once. On eBay that takes Advanced Search or a boolean search. Here it\u2019s a few taps.',
     Art: FilterArt,
   },
   {

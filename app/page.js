@@ -23,6 +23,7 @@ import { hasShareParams, parseShareParams, buildShareParams } from '../lib/share
 import { track } from '../lib/track';
 import { CARD_COMPANIES, brandFilterLabels } from '../lib/cardBrands';
 import { TEAMS, TEAM_LEAGUES, suggestTeams, teamFromQuery, teamFilterLabels, titleMatchesTeam, getTeam } from '../lib/teams';
+import { tidyRecentSearches } from '../lib/recentSearches';
 import { WatchlistContext, WatchlistProvider } from '../lib/watchlistContext';
 import { useUser } from '../lib/useUser';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -494,7 +495,7 @@ function Home() {
   // Recent searches with proper capitals and near-duplicates merged. Shows
   // the raw list until the matcher has loaded.
   const tidyRecents = useMemo(
-    () => (playerSuggest ? playerSuggest.tidyRecentSearches(recentSearches, 5) : recentSearches.slice(0, 5)),
+    () => (playerSuggest ? tidyRecentSearches(recentSearches, playerSuggest, 5) : recentSearches.slice(0, 5)),
     [playerSuggest, recentSearches],
   );
   const [dismissedFix, setDismissedFix] = useState(null);

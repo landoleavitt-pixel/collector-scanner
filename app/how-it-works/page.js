@@ -41,7 +41,7 @@ export default function HowItWorksPage() {
       </SectionHeading>
       <Prose>
         <p>
-          eBay has no concept of a print run. A card numbered <code>/10</code> is just text in a title to them, no different from <code>"2024-25 season"</code> or <code>"5/25/2024"</code> or <code>"+NEW 12/12"</code> stock counts.
+          On eBay, a print run is whatever the seller types. Some fill in a Print Run field. Many just put <code>/10</code> in the title, where it looks a lot like <code>"2024-25 season"</code> or <code>"5/25/2024"</code> or <code>"+NEW 12/12"</code> stock counts.
         </p>
         <p>
           Our parser knows the difference. It catches the real ones (<code>/10</code>, <code>#5/10</code>, <code>1/1</code>, <code>numbered to 25</code>, <code>2/10</code>, <code>jersey #44/99</code>) and rejects the false positives: season years, calendar dates, inventory counts, card numbers without a denominator.
@@ -61,14 +61,14 @@ export default function HowItWorksPage() {
       </Prose>
 
       <SectionHeading number="03" label="Stacked filters">
-        We combine filters eBay won't.
+        Every filter in one search.
       </SectionHeading>
       <Prose>
         <p>
-          On eBay, "Autographed" is a checkbox. So is "Rookie." Price has a range. But you can't tell eBay: <em>autographed, rookie, numbered to 25 or lower, under $300, Buy It Now only, sorted by ending soonest.</em>
+          On eBay, "Autographed" is a checkbox. So is "Rookie." Price has a range. Adding print runs on top means Advanced Search, or typing a boolean search by hand.
         </p>
         <p>
-          That's the one query a serious collector makes constantly. We let you stack all of it at once. The result list narrows from thousands to the few that actually fit what you're hunting.
+          Here it's one search: <em>autographed, rookie, numbered to 25 or lower, under $300, Buy It Now only, sorted by ending soonest.</em> That's the query a serious collector makes constantly. The result list narrows from thousands to the few that actually fit what you're hunting.
         </p>
         <p>
           If you toggle <strong>Autographed</strong> and your search already contains the word "auto," we don't double-add it. Small thing. Worth doing right.
