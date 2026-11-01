@@ -1,4 +1,4 @@
-# Screenshots: shot list for the two-sided app
+# Screenshots: shot list for Fields & Fables (two-sided app)
 
 **Don't take these yet.** Wait until the two-sided app (side chooser on launch, switch at the top, Foils & Fables live) is deployed, then take all 7 in one sitting so the status bar, data and look match.
 

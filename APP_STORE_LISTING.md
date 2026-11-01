@@ -1,8 +1,8 @@
-# App Store Listing: [App name] (two-sided app, free early access)
+# App Store Listing: Fields & Fables (two-sided app, free early access)
 
 Everything for App Store Connect, ready to copy and paste. The iPhone app holds **both sides**: **Fields & Floors** (sports cards) and **Foils & Fables** (trading card games). It opens on a choose-your-side screen, then has a switch at the top. This listing is for **free early access, no in-app purchases**.
 
-`[App name]` is a placeholder until the name is picked (section 0). Replace it everywhere before pasting. Character counts are checked against Apple's limits.
+The app name is **Fields & Fables** (Landon's pick, 2026-10-31; checks in section 0). Character counts are checked against Apple's limits.
 
 Where to paste: App Store Connect → your app → the version under **iOS App** (text, screenshots, review notes), **App Information** (name, subtitle, category, age rating), and **App Privacy** (privacy answers).
 
@@ -12,14 +12,30 @@ Where to paste: App Store Connect → your app → the version under **iOS App**
 
 ---
 
-## 0. App name: proposals
+## 0. App name: Fields & Fables
 
-The name has to cover both sides, so neither "Fields & Floors" nor "Foils & Fables" alone works. Checked on 2026-10-31:
-- **App Store:** Apple's public App Store search (US store), looking for an app with the same or a confusingly close name.
-- **US trademark:** a quick search on USPTO's trademark search for the exact phrase. "No live match" means the closest results were dead (cancelled or abandoned) marks or unrelated single words.
-- **Canada:** not checked this round. CIPO's database needs a manual search; do it for the final pick.
+### Name field (30 max)
 
-This is a first screen, not clearance (same as the Foils & Fables check, which Landon accepted without a lawyer).
+```
+Fields & Fables
+```
+
+15 characters. It joins the two side names and keeps the same F&F initials, so the existing F&F monogram still fits. Optional: `Fields & Fables: Card Finder` (28) puts "card finder" into App Store search, since nobody searches for a new brand. Either is fine; the short one matches the home screen label.
+
+### Checks on the final name (2026-10-31)
+
+This is a first screen, not clearance. Landon has decided on no trademark lawyer before launch.
+
+| Check | Result |
+|---|---|
+| **App Store** (Apple's public search, US and Canada stores, "Fields & Fables", "Fields and Fables", "Field Fables") | **Clear.** No app with this or a close name. Apple only confirms the name is free when the app record is created in App Store Connect, so do that step soon to hold it. |
+| **Canada (CIPO), every mark containing "Fables"** | **No conflict.** 9 marks contain "Fables" and none contain "Fields". Nearest in our fields: "Haus of Fables" (class 35, registered) and "Friendly Fables" (classes 16 and 35, registered). Both are unrelated businesses with clearly different names. |
+| **US (USPTO), "Fields Fables" and variants, any class** | **One close mark: "FIELD FABLES", pending, class 33 (wine), owned by an individual.** Different goods (wine vs. software and online services), so low risk. Worth knowing: if it registers and the owner expands, that is the one mark to watch. |
+| **US, every mark containing "Fables" in classes 9, 35 and 42** | **No conflict.** 90 marks. Live ones are game or story titles ("Bug Fables", "Merge Fables", "Grim Fables", "Mystic Fables"), none with "Fields" or about cards or search. Closest wording, "Friends & Fables" (classes 9 and 41), is dead (abandoned). |
+
+### Other names considered (for the record)
+
+The proposals that went to Landon. The checks in this table were quick ones (US App Store, USPTO exact phrase only).
 
 | # | Name (as it would appear, 30 max) | Length | App Store | US trademark (quick) | Notes |
 |---|---|---|---|---|---|
@@ -34,7 +50,7 @@ This is a first screen, not clearance (same as the Foils & Fables check, which L
 
 **Dropped:** anything with "Grail" (a direct competitor, GrailHound: Marketplace Alerts, is on the App Store, plus apps called "Grail" and "GrailCard"); "Card Hunter" (an app called CardHunt exists); "Rare Finds" (RareFinds app exists).
 
-**My pick: Rarest First: Card Finder.** It is the only name a stranger understands before opening the app, it is already our line on both sides, and it is clear on the App Store. Inside the app, the two sides keep their own names on the chooser and the switch.
+Inside the app, the two sides keep their own names (Fields & Floors, Foils & Fables) on the chooser and the switch.
 
 ---
 
@@ -45,6 +61,8 @@ This is a first screen, not clearance (same as the Foils & Fables check, which L
 ```
 Find rare sports & game cards
 ```
+
+Proposed. The name doesn't say "cards", so the subtitle has to, and it names both sides without any game name. Back-up if it feels flat: `Rare sports & game cards` (24).
 
 ### Promotional text (170 max, 155 used)
 
@@ -57,7 +75,7 @@ Free during early access. Search live eBay listings for rare sports cards and tr
 ### Description (4,000 max, about 1,800 used)
 
 ```
-[App name] is a search tool for collectors hunting rare cards on eBay. It has two sides, and you pick one each time you open the app: Fields & Floors for sports cards, and Foils & Fables for trading card games. A switch at the top moves between them, and one account covers both.
+Fields & Fables is a search tool for collectors hunting rare cards on eBay. It has two sides, and you pick one each time you open the app: Fields & Floors for sports cards, and Foils & Fables for trading card games. A switch at the top moves between them, and one account covers both.
 
 FIELDS & FLOORS: SPORTS CARDS
 Type a player, team or set and see live eBay listings sorted rarest first, so a /5 shows up before a /299. Every result is tagged by print run: Grail (/1 to /25), Ultra (/26 to /99), Rare (/100 to /249) and Scarce (/250 and up). Open any card to see how rare its print run is.
@@ -80,7 +98,7 @@ We don't sell cards. Tapping a listing opens it on eBay, and you buy from the se
 
 Sign in with Apple or email. You can delete your account at any time from the Account menu.
 
-[App name] is independent. It is not affiliated with, endorsed by or sponsored by eBay Inc. or any card maker or game publisher.
+Fields & Fables is independent. It is not affiliated with, endorsed by or sponsored by eBay Inc. or any card maker or game publisher.
 ```
 
 > **Check before pasting:**
@@ -97,7 +115,7 @@ No spaces after commas. Words already in the subtitle (find, rare, sports, game,
 baseball,basketball,football,hockey,tcg,trading,holo,foil,rookie,parallel,serial,autograph,auction
 ```
 
-Once the name is picked, remove any keyword that is also in the name (for example "foil" if the name were "Fields & Foils") and spend the freed characters on "collector" or "grail".
+None of these repeat a word from the name "Fields & Fables" or the subtitle, so no characters are wasted.
 
 ### What's New (version 1.0)
 
@@ -192,9 +210,9 @@ Then tick these data types. For every one: **Used for tracking: No.** We share n
 ### Notes (paste into "Notes")
 
 ```
-[App name] is a search tool for card collectors. It has two sides, chosen on a screen when the app opens: Fields & Floors (sports cards) and Foils & Fables (trading card games). A switch at the top moves between them, and one account covers both. It uses eBay's official Browse API to show live eBay listings, ranked rarest first.
+Fields & Fables is a search tool for card collectors. It has two sides, chosen on a screen when the app opens: Fields & Floors (sports cards) and Foils & Fables (trading card games). A switch at the top moves between them, and one account covers both. It uses eBay's official Browse API to show live eBay listings, ranked rarest first.
 
-The app is free during early access. There are no in-app purchases and no paid plans in this version. We don't sell anything: tapping a listing opens it on eBay in Safari, and the member buys from the seller on eBay. [App name] is not affiliated with eBay or with any card maker or game publisher. Game names appear inside the app only as plain filter labels, to describe which listings a member wants to see.
+The app is free during early access. There are no in-app purchases and no paid plans in this version. We don't sell anything: tapping a listing opens it on eBay in Safari, and the member buys from the seller on eBay. Fields & Fables is not affiliated with eBay or with any card maker or game publisher. Game names appear inside the app only as plain filter labels, to describe which listings a member wants to see.
 
 Native features:
 - Push notifications: when a new listing matches a saved search, and bid reminders before an auction a member is watching ends (3 hours to 5 minutes before).
@@ -255,3 +273,22 @@ Our answer: the demo account has saved searches and starred cards on both sides.
 
 **Guideline 1.5 / 2.3, Accurate metadata.**
 Our answer: screenshots are of the real app with real current eBay listings. Nothing is mocked up.
+
+---
+
+## 7. Other places the app name has to change
+
+The listing above is ready. These are the places outside App Store Connect's text fields that still say "Fields & Floors" as the **app** name. Native files are listed for whoever does the native change, not edited here. The website and the sports side keep the name Fields & Floors.
+
+| Place | What to change | Who |
+|---|---|---|
+| `capacitor.config.json` → `appName` | "Fields & Floors" → "Fields & Fables". Then `npx cap sync ios`, which copies it to `ios/App/App/capacitor.config.json` (don't edit that copy by hand). Leave `ios.scheme` alone; it's the Xcode scheme name, not shown to anyone | Agent (native change) |
+| `ios/App/App/Info.plist` → `CFBundleDisplayName` | "Fields &amp; Floors" → "Fields &amp; Fables". This is the label under the home screen icon and the name in the Sign in with Apple sheet and in notification settings | Agent (native change), needs a new build |
+| `mobile-shell/offline.html` (and its synced copy `ios/App/App/public/offline.html`) | The "you're offline" page shown when there's no connection: line 18 shows "Fields &amp; Floors" | Agent, then `npx cap sync ios` |
+| App Store Connect → New App | Create the app record as "Fields & Fables" (bundle ID stays `com.fieldsandfloors.app`; it can't change and nobody sees it). Doing this early holds the name | Landon |
+| Apple Developer → Identifiers → `com.fieldsandfloors.app` → Description | Optional tidy-up to "Fields & Fables". Only Apple's portal shows it | Landon |
+| `IOS_APP_SETUP.md` section 4 step 1 | Says to create the app as "Fields & Floors"; change to "Fields & Fables" | Boss (doc) |
+| Push notification and alert email wording (`supabase/functions/poller/index.ts`, `emails.ts`, `lib/huntConfirmedEmail.js`) | Check only: these say "Fields & Floors" for sports alerts, which is still right. Foils & Fables alerts should say "Foils & Fables". Neither should say "Fields & Fables" except where the whole app is meant | Agent (check) |
+| `app/layout.js` metadata (page titles "Fields & Floors Collectors") | No change: that's the website. Only change it if the app should show a different title in the app switcher | None for now |
+
+The app icon and splash use the F&F monogram, which still fits Fields & Fables, so they don't need to change.
