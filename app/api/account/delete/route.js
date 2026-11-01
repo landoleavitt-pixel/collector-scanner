@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 import { createServerSupabase } from '../../../../lib/supabaseServer';
+import { revokeStoredAppleToken } from '../../../../lib/appleAuth';
 
 // POST /api/account/delete
 //
@@ -17,6 +18,8 @@ import { createServerSupabase } from '../../../../lib/supabaseServer';
 //   2. Delete their rows. Foreign keys to auth.users may or may not cascade
 //      depending on how each table was created, so we delete explicitly
 //      rather than trusting a cascade we haven't verified.
+//   1b. Revoke their Sign in with Apple token, if we hold one
+//      (lib/appleAuth.js). Best effort: a failure is logged, never fatal.
 //   3. Delete the auth user last.
 //
 // Requires SUPABASE_SERVICE_ROLE_KEY — removing an auth user is an admin
@@ -82,6 +85,11 @@ export async function POST(request) {
     console.error('account/delete: profile lookup failed:', err?.message);
     return NextResponse.json({ error: 'Could not close account' }, { status: 500 });
   }
+
+  // ── 1b. Revoke Sign in with Apple ────────────────────────────────
+  // App Review 5.1.1(v). Never blocks deletion: failures are logged inside.
+  const apple = await revokeStoredAppleToken(admin, user.id);
+  if (apple !== 'none') console.log(`account/delete: apple token ${apple} for ${user.id}`);
 
   // ── 2. Delete their data ─────────────────────────────────────────
   // Explicit rather than relying on FK cascades, which aren't guaranteed here.

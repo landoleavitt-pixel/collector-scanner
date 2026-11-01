@@ -34,6 +34,20 @@ Website visitors will see the new landing page, intro and fixed plans card. Ever
 
 Supabase → Authentication → Providers → Apple → enable. Under **Client IDs**, add `com.fieldsandfloors.app`. That's all the native app needs.
 
+**So deleting an account also revokes Sign in with Apple** (App Review 5.1.1(v)):
+
+1. Run `supabase/migrations/20261101000000_apple_tokens.sql` in Supabase → SQL Editor.
+2. In Vercel → Settings → Environment Variables (Production), add:
+   - `APPLE_TEAM_ID`: your 10-character Team ID
+   - `APPLE_KEY_ID`: the Key ID of the key from step 2.3
+   - `APPLE_CLIENT_ID`: `com.fieldsandfloors.app`
+   - `APPLE_PRIVATE_KEY`: the whole contents of that key's `.p8` file, including the `-----BEGIN PRIVATE KEY-----` and `-----END PRIVATE KEY-----` lines
+3. Redeploy.
+
+**Security note:** the `.p8` key is a secret. Paste it only into Vercel (and the Supabase push secret), never into chat, email, GitHub or a file in the project. Anyone holding it could act as our app towards Apple. If it ever leaks, revoke the key in Apple Developer → Keys and make a new one. The Apple tokens this stores are kept in a table only the server can read.
+
+Until these are set, sign-in and account deletion work as before; deletion just can't revoke the Apple token.
+
 ## 4. App Store Connect
 
 1. appstoreconnect.apple.com → **Apps → +** → New App. Platform iOS, name "Fields & Fables" (the app holds both sides: Fields & Floors and Foils & Fables), bundle ID `com.fieldsandfloors.app`.
