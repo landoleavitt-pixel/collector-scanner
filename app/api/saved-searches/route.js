@@ -3,6 +3,7 @@ import { createServerSupabase } from '../../../lib/supabaseServer';
 import { recordOnce } from '../../../lib/trackServer';
 import { PAYMENTS_LIVE } from '../../../lib/payments';
 import { savedSearchParams } from '../../../lib/tcg/search';
+import { familySavedParams } from '../../../lib/tcg/familySearch';
 import { buildFablesConfirmation, FABLES_SENDER } from '../../../lib/fablesEmail';
 import { buildSportsConfirmation, SPORTS_SENDER } from '../../../lib/huntConfirmedEmail';
 
@@ -177,7 +178,10 @@ async function primeNotifications(request, savedSearch, filters) {
 
   // Card-game searches run through /api/tcg-search, the way the poller does.
   if (savedSearch.side === 'fables') {
-    const res = await fetch(`${origin}/api/tcg-search?${savedSearchParams(savedSearch.query, filters)}`);
+    // A card-family search (filters.card) primes from the family search.
+    const res = await fetch(filters?.card
+      ? `${origin}/api/tcg-family-search?${familySavedParams(filters)}`
+      : `${origin}/api/tcg-search?${savedSearchParams(savedSearch.query, filters)}`);
     if (!res.ok) throw new Error(`Prime search returned ${res.status}`);
     return insertPrimed(supabase, savedSearch, (await res.json()).items ?? []);
   }

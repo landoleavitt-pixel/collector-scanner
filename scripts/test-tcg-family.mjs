@@ -30,6 +30,7 @@ fs.writeFileSync(path.join(dir, 'ebay-stub.mjs'), 'export const getAppToken = ()
 fs.symlinkSync(path.join(root, 'lib/tcg/catalog'), path.join(dir, 'catalog'));
 const { matchListing } = await import(pathToFileURL(path.join(dir, 'family.mjs')).href);
 const { cardVersions, findCards, familyCards } = await import(pathToFileURL(path.join(dir, 'catalog.mjs')).href);
+const { familySavedParams } = await import(pathToFileURL(path.join(dir, 'familySearch.mjs')).href);
 
 const { cases } = JSON.parse(fs.readFileSync(path.join(root, 'mockups/tcg-family-cases.json'), 'utf8'));
 let pass = 0;
@@ -57,6 +58,8 @@ const checks = [
   ['Name search puts names that start with the words first', () => findCards('pokemon', 'charizard')[0].name.toLowerCase().startsWith('charizard')],
   ['Charizard family has every Charizard card, more than 10', () => { const f = familyCards('pokemon', 'Charizard'); return f.length > 10 && f.some((c) => c.name === 'Mega Charizard X ex') && f.some((c) => c.name === 'Charizard VMAX'); }],
   ['Family matches whole words only ("Mew" has no "Mewtwo ex")', () => !familyCards('pokemon', 'Mew').some((c) => c.name === 'Mewtwo ex')],
+  ['Saved family search with picked versions hides unsure listings', () => { const p = familySavedParams({ game: 'pokemon', card: 'charizard-ex', versions: ['sv03.5:199:h'], needOnly: true }); return p.get('card') === 'charizard-ex' && p.get('versions') === 'sv03.5:199:h' && p.get('unsure') === 'hide' && p.get('sort') === 'newest' && !p.has('needOnly'); }],
+  ['Saved family search with no versions keeps unsure listings', () => familySavedParams({ game: 'mtg', card: 'sol-ring' }).get('unsure') === 'show'],
   ['Serialized One Ring is a grail', () => cardVersions('mtg', 'the-one-ring').sets.flatMap((s) => s.numbers.flatMap((n) => n.versions)).some((v) => v.rarityKey === 'serialized' && v.tier === 'grail')],
 ];
 for (const [name, fn] of checks) {

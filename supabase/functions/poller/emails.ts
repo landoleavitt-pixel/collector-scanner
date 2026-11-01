@@ -33,6 +33,8 @@ export interface Listing {
   serial?: { n: number | null; of: number } | null;
   gradeLabel?: string | null;
   buyingOptions?: string[];
+  // Card-family results (/api/tcg-family-search): the versions a listing can be.
+  match?: { kind?: string; versions?: string[] } | null;
 }
 
 export interface UserDigest {

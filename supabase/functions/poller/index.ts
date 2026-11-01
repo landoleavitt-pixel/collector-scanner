@@ -143,8 +143,12 @@ Deno.serve(async (_req) => {
         );
 
         for (const search of searchesInGroup) {
+          // "Only the ones I need": drop listings that can only be versions
+          // this member already owns. If their marks can't be read, alert on
+          // everything, as before.
+          const owned = side === "fables" ? await ownedVersionsFor(search) : null;
           const newMatches = results.filter(
-            (r) => !sentSet.has(`${search.user_id}::${r.id}`)
+            (r) => !sentSet.has(`${search.user_id}::${r.id}`) && !onlyOwned(r, owned)
           );
           if (newMatches.length === 0) continue;
 
@@ -605,14 +609,31 @@ async function callAppSearch(query: string, filters: Record<string, unknown>): P
 // (same names as its query string). Mirrors savedSearchParams in
 // lib/tcg/search.js: newest listings, the whole filtered pool.
 const TCG_FILTER_KEYS = ["game", "rarity", "lang", "graded", "grader", "grade", "firstEd", "serialOnly", "priceMin", "priceMax", "listing"];
-async function callTcgSearch(query: string, filters: Record<string, unknown>): Promise<Listing[]> {
+// Saved searches with a `card` are card-family searches: GET
+// /api/tcg-family-search. Mirrors familySavedParams in lib/tcg/familySearch.js.
+const FAMILY_FILTER_KEYS = ["game", "card", "versions", "lang", "graded", "priceMin", "priceMax", "listing"];
+function tcgSearchUrl(query: string, filters: Record<string, unknown>): string {
+  if (filters?.card) {
+    const params = new URLSearchParams({ sort: "newest", limit: "1000" });
+    for (const k of FAMILY_FILTER_KEYS) {
+      const v = filters[k];
+      if (v == null || v === "" || v === false || (Array.isArray(v) && !v.length)) continue;
+      params.set(k, Array.isArray(v) ? v.join(",") : String(v));
+    }
+    params.set("unsure", Array.isArray(filters.versions) && filters.versions.length ? "hide" : "show");
+    return `${APP_BASE_URL}/api/tcg-family-search?${params}`;
+  }
   const params = new URLSearchParams({ q: query || "", sort: "newest", limit: "1000" });
   for (const k of TCG_FILTER_KEYS) {
     const v = filters?.[k];
     if (v == null || v === "" || v === false) continue;
     params.set(k, Array.isArray(v) ? v.join(",") : v === true ? "1" : String(v));
   }
-  const url = `${APP_BASE_URL}/api/tcg-search?${params}`;
+  return `${APP_BASE_URL}/api/tcg-search?${params}`;
+}
+
+async function callTcgSearch(query: string, filters: Record<string, unknown>): Promise<Listing[]> {
+  const url = tcgSearchUrl(query, filters);
   for (let attempt = 0; attempt < 2; attempt++) {
     const res = await fetch(url, { headers: await pollerSignature() });
     if (res.status === 429 && attempt === 0) {
@@ -630,6 +651,36 @@ async function callTcgSearch(query: string, filters: Record<string, unknown>): P
     }));
   }
   throw new Error("TCG search API rate-limited the alert checker twice");
+}
+
+// The versions of a card-family search's card that the alert's owner has
+// marked as owned (table owned_cards). Only that member's rows for that card
+// are read. Returns null (no filtering) when the search isn't a need-only
+// family search, or when the table is missing or the read fails. Nothing
+// about the member or the card is logged.
+async function ownedVersionsFor(search: SavedSearch): Promise<Set<string> | null> {
+  const f = (search.filters ?? {}) as Record<string, unknown>;
+  if (!f.needOnly || !f.card || !f.game) return null;
+  try {
+    const { data, error } = await supabase
+      .from("owned_cards")
+      .select("version_key")
+      .eq("user_id", search.user_id)
+      .eq("side", "fables")
+      .eq("game", String(f.game))
+      .eq("card_key", String(f.card));
+    if (error || !data) return null;
+    return new Set(data.map((row: { version_key: string }) => row.version_key));
+  } catch {
+    return null;
+  }
+}
+
+// True when every version a listing could be is one the member owns.
+function onlyOwned(listing: Listing, owned: Set<string> | null): boolean {
+  const versions = listing.match?.versions;
+  if (!owned || !owned.size || !versions?.length) return false;
+  return versions.every((v) => owned.has(v));
 }
 
 // "poller:<unix seconds>" signed with POLLER_SECRET (or the service role key),
