@@ -36,7 +36,7 @@ Supabase → Authentication → Providers → Apple → enable. Under **Client I
 
 ## 4. App Store Connect
 
-1. appstoreconnect.apple.com → **Apps → +** → New App. Platform iOS, name "Fields & Floors", bundle ID `com.fieldsandfloors.app`.
+1. appstoreconnect.apple.com → **Apps → +** → New App. Platform iOS, name "Fields & Fables" (the app holds both sides: Fields & Floors and Foils & Fables), bundle ID `com.fieldsandfloors.app`.
 2. **Agreements, Tax and Banking**: accept the Paid Apps agreement and add your bank and tax info. Purchases won't work until this is done.
 3. Join the **App Store Small Business Program**, which cuts Apple's fee from 30% to 15%.
 4. In the app's **Subscriptions** section, create a group "Base". It must match the website's plans: Base monthly $6.99 CAD and Base yearly $59 CAD, both with a 14-day free trial.

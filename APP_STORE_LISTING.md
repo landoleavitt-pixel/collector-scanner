@@ -282,12 +282,12 @@ The listing above is ready. These are the places outside App Store Connect's tex
 
 | Place | What to change | Who |
 |---|---|---|
-| `capacitor.config.json` → `appName` | "Fields & Floors" → "Fields & Fables". Then `npx cap sync ios`, which copies it to `ios/App/App/capacitor.config.json` (don't edit that copy by hand). Leave `ios.scheme` alone; it's the Xcode scheme name, not shown to anyone | Agent (native change) |
-| `ios/App/App/Info.plist` → `CFBundleDisplayName` | "Fields &amp; Floors" → "Fields &amp; Fables". This is the label under the home screen icon and the name in the Sign in with Apple sheet and in notification settings | Agent (native change), needs a new build |
-| `mobile-shell/offline.html` (and its synced copy `ios/App/App/public/offline.html`) | The "you're offline" page shown when there's no connection: line 18 shows "Fields &amp; Floors" | Agent, then `npx cap sync ios` |
+| `capacitor.config.json` → `appName` | "Fields & Floors" → "Fields & Fables". Then `npx cap sync ios`, which copies it to `ios/App/App/capacitor.config.json` (don't edit that copy by hand). Leave `ios.scheme` alone; it's the Xcode scheme name, not shown to anyone | **Done** 2026-10-31 |
+| `ios/App/App/Info.plist` → `CFBundleDisplayName` | "Fields &amp; Floors" → "Fields &amp; Fables". This is the label under the home screen icon and the name in the Sign in with Apple sheet and in notification settings | **Done** 2026-10-31 (shows after the next build) |
+| `mobile-shell/offline.html` (and its synced copy `ios/App/App/public/offline.html`) | The "you're offline" page shown when there's no connection: line 18 shows "Fields &amp; Floors" | **Done** 2026-10-31, synced |
 | App Store Connect → New App | Create the app record as "Fields & Fables" (bundle ID stays `com.fieldsandfloors.app`; it can't change and nobody sees it). Doing this early holds the name | Landon |
 | Apple Developer → Identifiers → `com.fieldsandfloors.app` → Description | Optional tidy-up to "Fields & Fables". Only Apple's portal shows it | Landon |
-| `IOS_APP_SETUP.md` section 4 step 1 | Says to create the app as "Fields & Floors"; change to "Fields & Fables" | Boss (doc) |
+| `IOS_APP_SETUP.md` section 4 step 1 | Says to create the app as "Fields & Floors"; change to "Fields & Fables" | **Done** 2026-10-31 |
 | Push notification and alert email wording (`supabase/functions/poller/index.ts`, `emails.ts`, `lib/huntConfirmedEmail.js`) | Check only: these say "Fields & Floors" for sports alerts, which is still right. Foils & Fables alerts should say "Foils & Fables". Neither should say "Fields & Fables" except where the whole app is meant | Agent (check) |
 | `app/layout.js` metadata (page titles "Fields & Floors Collectors") | No change: that's the website. Only change it if the app should show a different title in the app switcher | None for now |
 
