@@ -12,11 +12,15 @@
 //     Sets newest first; numbers in card order. Show `source.note` with the
 //     list (Scryfall's terms: the data stays free to everyone and is credited).
 //
-//   ?game=mtg|pokemon&q=<typed name>
-//     → { cards: [{ key, name, printings }] }, up to 10, for the card picker.
+//   ?game=mtg|pokemon&q=<typed name>[&limit=N]
+//     → { cards: [{ key, name, printings }] }, up to 10 (or N, max 300), for
+//     the card picker. Matches the start of any word of the name.
+//   ?game=mtg|pokemon&q=<name>&family=1
+//     → { cards, total }: every card whose name holds the name as whole words
+//     (a whole family, e.g. every Charizard card), up to 300.
 
 import { NextResponse } from 'next/server';
-import { cardVersions, findCards, CATALOG_GAMES } from '../../../lib/tcg/catalog';
+import { cardVersions, findCards, familyCards, CATALOG_GAMES } from '../../../lib/tcg/catalog';
 
 export async function GET(req) {
   const p = new URL(req.url).searchParams;
@@ -27,7 +31,12 @@ export async function GET(req) {
   // The catalog only changes when it's rebuilt and redeployed.
   const cache = { 'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=86400' };
   if (p.get('q') != null && !p.get('card')) {
-    return NextResponse.json({ cards: findCards(game, String(p.get('q')).slice(0, 80)) }, { headers: cache });
+    const q = String(p.get('q')).slice(0, 80);
+    if (p.get('family') === '1') {
+      const cards = familyCards(game, q);
+      return NextResponse.json({ cards, total: cards.length }, { headers: cache });
+    }
+    return NextResponse.json({ cards: findCards(game, q, parseInt(p.get('limit'), 10) || 10) }, { headers: cache });
   }
   const body = cardVersions(game, String(p.get('card') || '').slice(0, 120));
   if (!body) {

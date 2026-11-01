@@ -29,7 +29,7 @@ for (const f of fs.readdirSync(path.join(root, 'lib/tcg'))) {
 fs.writeFileSync(path.join(dir, 'ebay-stub.mjs'), 'export const getAppToken = () => null; export const browseSearch = () => ({});');
 fs.symlinkSync(path.join(root, 'lib/tcg/catalog'), path.join(dir, 'catalog'));
 const { matchListing } = await import(pathToFileURL(path.join(dir, 'family.mjs')).href);
-const { cardVersions, findCards } = await import(pathToFileURL(path.join(dir, 'catalog.mjs')).href);
+const { cardVersions, findCards, familyCards } = await import(pathToFileURL(path.join(dir, 'catalog.mjs')).href);
 
 const { cases } = JSON.parse(fs.readFileSync(path.join(root, 'mockups/tcg-family-cases.json'), 'utf8'));
 let pass = 0;
@@ -53,6 +53,10 @@ const checks = [
   ['Base Set Charizard has a 1st Edition Holo', () => cardVersions('pokemon', 'charizard').sets.find((s) => s.set === 'base1').numbers[0].versions.some((v) => v.label === '1st Edition Holo')],
   ['Sets are newest first', () => { const s = cardVersions('mtg', 'sol-ring').sets; return s[0].released >= s[s.length - 1].released; }],
   ['Name search finds "Sheoldred"', () => findCards('mtg', 'sheold').length >= 3],
+  ['Name search matches any word ("charizard" finds Mega Charizard X ex)', () => findCards('pokemon', 'charizard', 300).some((c) => c.name === 'Mega Charizard X ex')],
+  ['Name search puts names that start with the words first', () => findCards('pokemon', 'charizard')[0].name.toLowerCase().startsWith('charizard')],
+  ['Charizard family has every Charizard card, more than 10', () => { const f = familyCards('pokemon', 'Charizard'); return f.length > 10 && f.some((c) => c.name === 'Mega Charizard X ex') && f.some((c) => c.name === 'Charizard VMAX'); }],
+  ['Family matches whole words only ("Mew" has no "Mewtwo ex")', () => !familyCards('pokemon', 'Mew').some((c) => c.name === 'Mewtwo ex')],
   ['Serialized One Ring is a grail', () => cardVersions('mtg', 'the-one-ring').sets.flatMap((s) => s.numbers.flatMap((n) => n.versions)).some((v) => v.rarityKey === 'serialized' && v.tier === 'grail')],
 ];
 for (const [name, fn] of checks) {

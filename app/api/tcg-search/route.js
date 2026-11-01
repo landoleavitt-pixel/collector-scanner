@@ -15,6 +15,8 @@
 //   sort        rarest | ending | newest | price_asc (price-low) | price_desc (price-high)
 //   offset      paging start; limit  page size (default 48, max 1000)
 //   proxies=show, lots=show   (both hidden by default)
+//   versions=1  Magic / English Pokémon with q: add `catalog` (set, number,
+//               version keys) to each listing that fits one printing exactly
 //
 // Returns { items, total, offset, nextOffset, ebayTotal, capped }.
 //
