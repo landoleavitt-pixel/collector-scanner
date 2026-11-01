@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useUser } from '../../lib/useUser';
 import { createClient } from '../../lib/supabaseClient';
 import { isNativeApp, enablePush, getPurchases } from '../../lib/native';
+import { PAYMENTS_LIVE } from '../../lib/payments';
 
 // Runs only inside the iOS app; renders nothing. Once a signed-in user is
 // known it:
@@ -46,7 +47,8 @@ export default function NativeBridge() {
         .eq('id', user.id)
         .single();
       if (cancelled) return;
-      if (data?.tier === 'base' || data?.is_founding_member) {
+      // Early access: everyone gets alerts, so everyone is asked for push.
+      if (!PAYMENTS_LIVE || data?.tier === 'base' || data?.is_founding_member) {
         enablePush((path) => router.push(path)).catch(() => {});
       }
     })();
