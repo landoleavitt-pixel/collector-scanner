@@ -12,6 +12,7 @@ The single list of work that's finished or in progress but **not live yet**. The
 | P7 | Catalog research phase 2 (Japanese Pokémon, One Piece, YGO/Lorcana terms) | Research | 🟡 Researching | research/catalogs-phase-2.md | — |
 | 7 | eBay Partner Network affiliate links | CFO | ⏸ Plan approved. Waiting on Landon's sign-up + Campaign ID; code held until batch ships | SiteTour.js, guides, reading-list copy + link tagging | — |
 | L05 | Proof strip | Landing | ⏹ Skipped: no honest live number yet (no fake figures) | — | — |
+| P8 | Card checklist (English Pokémon) at /fables/checklist; then row wording, Find it, star; engine: family lookup, set/number per listing, need-only alerts | Design + Engine | 🔵 In progress | app/fables/checklist, lib/tcg | SQL for Landon: owned_cards |
 | E-later | Fables versions: "Secret Lair Prize #8001" / "Buy-A-Box" titles to catalog set names; Magic titles with a number but no set ("022/259") | Engine | ⚪ Follow-up | lib/tcg | — |
 | S-poll | Lock down the alert checker: it can be triggered by anyone holding the public key; require a private secret header from the cron jobs instead | Debugger | ⚪ Follow-up (low risk today: it only re-runs checks and never re-sends) | poller, both cron jobs | poller deploy + Landon edits 2 cron jobs |
 
