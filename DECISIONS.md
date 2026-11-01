@@ -93,3 +93,4 @@ Everything Landon has decided, so no agent ever asks him the same thing twice. O
 - All questions go through the boss and are asked **once**. (2026-10-20, 2026-10-21)
 - Once Landon approves, the boss pushes and deploys the poller. Landon pastes SQL into the Supabase SQL Editor himself. (2026-10-20)
 - Every privacy or security risk is stated plainly before Landon is asked to do anything. (2026-10-20)
+- Agents share one folder, so **commit only your own files with `git commit -- <your paths>`**. Never run `git add -A` or a plain `git commit` with other agents' changes staged. Never rewrite history. (2026-10-31)
