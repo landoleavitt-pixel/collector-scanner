@@ -145,7 +145,7 @@ export default function TermsPage() {
           &amp; Fables application are not affiliated with, endorsed by, sponsored
           by, licensed by, or operated by eBay Inc.; The Pok&eacute;mon Company,
           Nintendo, Creatures Inc., or GAME FREAK inc.; Wizards of the Coast LLC
-          or Hasbro, Inc.; Konami Digital Entertainment; Bandai Co., Ltd. or Bandai
+          or Hasbro, Inc.; Konami Digital Entertainment or 4K Media Inc.; Bandai Co., Ltd. or Bandai
           Namco; Ravensburger AG; The Walt Disney Company; or any other card
           manufacturer, game publisher, or rights holder whose products appear in
           Listings or Card Data. Nothing in the Service is intended to suggest any
@@ -427,7 +427,10 @@ export default function TermsPage() {
             Magic: The Gathering card names, text, and other card information are
             the property of Wizards of the Coast LLC. Card Data from Scryfall is
             available free of charge to every visitor and is never part of a paid
-            plan.
+            plan. Foils &amp; Fables is unofficial Fan Content permitted under the{' '}
+            <a href="https://company.wizards.com/en/legal/fancontentpolicy" target="_blank" rel="noopener noreferrer">Fan Content Policy</a>.
+            Not approved/endorsed by Wizards. Portions of the materials used are
+            property of Wizards of the Coast. &copy;Wizards of the Coast LLC.
           </li>
           <li>
             <strong>Pok&eacute;mon:</strong> card data from{' '}
@@ -435,6 +438,21 @@ export default function TermsPage() {
             used under the MIT License reproduced below. Pok&eacute;mon card names
             and other card information are the property of The Pok&eacute;mon
             Company, Nintendo, Creatures Inc., and GAME FREAK inc.
+          </li>
+          <li>
+            <strong>Yu-Gi-Oh!:</strong> card data from{' '}
+            <a href="https://ygoprodeck.com" target="_blank" rel="noopener noreferrer">YGOPRODeck</a>.
+            Yu-Gi-Oh! card names and other card information are &copy; 4K Media
+            Inc. and Konami Digital Entertainment.
+          </li>
+          <li>
+            <strong>Disney Lorcana:</strong> card data from{' '}
+            <a href="https://lorcast.com" target="_blank" rel="noopener noreferrer">Lorcast</a>,
+            which provides Lorcana content under Ravensburger&rsquo;s Community
+            Code Policy. Disney Lorcana card names and other card information are
+            the property of Ravensburger AG and Disney. Card Data from Lorcast is
+            available free of charge to every visitor and is never part of a paid
+            plan.
           </li>
         </ul>
         <p style={{ fontSize: '0.85em' }}>
