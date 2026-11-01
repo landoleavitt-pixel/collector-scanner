@@ -762,6 +762,77 @@
     "kind": "exact",
     "why": "Double Masters #56"
    }
+  },
+  {
+   "game": "mtg",
+   "card": "gaeas-cradle",
+   "title": "Magic MTG Judge Promo FOIL Gaea's Cradle NEAR MINT NM *707",
+   "expect": {
+    "kind": "exact",
+    "why": "Judge Gift Cards"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "gaeas-cradle",
+   "title": "Gaea's Cradle 321 Judge Promos Foil Promo MTG English",
+   "expect": {
+    "kind": "exact",
+    "why": "Judge Gift Cards"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "jace-the-mind-sculptor",
+   "title": "2023 MTG PROMOS SECRET LAIR DROP PRIZE #8001 JACE, THE MIND SCULPTOR M BGS 9",
+   "expect": {
+    "kind": "exact",
+    "why": "#8001"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Pikachu VMAX",
+   "title": "Pokémon TCG Pikachu VMAX Promo TG29/TG30 Full Art Holo English",
+   "expect": {
+    "kind": "exact",
+    "why": "TG29"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Greninja ex",
+   "title": "Greninja ex 021/128 - SVP Promo Holo - 2023 EN Pokemon TCG",
+   "expect": {
+    "kind": "exact",
+    "why": "30th Celebration 021"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Mew ex",
+   "title": "2026 30th Celebrations Mew EX Secret Rare #158/128",
+   "expect": {
+    "kind": "exact",
+    "why": "30th Celebration 158"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Mew ex",
+   "title": "Mew ex 88/92 Pokémon Celebrations Classic Collection 25th Ann",
+   "expect": {
+    "kind": "exact",
+    "why": "Classic Collection"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Umbreon ex",
+   "title": "CGC 9.5 Umbreon ex Prismatic Evolutions Stamp Exclusive 060/131",
+   "expect": {
+    "kind": "promo"
+   }
   }
  ]
 }

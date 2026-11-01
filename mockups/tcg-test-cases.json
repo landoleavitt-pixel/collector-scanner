@@ -2580,6 +2580,34 @@
    "expect": {
     "lot": true
    }
+  },
+  {
+   "group": "Re-test 4 follow-ups",
+   "title": "MTG Underground Sea Revised LP+ Dual Land #46",
+   "expect": {
+    "lot": false
+   }
+  },
+  {
+   "group": "Re-test 4 follow-ups",
+   "title": "Magic The Gathering Cyclonic Rift Return to Ravnica #35 Regular Blue 2012 Card",
+   "expect": {
+    "lot": false
+   }
+  },
+  {
+   "group": "Re-test 4 follow-ups",
+   "title": "BGS 9.5 Quad++ Charizard Base Set 4/102 Holo",
+   "expect": {
+    "lot": false
+   }
+  },
+  {
+   "group": "Re-test 4 follow-ups",
+   "title": "Charizard ex 234/091 Paldean Fates Holo + Iono",
+   "expect": {
+    "lot": true
+   }
   }
  ]
 }
