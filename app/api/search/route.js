@@ -14,6 +14,7 @@ import { getAppToken, browseSearch } from '../../../lib/ebay';
 import { makeBrandMatcher, brandQueryTerms } from '../../../lib/cardBrands';
 import { teamFromQuery, teamQueryKeywords } from '../../../lib/teams';
 import { catalogTeamsForTitle, matchesTeam, makeCatalogTeamMatcher, teamQueryPlayers, orGroups } from '../../../lib/playerTeams';
+import { isNonCard } from '../../../lib/listingFilter';
 
 // ── Per-IP rate limiter ────────────────────────────────────────────────────
 //
@@ -468,7 +469,7 @@ function verifyPrintRun(title, numberedLimit) {
 const SINGLE_CARD_PHRASES = /\bfast\s+break\b|\bpack[\s-]*fresh\b|\b(?:fresh\s+)?(?:from|out\s+of|of)\s+(?:a\s+|the\s+)?(?:pack|box)\b|\bpulled\b[^,]{0,20}\b(?:pack|box)\b|\bbox\s+toppers?\b|\b(?:hobby|mega|blaster|retail|value|hanger|cello|jumbo|fotl|choice|first\s+day|h2|breaker'?s?)\s+(?:box\s+)?(?:exclusive|excl?\.?|only)\b|\b(?:hobby|mega|blaster|hanger|cello|jumbo|retail|value)\s+box\s+(?:exclusive|excl?\.?|only|parallel|refractor|mojo|wave|prizm)\b/gi;
 const LOT_OR_SEALED = /\blots?\b|(?<![\/#\d])(?:[2-9]|[1-9]\d{1,2})(?!\d)\s*-?\s*(?:card|cards|ct|count)\b|\brepacks?\b|\bmystery\b|\bbreaks?\b|\bsealed\b|\bboxe?s?\b|\bpacks?\b/i;
 
-const NOT_AUTO = /\b(?:non|no|not)[\s-]*autos?\b/i;
+const NOT_AUTO = /\b(?:non|no|not)[\s-]*autos?\b|\bun-?signed\b/i;
 
 function isLotOrSealed(title) {
   if (!title) return false;
@@ -643,6 +644,9 @@ export async function POST(req) {
       items = result.items;
       ebayTotal = result.total;
     }
+
+    // Customs, displays, frames, reprints and proofs aren't cards, so they never show.
+    items = items.filter((it) => !isNonCard(it.title));
 
     // Single cards only: drop lots, repacks, breaks and sealed product unless
     // the caller explicitly asks for them (includeLots: true).

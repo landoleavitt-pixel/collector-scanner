@@ -18,6 +18,7 @@ import { NextResponse } from 'next/server';
 import { createServerSupabase } from '../../../lib/supabaseServer';
 import { POST as search } from '../search/route';
 import { printRunOf } from '../../../lib/printRun';
+import { isNonCard } from '../../../lib/listingFilter';
 
 const MAX_SEARCHES = 2;
 const MAX_CARDS = 5;
@@ -77,7 +78,7 @@ async function runSearch(body) {
     body: key,
   }));
   if (!res.ok) throw new Error(`search ${res.status}`);
-  const items = ((await res.json()).items || []).filter((it) => it.image && it.price != null);
+  const items = ((await res.json()).items || []).filter((it) => it.image && it.price != null && !isNonCard(it.title));
 
   if (cache.size >= MAX_CACHE) cache.delete(cache.keys().next().value);
   cache.set(key, { at: Date.now(), items });

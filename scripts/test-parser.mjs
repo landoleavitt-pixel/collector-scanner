@@ -16,7 +16,7 @@ import { execSync } from 'child_process';
 import { fileURLToPath, pathToFileURL } from 'url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const FILES = ['parallelData', 'parallelDataExtra', 'parseSetFromTitle'];
+const FILES = ['parallelData', 'parallelDataExtra', 'listingFilter', 'parseSetFromTitle'];
 const fix = (src) => src.replace(/from '\.\/([A-Za-z]+)'/g, "from './$1.mjs'");
 
 async function load(read, label) {

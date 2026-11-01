@@ -737,6 +737,48 @@
       "title": "2026 Topps Chrome Football Greats of the Game John Elway Pink Refractor Broncos",
       "expect": "none",
       "why": "Greats of the Game is an insert"
+    },
+    {
+      "group": "QA 2026-10-31: bad titles from the live site (research/qa-2026-10-31.md)",
+      "title": "Custom 1/1 Shohei Ohtani Jersey /25 Auto And Gem 10 Patch Card Raree Dispay",
+      "expect": "none",
+      "why": "Custom display, $35,000 on the home page (issue 4)"
+    },
+    {
+      "group": "QA 2026-10-31: bad titles from the live site (research/qa-2026-10-31.md)",
+      "title": "2023 Leaf Metal Pre-Production Proof Unsigned 1/1",
+      "expect": "none",
+      "why": "Unsigned proof tagged AUTO (issue 7)"
+    },
+    {
+      "group": "QA 2026-10-31: bad titles from the live site (research/qa-2026-10-31.md)",
+      "title": "Paul Skenes 2023 Choice Bradenton Marauders (1 of 1,060 made) Auto",
+      "expect": "none",
+      "why": "1 of 1,060 is not a 1/1 (issue 7); no set identified either"
+    },
+    {
+      "group": "QA 2026-10-31: bad titles from the live site (research/qa-2026-10-31.md)",
+      "title": "2025 Topps Chrome Paul Skenes Built By Patch Lab 1/1 Custom",
+      "expect": "none",
+      "why": "custom card from a seller who makes them (issue 7)"
+    },
+    {
+      "group": "QA 2026-10-31: bad titles from the live site (research/qa-2026-10-31.md)",
+      "title": "2025 Topps Chrome Paul Skenes Reprint RP /25",
+      "expect": "none",
+      "why": "reprint (Boss list: reprint, RP)"
+    },
+    {
+      "group": "QA 2026-10-31: bad titles from the live site (research/qa-2026-10-31.md)",
+      "title": "2025 Topps Chrome Paul Skenes Framed Display Case Auto /25",
+      "expect": "none",
+      "why": "framed display (Boss list)"
+    },
+    {
+      "group": "QA 2026-10-31: bad titles from the live site (research/qa-2026-10-31.md)",
+      "title": "2024 Bowman Chrome Prospect Auto Custom Art Card Shadowbox /25",
+      "expect": "none",
+      "why": "custom art and shadowbox"
     }
   ]
 }

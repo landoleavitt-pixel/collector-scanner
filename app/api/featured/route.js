@@ -17,6 +17,8 @@
 
 // Athletes whose Grail-tier cards are likely to surface real, photogenic
 // listings. Order doesn't matter — selection is by hour-of-day mod length.
+import { detectPrintRun, hasAutoText, isNonCard } from '../../../lib/listingFilter';
+
 const FEATURED_ATHLETES = [
   'Patrick Mahomes auto',
   'LeBron James auto',
@@ -65,43 +67,6 @@ async function getAccessToken() {
   return cachedToken;
 }
 
-/**
- * Detect a real print run in a card title. Mirrors the logic in page.js —
- * catches /N, #N/M, "numbered to N", etc., rejects season years and dates.
- *
- * Returns the numerator (the "total printed" number, e.g. 25 for /25), or
- * null if no real print run found.
- */
-function detectPrintRun(title) {
-  if (!title) return null;
-  const t = title;
-
-  // Pattern: "numbered to N" or "no. N"
-  const numTo = t.match(/\bnumbered\s+to\s+(\d{1,4})\b/i);
-  if (numTo) {
-    const n = parseInt(numTo[1], 10);
-    if (n >= 1 && n <= 9999) return n;
-  }
-
-  // Pattern: /N where N is the total (e.g. "/25", "/10", "/1")
-  // Avoid year fragments like "/2024" by capping at 4 digits and rejecting
-  // values that look like years (>= 1900).
-  const slashMatches = [...t.matchAll(/(?:^|[^\d])\/(\d{1,4})(?!\d)/g)];
-  for (const m of slashMatches) {
-    const n = parseInt(m[1], 10);
-    if (n >= 1 && n <= 999) return n;
-  }
-
-  // Pattern: #N/M — return M
-  const hashMatch = t.match(/#\s*\d{1,4}\s*\/\s*(\d{1,4})\b/);
-  if (hashMatch) {
-    const n = parseInt(hashMatch[1], 10);
-    if (n >= 1 && n <= 999) return n;
-  }
-
-  return null;
-}
-
 export async function GET() {
   try {
     // Pick this hour's athlete deterministically. Hour-based rotation gives
@@ -144,6 +109,7 @@ export async function GET() {
     const picks = [];
     const seenTitles = new Set();
     for (const it of items) {
+      if (isNonCard(it.title)) continue;
       const printRun = detectPrintRun(it.title);
       if (!printRun || printRun > 25) continue;
       if (!it.image?.imageUrl) continue;
@@ -160,7 +126,7 @@ export async function GET() {
         currency: it.price?.currency || 'USD',
         printRun,
         // Detect auto + grade from title for badge display
-        hasAuto: /\bauto\b|autograph|signed/i.test(it.title),
+        hasAuto: hasAutoText(it.title),
         psaGrade: it.title.match(/PSA\s*(\d{1,2})/i)?.[1] || null,
         bgsGrade: it.title.match(/BGS\s*(\d{1,2}(?:\.\d)?)/i)?.[1] || null,
         sgcGrade: it.title.match(/SGC\s*(\d{1,2}(?:\.\d)?)/i)?.[1] || null,

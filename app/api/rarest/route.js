@@ -17,6 +17,7 @@
 import { NextResponse } from 'next/server';
 import { POST as search } from '../search/route';
 import { printRunOf } from '../../../lib/printRun';
+import { isNonCard } from '../../../lib/listingFilter';
 
 const PLAYERS = ['Paul Skenes', 'Caitlin Clark', 'Shohei Ohtani', 'Victor Wembanyama'];
 const RUNS = ['/1', '/5', '/10', '/15', '/25', '/49', '/50'];
@@ -58,7 +59,7 @@ async function build() {
   const data = await res.json();
 
   const ranked = (data.items || [])
-    .filter((it) => it.image && it.price != null)
+    .filter((it) => it.image && it.price != null && !isNonCard(it.title))
     .map((it) => ({ it, run: runOf(it.title) }))
     .filter((x) => x.run != null)
     // Rarest first; within a run, the higher-priced card (usually the cleaner listing).
