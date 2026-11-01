@@ -1,0 +1,427 @@
+{
+ "_readme": "Card-family matcher cases (lib/tcg/family.js), written 2026-11-01 from the patterns found in the 40-card re-test (research/card-family-test.md). Titles are written for the test, not copied from listings. Run: node scripts/test-tcg-family.mjs",
+ "cases": [
+  {
+   "game": "pokemon",
+   "card": "charizard-ex",
+   "title": "Pokemon 151 Charizard ex 199/165 Special Illustration Rare SIR NM",
+   "expect": {
+    "kind": "exact",
+    "versions": [
+     "sv03.5:199:h"
+    ],
+    "why": "151 199/165"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Charizard",
+   "title": "Charizard 4/102 Base Set Holo Rare 1999 English",
+   "expect": {
+    "kind": "exact",
+    "versions": [
+     "base1:4:h"
+    ],
+    "why": "Base Set 4/102"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Charizard",
+   "title": "Charizard 4/102 Celebrations Classic Collection Holo",
+   "expect": {
+    "kind": "exact",
+    "why": "Classic Collection"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Blastoise",
+   "title": "Blastoise Holofoil [CCC - 2/102] NM",
+   "expect": {
+    "kind": "exact",
+    "why": "Classic Collection"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "charizard-ex",
+   "title": "Charizard ex 234/091 Paldea Evolved Special Illustration Rare",
+   "expect": {
+    "kind": "exact",
+    "why": "Paldean Fates 234/91"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Gengar VMAX",
+   "title": "2021 POKEMON FUSION STRIKE SECRET RARE FULL ART GENGAR VMAX PSA 10",
+   "expect": {
+    "kind": "exact",
+    "why": "271/264"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Charizard VMAX",
+   "title": "Charizard VMAX SWSH261 Black Star Promo Holo",
+   "expect": {
+    "kind": "exact",
+    "why": "SWSH261"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Charizard",
+   "title": "Mega Charizard X ex 013/094 Double Rare Phantasmal Flames",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Charizard",
+   "title": "2016 Evolutions Charizard Spirit Link 75/108 Reverse Holo",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Blastoise",
+   "title": "Blastoise EX XY122 XY Black Star Promo Holo",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "charizard-ex",
+   "title": "Charizard EX 100/106 Full Art XY Flashfire PSA 9",
+   "expect": {
+    "kind": "reject",
+    "why": "Charizard EX"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "pikachu-ex",
+   "title": "Pikachu EX XY174 XY Promo Holo English",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Venusaur",
+   "title": "Venusaur ex 198/165 151 Special Illustration Rare",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Charizard",
+   "title": "MEGA CHARIZARD X FULL ART HOLO (FAN ART)",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Mewtwo",
+   "title": "Pokemon Mewtwo Prism Holo Sticker Vintage",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Venusaur",
+   "title": "1999 Japanese CD Promo Charizard PSA 9, Blastoise PSA 9, Venusaur PSA 10",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Venusaur",
+   "title": "Japanese CD Promo Holo TAG 10 Trio Charizard Venusaur Blastoise",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "black-lotus",
+   "title": "Black Lotus Ultra Pro Play Mat Gencon",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "black-lotus",
+   "title": "Black Lotus Alter by artist hand painted on Alpha Forest",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "black-lotus",
+   "title": "Duel Masters Black Lotus EX18 S1/S15 SR Japanese",
+   "expect": {
+    "kind": "reject",
+    "why": "Duel Masters"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "the-one-ring",
+   "title": "One Ring to Rule Them All #0102 LTR Non-Foil NM",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "underground-sea",
+   "title": "Underground Sea Custom Art Playtest Card Commander",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Umbreon VMAX",
+   "title": "UMBREON VMAX 048/069 S6A EEVEE HEROES JAPANESE POKEMON CARD",
+   "expect": {
+    "kind": "language",
+    "why": "Japanese · set S6a · #048/069, as listed by seller"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Rayquaza VMAX",
+   "title": "Rayquaza VMAX 284/184 UR Gold VMAX Climax S8b Japanese",
+   "expect": {
+    "kind": "language",
+    "why": "set S8b · #284/184, as listed by seller"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Umbreon VMAX",
+   "title": "PSA10 Umbreon VMAX CSR Pokemon Card",
+   "expect": {
+    "kind": "language",
+    "why": "Japanese printing, version not named"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Umbreon VMAX",
+   "title": "Pokemon Japanese Umbreon VMAX PSA 10 Gem Mint",
+   "expect": {
+    "kind": "language",
+    "why": "Japanese printing, version not named"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Iono",
+   "title": "ナンジャモ SAR 350/190 sv4a",
+   "expect": {
+    "kind": "language",
+    "why": "set SV4a"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Umbreon VMAX",
+   "title": "2021 Eevee Heroes Korean Umbreon VMAX 048/069 PSA 10",
+   "expect": {
+    "kind": "language",
+    "why": "Korean printing"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Rayquaza VMAX",
+   "title": "Pokemon Chinese Card Rayquaza VMAX CS4bC-156 Full Art",
+   "expect": {
+    "kind": "language",
+    "why": "Chinese printing"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Sylveon ex",
+   "title": "Pokemon S-CHN Sylveon ex 30th Celebration 130/103 SAR",
+   "expect": {
+    "kind": "language",
+    "why": "Chinese printing"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Pikachu VMAX",
+   "title": "PSA 10 Pikachu VMAX Ultra Rare 279/184 VMAX Climax Japanese",
+   "expect": {
+    "kind": "language"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "force-of-will",
+   "title": "Force Of Will 2XM Japan Edition Non-Foil",
+   "expect": {
+    "kind": "language",
+    "why": "Japanese printing"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "smothering-tithe",
+   "title": "FOIL JAP Smothering Tithe Borderless Double Masters",
+   "expect": {
+    "kind": "language"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Umbreon ex",
+   "title": "CGC 10 Umbreon ex 060/131 Prismatic Evolutions Surprise Box Stamp",
+   "expect": {
+    "kind": "promo",
+    "why": "promo — version not confirmed"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Greninja ex",
+   "title": "Greninja ex 106/167 Prize Pack Series Cards Holo NM",
+   "expect": {
+    "kind": "promo"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "gaeas-cradle",
+   "title": "Gaea's Cradle Judge Promo Foil DCI",
+   "expect": {
+    "kind": "exact",
+    "why": "Judge Gift Cards"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "gaeas-cradle",
+   "title": "Gaea's Cradle 1999 World Championship Decks Gold Border",
+   "expect": {
+    "kind": "exact",
+    "why": "World Championship Decks 1999"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "mana-crypt",
+   "title": "Mana Crypt #225 List Reprints LIST Magic MTG",
+   "expect": {
+    "kind": "exact",
+    "why": "The List"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "sheoldred-the-apocalypse",
+   "title": "Sheoldred, the Apocalypse Dominaria United Prerelease Promo Foil Stamped",
+   "expect": {
+    "why": "Promo"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "ragavan-nimble-pilferer",
+   "title": "Zidane Tribal - Ragavan, Nimble Pilferer (Showcase) NM",
+   "expect": {
+    "kind": "exact",
+    "why": "Final Fantasy"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "ragavan-nimble-pilferer",
+   "title": "Ragavan, Nimble Pilferer (Halo Foil) Multiverse Legends",
+   "expect": {
+    "kind": "exact",
+    "why": "Halo foil"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "ragavan-nimble-pilferer",
+   "title": "Ragavan, Nimble Pilferer (11/16) Modern Horizons 2 Timeshifts Foil Retro",
+   "expect": {
+    "kind": "exact",
+    "why": "Timeshifts"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "rhystic-study",
+   "title": "Stay with Me - Rhystic Study (Showcase) Final Fantasy",
+   "expect": {
+    "kind": "exact",
+    "why": "Final Fantasy"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "underground-sea",
+   "title": "Underground Sea Revised Edition Regular LP",
+   "expect": {
+    "kind": "exact",
+    "why": "Revised Edition #290"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "underground-sea",
+   "title": "Underground Sea Unlimited CGC 7",
+   "expect": {
+    "kind": "exact",
+    "why": "Unlimited Edition"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "sheoldred-the-apocalypse",
+   "title": "Sheoldred, the Apocalypse #107 (Foil) (LP) Dominaria United DMU",
+   "expect": {
+    "kind": "exact",
+    "versions": [
+     "dmu:107:f"
+    ]
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "sol-ring",
+   "title": "Sol Ring 239 Uncommon Universes Beyond: Fallout NM",
+   "expect": {
+    "kind": "exact",
+    "why": "Fallout"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "mana-crypt",
+   "title": "MTG Mana Crypt",
+   "expect": {
+    "kind": "unknown"
+   }
+  }
+ ]
+}
