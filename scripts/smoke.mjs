@@ -129,6 +129,10 @@ try {
   else report('EXPECTED FAIL', '/fables?utm_source=x serves the home page', 'opens a results list (QA #1, fix in progress)');
 } catch (e) { report('FAIL', '/fables?utm_source=x', e.message); }
 
+// 5. Checklist API checks from scripts/smoke-extra.mjs.
+const { runExtraChecks } = await import('./smoke-extra.mjs');
+await runExtraChecks({ getJson, report });
+
 const failedCount = lines.filter((l) => l.startsWith('FAIL')).length;
 console.log(`\n${failedCount} failed, ${lines.filter((l) => l.startsWith('PASS')).length} passed, ${lines.filter((l) => l.startsWith('EXPECTED')).length} expected, ${lines.filter((l) => l.startsWith('SKIP')).length} skipped against ${BASE}`);
 process.exit(failed ? 1 : 0);
