@@ -779,6 +779,30 @@
       "title": "2024 Bowman Chrome Prospect Auto Custom Art Card Shadowbox /25",
       "expect": "none",
       "why": "custom art and shadowbox"
+    },
+    {
+      "group": "Phase 2 inserts (2026-10-31): insert lists are stored, not matched yet",
+      "title": "2024-25 Panini Select Basketball Hot Stars Pink Cracked Ice Prizm /99 Luka Doncic",
+      "expect": "none",
+      "why": "Hot Stars insert colour must not match the base set"
+    },
+    {
+      "group": "Phase 2 inserts (2026-10-31): insert lists are stored, not matched yet",
+      "title": "2024-25 Panini Prizm Basketball Hot Stars Pink Cracked Ice /99",
+      "expect": "none",
+      "why": "insert colour, base brand name"
+    },
+    {
+      "group": "Phase 2 inserts (2026-10-31): insert lists are stored, not matched yet",
+      "title": "2024-25 Donruss Optic Basketball Express Lane Hyper Green /249 Victor Wembanyama",
+      "expect": "none",
+      "why": "Express Lane insert, not the base Optic list"
+    },
+    {
+      "group": "Phase 2 inserts (2026-10-31): insert lists are stored, not matched yet",
+      "title": "2024-25 Panini Mosaic Basketball Elevate Purple Fluorescent Mosaic /175",
+      "expect": "none",
+      "why": "Elevate insert, not the base Mosaic list"
     }
   ]
 }

@@ -34,6 +34,15 @@ for (const [key, set] of Object.entries(EXTRA_SETS)) {
   }
 }
 
+// Insert lists: kind 'insert', a product name, numbered colours only from the insert's own checklist.
+const inserts = Object.entries(EXTRA_SETS).filter(([, s]) => s.kind === 'insert');
+check(inserts.length >= 3, `expected at least 3 insert lists, got ${inserts.length}`);
+for (const [key, s] of inserts) {
+  check(typeof s.product === 'string' && s.product.length > 0, `${key}: insert needs a product name`);
+  check(s.parallels.numbered.length >= 3, `${key}: insert should have numbered colours`);
+  check(!s.parallels.numbered.some((p) => /auto/i.test(p.name)), `${key}: autograph colour in an insert list`);
+}
+
 // Football Leather Blue and Teal Wave are on the rookie list only.
 const tc = EXTRA_SETS['2025-topps-chrome-football'];
 check(find(tc, 'Football Leather Blue Refractor')?.cards === 'rookies', 'Football Leather Blue should be rookie-only');

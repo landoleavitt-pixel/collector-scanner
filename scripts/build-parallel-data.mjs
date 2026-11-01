@@ -165,6 +165,7 @@ function build(set, secs) {
     brand: set.brand,
     ...(set.college ? { college: true } : {}),
     ...(set.kind === 'auto' ? { kind: 'auto', line: set.line, parent: set.parent } : {}),
+    ...(set.kind === 'insert' ? { kind: 'insert', product: set.product } : {}),
     ...(set.requireNamed ? { requireNamed: true } : {}),
     ...(set.note ? { note: set.note } : {}),
     ...(baseKey ? { baseKey } : {}),

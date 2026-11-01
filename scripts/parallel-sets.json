@@ -596,6 +596,51 @@
       "sections": [
         "Base & Parallel Details"
       ]
+    },
+    {
+      "key": "2024-25-select-basketball-hot-stars",
+      "kind": "insert",
+      "product": "2024-25 Panini Select Basketball",
+      "label": "2024-25 Panini Select Basketball Hot Stars",
+      "sport": "basketball",
+      "year": 2024,
+      "season": true,
+      "brand": "panini-select",
+      "page": "2024-25-panini-select-basketball",
+      "sections": [
+        "Hot Stars Checklist"
+      ],
+      "note": "Insert set. Colour list from the insert's own checklist."
+    },
+    {
+      "key": "2024-25-donruss-optic-basketball-express-lane",
+      "kind": "insert",
+      "product": "2024-25 Donruss Optic Basketball",
+      "label": "2024-25 Donruss Optic Basketball Express Lane",
+      "sport": "basketball",
+      "year": 2024,
+      "season": true,
+      "brand": "donruss-optic",
+      "page": "2024-25-donruss-optic-basketball",
+      "sections": [
+        "Express Lane Checklist"
+      ],
+      "note": "Insert set. Colour list from the insert's own checklist."
+    },
+    {
+      "key": "2024-25-panini-mosaic-basketball-elevate",
+      "kind": "insert",
+      "product": "2024-25 Panini Mosaic Basketball",
+      "label": "2024-25 Panini Mosaic Basketball Elevate",
+      "sport": "basketball",
+      "year": 2024,
+      "season": true,
+      "brand": "panini-mosaic",
+      "page": "2024-25-panini-mosaic-basketball",
+      "sections": [
+        "Elevate Checklist"
+      ],
+      "note": "Insert set. Colour list from the insert's own checklist."
     }
   ]
 }
