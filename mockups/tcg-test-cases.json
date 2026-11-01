@@ -2412,6 +2412,41 @@
    "expect": {
     "proxy": false
    }
+  },
+  {
+   "group": "QA follow-ups",
+   "title": "Yu-Gi-Oh 1 of 1 Uncut Sheet Blue-Eyes White Dragon , Dark Magician , Test Prints",
+   "expect": {
+    "nonCard": true
+   }
+  },
+  {
+   "group": "QA follow-ups",
+   "title": "Yugioh PSA 10 SDK-001 SDY-006 Blue-Eyes White Dragon Dark Magician 1st Edition",
+   "expect": {
+    "lot": true
+   }
+  },
+  {
+   "group": "QA follow-ups",
+   "title": "Yu-Gi-Oh Dark Magician LOB-005 LOB-EN005 Ultra Rare 1st Edition PSA 9",
+   "expect": {
+    "lot": false
+   }
+  },
+  {
+   "group": "QA follow-ups",
+   "title": "One Piece Luffy OP05-119 Manga Rare PSA 10",
+   "expect": {
+    "lot": false
+   }
+  },
+  {
+   "group": "QA follow-ups",
+   "title": "Magic The Gathering Black Lotus Uncut Sheet Reprint Poster",
+   "expect": {
+    "nonCard": true
+   }
   }
  ]
 }
