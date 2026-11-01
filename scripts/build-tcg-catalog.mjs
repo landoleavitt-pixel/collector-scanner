@@ -69,7 +69,8 @@ async function buildMtg() {
   const setRows = {};
   for (const s of sets) {
     if (s.digital) continue;
-    setRows[s.code] = [s.name, s.released_at || null, s.set_type, s.parent_set_code || null];
+    // printed_size: the total printed on the cards ("022/259"), for titles with no set name.
+    setRows[s.code] = [s.name, s.released_at || null, s.set_type, s.parent_set_code || null, s.printed_size || null];
   }
 
   const tmp = path.join(os.tmpdir(), `scryfall-${Date.now()}.jsonl.gz`);
