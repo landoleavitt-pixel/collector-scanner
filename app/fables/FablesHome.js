@@ -1,20 +1,48 @@
 'use client';
 
-// Foils & Fables: home (signed out / signed in) and results with filters.
-// Same skeleton as Fields & Floors (search first, rarest first, rows with
-// tier chips, star to watch, save a search for alerts); Night foil look comes
-// from the [data-side="fables"] tokens in globals.css.
+// Foils & Fables: home (signed out / signed in), results and the saved-search
+// edit page. Behaves exactly like Fields & Floors (DECISIONS.md: only colours,
+// fonts and game filters differ), so it's built from the same shared pieces
+// in app/components/search: name suggestions and "Did you mean", the editable
+// heading, the filter sidebar and phone drawer, "Search with new filters?",
+// sort, result rows, stars, the alert band and the card popup. The Night foil
+// look comes from the [data-side="fables"] tokens in globals.css.
 
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
-import { Search, ArrowRight, Star, Bell, ListFilter, SlidersHorizontal, X, ImageOff, Clock, Crosshair, Bookmark } from 'lucide-react';
+import { Search, ArrowRight, ArrowLeft, Star, Bell, ListFilter, Clock, Crosshair, Bookmark } from 'lucide-react';
 import { useUser } from '../../lib/useUser';
 import { PAYMENTS_LIVE } from '../../lib/payments';
+import { track } from '../../lib/track';
 import SignupPromptCard from '../components/SignupPromptCard';
+import SaveSearchModal from '../components/SaveSearchModal';
+import ShareSearchButton from '../components/ShareSearchButton';
+import CardModal from '../components/CardModal';
+import { useNameSuggest, useSuggestBox, DidYouMeanLine, EditableSearchHeading } from '../components/search/SuggestBox';
+import {
+  PRICE_NO_MAX, SectionLabel, SectionDivider, PriceRangeSlider, priceRangeLabel, SegmentedGroup, ResultsSidebar,
+  MobileFilterBar, MobileFilterDrawer, MobileSortSheet, SortDropdown, PendingSearchModal, BackToTop, LoadingState, NoResultsState,
+} from '../components/search/SearchUI';
+import { usePendingStarSave, AlertBand } from '../components/search/WatchStar';
+import { ResultCard, Badge, upscaleEbayImage } from '../components/search/ResultCard';
 import { SIDE, fetchMeta, searchCards, toParams, fromParams, LANG_LABEL, serialOf, gradeText } from './data';
 
-const DEFAULT_FILTERS = { game: '', rarity: [], lang: [], graded: 'any', grader: '', grade: '', firstEd: false, serialOnly: false, priceMin: 0, priceMax: 100000, sort: 'rarest' };
+const DEFAULT_FILTERS = {
+  game: '', rarity: [], lang: [], graded: 'any', grader: '', grade: '', firstEd: false, serialOnly: false,
+  listing: 'any', priceMin: 0, priceMax: PRICE_NO_MAX, sort: 'rarest',
+};
+// Filters that need a new search when changed. Sort is left out, as on sports:
+// it reorders without asking.
+const COMPARE_KEYS = Object.keys(DEFAULT_FILTERS).filter((k) => k !== 'sort');
+// Any of these in the URL is a shared search link that runs on arrival.
+const SEARCH_KEYS = ['q', ...COMPARE_KEYS, 'sort'];
+const SORT_OPTIONS = [
+  ['rarest', 'Rarest first'],
+  ['price-low', 'Price: low to high'],
+  ['price-high', 'Price: high to low'],
+  ['ending', 'Ending soonest'],
+  ['newest', 'Newest first'],
+];
 const RECENTS_KEY = 'ffFablesRecents';
 const HUNTS = [
   ['Special Illustration Rares', { game: 'pokemon', rarity: ['sir'] }],
@@ -25,156 +53,544 @@ const HUNTS = [
 ];
 
 // Tier chip colours for this side. Names on chips are the card's own printed
-// rarity, so no tier names are shown (those are still placeholders).
+// rarity, so no tier names are shown.
 const TIER_STYLE = {
   grail: { background: 'var(--foil)', color: '#0b0f1a' },
   ultra: { background: 'linear-gradient(180deg,#c9d3f5,#8b97c7)', color: '#0b0f1a' },
   rare: { background: 'linear-gradient(180deg,#9fe3f5,#4b98ad)', color: '#071018' },
   scarce: { background: 'linear-gradient(180deg,#7a8199,#4a5068)', color: '#eef0f7' },
 };
+// Row tint by tier, same strength as sports' tierRowStyle.
+const TIER_ROW = {
+  grail: { backgroundImage: 'linear-gradient(90deg, rgba(182,168,240,0.30) 0%, rgba(240,179,208,0.10) 22%, transparent 55%)', borderLeft: '2px solid #d7c4f2' },
+  ultra: { backgroundImage: 'linear-gradient(90deg, rgba(201,211,245,0.22) 0%, rgba(201,211,245,0.06) 18%, transparent 40%)', borderLeft: '2px solid #c9d3f5' },
+  rare: { backgroundImage: 'linear-gradient(90deg, rgba(159,227,245,0.20) 0%, rgba(159,227,245,0.05) 16%, transparent 32%)', borderLeft: '2px solid #9fe3f5' },
+  scarce: { backgroundImage: 'linear-gradient(90deg, rgba(122,129,153,0.18) 0%, transparent 24%)', borderLeft: '2px solid #7a8199' },
+};
 
 function getRecents() { try { return JSON.parse(localStorage.getItem(RECENTS_KEY) || '[]'); } catch { return []; } }
 function addRecent(q) {
   if (!q) return;
-  try { localStorage.setItem(RECENTS_KEY, JSON.stringify([q, ...getRecents().filter((x) => x.toLowerCase() !== q.toLowerCase())].slice(0, 6))); } catch {}
+  try { localStorage.setItem(RECENTS_KEY, JSON.stringify([q, ...getRecents().filter((x) => x.toLowerCase() !== q.toLowerCase())].slice(0, 10))); } catch {}
 }
-const money = (v, c = 'USD') => (v == null ? '' : `${c === 'USD' ? '$' : ''}${Number(v).toLocaleString('en-US', { maximumFractionDigits: v < 100 ? 2 : 0 })}${c !== 'USD' ? ` ${c}` : ''}`);
-function timeLeft(iso) {
-  if (!iso) return null;
-  const ms = new Date(iso).getTime() - Date.now(); if (ms <= 0) return 'Ended';
-  const h = Math.floor(ms / 3600e3), d = Math.floor(h / 24);
-  return d >= 1 ? `${d}d ${h % 24}h` : `${h}h ${Math.floor((ms % 3600e3) / 60000)}m`;
+const money = (v, c = 'USD') => (v == null ? '' : `${c === 'USD' ? '$' : ''}${Number(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}${c !== 'USD' ? ` ${c}` : ''}`);
+const isDefault = (f) => COMPARE_KEYS.every((k) => JSON.stringify(f[k]) === JSON.stringify(DEFAULT_FILTERS[k]));
+const origin = () => (typeof window !== 'undefined' ? window.location.origin : 'https://fieldsandfloors.com');
+
+function countActiveFilters(f) {
+  let n = 0;
+  if (f.game) n++;
+  if (f.rarity?.length) n++;
+  if (f.lang?.length) n++;
+  if (f.graded && f.graded !== 'any') n++;
+  if (f.firstEd) n++;
+  if (f.serialOnly) n++;
+  if (f.listing && f.listing !== 'any') n++;
+  if ((f.priceMin || 0) > 0 || (f.priceMax ?? PRICE_NO_MAX) < PRICE_NO_MAX) n++;
+  return n;
+}
+
+// Plain-text chips for what a search is filtered by (results heading and the
+// save modal).
+function filterLabels(f, meta) {
+  const out = [];
+  const game = meta?.games?.find((g) => g.key === f.game);
+  if (game) out.push({ label: game.label });
+  const ladder = f.game ? meta?.ladders?.[f.game] || [] : [];
+  (f.rarity || []).forEach((k) => { const r = ladder.find((x) => x.key === k); out.push({ label: r?.label || k, tier: r?.tier }); });
+  (f.lang || []).forEach((k) => out.push({ label: LANG_LABEL[k] || k }));
+  if (f.graded === 'graded') out.push({ label: [f.grader || 'Graded', f.grade ? (f.grade === '10' ? '10' : `${f.grade}+`) : ''].filter(Boolean).join(' ') });
+  if (f.graded === 'raw') out.push({ label: 'Raw' });
+  if (f.firstEd) out.push({ label: '1st Edition' });
+  if (f.serialOnly) out.push({ label: 'Serial-numbered' });
+  if (f.listing === 'bin') out.push({ label: 'Buy It Now' });
+  if (f.listing === 'auction') out.push({ label: 'Auction' });
+  const min = f.priceMin || 0;
+  const max = f.priceMax ?? PRICE_NO_MAX;
+  if (min > 0 || max < PRICE_NO_MAX) out.push({ label: priceRangeLabel(min, max) });
+  return out;
+}
+
+function fablesPayload(item) {
+  return {
+    listing_id: item.id, title: item.title, price: item.price, currency: item.currency || 'USD',
+    image_url: item.image, listing_url: item.url, is_auction: !!item.isAuction,
+    end_time: item.endTime || null, bid_count: item.bidCount ?? null,
+    badges: { game: item.game, rarity: item.rarity, tier: item.tier, serial: serialOf(item), grade: gradeText(item), language: LANG_LABEL[item.language] || item.language || null, firstEdition: item.firstEdition },
+    side: SIDE,
+  };
 }
 
 export default function FablesHome() {
   const router = useRouter();
-  const sp = useSearchParams();
+  const searchParams = useSearchParams();
   const { user, loading: userLoading } = useUser();
+  const names = useNameSuggest('fables');
   const [meta, setMeta] = useState(null);
-  const initial = useMemo(() => fromParams(sp), []); // eslint-disable-line react-hooks/exhaustive-deps
-  const [query, setQuery] = useState(initial.q);
-  const [filters, setFilters] = useState({ ...DEFAULT_FILTERS, ...initial.filters });
-  const [stage, setStage] = useState([...sp.keys()].some((k) => k !== 'card') ? 'results' : 'idle');
-  const cardId = sp.get('card');
-  const [res, setRes] = useState({ items: [], total: 0 });
+  const [query, setQuery] = useState('');
+  const [filters, setFilters] = useState(DEFAULT_FILTERS);
+  // The query and filters behind the results on screen.
+  const [applied, setApplied] = useState(null); // { q, f }
+  // 'transition' while a deep link (?savedSearch=, ?editSearch=, a shared
+  // search) resolves, so the home page doesn't flash first.
+  const [stage, setStage] = useState(() => (
+    searchParams?.get('savedSearch') || searchParams?.get('editSearch') || SEARCH_KEYS.some((k) => searchParams?.get(k)) ? 'transition' : 'idle'
+  ));
+  const [res, setRes] = useState({ items: [], total: 0, nextOffset: null });
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [error, setError] = useState(null);
+  const [editingSearch, setEditingSearch] = useState(null);
+  const [saveModalOpen, setSaveModalOpen] = useState(false);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [mobileSortOpen, setMobileSortOpen] = useState(false);
+  const [pendingSearchOpen, setPendingSearchOpen] = useState(false);
+  const [isDesktopViewport, setIsDesktopViewport] = useState(false);
+  const [recentSearches, setRecentSearches] = useState([]);
+  const [dismissedFix, setDismissedFix] = useState(null);
+  const [selectedCardItem, setSelectedCardItem] = useState(null);
+  const [selectedExpired, setSelectedExpired] = useState(false);
+  const sidebarRef = useRef(null);
+  const searchSeq = useRef(0);
 
-  useEffect(() => { fetchMeta().then(setMeta); }, []);
+  useEffect(() => { fetchMeta().then(setMeta); setRecentSearches(getRecents()); }, []);
 
-  const run = useCallback(async (q, f) => {
-    setLoading(true); setStage('results');
-    addRecent(q);
-    router.replace(`/fables?${toParams(q, f)}`, { scroll: false });
+  const setFilter = (key, value) => setFilters((f) => ({ ...f, [key]: value, ...(key === 'game' && value !== f.game ? { rarity: [] } : {}) }));
+  const appliedFilters = applied?.f || null;
+  function filtersDifferFromApplied() {
+    if (!appliedFilters) return false;
+    return COMPARE_KEYS.some((k) => JSON.stringify(filters[k]) !== JSON.stringify(appliedFilters[k]));
+  }
+  function revertFiltersToApplied() {
+    if (appliedFilters) setFilters((f) => ({ ...appliedFilters, sort: f.sort }));
+  }
+
+  useEffect(() => {
+    const media = window.matchMedia('(min-width: 1024px)');
+    const update = () => setIsDesktopViewport(media.matches);
+    update();
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
+
+  // Desktop: the "Search with new filters?" prompt floats while filters
+  // differ from the results on screen (same as sports).
+  useEffect(() => {
+    if (mobileFiltersOpen || !appliedFilters || !isDesktopViewport) return;
+    setPendingSearchOpen(filtersDifferFromApplied());
+  }, [filters, appliedFilters, mobileFiltersOpen, isDesktopViewport]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function handleSearch(overrideQuery, overrideFilters) {
+    const q = (overrideQuery ?? query).trim();
+    const f = overrideFilters || filters;
+    if (!q && isDefault(f)) {
+      setError('Enter a card or character name, or pick a game.');
+      return;
+    }
+    if (overrideQuery !== undefined) setQuery(overrideQuery);
+    if (overrideFilters) setFilters(overrideFilters);
+    if (q) { addRecent(q); setRecentSearches(getRecents()); }
+    setError(null);
+    setLoading(true);
+    setStage('results');
+    const seq = ++searchSeq.current;
     const r = await searchCards(q, f);
-    setRes(r); setLoading(false);
-    window.scrollTo({ top: 0 });
-  }, [router]);
+    if (seq !== searchSeq.current) return; // a newer search took over
+    if (r.error) {
+      setError(r.error);
+      setRes({ items: [], total: 0, nextOffset: null });
+    } else {
+      // Funnel tracking: filter types only, never the search text.
+      track('searched', { side: SIDE, game: f.game || 'any', listing: f.listing || 'any', graded: f.graded === 'graded' });
+      setRes(r);
+    }
+    setApplied({ q, f: { ...f } });
+    setLoading(false);
+  }
 
-  const more = useCallback(async () => {
-    if (res.nextOffset == null) return;
-    const r = await searchCards(query, filters, res.nextOffset);
-    setRes((prev) => ({ ...r, items: [...prev.items, ...r.items], total: r.total ?? prev.total }));
-  }, [res.nextOffset, query, filters]);
+  async function loadMore() {
+    if (res.nextOffset == null || loadingMore || !applied) return;
+    setLoadingMore(true);
+    const seq = searchSeq.current;
+    const r = await searchCards(applied.q, applied.f, res.nextOffset);
+    if (seq === searchSeq.current) setRes((prev) => ({ ...r, items: [...prev.items, ...(r.items || [])], total: r.total ?? prev.total }));
+    setLoadingMore(false);
+  }
 
-  // Deep link (?q=… or ?game=…) runs on arrival.
-  useEffect(() => { if (stage === 'results') run(query, filters); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // Sort re-runs the shown search in the new order. Unapplied filter edits
+  // stay pending, as on sports.
+  function changeSort(v) {
+    setFilter('sort', v);
+    if (applied) handleSearch(applied.q, { ...applied.f, sort: v }).then(() => setFilters((f) => ({ ...f, sort: v })));
+  }
 
-  const submit = (q = query, f = filters) => {
-    if (!q.trim() && JSON.stringify(f) === JSON.stringify(DEFAULT_FILTERS)) return;
-    setQuery(q); setFilters(f); run(q.trim(), f);
-  };
-  const newSearch = () => { setStage('idle'); setQuery(''); setFilters(DEFAULT_FILTERS); setRes({ items: [], total: 0 }); router.replace('/fables', { scroll: false }); };
+  // ── Deep links ─────────────────────────────────────────────────────
+  // ?savedSearch=<id> runs a saved search, ?editSearch=<id> opens it for
+  // editing (no eBay call), and a shared link (/fables?q=…&game=…) runs.
+  const deepLinked = useRef(false);
+  useEffect(() => {
+    if (deepLinked.current) return;
+    const viewId = searchParams.get('savedSearch');
+    const editId = searchParams.get('editSearch');
+    if (viewId || editId) {
+      if (userLoading) return;
+      deepLinked.current = true;
+      (async () => {
+        try {
+          const r = await fetch(`/api/saved-searches/${editId || viewId}`);
+          const { search } = r.ok ? await r.json() : {};
+          if (!search) throw new Error('not found');
+          const restored = { ...DEFAULT_FILTERS, ...(search.filters || {}) };
+          setFilters(restored);
+          setQuery(search.query || '');
+          router.replace('/fables', { scroll: false });
+          if (editId) {
+            setEditingSearch({ id: search.id, name: search.name, notify_enabled: search.notify_enabled });
+            setStage('configuring');
+          } else {
+            handleSearch(search.query || '', restored);
+          }
+        } catch {
+          setStage('idle');
+        }
+      })();
+      return;
+    }
+    if (SEARCH_KEYS.some((k) => searchParams.get(k))) {
+      deepLinked.current = true;
+      const { q, filters: shared } = fromParams(searchParams);
+      handleSearch(q, { ...DEFAULT_FILTERS, ...shared });
+    }
+  }, [userLoading, searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (stage === 'results') {
+  // ── Card popup (?card=<id>), same as sports ────────────────────────
+  function openCard(item) {
+    if (!item?.id) return;
+    setSelectedCardItem(item);
+    setSelectedExpired(false);
+    const next = new URLSearchParams(window.location.search);
+    next.set('card', item.id);
+    window.history.pushState({ cardOpen: true }, '', `${window.location.pathname}?${next}`);
+  }
+  function closeCard() {
+    setSelectedCardItem(null);
+    setSelectedExpired(false);
+    const next = new URLSearchParams(window.location.search);
+    next.delete('card');
+    const qs = next.toString();
+    if (window.history.state?.cardOpen) window.history.back();
+    else window.history.replaceState({}, '', `${window.location.pathname}${qs ? `?${qs}` : ''}`);
+  }
+  useEffect(() => {
+    const cardId = searchParams.get('card');
+    if (!cardId) { setSelectedCardItem(null); setSelectedExpired(false); return; }
+    const match = res.items.find((r) => r.id === cardId);
+    if (match) { setSelectedCardItem(match); setSelectedExpired(false); return; }
+    if (res.items.length > 0 || stage === 'results') {
+      setSelectedCardItem({ id: cardId, title: '', url: '', image: null });
+      setSelectedExpired(true);
+      return;
+    }
+    // Cold arrival (alert email): load the listing and open it.
+    let cancelled = false;
+    fetch(`/api/listing/${encodeURIComponent(cardId)}`).then((r) => r.json()).catch(() => null).then((d) => {
+      if (cancelled) return;
+      if (d?.ok) {
+        setSelectedCardItem({
+          id: cardId, title: d.title || '', price: d.price ?? null, currency: d.currency || 'USD',
+          image: Array.isArray(d.images) && d.images[0] ? d.images[0] : null, url: d.url || '',
+          isAuction: !!d.isAuction, endTime: d.endTime || null,
+        });
+        setSelectedExpired(false);
+      } else {
+        setSelectedCardItem({ id: cardId, title: '', url: '', image: null });
+        setSelectedExpired(true);
+      }
+    });
+    return () => { cancelled = true; };
+  }, [searchParams, res.items, stage]);
+  useEffect(() => {
+    const onPop = () => { if (!new URLSearchParams(window.location.search).get('card')) { setSelectedCardItem(null); setSelectedExpired(false); } };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
+  // ── Name help ──────────────────────────────────────────────────────
+  const tidyRecents = useMemo(
+    () => (names ? names.tidyRecentSearches(recentSearches, 5) : recentSearches.slice(0, 5)),
+    [names, recentSearches],
+  );
+  const shownQuery = applied?.q ?? query;
+  const nameFix = useMemo(
+    () => (names && stage === 'results' && shownQuery ? names.didYouMean(shownQuery) : null),
+    [names, stage, shownQuery],
+  );
+  const searchFix = (fixed) => handleSearch(fixed);
+
+  const gameLabel = meta?.games?.find((g) => g.key === (appliedFilters || filters).game)?.label;
+  function handleOpenSave() {
+    if (!user) { router.push(`/login?next=${encodeURIComponent('/fables')}`); return; }
+    setSaveModalOpen(true);
+  }
+  const saveModal = (
+    <SaveSearchModal
+      open={saveModalOpen}
+      onClose={() => { setSaveModalOpen(false); if (editingSearch) setEditingSearch(null); }}
+      query={query || gameLabel || ''}
+      filters={filters}
+      chips={filterLabels(filters, meta).map((c) => ({ label: c.label, tier: 'neutral' }))}
+      editingSearch={editingSearch}
+      side={SIDE}
+    />
+  );
+
+  const cardModal = selectedCardItem && (
+    <CardModal
+      item={selectedCardItem}
+      printRun={null}
+      onClose={closeCard}
+      expired={selectedExpired}
+      side={SIDE}
+      chips={selectedExpired ? null : <CardBadges item={selectedCardItem} />}
+      watchPayload={fablesPayload(selectedCardItem)}
+    />
+  );
+
+  if (stage === 'transition') return <main className="min-h-[70vh]" />;
+
+  if (stage === 'configuring') {
     return (
-      <Results
-        meta={meta} query={query} setQuery={setQuery} filters={filters} setFilters={setFilters}
-        res={res} loading={loading} onSearch={submit} onNewSearch={newSearch} user={user} onMore={more}
-      />
+      <main>
+        <EditPanel
+          meta={meta} query={query} setQuery={setQuery} filters={filters} setFilter={setFilter} editingSearch={editingSearch}
+          onSubmit={() => setSaveModalOpen(true)}
+          onCancel={() => { setEditingSearch(null); router.push('/watchlist'); }}
+        />
+        {saveModal}
+      </main>
     );
   }
+
+  if (stage === 'results') {
+    const resultsReturn = applied ? `/fables?${toParams(applied.q, applied.f)}` : null;
+    const pending = filtersDifferFromApplied();
+    return (
+      <main className="relative min-h-screen z-10">
+        <section className="max-w-[1200px] mx-auto px-6 lg:px-10 pt-10 pb-16 relative z-10 stage-in">
+          <div className="flex flex-wrap items-end justify-between gap-6 pb-6 mb-8 border-b border-[var(--line)]">
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--ink-400)] mb-2">Searching for</p>
+              <EditableSearchHeading
+                side="fables"
+                value={shownQuery}
+                placeholder={gameLabel || 'All games'}
+                onSubmit={(next) => {
+                  const trimmed = (next || '').trim();
+                  if (trimmed === shownQuery) return;
+                  handleSearch(trimmed, { ...filters });
+                }}
+              />
+              {nameFix && !loading && res.items.length > 0 && dismissedFix !== shownQuery && (
+                <DidYouMeanLine fix={nameFix.query} onPick={() => searchFix(nameFix.query)} onDismiss={() => setDismissedFix(shownQuery)} />
+              )}
+              <FilterChips
+                meta={meta}
+                filters={appliedFilters || filters}
+                onEdit={() => {
+                  if (isDesktopViewport) {
+                    sidebarRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    sidebarRef.current?.querySelector('button')?.focus({ preventScroll: true });
+                  } else {
+                    setMobileFiltersOpen(true);
+                  }
+                }}
+              />
+              {!loading && (
+                <p className="text-[13px] mt-3" style={{ color: 'var(--ink-400)' }}>
+                  <span style={{ color: 'var(--gold)' }}>{res.total}</span>{' '}
+                  {res.total === 1 ? 'listing' : 'listings'}, ranked by the rarity printed on the card{res.stub ? ' (sample data)' : ''}
+                </p>
+              )}
+            </div>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <ShareSearchButton
+                query={query}
+                filters={filters}
+                url={`${origin()}/fables?${toParams(query, filters)}`}
+                siteName="Foils & Fables"
+              />
+              <div className="hidden lg:block">
+                <SortDropdown value={filters.sort} onChange={changeSort} options={SORT_OPTIONS} />
+              </div>
+              <button
+                onClick={handleOpenSave}
+                className="flex items-center gap-2 px-4 py-2 rounded-full text-[11px] uppercase tracking-[0.18em] transition-colors"
+                style={{ border: '0.5px solid var(--gold)', color: 'var(--gold)', background: 'transparent' }}
+              >
+                <Bookmark className="w-[13px] h-[13px]" strokeWidth={1.6} aria-hidden="true" />
+                Save this search
+              </button>
+              <button
+                onClick={() => {
+                  setStage('idle');
+                  setQuery('');
+                  setFilters(DEFAULT_FILTERS);
+                  setRes({ items: [], total: 0, nextOffset: null });
+                  setError(null);
+                  setApplied(null);
+                }}
+                className="text-[11px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
+              >
+                New search
+              </button>
+            </div>
+          </div>
+
+          <MobileFilterBar
+            activeCount={countActiveFilters(filters)}
+            onOpenFilters={() => setMobileFiltersOpen(true)}
+            onOpenSort={() => setMobileSortOpen(true)}
+          />
+
+          <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-x-12 gap-y-8 items-start">
+            <div ref={sidebarRef} className="hidden lg:block scroll-mt-6">
+              <ResultsSidebar onSearch={() => handleSearch()} hasPending={pending}>
+                <FilterControls meta={meta} filters={filters} setFilter={setFilter} compact />
+              </ResultsSidebar>
+            </div>
+            <ResultsList
+              loading={loading}
+              loadingMore={loadingMore}
+              res={res}
+              error={error}
+              query={applied?.q || gameLabel || ''}
+              appliedFilters={appliedFilters}
+              hasPendingFilters={pending}
+              onPendingClick={() => setPendingSearchOpen(true)}
+              onCardClick={openCard}
+              nameFix={nameFix?.query || null}
+              onNameFix={searchFix}
+              onAlert={handleOpenSave}
+              returnPath={resultsReturn}
+              onMore={loadMore}
+            />
+          </div>
+
+          <MobileFilterDrawer
+            open={mobileFiltersOpen}
+            onClose={() => setMobileFiltersOpen(false)}
+            onCloseWithChanges={() => { setMobileFiltersOpen(false); setPendingSearchOpen(true); }}
+            filters={filters}
+            onSearch={() => { handleSearch(); setMobileFiltersOpen(false); }}
+          >
+            <FilterControls meta={meta} filters={filters} setFilter={setFilter} compact />
+          </MobileFilterDrawer>
+          <MobileSortSheet
+            open={mobileSortOpen}
+            onClose={() => setMobileSortOpen(false)}
+            value={filters.sort}
+            options={SORT_OPTIONS}
+            note="Sort reloads these results in the new order. Your filters stay the same."
+            onChange={(v) => { changeSort(v); setMobileSortOpen(false); }}
+          />
+          <PendingSearchModal
+            open={pendingSearchOpen}
+            floating={isDesktopViewport}
+            onSearch={() => { setPendingSearchOpen(false); handleSearch(); }}
+            onCancel={() => { setPendingSearchOpen(false); revertFiltersToApplied(); }}
+            onDismiss={() => setPendingSearchOpen(false)}
+          />
+        </section>
+        {saveModal}
+        {cardModal}
+        <BackToTop />
+      </main>
+    );
+  }
+
   return (
     <main>
-      {cardId && <AlertCard id={cardId} />}
       {!userLoading && user
-        ? <SignedIn query={query} setQuery={setQuery} onSearch={submit} />
-        : <SignedOut query={query} setQuery={setQuery} onSearch={submit} />}
+        ? <SignedIn query={query} setQuery={setQuery} onSearch={handleSearch} recents={tidyRecents} error={error} onCardClick={openCard} />
+        : <SignedOut query={query} setQuery={setQuery} onSearch={handleSearch} error={error} onCardClick={openCard} />}
+      {cardModal}
     </main>
   );
 }
 
-/* ── shared bits ─────────────────────────────────────────────────────── */
+/* ── search box (home) ───────────────────────────────────────────────── */
 
-function SearchBar({ query, setQuery, onSubmit, big = false }) {
+function SearchBar({ query, setQuery, onSubmit, onPick, big = false }) {
+  // Picking a suggestion searches it straight away, as on sports.
+  const suggest = useSuggestBox(query, (v) => { setQuery(v); onPick?.(v); }, { side: 'fables' });
   return (
-    <form onSubmit={(e) => { e.preventDefault(); onSubmit(); }} className="flex items-center gap-2.5 rounded-xl pl-4 pr-1.5 py-1.5 ff-foil-edge">
-      <Search className="w-[18px] h-[18px] flex-none" strokeWidth={1.75} style={{ color: 'var(--ink-400)' }} aria-hidden="true" />
-      <input
-        value={query} onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search a card, character or set" aria-label="Search a card, character or set"
-        className={`flex-1 min-w-0 bg-transparent outline-none ${big ? 'text-[17px] py-3' : 'text-[16px] py-2.5'}`} style={{ color: 'var(--ink-100)' }}
-      />
-      <button type="submit" className="inline-flex items-center gap-1.5 rounded-lg px-3.5 h-11 text-[13px] font-semibold flex-none" style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
-        Show cards <ArrowRight className="w-4 h-4" strokeWidth={2} aria-hidden="true" />
-      </button>
-    </form>
+    <>
+      <form
+        ref={suggest.anchorRef}
+        onSubmit={(e) => { e.preventDefault(); suggest.close(); onSubmit(); }}
+        className="flex items-center gap-2.5 rounded-xl pl-4 pr-1.5 py-1.5 ff-foil-edge"
+      >
+        <Search className="w-[18px] h-[18px] flex-none" strokeWidth={1.75} style={{ color: 'var(--ink-400)' }} aria-hidden="true" />
+        <input
+          value={query}
+          onChange={(e) => { setQuery(e.target.value); suggest.openBox(); }}
+          onKeyDown={(e) => { suggest.handleKey(e); }}
+          onFocus={suggest.openBox}
+          onBlur={suggest.close}
+          {...suggest.inputProps}
+          placeholder="Search a card, character or set" aria-label="Search a card, character or set"
+          className={`flex-1 min-w-0 bg-transparent outline-none ${big ? 'text-[17px] py-3' : 'text-[16px] py-2.5'}`} style={{ color: 'var(--ink-100)' }}
+        />
+        <button type="submit" className="inline-flex items-center gap-1.5 rounded-lg px-3.5 h-11 text-[13px] font-semibold flex-none" style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
+          Show cards <ArrowRight className="w-4 h-4" strokeWidth={2} aria-hidden="true" />
+        </button>
+      </form>
+      {suggest.dropdown}
+    </>
   );
 }
 
 export function TcgChip({ item }) {
   const of = serialOf(item);
-  if (of) return <span className="font-mono text-[11px] font-bold px-1.5 py-[2px] rounded" style={TIER_STYLE.grail}>/{of}</span>;
+  if (of) return <span className="inline-flex items-center px-2.5 py-1 font-mono text-[11px] font-bold tracking-[0.1em]" style={TIER_STYLE.grail}>/{of}</span>;
   if (!item.rarity) return null;
   return (
-    <span className="inline-block max-w-full truncate align-middle text-[11px] font-semibold px-1.5 py-[2px] rounded whitespace-nowrap" style={TIER_STYLE[item.tier] || { color: 'var(--ink-200)', border: '1px solid var(--line)' }}>
+    <span className="inline-block max-w-full align-middle px-2.5 py-1 text-[11px] leading-snug font-semibold tracking-[0.04em]" style={TIER_STYLE[item.tier] || { color: 'var(--ink-200)', border: '1px solid var(--line)' }}>
       {item.rarity}
     </span>
   );
 }
 
-function Tag({ children }) {
-  return <span className="text-[11px] px-1.5 py-[2px] rounded whitespace-nowrap" style={{ color: 'var(--gold-bright)', border: '0.5px solid var(--gold-deep)' }}>{children}</span>;
+// Badges on a result row and in the card popup.
+function CardBadges({ item }) {
+  return (
+    <>
+      <TcgChip item={item} />
+      {item.firstEdition && <Badge>1st Edition</Badge>}
+      {item.language && item.language !== 'en' && item.language !== 'English' && <Badge>{LANG_LABEL[item.language] || item.language}</Badge>}
+      {item.shadowless && <Badge>Shadowless</Badge>}
+      {gradeText(item) && <Badge>{gradeText(item)}</Badge>}
+    </>
+  );
 }
+const hasCardBadges = (item) => !!(serialOf(item) || item.rarity || item.firstEdition || (item.language && item.language !== 'en') || item.shadowless || gradeText(item));
 
 function CardImage({ src, alt, className = '' }) {
   const [bad, setBad] = useState(false);
   return (
     <span className={`block aspect-[3/4] rounded overflow-hidden ${className}`} style={{ background: 'var(--bg-elev-2)' }}>
       {src && !bad
-        ? <img src={src.replace(/\/s-l\d+\.(\w+)/, '/s-l500.$1')} alt={alt} className="w-full h-full object-cover" loading="lazy" onError={() => setBad(true)} />
-        : <span className="w-full h-full grid place-items-center" style={{ color: 'var(--ink-600)' }}><ImageOff className="w-6 h-6" strokeWidth={1.5} aria-hidden="true" /></span>}
+        // eslint-disable-next-line @next/next/no-img-element
+        ? <img src={upscaleEbayImage(src)} alt={alt} className="w-full h-full object-cover" loading="lazy" onError={() => setBad(true)} />
+        : null}
     </span>
   );
 }
 
-function useStar(item) {
-  const { user } = useUser();
-  const [saved, setSaved] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const toggle = async (e) => {
-    e?.preventDefault(); e?.stopPropagation();
-    if (!user) { window.location.assign('/signup?src=star&next=/fables'); return; }
-    if (saved || busy) return;
-    setBusy(true);
-    const r = await fetch('/api/watchlist', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        listing_id: item.id, title: item.title, price: item.price, currency: item.currency,
-        image_url: item.image, listing_url: item.url, is_auction: (item.buyingOptions || []).includes('AUCTION'),
-        end_time: item.endTime, bid_count: item.bidCount,
-        badges: { game: item.game, rarity: item.rarity, tier: item.tier, serial: serialOf(item), grade: gradeText(item), language: LANG_LABEL[item.language] || item.language || null, firstEdition: item.firstEdition },
-        side: SIDE,
-      }),
-    }).catch(() => null);
-    setBusy(false);
-    if (r && r.ok) setSaved(true);
-  };
-  return { saved, busy, toggle };
-}
-
 /* ── signed-out home ─────────────────────────────────────────────────── */
 
-function SignedOut({ query, setQuery, onSearch }) {
+function SignedOut({ query, setQuery, onSearch, error, onCardClick }) {
+  usePendingStarSave();
   return (
     <>
       <section className="max-w-[1100px] mx-auto px-6 lg:px-10 pt-10 md:pt-16 pb-8 grid md:grid-cols-[1.1fr_.9fr] gap-8 md:gap-10 items-center">
@@ -183,7 +599,8 @@ function SignedOut({ query, setQuery, onSearch }) {
             Chase the <em className="ff-foil-text not-italic md:italic">shine</em>.
           </h1>
           <p className="font-display italic text-[18px] mb-4" style={{ color: 'var(--gold)' }}>Just try it.</p>
-          <SearchBar query={query} setQuery={setQuery} onSubmit={() => onSearch()} big />
+          <SearchBar query={query} setQuery={setQuery} onSubmit={() => onSearch()} onPick={(v) => onSearch(v)} big />
+          {error && <p className="text-[13px] mt-2" style={{ color: 'var(--crit)' }}>{error}</p>}
           <div className="flex flex-wrap gap-2 mt-3">
             {HUNTS.map(([label, f]) => (
               <button key={label} type="button" onClick={() => onSearch('', { ...DEFAULT_FILTERS, ...f })}
@@ -194,7 +611,7 @@ function SignedOut({ query, setQuery, onSearch }) {
           </div>
           <p className="text-[12px] mt-3" style={{ color: 'var(--ink-600)' }}>Ranked by the rarity printed on the card. Not affiliated with eBay or any game publisher.</p>
         </div>
-        <div className="min-w-0"><RarestStrip compact /></div>
+        <div className="min-w-0"><RarestStrip compact onCardClick={onCardClick} /></div>
       </section>
       <section className="max-w-[1100px] mx-auto px-6 lg:px-10 pt-6 pb-4">
         <h2 className="sr-only">How it works</h2>
@@ -213,19 +630,20 @@ function SignedOut({ query, setQuery, onSearch }) {
 
 /* ── signed-in home ──────────────────────────────────────────────────── */
 
-function SignedIn({ query, setQuery, onSearch }) {
+function SignedIn({ query, setQuery, onSearch, recents, error, onCardClick }) {
+  usePendingStarSave();
   const [saved, setSaved] = useState([]);
-  const [recents, setRecents] = useState([]);
   useEffect(() => {
-    setRecents(getRecents());
-    fetch('/api/saved-searches').then((r) => (r.ok ? r.json() : null)).then((d) => {
+    fetch(`/api/saved-searches?side=${SIDE}`).then((r) => (r.ok ? r.json() : null)).then((d) => {
       setSaved((d?.searches || []).filter((s) => s.side === SIDE).slice(0, 4));
     }).catch(() => {});
   }, []);
+  const shownRecents = recents.filter((r) => !saved.some((s) => s.query?.toLowerCase() === r.toLowerCase())).slice(0, 4);
   return (
     <section className="max-w-[1040px] mx-auto px-5 md:px-6 lg:px-10 pt-8 md:pt-12 pb-16">
-      <SearchBar query={query} setQuery={setQuery} onSubmit={() => onSearch()} />
-      {(saved.length > 0 || recents.length > 0) && (
+      <SearchBar query={query} setQuery={setQuery} onSubmit={() => onSearch()} onPick={(v) => onSearch(v)} />
+      {error && <p className="text-[13px] mt-2" style={{ color: 'var(--crit)' }}>{error}</p>}
+      {(saved.length > 0 || shownRecents.length > 0) && (
         <div className="flex gap-2 mt-3 overflow-x-auto md:flex-wrap pb-1">
           {saved.map((s) => (
             <button key={s.id} type="button" onClick={() => onSearch(s.query || '', { ...DEFAULT_FILTERS, ...(s.filters || {}) })}
@@ -233,7 +651,7 @@ function SignedIn({ query, setQuery, onSearch }) {
               <Crosshair className="w-3.5 h-3.5" strokeWidth={1.75} style={{ color: 'var(--gold)' }} aria-hidden="true" />{s.name}
             </button>
           ))}
-          {recents.map((r) => (
+          {shownRecents.map((r) => (
             <button key={r} type="button" onClick={() => onSearch(r, DEFAULT_FILTERS)}
                     className="flex-none inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] whitespace-nowrap" style={{ color: 'var(--ink-200)', border: '1px solid var(--line)' }}>
               <Clock className="w-3.5 h-3.5" strokeWidth={1.75} style={{ color: 'var(--ink-400)' }} aria-hidden="true" />{r}
@@ -241,14 +659,14 @@ function SignedIn({ query, setQuery, onSearch }) {
           ))}
         </div>
       )}
-      <div className="mt-9"><RarestStrip /></div>
+      <div className="mt-9"><RarestStrip onCardClick={onCardClick} /></div>
     </section>
   );
 }
 
 /* ── rarest right now ────────────────────────────────────────────────── */
 
-function RarestStrip({ compact = false }) {
+function RarestStrip({ compact = false, onCardClick }) {
   const [items, setItems] = useState(null);
   // A $100 floor keeps the showcase to real chase cards, not $1 prize-card listings.
   useEffect(() => { searchCards('', { ...DEFAULT_FILTERS, priceMin: 100 }).then((r) => setItems(r.items.slice(0, compact ? 4 : 5))); }, [compact]);
@@ -261,7 +679,9 @@ function RarestStrip({ compact = false }) {
       </div>
       <div className={`grid gap-3 ${compact ? 'grid-cols-2' : 'grid-cols-2 md:grid-cols-5'}`}>
         {(items || Array.from({ length: compact ? 4 : 5 }, () => null)).map((it, i) => (
-          <a key={it?.id || i} href={it?.url || undefined} target="_blank" rel="noopener noreferrer" className="block min-w-0 rounded-lg p-2" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line-soft)' }}>
+          <a key={it?.id || i} href={it?.url || undefined} target="_blank" rel="noopener noreferrer"
+             onClick={(e) => { if (it && onCardClick && !(e.metaKey || e.ctrlKey)) { e.preventDefault(); onCardClick(it); } }}
+             className="block min-w-0 rounded-lg p-2" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line-soft)' }}>
             <CardImage src={it?.image} alt={it?.title || ''} className="mb-2" />
             <span className="block text-[12px] leading-snug h-[32px] overflow-hidden" style={{ color: 'var(--ink-200)' }}>{it?.title}</span>
             <span className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 mt-1.5 min-w-0">
@@ -277,224 +697,205 @@ function RarestStrip({ compact = false }) {
 
 /* ── results ─────────────────────────────────────────────────────────── */
 
-function Results({ meta, query, setQuery, filters, setFilters, res, loading, onSearch, onNewSearch, user, onMore }) {
-  const [drawer, setDrawer] = useState(false);
-  const [saveMsg, setSaveMsg] = useState('');
-  const set = (k, v) => setFilters((f) => ({ ...f, [k]: v, ...(k === 'game' ? { rarity: [] } : {}) }));
-  const apply = (f = filters) => { setDrawer(false); onSearch(query, f); };
-  const gameLabel = meta?.games?.find((g) => g.key === filters.game)?.label;
+function FilterChips({ meta, filters, onEdit }) {
+  const chips = filterLabels(filters, meta);
+  return (
+    <div className="mt-3 flex flex-wrap items-center gap-2">
+      {chips.map((c) => (
+        <span key={c.label} className="inline-flex items-center rounded-full text-[12px]"
+              style={{ minHeight: 26, padding: '0 10px', ...(c.tier && TIER_STYLE[c.tier] ? TIER_STYLE[c.tier] : { color: 'var(--gold-bright)', background: 'rgba(143,211,232,0.06)', border: '0.5px solid var(--gold-deep)' }) }}>
+          {c.label}
+        </span>
+      ))}
+      {chips.length === 0 && <span className="text-[13px]" style={{ color: 'var(--ink-400)' }}>All cards</span>}
+      <button type="button" onClick={onEdit} className="text-[13px] px-1 transition-colors hover:text-[var(--gold-bright)]"
+              style={{ minHeight: 32, color: 'var(--ink-200)', borderBottom: '0.5px solid var(--gold-deep)' }}>
+        Edit filters
+      </button>
+    </div>
+  );
+}
 
-  async function saveSearch() {
-    if (!user) { window.location.assign('/signup?src=alert&next=/fables'); return; }
-    const name = [query, gameLabel].filter(Boolean).join(' · ') || 'Saved search';
-    const r = await fetch('/api/saved-searches', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, query: query || gameLabel || '', filters, notify_enabled: true, side: SIDE }),
-    }).catch(() => null);
-    const d = r ? await r.json().catch(() => ({})) : {};
-    setSaveMsg(r && r.ok ? (d.watchLimited ? 'Saved. Alerts are full; pause one to watch this.' : 'Saved. We’ll email you new matches.') : (d.error || 'Couldn’t save. Try again.'));
+function ResultsList({ loading, loadingMore, res, error, query, appliedFilters, hasPendingFilters, onPendingClick, onCardClick, nameFix, onNameFix, onAlert, returnPath, onMore }) {
+  if (loading) return <LoadingState phrase="Searching eBay" />;
+  if (res.items.length === 0) {
+    return (
+      <div>
+        {error
+          ? <p className="font-display italic text-2xl leading-snug pt-2" style={{ color: 'var(--crit)' }}>{error}</p>
+          : <NoResultsState appliedFilters={appliedFilters} nameFix={nameFix} onNameFix={onNameFix} emptyText="No cards found with your current filters. Try fewer filters or another spelling." />}
+        <AlertBand query={query} filters={appliedFilters} onAlert={onAlert} returnPath={returnPath} />
+      </div>
+    );
   }
-
+  const formatPrice = (p) => money(p);
+  const remaining = Math.max(0, (res.total || 0) - res.items.length);
   return (
-    <main className="max-w-[1200px] mx-auto px-5 md:px-6 lg:px-10 pt-6 md:pt-10 pb-16">
-      <div className="flex flex-wrap items-end justify-between gap-4 pb-5 mb-6 border-b" style={{ borderColor: 'var(--line)' }}>
-        <div className="min-w-0 flex-1">
-          <p className="text-[10px] uppercase tracking-[0.28em] mb-2" style={{ color: 'var(--ink-400)' }}>Searching for</p>
-          <h1 className="font-display italic text-[30px] md:text-[40px] leading-tight truncate">{query || gameLabel || 'All games'}</h1>
-          <p className="text-[13px] mt-1" style={{ color: 'var(--ink-400)' }}>
-            {loading ? 'Searching eBay…' : `${res.total} listings, ranked by the rarity printed on the card`}{res.stub ? ' (sample data)' : ''}
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
-          <button type="button" onClick={saveSearch} className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[11px] uppercase tracking-[0.16em]" style={{ border: '0.5px solid var(--gold)', color: 'var(--gold)' }}>
-            <Bookmark className="w-3.5 h-3.5" strokeWidth={1.75} aria-hidden="true" />Save this search
+    <div>
+      <div className="divide-y divide-[var(--line-soft)]">
+        {res.items.flatMap((item, i) => {
+          const card = (
+            <ResultCard
+              key={item.id} item={item} formatPrice={formatPrice} index={i}
+              hasPendingFilters={hasPendingFilters} onPendingClick={onPendingClick} onCardClick={onCardClick}
+              payload={fablesPayload(item)} rowStyle={TIER_ROW[item.tier] || null}
+              badges={<CardBadges item={item} />} hasBadges={hasCardBadges(item)}
+            />
+          );
+          return i === 3 ? [card, <SignupPromptCard key="signup-prompt" />] : [card];
+        })}
+      </div>
+      {res.nextOffset != null && (
+        <div className="pt-8 flex flex-col items-center gap-3">
+          <span className="text-[12px]" style={{ color: 'var(--ink-600)' }}>Showing {res.items.length} of {res.total}</span>
+          <button
+            onClick={onMore}
+            disabled={loadingMore}
+            className="text-[11px] uppercase tracking-[0.2em] px-6 py-3 rounded-full transition-opacity hover:opacity-90 disabled:opacity-60"
+            style={{ border: '0.5px solid var(--gold-deep)', color: 'var(--gold)' }}
+          >
+            {loadingMore ? 'Loading…' : `Load ${Math.min(48, remaining || 48)} more`}
           </button>
-          <button type="button" onClick={onNewSearch} className="text-[11px] uppercase tracking-[0.18em]" style={{ color: 'var(--ink-400)' }}>New search</button>
         </div>
-        {saveMsg && <p className="w-full text-[13px]" style={{ color: 'var(--gold-bright)' }}>{saveMsg}</p>}
-      </div>
-
-      <div className="lg:hidden mb-4">
-        <button type="button" onClick={() => setDrawer((v) => !v)} className="w-full inline-flex items-center justify-center gap-2 rounded-full py-3 text-[12px] uppercase tracking-[0.14em]" style={{ border: '1px solid var(--line)', color: 'var(--ink-200)' }}>
-          <SlidersHorizontal className="w-4 h-4" strokeWidth={1.75} aria-hidden="true" />{drawer ? 'Hide filters' : 'Filters'}
-        </button>
-      </div>
-
-      <div className="grid lg:grid-cols-[260px_1fr] gap-8">
-        <aside className={`${drawer ? 'block' : 'hidden'} lg:block`}>
-          <FilterPanel meta={meta} filters={filters} set={set} onApply={() => apply()} />
-        </aside>
-        <section>
-          <div className="flex justify-end mb-2">
-            <select value={filters.sort} onChange={(e) => { const f = { ...filters, sort: e.target.value }; setFilters(f); apply(f); }}
-                    aria-label="Sort" className="bg-transparent text-[13px] rounded-lg px-3 py-2" style={{ border: '1px solid var(--line)', color: 'var(--ink-200)' }}>
-              <option value="rarest">Rarest first</option><option value="price-low">Price: low to high</option>
-              <option value="price-high">Price: high to low</option><option value="ending">Ending soonest</option><option value="newest">Newly listed</option>
-            </select>
-          </div>
-          {res.error && <p className="text-[14px] py-6" style={{ color: 'var(--crit)' }}>{res.error}</p>}
-          {loading && <div className="py-16 text-center font-display italic text-[24px]" style={{ color: 'var(--ink-200)' }}>Searching eBay…</div>}
-          {!loading && !res.error && res.items.length === 0 && (
-            <div className="py-16 text-center">
-              <p className="font-display italic text-[24px]">No matches</p>
-              <p className="text-[14px] mt-2" style={{ color: 'var(--ink-400)' }}>Try fewer filters or another spelling.</p>
-            </div>
-          )}
-          {!loading && (
-            <div className="divide-y" style={{ borderColor: 'var(--line-soft)' }}>
-              {res.items.flatMap((it, i) => {
-                const row = <ResultRow key={it.id} item={it} />;
-                return i === 3 ? [row, <SignupPromptCard key="signup-prompt" />] : [row];
-              })}
-            </div>
-          )}
-          {!loading && res.nextOffset != null && (
-            <div className="pt-8 flex flex-col items-center gap-3">
-              <span className="text-[12px]" style={{ color: 'var(--ink-600)' }}>Showing {res.items.length} of {res.total}</span>
-              <button type="button" onClick={onMore} className="rounded-full px-5 py-2.5 text-[12px] uppercase tracking-[0.14em]" style={{ border: '1px solid var(--line)', color: 'var(--ink-200)' }}>Show more</button>
-            </div>
-          )}
-        </section>
-      </div>
-    </main>
+      )}
+      <AlertBand query={query} filters={appliedFilters} onAlert={onAlert} returnPath={returnPath} />
+    </div>
   );
 }
 
-function ResultRow({ item }) {
-  const { saved, busy, toggle } = useStar(item);
-  const auction = (item.buyingOptions || []).includes('AUCTION');
-  const left = auction ? timeLeft(item.endTime) : null;
-  return (
-    <a href={item.url} target="_blank" rel="noopener noreferrer"
-       className="grid grid-cols-[76px_1fr_auto] md:grid-cols-[96px_1fr_auto] gap-4 items-center py-4 pl-3 relative"
-       style={item.tier === 'grail' ? { borderLeft: '2px solid transparent', borderImage: 'var(--foil) 1' } : { borderLeft: '2px solid transparent' }}>
-      <span className="relative">
-        <CardImage src={item.image} alt={item.title} />
-        <button type="button" onClick={toggle} disabled={busy} aria-label={saved ? 'Starred' : 'Star this card'}
-                className="absolute top-1.5 right-1.5 w-8 h-8 rounded-full grid place-items-center" style={{ background: 'rgba(8,10,18,0.7)', color: saved ? 'var(--gold-bright)' : 'var(--ink-100)' }}>
-          <Star className="w-4 h-4" strokeWidth={1.75} fill={saved ? 'currentColor' : 'none'} aria-hidden="true" />
-        </button>
-      </span>
-      <span className="min-w-0">
-        <span className="block font-display italic text-[17px] md:text-[19px] leading-snug line-clamp-2">{item.title}</span>
-        <span className="flex flex-wrap gap-1.5 mt-2">
-          <TcgChip item={item} />
-          {item.firstEdition && <Tag>1st Edition</Tag>}
-          {item.language && item.language !== 'en' && item.language !== 'English' && <Tag>{LANG_LABEL[item.language] || item.language}</Tag>}
-          {item.shadowless && <Tag>Shadowless</Tag>}
-          {gradeText(item) && <Tag>{gradeText(item)}</Tag>}
-        </span>
-        <span className="block text-[12px] mt-1.5" style={{ color: 'var(--ink-400)' }}>
-          {auction ? `Auction${item.bidCount != null ? ` · ${item.bidCount} ${item.bidCount === 1 ? 'bid' : 'bids'}` : ''}${left ? ` · ${left}` : ''}` : 'Buy it now'}
-        </span>
-      </span>
-      <span className="text-[18px] md:text-[22px] font-medium text-right pr-1">{money(item.price, item.currency)}</span>
-    </a>
-  );
-}
+/* ── filter controls (sidebar, phone drawer, edit page) ──────────────── */
 
-/* ── filter panel ────────────────────────────────────────────────────── */
-
-function Pill({ on, onClick, children }) {
+// Chip toggle styled like the sports print-run chips.
+function Chip({ on, onClick, children, tier }) {
+  const onStyle = tier && TIER_STYLE[tier]
+    ? { ...TIER_STYLE[tier], border: '1px solid transparent', fontWeight: 600 }
+    : { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', border: '1px solid var(--gold-bright)', fontWeight: 600 };
   return (
     <button type="button" onClick={onClick} aria-pressed={on}
-            className="text-[13px] rounded-full px-3 py-1.5 whitespace-nowrap"
-            style={on ? { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', border: '1px solid var(--gold-bright)' } : { color: 'var(--ink-200)', border: '1px solid var(--line)' }}>
+            className="text-[13px] inline-flex items-center rounded-full transition-all whitespace-nowrap"
+            style={{ minHeight: 36, padding: '0 14px', ...(on ? onStyle : { border: '1px solid var(--line)', background: 'var(--bg-elev-2)', color: 'var(--ink-200)', fontWeight: 500 }) }}>
       {children}
     </button>
   );
 }
-function Group({ label, children }) {
-  return (
-    <div className="mb-5">
-      <div className="font-mono text-[10px] uppercase tracking-[0.2em] mb-2" style={{ color: 'var(--ink-400)' }}>{label}</div>
-      <div className="flex flex-wrap gap-1.5">{children}</div>
-    </div>
-  );
-}
 
-function FilterPanel({ meta, filters, set, onApply }) {
+function FilterControls({ meta, filters, setFilter, compact = false }) {
   if (!meta) return <div className="h-40 rounded-xl shimmer" style={{ background: 'var(--bg-elev)' }} />;
   const ladder = filters.game ? (meta.ladders?.[filters.game] || []) : [];
-  const toggleIn = (k, v) => set(k, filters[k].includes(v) ? filters[k].filter((x) => x !== v) : [...filters[k], v]);
+  const toggleIn = (k, v) => setFilter(k, filters[k].includes(v) ? filters[k].filter((x) => x !== v) : [...filters[k], v]);
   return (
-    <div className="rounded-xl p-4 lg:p-0 lg:rounded-none" style={{ background: 'var(--bg-elev)' }}>
-      <div className="lg:bg-transparent">
-        <Group label="Game">
-          <Pill on={!filters.game} onClick={() => set('game', '')}>Any</Pill>
-          {meta.games.map((g) => <Pill key={g.key} on={filters.game === g.key} onClick={() => set('game', g.key)}>{g.label}</Pill>)}
-        </Group>
-        <Group label="Rarity">
-          {ladder.length
-            ? ladder.map((r) => <Pill key={r.key} on={filters.rarity.includes(r.key)} onClick={() => toggleIn('rarity', r.key)}>{r.label}</Pill>)
-            : <span className="text-[13px]" style={{ color: 'var(--ink-600)' }}>Pick a game to filter by its rarities.</span>}
-        </Group>
-        <Group label="Language">
-          <Pill on={!filters.lang.length} onClick={() => set('lang', [])}>All</Pill>
-          {(meta.languages || []).map((l) => <Pill key={l.key} on={filters.lang.includes(l.key)} onClick={() => toggleIn('lang', l.key)}>{l.label}</Pill>)}
-        </Group>
-        <Group label="Condition">
-          {[['any', 'Any'], ['graded', 'Graded'], ['raw', 'Raw']].map(([k, l]) => <Pill key={k} on={filters.graded === k} onClick={() => set('graded', k)}>{l}</Pill>)}
-        </Group>
-        {filters.graded === 'graded' && (
-          <>
-            <Group label="Grader">
-              <Pill on={!filters.grader} onClick={() => set('grader', '')}>Any</Pill>
-              {(meta.graders || []).map((g) => <Pill key={g} on={filters.grader === g} onClick={() => set('grader', g)}>{g}</Pill>)}
-            </Group>
-            <Group label="Grade">
-              {[['', 'Any'], ['10', '10'], ['9.5', '9.5+'], ['9', '9+']].map(([k, l]) => <Pill key={l} on={filters.grade === k} onClick={() => set('grade', k)}>{l}</Pill>)}
-            </Group>
-          </>
-        )}
-        <Group label="Only">
-          <Pill on={filters.firstEd} onClick={() => set('firstEd', !filters.firstEd)}>1st Edition</Pill>
-          <Pill on={filters.serialOnly} onClick={() => set('serialOnly', !filters.serialOnly)}>Serial-numbered</Pill>
-        </Group>
-        <Group label="Price">
-          <div className="flex items-center gap-2 w-full">
-            {['priceMin', 'priceMax'].map((k) => (
-              <input key={k} inputMode="numeric" aria-label={k === 'priceMin' ? 'Minimum price' : 'Maximum price'}
-                     placeholder={k === 'priceMin' ? 'Min $' : 'Max $'}
-                     value={k === 'priceMax' && filters.priceMax >= 100000 ? '' : (filters[k] || '')}
-                     onChange={(e) => set(k, Number(e.target.value.replace(/\D/g, '')) || (k === 'priceMax' ? 100000 : 0))}
-                     className="w-full min-w-0 rounded-lg px-3 py-2 text-[14px] bg-transparent outline-none" style={{ border: '1px solid var(--line)', color: 'var(--ink-100)' }} />
-            ))}
-          </div>
-        </Group>
-        <p className="text-[12px] mb-4" style={{ color: 'var(--ink-600)' }}>Sealed product, lots and proxies are hidden.</p>
-        <button type="button" onClick={onApply} className="w-full rounded-lg py-3 text-[12px] uppercase tracking-[0.14em] font-semibold" style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
-          Show cards
-        </button>
+    <div className={compact ? 'space-y-7' : 'space-y-10'}>
+      <div>
+        <SectionLabel>Game</SectionLabel>
+        <div className="flex flex-wrap gap-2">
+          <Chip on={!filters.game} onClick={() => setFilter('game', '')}>Any</Chip>
+          {meta.games.map((g) => <Chip key={g.key} on={filters.game === g.key} onClick={() => setFilter('game', g.key)}>{g.label}</Chip>)}
+        </div>
       </div>
+      <div>
+        <SectionLabel>Rarity</SectionLabel>
+        {ladder.length
+          ? <div className="flex flex-wrap gap-2">{ladder.map((r) => <Chip key={r.key} tier={r.tier} on={filters.rarity.includes(r.key)} onClick={() => toggleIn('rarity', r.key)}>{r.label}</Chip>)}</div>
+          : <p className="text-[13px]" style={{ color: 'var(--ink-600)' }}>Pick a game to filter by its rarities.</p>}
+      </div>
+      <SectionDivider />
+      <div>
+        <SectionLabel>Language</SectionLabel>
+        <div className="flex flex-wrap gap-2">
+          <Chip on={!filters.lang.length} onClick={() => setFilter('lang', [])}>All</Chip>
+          {(meta.languages || []).map((l) => <Chip key={l.key} on={filters.lang.includes(l.key)} onClick={() => toggleIn('lang', l.key)}>{l.label}</Chip>)}
+        </div>
+      </div>
+      <SectionDivider />
+      <div className={compact ? 'space-y-7' : 'grid grid-cols-1 md:grid-cols-2 gap-8'}>
+        <div>
+          <SectionLabel>Listing Type</SectionLabel>
+          <SegmentedGroup value={filters.listing} onChange={(v) => setFilter('listing', v)} vertical={compact}
+                          options={[['any', 'Any'], ['bin', 'Buy It Now'], ['auction', 'Auction']]} />
+        </div>
+        <div>
+          <SectionLabel>Condition</SectionLabel>
+          <SegmentedGroup value={filters.graded} onChange={(v) => setFilter('graded', v)} vertical={compact}
+                          options={[['any', 'Any'], ['raw', 'Raw'], ['graded', 'Graded']]} />
+        </div>
+      </div>
+      {filters.graded === 'graded' && (
+        <div className="space-y-5">
+          <div>
+            <SectionLabel>Grader</SectionLabel>
+            <div className="flex flex-wrap gap-2">
+              <Chip on={!filters.grader} onClick={() => setFilter('grader', '')}>Any</Chip>
+              {(meta.graders || []).map((g) => <Chip key={g} on={filters.grader === g} onClick={() => setFilter('grader', g)}>{g}</Chip>)}
+            </div>
+          </div>
+          <div>
+            <SectionLabel>Grade</SectionLabel>
+            <div className="flex flex-wrap gap-2">
+              {[['', 'Any'], ['10', '10'], ['9.5', '9.5+'], ['9', '9+']].map(([k, l]) => <Chip key={l} on={filters.grade === k} onClick={() => setFilter('grade', k)}>{l}</Chip>)}
+            </div>
+          </div>
+        </div>
+      )}
+      <SectionDivider />
+      <div>
+        <SectionLabel>Only</SectionLabel>
+        <div className="flex flex-wrap gap-2">
+          <Chip on={filters.firstEd} onClick={() => setFilter('firstEd', !filters.firstEd)}>1st Edition</Chip>
+          <Chip on={filters.serialOnly} onClick={() => setFilter('serialOnly', !filters.serialOnly)}>Serial-numbered</Chip>
+        </div>
+      </div>
+      <SectionDivider />
+      <div>
+        <div className="flex items-baseline justify-between mb-3">
+          <SectionLabel className="!mb-0">Price Range</SectionLabel>
+          <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--ink-600)]">USD</span>
+        </div>
+        <PriceRangeSlider
+          min={filters.priceMin}
+          max={filters.priceMax}
+          onChange={(min, max) => { setFilter('priceMin', min); setFilter('priceMax', max); }}
+        />
+      </div>
+      <p className="text-[12px]" style={{ color: 'var(--ink-600)' }}>Sealed product, lots and proxies are hidden.</p>
     </div>
   );
 }
 
-/* ── alert deep link: /fables?card=<id> ──────────────────────────────── */
+/* ── edit a saved search (?editSearch=<id>), same as sports ──────────── */
 
-function AlertCard({ id }) {
-  const [d, setD] = useState(null);
-  useEffect(() => {
-    fetch(`/api/listing/${encodeURIComponent(id)}`).then((r) => r.json()).then(setD).catch(() => setD({ ok: false }));
-  }, [id]);
-  if (!d) return <div className="max-w-[1040px] mx-auto px-5 md:px-6 lg:px-10 pt-6"><div className="h-[120px] rounded-xl shimmer" style={{ background: 'var(--bg-elev)' }} /></div>;
+function EditPanel({ meta, query, setQuery, filters, setFilter, editingSearch, onSubmit, onCancel }) {
   return (
-    <section className="max-w-[1040px] mx-auto px-5 md:px-6 lg:px-10 pt-6">
-      <div className="rounded-xl p-4 grid grid-cols-[80px_1fr] gap-4 items-center ff-foil-edge">
-        <CardImage src={d.images?.[0]} alt={d.title || ''} />
-        <div className="min-w-0">
-          <p className="text-[12px] mb-1" style={{ color: 'var(--gold)' }}>{d.ok === false ? 'From your alert' : (d.isAuction ? 'From your alert · Auction' : 'From your alert')}</p>
-          {d.ok === false || d.expired
-            ? <p className="text-[15px]" style={{ color: 'var(--ink-200)' }}>This listing has ended or was removed on eBay.</p>
-            : <>
-                <p className="font-display italic text-[19px] leading-snug line-clamp-2">{d.title}</p>
-                <div className="flex items-center gap-3 mt-2">
-                  <span className="text-[20px] font-medium">{money(d.price, d.currency)}</span>
-                  {d.url && <a href={d.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-[12px] uppercase tracking-[0.12em] font-semibold" style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>View on eBay <ArrowRight className="w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" /></a>}
-                </div>
-              </>}
-        </div>
+    <section className="relative max-w-[1100px] mx-auto px-6 lg:px-10 pt-12 lg:pt-16 pb-16">
+      <div className="flex items-center justify-between mb-9">
+        <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--gold)]">
+          <span className="inline-block w-6 h-px bg-[var(--gold)] align-middle mr-3 -translate-y-[2px]" />
+          Editing · <span className="normal-case tracking-normal italic font-display text-[var(--ink-100)] ml-1">{editingSearch?.name}</span>
+        </p>
+        <button onClick={onCancel} className="text-[11px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors">
+          Cancel
+        </button>
+      </div>
+      <div className="mb-12 rise">
+        <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--ink-400)] mb-3">Searching for</p>
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter') onSubmit(); }}
+          placeholder="Any card"
+          className="w-full font-display text-4xl md:text-5xl bg-transparent border-b border-[var(--line)] focus:border-[var(--gold)] outline-none text-[var(--ink-100)] italic pb-2 transition-colors"
+        />
+      </div>
+      <div className="mb-12 rise" style={{ animationDelay: '120ms' }}>
+        <FilterControls meta={meta} filters={filters} setFilter={setFilter} />
+      </div>
+      <div className="flex justify-between items-center rise" style={{ animationDelay: '220ms' }}>
+        <span className="text-[11px] text-[var(--ink-600)]">All filters apply together</span>
+        <button onClick={onSubmit} className="group inline-flex items-center gap-3 px-9 py-4 transition-all text-sm font-semibold tracking-[0.12em] uppercase"
+                style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
+          Update search criteria
+          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" strokeWidth={1.8} />
+        </button>
       </div>
     </section>
   );

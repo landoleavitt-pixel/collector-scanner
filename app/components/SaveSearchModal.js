@@ -22,7 +22,8 @@ const TIER_STYLES = {
   neutral: { bg: 'rgba(232,226,213,0.04)', color: '#a8a090', border: 'rgba(232,226,213,0.12)' },
 };
 
-export default function SaveSearchModal({ open, onClose, query, filters, chips = [], editingSearch = null }) {
+// side: 'fables' for a Foils & Fables search; omitted means sports.
+export default function SaveSearchModal({ open, onClose, query, filters, chips = [], editingSearch = null, side }) {
   const router = useRouter();
   const [name, setName] = useState('');
   const [notifyEnabled, setNotifyEnabled] = useState(true);
@@ -121,12 +122,12 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
       ? await fetch(`/api/saved-searches/${editingSearch.id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, query, filters, notify_enabled: effectiveNotify }),
+          body: JSON.stringify({ name, query, filters, notify_enabled: effectiveNotify, ...(side ? { side } : {}) }),
         })
       : await fetch('/api/saved-searches', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, query, filters, notify_enabled: effectiveNotify }),
+          body: JSON.stringify({ name, query, filters, notify_enabled: effectiveNotify, ...(side ? { side } : {}) }),
         });
     setLoading(false);
 

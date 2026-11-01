@@ -107,7 +107,7 @@ export default function BidCountdown({ endTime }) {
 
   if (remainingSec <= 0) {
     return (
-      <div style={badgeWrapStyle} aria-label="Auction ended">
+      <div style={badgeWrapStyle} role="img" aria-label="Auction ended">
         <span style={endedTextStyle}>Ended</span>
       </div>
     );
@@ -123,7 +123,7 @@ export default function BidCountdown({ endTime }) {
     const hours = Math.floor((remainingSec % 86400) / 3600);
     const label = days >= 1 ? `${days}d ${hours}h` : `${hours}h`;
     return (
-      <div style={badgeWrapStyle} aria-label={`Auction ends in ${days} days ${hours} hours`}>
+      <div style={badgeWrapStyle} role="img" aria-label={`Auction ends in ${days} days ${hours} hours`}>
         <span style={textLabelStyle}>{label}</span>
       </div>
     );
@@ -150,9 +150,11 @@ export default function BidCountdown({ endTime }) {
   return (
     <div
       style={badgeWrapStyle}
+      role="img"
       aria-label={`Auction ends in ${formatLabel(h, m, s, showHours)}`}
     >
-      <div style={odoRow}>
+      {/* The rolling reels hold every digit 0–9; screen readers get the label. */}
+      <div style={odoRow} aria-hidden="true">
         {digits.map((d, i) =>
           d === ':' ? (
             <span key={i} style={colonStyle(urgent)}>:</span>

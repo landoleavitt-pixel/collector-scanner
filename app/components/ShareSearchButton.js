@@ -13,15 +13,16 @@ import { ArrowUpRight, Check } from 'lucide-react';
  * copy on desktop. Both paths end with visible confirmation, because a
  * share button that appears to do nothing is worse than no button.
  */
-export default function ShareSearchButton({ query, filters, allPresetRuns = [], className = '' }) {
+// `url` and `siteName` let Foils & Fables share its own /fables link.
+export default function ShareSearchButton({ query, filters, allPresetRuns = [], className = '', url: shareUrl, siteName = 'Fields & Floors' }) {
   const [status, setStatus] = useState('idle'); // idle | copied | shared | error
 
   async function handleShare() {
-    const url = buildShareUrl(query, filters, allPresetRuns);
-    const title = query ? `${query} on Fields & Floors` : 'Fields & Floors Collectors';
+    const url = shareUrl || buildShareUrl(query, filters, allPresetRuns);
+    const title = query ? `${query} on ${siteName}` : (shareUrl ? siteName : 'Fields & Floors Collectors');
     const text = query
-      ? `Check out this ${query} search on Fields & Floors`
-      : 'Check out this search on Fields & Floors';
+      ? `Check out this ${query} search on ${siteName}`
+      : `Check out this search on ${siteName}`;
 
     // Native share sheet — mobile primarily.
     if (typeof navigator !== 'undefined' && navigator.share) {

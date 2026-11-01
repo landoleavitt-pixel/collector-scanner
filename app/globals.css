@@ -453,6 +453,15 @@ html.native-app [data-ff-footer-legal] { padding-top: 0; border-top: 0; }
   --gold-fill-bottom: #7fbfd4;
   /* The signature: holo foil, used sparingly (edges, top rarity, one headline word). */
   --foil: linear-gradient(100deg, #9fe3f5 0%, #b6a8f0 28%, #f0b3d0 52%, #f3d9a0 76%, #9fe3f5 100%);
+  /* Shared search pieces (app/components/search) that have a fixed sports
+     colour as their fallback. */
+  --ff-seg-on-line: #8fd3e8;
+  --ff-seg-on-bg: linear-gradient(135deg, rgba(143, 211, 232, 0.12), rgba(143, 211, 232, 0.02));
+  --ff-seg-on-ink: #eef0f7;
+  --ff-seg-off-bg: rgba(16, 19, 31, 0.6);
+  --ff-chip-on-bg: rgba(185, 230, 242, 0.08);
+  --ff-glow: rgba(143, 211, 232, 0.35);
+  --ff-band-bg: linear-gradient(90deg, rgba(143, 211, 232, 0.08), transparent);
 }
 [data-side="fables"] body {
   background: radial-gradient(1200px 520px at 70% -10%, rgba(143, 211, 232, 0.06), transparent 60%), var(--bg-base);
@@ -465,3 +474,10 @@ html.native-app [data-ff-footer-legal] { padding-top: 0; border-top: 0; }
 /* Only on one side or the other (footer line, etc.) */
 html:not([data-side="fables"]) [data-fables-only] { display: none !important; }
 [data-side="fables"] [data-sports-only] { display: none !important; }
+
+/* Foils & Fables: the pending Search pulse in moonlight instead of gold. */
+@keyframes pendingPulseFables {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(185, 230, 242, 0); }
+  50%      { box-shadow: 0 0 0 6px rgba(185, 230, 242, 0.25); }
+}
+[data-side="fables"] .pending-pulse { animation-name: pendingPulseFables; }

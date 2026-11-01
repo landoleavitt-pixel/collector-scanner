@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Card Checklist</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400;1,9..144,500&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap');
+
+/* Same token names on both sides, different values (the sibling rule). */
+.fab{ --bg:#080a12; --elev:#10131f; --elev2:#161a29; --line:#242a3d; --soft:#1a1f2f;
+  --ink:#eef0f7; --ink2:#d5d9e8; --ink4:#9198b0; --ink6:#5d6480;
+  --acc:#8fd3e8; --acc2:#b9e6f2; --accdeep:#4b7f93; --on:#071018;
+  --cta:linear-gradient(180deg,#c9eef8,#7fbfd4);
+  --display:'Fraunces',serif;
+  --foil:linear-gradient(100deg,#9fe3f5 0%,#b6a8f0 28%,#f0b3d0 52%,#f3d9a0 76%,#9fe3f5 100%);
+  --t-grail:var(--foil); --t-ultra:linear-gradient(180deg,#c9d3f5,#8b97c7); --t-rare:linear-gradient(180deg,#9fe3f5,#4b98ad); --t-scarce:linear-gradient(180deg,#7a8199,#4a5068);
+  --t-grail-ink:#0b0f1a; --t-ultra-ink:#0b0f1a; --t-rare-ink:#071018; --t-scarce-ink:#eef0f7;
+  --t-grail-c:#d7c4f2; --t-ultra-c:#c9d3f5; --t-rare-c:#9fe3f5; --t-scarce-c:#9aa1b8; }
+.ffs{ --bg:#0a0907; --elev:#14110c; --elev2:#1a160f; --line:#2a251c; --soft:#1f1c16;
+  --ink:#f7f1e1; --ink2:#e8dfc9; --ink4:#a99e85; --ink6:#6b6354;
+  --acc:#c9954a; --acc2:#e6b96b; --accdeep:#8f6a32; --on:#1a1612;
+  --cta:linear-gradient(180deg,#f5d08a,#e6b96b);
+  --display:'Instrument Serif',serif;
+  --t-one:linear-gradient(180deg,#2a2418,#0d0b08); --t-one-ink:#ffd97a; --t-one-c:#ffd97a;
+  --t-grail:linear-gradient(180deg,#ffd97a,#d99c14); --t-ultra:linear-gradient(180deg,#e0e8f0,#98a5b3); --t-rare:linear-gradient(180deg,#d6884a,#8e4f1f); --t-scarce:linear-gradient(180deg,#8a96a4,#4a5360);
+  --t-grail-ink:#1a1612; --t-ultra-ink:#1a1612; --t-rare-ink:#1a1612; --t-scarce-ink:#1a1612;
+  --t-grail-c:#ffc14d; --t-ultra-c:#c8d4e0; --t-rare-c:#e08a4c; --t-scarce-c:#8a96a4; }
+.t-base{ --t-base:linear-gradient(180deg,var(--ink4),var(--ink6)); }
+
+*{box-sizing:border-box}
+html,body{margin:0;background:#030303;color:#e8e6e1;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+.page{max-width:1240px;margin:0 auto;padding:40px 16px 100px}
+.eyebrow{font:500 11px 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#8fd3e8}
+h1.t{font:italic 400 46px/1.04 'Fraunces',serif;margin:10px 0 10px}
+.lede{color:#a3a7b6;font-size:15px;max-width:780px;line-height:1.6;margin:0 0 26px}
+.sec{border-top:1px solid #23262f;padding-top:20px;margin:64px 0 22px}
+.sec .n{font:600 12px 'Geist Mono',monospace;color:#b9e6f2;letter-spacing:.14em}
+.sec h2{font:italic 400 32px/1.1 'Fraunces',serif;margin:6px 0 6px}
+.sec p{margin:0;color:#a3a7b6;font-size:14px;max-width:780px;line-height:1.55}
+.rec{background:#0e1119;border:1px solid #242a3d;border-radius:14px;padding:22px 24px;max-width:900px}
+.rec h3{margin:0 0 10px;font:italic 400 24px 'Fraunces',serif}
+.rec ol,.rec ul{margin:0;padding-left:20px;color:#d5d9e8;font-size:14px;line-height:1.65}
+.rec li{margin-bottom:6px}
+.rec b{color:#fff}
+.warn{margin-top:14px;padding:12px 14px;border-radius:10px;background:rgba(240,179,208,.06);border:1px solid rgba(240,179,208,.25);font-size:13.5px;color:#e9d6e0;line-height:1.55}
+.ic{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.cap{font-size:12.5px;color:#8c90a0;margin:10px 2px 0;line-height:1.5;max-width:420px}
+
+/* ── site shell ── */
+.site{background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6);position:relative}
+.fab .site,.site.fab{background:radial-gradient(1100px 480px at 75% -10%,rgba(143,211,232,.06),transparent 60%),var(--bg)}
+.hdr{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 24px;border-bottom:1px solid var(--soft)}
+.brand{font:italic 400 22px var(--display);display:flex;align-items:center;gap:8px}
+.amp{background:var(--foil);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ffs .amp{background:none;color:var(--acc2)}
+.sw{display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:var(--elev);border:1px solid var(--line);font-size:12px}
+.sw span{padding:5px 11px;border-radius:999px;color:var(--ink4);display:inline-flex;align-items:center;gap:6px}
+.sw span.on{background:var(--elev2);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+.sw i{width:7px;height:7px;border-radius:50%;display:inline-block}
+.nav{display:flex;gap:20px;font-size:13px;color:var(--ink4)}
+
+/* ── checklist page ── */
+.cl{padding:22px 24px 28px}
+.back{font-size:13px;color:var(--ink4);display:inline-flex;align-items:center;gap:6px;margin-bottom:12px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+.top .kicker{font:500 11px 'Geist Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--acc)}
+.top h3{margin:4px 0 4px;font:italic 400 44px/1 var(--display)}
+.top .sub{font-size:14px;color:var(--ink4)}
+.prog{min-width:300px}
+.prog .line{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:var(--ink4);margin-bottom:7px}
+.prog .line b{font:600 20px Geist;color:var(--ink)}
+.bar{height:6px;border-radius:999px;background:var(--elev2);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:999px;background:var(--acc2)}
+.fab .bar i{background:var(--foil)}
+.actions{display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap}
+.cta{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:10px;background:var(--cta);color:var(--on);font-weight:600;font-size:14px}
+.ghost{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;border:1px solid var(--line);color:var(--ink2);font-size:13.5px;background:var(--elev)}
+.seg{display:inline-flex;padding:3px;border-radius:10px;background:var(--elev);border:1px solid var(--line)}
+.seg button{padding:6px 12px;border-radius:7px;font-size:13px;color:var(--ink4);display:inline-flex;gap:6px;align-items:center}
+.seg button.on{background:var(--elev2);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+.body{display:grid;grid-template-columns:220px 1fr;gap:26px;margin-top:22px}
+.filters{font-size:13px}
+.filters h5{margin:0 0 8px;font:500 11px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ink6)}
+.fgrp{margin-bottom:20px}
+.fopt{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 0;color:var(--ink2)}
+.fopt .bx{width:15px;height:15px;border-radius:4px;border:1px solid var(--line);display:inline-grid;place-items:center;margin-right:8px;flex:none;background:var(--elev)}
+.fopt .bx.on{background:var(--acc2);border-color:var(--acc2);color:var(--on)}
+.fopt .l{display:flex;align-items:center;min-width:0}
+.fopt .c{color:var(--ink6);font:12px 'Geist Mono',monospace}
+.tchip{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:var(--ink2);margin:0 4px 6px 0;background:var(--elev)}
+.tchip i{width:8px;height:8px;border-radius:50%}
+.legend{font-size:12px;color:var(--ink6);line-height:1.55;margin-top:6px}
+
+/* set group */
+.set{border:1px solid var(--soft);border-radius:12px;margin-bottom:12px;background:var(--elev);overflow:hidden}
+.sethd{width:100%;display:flex;align-items:center;gap:12px;padding:12px 14px;text-align:left}
+.sethd .chev{transition:transform .15s;color:var(--ink4)}
+.set.closed .sethd .chev{transform:rotate(-90deg)}
+.sethd .nm{font:italic 400 20px var(--display);color:var(--ink)}
+.sethd .yr{font:12px 'Geist Mono',monospace;color:var(--ink6)}
+.lang{font:600 10px 'Geist Mono',monospace;letter-spacing:.08em;padding:2px 6px;border-radius:5px;border:1px solid var(--line);color:var(--ink2)}
+.sethd .own{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--ink4);white-space:nowrap}
+.sethd .mini{width:70px;height:4px;border-radius:9px;background:var(--elev2);overflow:hidden}
+.sethd .mini i{display:block;height:100%;background:var(--acc2)}
+.fab .sethd .mini i{background:var(--foil)}
+.set.closed .rows,.set.closed .grid{display:none}
+
+/* list rows */
+.row{display:grid;grid-template-columns:30px 92px minmax(170px,1fr) minmax(0,2.2fr) 18px;align-items:center;gap:12px;padding:10px 14px;border-top:1px solid var(--soft);cursor:pointer;width:100%;text-align:left}
+.row:hover{background:var(--elev2)}
+.mark{width:22px;height:22px;border-radius:50%;border:1.5px dashed var(--ink6);display:grid;place-items:center;color:var(--on)}
+.mark.some{border:1.5px solid var(--acc2);background:transparent;color:var(--acc2)}
+.mark.all{border:0;background:var(--acc2);color:var(--on)}
+.fab .mark.all{background:var(--foil)}
+.no{font:500 13px 'Geist Mono',monospace;color:var(--ink2)}
+.no small{display:block;font-size:10px;color:var(--ink6);letter-spacing:.1em}
+.who{min-width:0}
+.who b{display:block;font-weight:500;font-size:14px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who span{font-size:12px;color:var(--ink4)}
+.rc{font:700 9.5px 'Geist Mono',monospace;padding:1px 4px;border-radius:4px;border:1px solid var(--acc);color:var(--acc2);margin-left:6px;vertical-align:2px}
+.vers{display:flex;flex-wrap:wrap;gap:6px;min-width:0}
+.go{color:var(--ink6)}
+
+/* version chip: missing = tier-coloured outline, owned = solid tier fill + check */
+.v{display:inline-flex;align-items:center;gap:7px;padding:3px 9px 3px 8px;border-radius:7px;font-size:12px;font-weight:600;white-space:nowrap;
+   border:1px solid transparent;background:linear-gradient(var(--elev),var(--elev)) padding-box,var(--tg) border-box;color:var(--tc)}
+.v .fs{font:500 11px 'Geist Mono',monospace;color:var(--ink4)}
+.v.none{opacity:.55}
+.v.none .fs{color:var(--ink6)}
+.v.own{background:var(--tg);color:var(--ti)}
+.v.own .fs{color:var(--ti);opacity:.75}
+.v .q{font:700 10px 'Geist Mono',monospace;padding:0 4px;border-radius:4px;background:rgba(0,0,0,.18)}
+.v .ic{width:12px;height:12px;stroke-width:2.6}
+.more{font-size:12px;color:var(--ink4);padding:3px 8px;border-radius:7px;border:1px dashed var(--line)}
+.tier-grail{--tg:var(--t-grail);--tc:var(--t-grail-c);--ti:var(--t-grail-ink)}
+.tier-ultra{--tg:var(--t-ultra);--tc:var(--t-ultra-c);--ti:var(--t-ultra-ink)}
+.tier-rare{--tg:var(--t-rare);--tc:var(--t-rare-c);--ti:var(--t-rare-ink)}
+.tier-scarce{--tg:var(--t-scarce);--tc:var(--t-scarce-c);--ti:var(--t-scarce-ink)}
+.tier-one{--tg:var(--t-one);--tc:var(--t-one-c);--ti:var(--t-one-ink)}
+.tier-one.v{border-color:#ffc14d;background:var(--elev)} .tier-one.v.own{background:var(--t-one)}
+.tier-base{--tg:linear-gradient(var(--line),var(--line));--tc:var(--ink2);--ti:var(--ink)}
+.tier-base.v.own{background:var(--ink4);color:var(--on)}
+.fab .tier-grail.v:not(.own){color:transparent;background:linear-gradient(var(--elev),var(--elev)) padding-box,var(--foil) border-box}
+.fab .tier-grail.v:not(.own) .lbl{background:var(--foil);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* grid mode */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;padding:12px 14px 16px;border-top:1px solid var(--soft)}
+.tile{text-align:left;border-radius:10px;background:var(--bg);border:1px solid var(--soft);overflow:hidden;position:relative}
+.ph{aspect-ratio:5/7;margin:8px;border-radius:7px;position:relative;display:grid;place-items:end start;padding:8px;overflow:hidden;
+    background:radial-gradient(120px 160px at 50% 35%,rgba(255,255,255,.07),transparent 70%),linear-gradient(160deg,#20263a,#0e111b)}
+.ffs .ph{background:radial-gradient(120px 160px at 50% 35%,rgba(255,230,168,.08),transparent 70%),linear-gradient(160deg,#2a2419,#100d09)}
+.ph::before{content:'';position:absolute;inset:14% 16% 22%;border-radius:5px;border:1px solid rgba(255,255,255,.08);background:linear-gradient(135deg,rgba(255,255,255,.05),transparent)}
+.ph .pl{font:500 9.5px 'Geist Mono',monospace;letter-spacing:.08em;color:rgba(255,255,255,.45);position:relative}
+.ph.empty{background:var(--elev);border:1px dashed var(--line)}
+.ph.empty::before{display:none}
+.ph.empty .pl{color:var(--ink6)}
+.tile .owned{position:absolute;top:14px;right:14px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--acc2);color:var(--on);box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.fab .tile .owned{background:var(--foil)}
+.tile .meta{padding:0 10px 10px}
+.tile .meta .no{font-size:12px}
+.tile .meta b{display:block;font-size:13px;font-weight:500;margin:2px 0 1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .meta span{font-size:11.5px;color:var(--ink4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.dots{display:flex;gap:4px;margin-top:7px;flex-wrap:wrap}
+.dot{width:10px;height:10px;border-radius:3px;border:1px solid transparent;background:linear-gradient(var(--bg),var(--bg)) padding-box,var(--tg) border-box}
+.dot.own{background:var(--tg)}
+.tier-base.dot{background:linear-gradient(var(--bg),var(--bg)) padding-box,linear-gradient(var(--ink6),var(--ink6)) border-box}
+.tier-base.dot.own{background:var(--ink4)}
+
+/* version picker (sheet on phone, popover on desktop) */
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.55);display:none;z-index:20;align-items:center;justify-content:center}
+.scrim.open{display:flex}
+.sheet{width:420px;max-width:calc(100% - 32px);background:var(--elev);border:1px solid var(--line);border-radius:16px;padding:18px 18px 16px;box-shadow:0 30px 70px rgba(0,0,0,.6)}
+.sheet .grab{display:none;width:36px;height:4px;border-radius:9px;background:var(--line);margin:0 auto 12px}
+.sheet .h{display:flex;justify-content:space-between;gap:10px}
+.sheet .h b{font:italic 400 22px var(--display);display:block}
+.sheet .h span{font-size:13px;color:var(--ink4)}
+.sheet .q1{font-size:13px;color:var(--ink2);margin:14px 0 8px;font-weight:500}
+.opt{display:flex;align-items:center;gap:10px;padding:10px 10px;border-radius:10px;border:1px solid var(--soft);margin-bottom:7px;background:var(--bg)}
+.opt.on{border-color:var(--acc);background:var(--elev2)}
+.opt .bx{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--ink6);display:grid;place-items:center;flex:none;color:var(--on)}
+.opt.on .bx{background:var(--acc2);border-color:var(--acc2)}
+.opt .lb{flex:1;min-width:0;font-size:14px}
+.opt .lb small{display:block;font-size:12px;color:var(--ink4)}
+.step{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:8px;overflow:hidden;font:600 13px 'Geist Mono',monospace}
+.step button{width:28px;height:28px;color:var(--ink2)}
+.step span{min-width:22px;text-align:center}
+.sheet .foot{display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:10px}
+.sheet .foot .note{font-size:12px;color:var(--ink6);display:flex;align-items:center;gap:6px}
+.sw8{width:10px;height:10px;border-radius:3px;flex:none;background:var(--tg)}
+
+/* phone frames */
+.phones{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start}
+.phone{width:375px;max-width:100%;height:780px;border-radius:42px;border:10px solid #16171b;box-shadow:0 0 0 1px #2a2b30,0 30px 80px rgba(0,0,0,.6);overflow:hidden;position:relative;background:var(--bg);color:var(--ink)}
+.fab.phone{background:radial-gradient(500px 300px at 70% -5%,rgba(143,211,232,.08),transparent 60%),var(--bg)}
+.phone .status{height:44px;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font:600 14px Geist}
+.phone .scroll{height:calc(100% - 44px);overflow-y:auto;overflow-x:hidden;padding-bottom:90px}
+.phone .scroll::-webkit-scrollbar{display:none}
+.phone .cl{padding:6px 16px 20px}
+.phone .top h3{font-size:34px}
+.phone .prog{min-width:0;width:100%}
+.phone .body{display:block;margin-top:14px}
+.phone .filters{display:none}
+.phone .pfil{display:flex;gap:6px;overflow-x:auto;margin:14px -16px 12px;padding:0 16px}
+.phone .pfil::-webkit-scrollbar{display:none}
+.pfil .pc{flex:none;padding:6px 11px;border-radius:999px;border:1px solid var(--line);font-size:12.5px;color:var(--ink2);background:var(--elev);display:inline-flex;gap:6px;align-items:center}
+.pfil .pc.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.desk .pfil{display:none}
+.phone .row{grid-template-columns:26px 1fr 14px;grid-template-areas:"m w g" ". v v";row-gap:8px;padding:11px 12px}
+.phone .row .mark{grid-area:m}
+.phone .row .no{display:none}
+.phone .row .who{grid-area:w}
+.phone .row .who .pno{display:inline}
+.who .pno{display:none;font:500 12px 'Geist Mono',monospace;color:var(--ink4);margin-right:6px}
+.phone .row .vers{grid-area:v}
+.phone .row .go{grid-area:g}
+.phone .sethd{padding:11px 12px;flex-wrap:wrap;row-gap:4px}
+.phone .sethd .nm{font-size:18px}
+.phone .sethd .own{margin-left:26px;width:100%}
+.phone .sethd .mini{width:60px}
+.phone .grid{grid-template-columns:1fr 1fr;padding:10px}
+.phone .actions .cta{flex:1;justify-content:center}
+.phone .scrim{align-items:flex-end}
+.phone .sheet{width:100%;max-width:100%;border-radius:20px 20px 0 0;border-bottom:0;padding-bottom:30px}
+.phone .sheet .grab{display:block}
+.tabbar{position:absolute;left:14px;right:14px;bottom:16px;height:58px;border-radius:999px;background:rgba(20,22,32,.82);backdrop-filter:blur(14px);border:1px solid var(--line);display:flex;justify-content:space-around;align-items:center;font-size:10.5px;color:var(--ink4);z-index:10}
+.ffs .tabbar{background:rgba(24,20,14,.85)}
+.tabbar div{display:flex;flex-direction:column;align-items:center;gap:3px}
+.tabbar .on{color:var(--acc2)}
+.phone .scrim{z-index:30}
+
+/* entry points */
+.entry{display:grid;grid-template-columns:1.25fr 1fr;gap:20px}
+.mini-site{padding:18px}
+.banner{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--elev);margin-bottom:12px}
+.banner .ic2{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--elev2);color:var(--acc2);flex:none}
+.banner b{font-size:14px;font-weight:600}
+.banner span{display:block;font-size:12.5px;color:var(--ink4)}
+.banner a{margin-left:auto;font-size:13px;color:var(--acc2);white-space:nowrap;text-decoration:none;font-weight:600}
+.res{display:grid;grid-template-columns:64px 1fr;gap:12px;padding:12px;border-radius:12px;border:1px solid var(--soft);background:var(--elev);margin-bottom:10px;position:relative}
+.res::before{content:'';position:absolute;left:0;top:10px;bottom:10px;width:2px;border-radius:2px;background:var(--tg)}
+.res .ph{margin:0;aspect-ratio:5/7}
+.res b{font-size:13.5px;font-weight:500;display:block;line-height:1.35}
+.res .pr{font:600 15px Geist;margin:6px 0}
+.res .lk{font-size:12.5px;color:var(--acc2);display:inline-flex;align-items:center;gap:5px;margin-top:4px}
+.wt{border-radius:12px;border:1px solid var(--soft);background:var(--elev);padding:14px;margin-bottom:12px}
+.wt .side{font-size:11.5px;color:var(--ink4);display:flex;align-items:center;gap:6px}
+.wt b{font-size:15px;font-weight:500;display:block;margin:6px 0 4px}
+.wt .meta{font-size:12.5px;color:var(--ink4)}
+.wt .btns{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.wt .btns span{font-size:12.5px;padding:6px 11px;border-radius:8px;border:1px solid var(--line);color:var(--ink2)}
+.wt .btns span.hl{border-color:var(--acc);color:var(--acc2)}
+.alertsheet .sum{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.alertsheet .sum div{padding:10px;border-radius:10px;background:var(--bg);border:1px solid var(--soft)}
+.alertsheet .sum b{font:600 20px Geist;display:block}
+.alertsheet .sum span{font-size:12px;color:var(--ink4)}
+.radio{display:flex;gap:10px;align-items:flex-start;padding:10px;border-radius:10px;border:1px solid var(--soft);margin-bottom:7px;background:var(--bg);font-size:13.5px}
+.radio.on{border-color:var(--acc);background:var(--elev2)}
+.radio i{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--ink6);flex:none;margin-top:2px}
+.radio.on i{border:5px solid var(--acc2)}
+.radio small{display:block;color:var(--ink4);font-size:12px;margin-top:2px}
+.toast{position:absolute;left:16px;right:16px;bottom:88px;padding:12px 14px;border-radius:12px;background:var(--ink);color:var(--bg);font-size:13px;display:flex;gap:10px;align-items:center;z-index:12;box-shadow:0 12px 30px rgba(0,0,0,.4)}
+.toast b{font-weight:600}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.compare .lab{font:500 11px 'Geist Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#8c90a0;margin-bottom:8px}
+
+@media (max-width:900px){
+  .entry,.compare{grid-template-columns:1fr}
+  .desk .body{grid-template-columns:1fr}
+  .desk .filters{display:none}
+  .desk .pfil{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}
+  .desk .row{grid-template-columns:26px 1fr 14px;grid-template-areas:"m w g" ". v v";row-gap:8px}
+  .desk .row .mark{grid-area:m}.desk .row .no{display:none}.desk .row .who{grid-area:w}.desk .row .who .pno{display:inline}.desk .row .vers{grid-area:v}.desk .row .go{grid-area:g}
+  .desk .sethd{flex-wrap:wrap}.desk .sethd .own{margin-left:26px;width:100%}
+  .hdr .nav{display:none}
+  .desk .cl{padding:18px 14px}
+  .prog{min-width:0;width:100%}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="chk" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="right" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+  <symbol id="left" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></symbol>
+  <symbol id="bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol>
+  <symbol id="list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+  <symbol id="grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+  <symbol id="lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="layers" viewBox="0 0 24 24"><path d="M12 2l10 6-10 6L2 8z"/><path d="M2 14l10 6 10-6"/></symbol>
+  <symbol id="sliders" viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></symbol>
+  <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></symbol>
+  <symbol id="star" viewBox="0 0 24 24"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></symbol>
+  <symbol id="user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></symbol>
+</svg>
+
+<div class="page">
+  <div class="eyebrow">Mockup · not built · placeholder data</div>
+  <h1 class="t">Card checklist</h1>
+  <p class="lede">Search a character or an athlete and see every card of them, sorted by set, then card number, then version. Mark the ones you own and get alerts for the ones you're missing. The same page works on both sides. Everything below is clickable: switch between List and Grid, open and close sets, filter by Missing or Owned, and tap any card to mark it.</p>
+
+  <div class="rec">
+    <h3>My recommendation</h3>
+    <ol>
+      <li><b>List view by default, Grid view as an option.</b> The list keeps 80+ cards calm: one line per card number, with its versions as small coloured chips. The grid is for browsing by photo, and it only shows photos when a seller has one listed now.</li>
+      <li><b>Progress counts versions, not cards.</b> "You own 9 of 37" means 9 of the 37 versions. Each set also shows its own small progress bar.</li>
+      <li><b>One tap on a card opens a short picker</b> (a sheet on phone, a small window on desktop). Tick the versions you own, and use + / − if you have more than one. No prices, no values: this is a "what I own" list, not a portfolio.</li>
+      <li><b>"Alert me for the ones I'm missing" becomes one saved search</b> that counts as one of your 5 alerts. It updates itself when you mark a card as owned, so you stop getting alerts for it.</li>
+      <li><b>Opens from:</b> a banner at the top of search results ("See every Charizard card"), a link on each result ("Every version of this card"), and a Checklist button on watchlist tiles.</li>
+      <li><b>Build order:</b> Pokémon (English) first, then Magic. Fields &amp; Floors uses the card makers' own checklists for each player's card numbers.</li>
+    </ol>
+    <div class="warn"><b>Things to know before building.</b>
+      <br>• <b>Privacy:</b> the cards someone owns are saved to their account. They're only visible to that person, and can be removed. Marking a card needs a free account; anyone can view a checklist without signing in. Magic's catalog rules require free access, and this meets them.
+      <br>• <b>"For sale now":</b> the counts come from one live eBay search per checklist when the page opens. We don't keep listing history, and we never show "last seen".
+      <br>• <b>Fields &amp; Floors card lists:</b> each player's card numbers come from the card makers' own checklists (Landon is downloading them). Parallel colours come from our existing rarity lists. The Paul Skenes section below shows real numbers once those files are in.</div>
+  </div>
+
+  <!-- 1 -->
+  <div class="sec"><div class="n">01</div><h2>Foils &amp; Fables · Charizard · desktop</h2>
+    <p>Sets are listed newest first and each one can be opened or closed. Each line is one card number, and its versions sit to the right. A <b>filled</b> chip means you own that version, and an <b>outlined</b> chip means you're missing it. The number on each chip is how many are for sale on eBay right now. Try Missing / Owned, the Grid view, or tap a card.</p></div>
+  <div class="fab desk" id="d-fab"></div>
+
+  <!-- 2 -->
+  <div class="sec"><div class="n">02</div><h2>Same page on phone</h2>
+    <p>Filters move into a row of chips, and each line puts its versions under the card name. The second phone shows what happens when you tap No. 223: you pick the version (and how many), then tap Done. The third shows the grid.</p></div>
+  <div class="phones">
+    <div><div class="fab phone" id="p-fab-list"></div><p class="cap">List view, the default. The set headers show progress at a glance.</p></div>
+    <div><div class="fab phone" id="p-fab-sheet"></div><p class="cap">Tap a card, then tick the versions you own. Use + / − only if you have more than one. "Only you can see this": what you own is private and never shown to anyone else.</p></div>
+    <div><div class="fab phone" id="p-fab-grid"></div><p class="cap">Grid view. A photo appears only when a seller has one listed now; otherwise the tile says none for sale.</p></div>
+  </div>
+
+  <!-- 3 -->
+  <div class="sec"><div class="n">03</div><h2>What "owned" looks like</h2>
+    <p>The ring on the left fills in as you collect a card's versions. Chips for versions you own are filled in with a check mark, and show a count when you have more than one.</p></div>
+  <div class="compare fab" id="cmp"></div>
+
+  <!-- 4 -->
+  <div class="sec"><div class="n">04</div><h2>"Alert me for the ones I'm missing"</h2>
+    <p>One tap opens a short confirmation, then it's saved as a single alert. It shows on the watchlist like any saved search, and it stops alerting for a version as soon as you mark that version owned.</p></div>
+  <div class="phones">
+    <div><div class="fab phone" id="p-alert"></div><p class="cap">The confirmation. "Only the rarest" is there for people missing 70+ versions who don't want an alert for every common one.</p></div>
+    <div><div class="fab phone" id="p-alert-done"></div><p class="cap">After saving: a short confirmation, and the button changes to "Alerts on".</p></div>
+  </div>
+
+  <!-- 5 -->
+  <div class="sec"><div class="n">05</div><h2>Fields &amp; Floors · Paul Skenes</h2>
+    <p>The same page in the Fields &amp; Floors look. Each line is a card number, and its versions are the parallel colours, sorted rarest first and coloured by print run: Grail /1–25, Ultra /26–99, Rare /100–249, Scarce /250+. Base and unnumbered versions are plain. A card with many parallels shows the rarest 8, then "+ N more".</p></div>
+  <div class="ffs desk" id="d-ffs"></div>
+  <div class="phones" style="margin-top:28px">
+    <div><div class="ffs phone" id="p-ffs-list"></div><p class="cap">Phone, list view.</p></div>
+    <div><div class="ffs phone" id="p-ffs-sheet"></div><p class="cap">Marking a card: pick the colour you own, for example Gold /50.</p></div>
+  </div>
+
+  <!-- 6 -->
+  <div class="sec"><div class="n">06</div><h2>How people get there</h2>
+    <p>From search results there's a banner when the search matches one character or athlete, plus a link on each result. From the watchlist there's a Checklist button on any tile for a character or athlete we have a list for.</p></div>
+  <div class="entry">
+    <div class="fab"><div class="site mini-site" id="entry-fab"></div><p class="cap">Foils &amp; Fables search results for "charizard".</p></div>
+    <div class="ffs"><div class="site mini-site" id="entry-ffs"></div><p class="cap">Fields &amp; Floors watchlist tiles: a starred card and a checklist alert.</p></div>
+  </div>
+</div>
+
+<script>
+const I = (id, cls='ic') => `<svg class="${cls}"><use href="#${id}"/></svg>`;
+
+/* ── placeholder data ── v: [label, forSaleNow, tier, ownedQty] */
+const FAB = { name:'Charizard', kicker:'Checklist · Pokémon', sub:'Every Charizard card, set by set', side:'fab',
+  rarities:[['Grail','grail'],['Ultra','ultra'],['Rare','rare'],['Scarce','scarce']],
+  sets:[
+  {set:'Phantasmal Flames', yr:2025, cards:[
+    {no:'011/094', nm:'Mega Charizard X ex', r:'Double Rare', v:[['Holo',22,'rare',0],['Reverse Holo',6,'scarce',0]]},
+    {no:'109/094', nm:'Mega Charizard X ex', r:'Ultra Rare', v:[['Holo',8,'ultra',0]]},
+    {no:'125/094', nm:'Mega Charizard X ex', r:'Special Illustration Rare', v:[['Holo',5,'grail',0]]},
+    {no:'130/094', nm:'Mega Charizard X ex', r:'Mega Hyper Rare', v:[['Gold',2,'grail',0]]}]},
+  {set:'Paldean Fates', yr:2024, cards:[
+    {no:'054/091', nm:'Charizard ex', r:'Double Rare', v:[['Holo',15,'rare',0]]},
+    {no:'234/091', nm:'Charizard ex', r:'Special Illustration Rare', v:[['Holo',9,'grail',1]]},
+    {no:'255/091', nm:'Charizard ex', r:'Hyper Rare', v:[['Gold',4,'grail',0]]}]},
+  {set:'151', yr:2023, cards:[
+    {no:'006/165', nm:'Charizard ex', r:'Double Rare', v:[['Holo',31,'rare',2],['Reverse Holo',0,'scarce',0]]},
+    {no:'183/165', nm:'Charizard ex', r:'Ultra Rare', v:[['Holo',11,'ultra',0]]},
+    {no:'199/165', nm:'Charizard ex', r:'Special Illustration Rare', v:[['Holo',18,'grail',1]]}]},
+  {set:'Obsidian Flames', yr:2023, cards:[
+    {no:'125/197', nm:'Charizard ex', r:'Double Rare', v:[['Holo',26,'rare',1],['Reverse Holo',4,'scarce',0]]},
+    {no:'215/197', nm:'Charizard ex', r:'Ultra Rare', v:[['Holo',7,'ultra',0]]},
+    {no:'223/197', nm:'Charizard ex', r:'Special Illustration Rare', v:[['Holo',14,'grail',0],['Japanese print',3,'grail',0]]},
+    {no:'228/197', nm:'Charizard ex', r:'Hyper Rare', v:[['Gold',6,'grail',0]]}]},
+  {set:'Ruler of the Black Flame', yr:2023, lang:'JP', closed:true, cards:[
+    {no:'066/108', nm:'Charizard ex', r:'Double Rare', v:[['Holo',12,'rare',0]]},
+    {no:'134/108', nm:'Charizard ex', r:'Super Rare', v:[['Holo',4,'ultra',0]]},
+    {no:'135/108', nm:'Charizard ex', r:'Special Art Rare', v:[['Holo',6,'grail',0]]},
+    {no:'139/108', nm:'Charizard ex', r:'Ultra Rare', v:[['Gold',3,'grail',0]]}]},
+  {set:'Pokémon GO', yr:2022, closed:true, cards:[
+    {no:'010/078', nm:'Charizard', r:'Rare Holo', v:[['Holo',9,'scarce',0],['Reverse Holo',5,'scarce',0]]}]},
+  {set:'Brilliant Stars', yr:2022, closed:true, cards:[
+    {no:'017/172', nm:'Charizard V', r:'Ultra Rare', v:[['Holo',13,'rare',1]]},
+    {no:'018/172', nm:'Charizard VSTAR', r:'Ultra Rare', v:[['Holo',20,'rare',1]]},
+    {no:'154/172', nm:'Charizard V', r:'Full Art', v:[['Holo',6,'ultra',0]]},
+    {no:'TG03', nm:'Charizard', r:'Trainer Gallery', v:[['Holo',17,'ultra',0]]}]},
+  {set:'Champion\'s Path', yr:2020, closed:true, cards:[
+    {no:'074/073', nm:'Charizard V', r:'Full Art', v:[['Holo',8,'ultra',0]]},
+    {no:'079/073', nm:'Charizard VMAX', r:'Secret Rare', v:[['Rainbow',4,'grail',1]]}]},
+  {set:'Evolutions', yr:2016, closed:true, cards:[
+    {no:'11/108', nm:'Charizard', r:'Rare Holo', v:[['Holo',21,'scarce',0],['Reverse Holo',9,'scarce',1]]}]},
+  {set:'Base Set', yr:1999, closed:true, cards:[
+    {no:'4/102', nm:'Charizard', r:'Rare Holo', v:[['1st Edition',3,'grail',0],['Shadowless',5,'ultra',0],['Unlimited',24,'rare',1]]}]},
+  {set:'Base Expansion Pack', yr:1996, lang:'JP', closed:true, cards:[
+    {no:'No. 006', nm:'Charizard', r:'Holo', v:[['No Rarity Symbol',1,'grail',0],['Holo',7,'ultra',0]]}]},
+]};
+
+const FFS = { name:'Paul Skenes', kicker:'Checklist · Baseball', sub:'Every Paul Skenes card, set by set', side:'ffs', moreAt:8,
+  rarities:[['Grail /1–25','grail'],['Ultra /26–99','ultra'],['Rare /100–249','rare'],['Scarce /250+','scarce']],
+  sets:[
+  {set:'2025 Topps Chrome', yr:'', cards:[
+    {no:'#1', nm:'Paul Skenes', r:'Base', v:[['SuperFractor 1/1',0,'one',0],['Red /5',0,'grail',0],['Black /10',0,'grail',0],['Orange /25',1,'grail',0],['Gold /50',2,'ultra',0],['Green /99',3,'ultra',0],['Blue /150',5,'rare',1],['Aqua /199',4,'rare',0],['Purple /299',6,'scarce',0],['X-Fractor',8,'base',0],['Prism Refractor',12,'base',0],['Refractor',31,'base',1],['Base',40,'base',0]]},
+    {no:'#CA-PS', nm:'Paul Skenes', r:'Chrome Autograph', v:[['SuperFractor Auto 1/1',0,'one',0],['Red Auto /5',0,'grail',0],['Gold Auto /50',1,'ultra',0],['Refractor Auto /499',4,'scarce',0],['Auto',9,'base',0]]}]},
+  {set:'2025 Topps Series 1', yr:'', cards:[
+    {no:'#100', nm:'Paul Skenes', r:'Base', v:[['Platinum 1/1',0,'one',0],['Black /74',1,'ultra',0],['Independence Day /76',1,'ultra',0],['Vintage Stock /99',2,'ultra',0],['Gold /2025',9,'scarce',0],['Rainbow Foil',18,'base',0],['Base',55,'base',2]]}]},
+  {set:'2024 Topps Chrome Update', yr:'', rc:true, cards:[
+    {no:'#USC150', nm:'Paul Skenes', r:'Rookie Card', rc:true, v:[['SuperFractor 1/1',0,'one',0],['Red /5',0,'grail',0],['Orange /25',1,'grail',0],['Gold /50',2,'ultra',1],['Green /99',3,'ultra',0],['Blue /150',4,'rare',0],['Purple /299',7,'scarce',0],['Sepia',12,'base',0],['Refractor',40,'base',0],['Base',88,'base',1]]},
+    {no:'#USC150-A', nm:'Paul Skenes', r:'Rookie Card · image variation', rc:true, v:[['Gold /50',0,'ultra',0],['Refractor',3,'base',0],['Base',6,'base',0]]}]},
+  {set:'2024 Bowman Chrome', yr:'', closed:true, cards:[
+    {no:'#BCP-50', nm:'Paul Skenes', r:'Prospect', v:[['Red /5',0,'grail',0],['Gold /50',1,'ultra',0],['Blue /150',3,'rare',0],['Refractor /499',5,'scarce',0],['Base',22,'base',1]]}]},
+  {set:'2023 Bowman Draft', yr:'', closed:true, cards:[
+    {no:'#BDC-1', nm:'Paul Skenes', r:'Chrome 1st Bowman', v:[['SuperFractor 1/1',0,'one',0],['Red /5',0,'grail',0],['Orange /25',1,'grail',0],['Gold /50',2,'ultra',0],['Green /99',2,'ultra',0],['Blue /150',3,'rare',0],['Refractor /499',6,'scarce',0],['Base',30,'base',0]]}]},
+]};
+
+const totals = (d) => { let t=0,o=0; d.sets.forEach(s=>s.cards.forEach(c=>c.v.forEach(v=>{t++; if(v[3]) o++;}))); return [o,t]; };
+const setTot = (s) => { let t=0,o=0; s.cards.forEach(c=>c.v.forEach(v=>{t++; if(v[3]) o++;})); return [o,t]; };
+const missingCount = (d) => { const [o,t]=totals(d); return t-o; };
+
+function chip(v){
+  const [lb,fs,tier,q] = v;
+  const own = q>0;
+  const cls = `v tier-${tier}${own?' own':''}${!own&&fs===0?' none':''}`;
+  return `<span class="${cls}">${own?I('chk'):''}<span class="lbl">${lb}</span>${q>1?`<span class="q">×${q}</span>`:''}<span class="fs">${fs?fs+' for sale':'none for sale'}</span></span>`;
+}
+function markOf(c){ const o=c.v.filter(v=>v[3]).length; return o===0?'':o===c.v.length?'all':'some'; }
+
+function rowHTML(d, si, ci, st){
+  const c=d.sets[si].cards[ci];
+  let vs=c.v;
+  if(st.show==='missing') vs=vs.filter(v=>!v[3]);
+  if(st.show==='owned') vs=vs.filter(v=>v[3]);
+  if(!vs.length) return '';
+  const lim=d.moreAt; let extra='';
+  if(lim && vs.length>lim){ extra=`<span class="more">+ ${vs.length-lim} more</span>`; vs=vs.slice(0,lim); }
+  const m=markOf(c);
+  return `<div class="row" data-s="${si}" data-c="${ci}">
+    <span class="mark ${m}">${m?I('chk','ic'):''}</span>
+    <span class="no">${c.no}</span>
+    <span class="who"><b><span class="pno">${c.no}</span>${c.nm}${c.rc?'<span class="rc">RC</span>':''}</b><span>${c.r}</span></span>
+    <span class="vers">${vs.map(chip).join('')}${extra}</span>
+    <span class="go">${I('right')}</span></div>`;
+}
+function tileHTML(d, si, ci, st){
+  const c=d.sets[si].cards[ci];
+  const own=c.v.some(v=>v[3]);
+  if(st.show==='missing' && c.v.every(v=>v[3])) return '';
+  if(st.show==='owned' && !own) return '';
+  const fs=c.v.reduce((a,v)=>a+v[1],0);
+  return `<button class="tile" data-s="${si}" data-c="${ci}">
+    <div class="ph${fs?'':' empty'}"><span class="pl">${fs?'SELLER PHOTO':'NONE FOR SALE NOW'}</span></div>
+    ${own?`<span class="owned">${I('chk')}</span>`:''}
+    <div class="meta"><span class="no">${c.no}</span><b>${c.nm}</b><span>${c.r} · ${fs} for sale</span>
+    <div class="dots">${c.v.map(v=>`<i class="dot tier-${v[2]}${v[3]?' own':''}" title="${v[0]}"></i>`).join('')}</div></div></button>`;
+}
+
+function render(root, d, st){
+  const [o,t]=totals(d);
+  const phone=root.classList.contains('phone');
+  const fab=d.side==='fab';
+  const hdr = phone ? `<div class="status"><span>9:41</span><span>●●●</span></div>` :
+    `<div class="hdr"><div style="display:flex;align-items:center;gap:16px"><span class="brand">${fab?'Foils <span class="amp">&amp;</span> Fables':'Fields <span class="amp">&amp;</span> Floors'}</span>
+      <span class="sw"><span class="${fab?'':'on'}"><i style="background:#e6b96b"></i>Fields &amp; Floors</span><span class="${fab?'on':''}"><i style="background:linear-gradient(135deg,#9fe3f5,#b6a8f0,#f0b3d0,#f3d9a0)"></i>Foils &amp; Fables</span></span></div>
+      <div class="nav"><span>Search</span><span>Watchlist</span><span>Account</span></div></div>`;
+  const miss=t-o;
+  const alertBtn = st.alerted ? `<span class="ghost" style="color:var(--acc2);border-color:var(--accdeep)">${I('bell')}Alerts on for ${miss} missing</span>`
+                              : `<button class="cta" data-act="alert">${I('bell')}Alert me for the ${miss} I'm missing</button>`;
+  const viewSeg = `<span class="seg"><button class="${st.view==='list'?'on':''}" data-view="list">${I('list')}${phone?'':'List'}</button><button class="${st.view==='grid'?'on':''}" data-view="grid">${I('grid')}${phone?'':'Grid'}</button></span>`;
+  const showSeg = (cls='seg') => `<span class="${cls}">${['all','missing','owned'].map(k=>`<button class="${st.show===k?'on':''}" data-show="${k}">${k==='all'?'All':k==='missing'?'Missing':'Owned'}</button>`).join('')}</span>`;
+
+  const sets = d.sets.map((s,si)=>{
+    const [so,stt]=setTot(s);
+    const closed = st.closed[si] ?? s.closed;
+    const inner = st.view==='grid'
+      ? `<div class="grid">${s.cards.map((_,ci)=>tileHTML(d,si,ci,st)).join('')}</div>`
+      : `<div class="rows">${s.cards.map((_,ci)=>rowHTML(d,si,ci,st)).join('')}</div>`;
+    return `<div class="set${closed?' closed':''}"><button class="sethd" data-set="${si}"><span class="chev">${I('chev')}</span>
+      <span class="nm">${s.set}</span>${s.yr?`<span class="yr">${s.yr}</span>`:''}${s.lang?`<span class="lang">${s.lang==='JP'?'Japanese':s.lang}</span>`:''}
+      <span class="own"><span>${so} of ${stt} owned</span><span class="mini"><i style="width:${stt?so/stt*100:0}%"></i></span></span></button>${inner}</div>`;
+  }).join('');
+
+  const filters = `<aside class="filters">
+    <div class="fgrp"><h5>Show</h5>${showSeg()}</div>
+    ${fab?`<div class="fgrp"><h5>Language</h5>${[['All languages',1,''],['English',0,''],['Japanese',0,'']].map(([l,on])=>`<div class="fopt"><span class="l"><span class="bx ${on?'on':''}">${on?I('chk','ic'):''}</span>${l}</span></div>`).join('')}</div>`:''}
+    <div class="fgrp"><h5>Rarity</h5>${d.rarities.map(([l,t])=>`<span class="tchip"><i class="tier-${t}" style="background:var(--tg)"></i>${l}</span>`).join('')}</div>
+    <div class="fgrp"><h5>Set</h5><div class="fopt"><span class="l"><span class="bx on">${I('chk','ic')}</span>All sets</span><span class="c">${d.sets.length}</span></div>
+      ${d.sets.slice(0,6).map(s=>`<div class="fopt"><span class="l"><span class="bx"></span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.set}</span></span><span class="c">${s.cards.length}</span></div>`).join('')}
+      ${d.sets.length>6?`<div class="fopt" style="color:var(--ink4)">+ ${d.sets.length-6} more sets</div>`:''}</div>
+    <div class="fgrp"><div class="fopt"><span class="l"><span class="bx"></span>For sale now only</span></div></div>
+    <p class="legend">Chip number = how many are for sale on eBay right now. Filled chip = you own it.</p></aside>`;
+  const pfil = `<div class="pfil">${['all','missing','owned'].map(k=>`<button class="pc ${st.show===k?'on':''}" data-show="${k}">${k==='all'?'All':k==='missing'?'Missing':'Owned'}</button>`).join('')}
+    <span class="pc">${I('sliders')}Filters</span>${fab?'<span class="pc">Language: All</span>':''}<span class="pc">Rarity</span><span class="pc">Set</span></div>`;
+
+  root.innerHTML = `${phone?'':'<div class="site">'}${hdr}<div class="${phone?'scroll':''}"><div class="cl">
+    <div class="back">${I('left')}Back to results</div>
+    <div class="top"><div><div class="kicker">${d.kicker}</div><h3>${d.name}</h3><div class="sub">${d.sub}</div></div>
+      <div class="prog"><div class="line"><span>You own <b>${o}</b> of ${t} versions</span><span>${Math.round(o/t*100)}%</span></div><div class="bar"><i style="width:${o/t*100}%"></i></div>
+      <div class="actions">${alertBtn}${phone?'':viewSeg}</div><div style="font-size:12px;color:var(--ink6);margin-top:8px;display:flex;align-items:center;gap:6px">${I('lock')}Only you can see this</div></div></div>
+    ${phone?`<div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px"><span style="font-size:12px;color:var(--ink6)">Number = for sale now · Filled = owned</span>${viewSeg}</div>`:''}
+    ${pfil}
+    <div class="body">${phone?'':filters}<div>${sets}</div></div>
+  </div></div>
+  ${phone?`<div class="tabbar"><div class="on">${I('search')}Search</div><div>${I('star')}Watchlist</div><div>${I('user')}Account</div></div>`:''}
+  <div class="scrim"></div>${phone?'':'</div>'}`;
+  if(st.toast){ root.insertAdjacentHTML('beforeend', `<div class="toast">${I('bell')}<span><b>Alerts on.</b> We'll tell you when any of the ${miss} you're missing is listed. Find it in your Watchlist.</span></div>`); }
+  if(st.pick) openPick(root,d,st,...st.pick);
+  if(st.alertOpen) openAlert(root,d,st);
+}
+
+function openPick(root,d,st,si,ci){
+  const c=d.sets[si].cards[ci], s=d.sets[si];
+  const scrim=root.querySelector('.scrim');
+  scrim.innerHTML = `<div class="sheet"><div class="grab"></div><div class="h"><div><b>${c.no} · ${c.nm}</b><span>${s.set}${s.yr?' · '+s.yr:''} · ${c.r}</span></div></div>
+    <div class="q1">Which version${c.v.length>1?'s':''} do you own?</div>
+    ${c.v.map((v,vi)=>`<div class="opt ${v[3]?'on':''}" data-v="${vi}"><span class="bx">${v[3]?I('chk','ic'):''}</span>
+      <span class="sw8 tier-${v[2]}"></span><span class="lb">${v[0]}<small>${v[1]?v[1]+' for sale now':'None for sale now'}</small></span>
+      ${v[3]?`<span class="step"><button data-q="-1" data-v="${vi}">−</button><span>${v[3]}</span><button data-q="1" data-v="${vi}">+</button></span>`:''}</div>`).join('')}
+    <div class="foot"><span class="note">${I('lock')}Only you can see this</span><button class="cta" data-act="done">Done</button></div></div>`;
+  scrim.classList.add('open');
+  scrim.onclick=(e)=>{
+    if(e.target===scrim || e.target.closest('[data-act="done"]')){ st.pick=null; render(root,d,st); return; }
+    const q=e.target.closest('[data-q]');
+    if(q){ const v=c.v[+q.dataset.v]; v[3]=Math.max(0,v[3]+ +q.dataset.q); render(root,d,st); return; }
+    const op=e.target.closest('.opt');
+    if(op){ const v=c.v[+op.dataset.v]; v[3]=v[3]?0:1; render(root,d,st); }
+  };
+}
+function openAlert(root,d,st){
+  const [o,t]=totals(d); const miss=t-o;
+  const grails=d.sets.reduce((a,s)=>a+s.cards.reduce((b,c)=>b+c.v.filter(v=>!v[3]&&(v[2]==='grail'||v[2]==='one')).length,0),0);
+  const forsale=d.sets.reduce((a,s)=>a+s.cards.reduce((b,c)=>b+c.v.filter(v=>!v[3]&&v[1]).length,0),0);
+  const scrim=root.querySelector('.scrim');
+  scrim.innerHTML=`<div class="sheet alertsheet"><div class="grab"></div><div class="h"><div><b>Alert me for missing ${d.name} cards</b><span>We'll check eBay and tell you when one is listed.</span></div></div>
+    <div class="sum"><div><b>${miss}</b><span>versions you're missing</span></div><div><b>${forsale}</b><span>of them for sale right now</span></div></div>
+    <div class="radio ${st.only?'':'on'}" data-only="0"><i></i><span>All ${miss} I'm missing<small>Every version you haven't marked as owned</small></span></div>
+    <div class="radio ${st.only?'on':''}" data-only="1"><i></i><span>Only the rarest (${grails})<small>Grail tier only, fewer alerts</small></span></div>
+    <p style="font-size:12.5px;color:var(--ink4);line-height:1.5;margin:10px 2px 0">Uses 1 of your 5 alerts. When you mark a card as owned, we stop alerting for it.</p>
+    <div class="foot"><button class="ghost" data-act="cancel">Cancel</button><button class="cta" data-act="save">${I('bell')}Turn on alerts</button></div></div>`;
+  scrim.classList.add('open');
+  scrim.onclick=(e)=>{
+    const r=e.target.closest('[data-only]'); if(r){ st.only=r.dataset.only==='1'; render(root,d,st); return; }
+    if(e.target===scrim||e.target.closest('[data-act="cancel"]')){ st.alertOpen=false; render(root,d,st); return; }
+    if(e.target.closest('[data-act="save"]')){ st.alertOpen=false; st.alerted=true; st.toast=true; render(root,d,st); }
+  };
+}
+
+function mount(id, d, init={}){
+  const root=document.getElementById(id);
+  const data=JSON.parse(JSON.stringify(d));
+  const st=Object.assign({view:'list',show:'all',closed:{},pick:null,alertOpen:false,alerted:false,only:false,toast:false},init);
+  root.addEventListener('click',(e)=>{
+    if(e.target.closest('.scrim')) return;
+    const b=e.target.closest('[data-view],[data-show],[data-set],[data-act],.row,.tile');
+    if(!b) return;
+    if(b.dataset.view){ st.view=b.dataset.view; }
+    else if(b.dataset.show){ st.show=b.dataset.show; }
+    else if(b.dataset.set){ const si=+b.dataset.set; st.closed[si]=!(st.closed[si] ?? data.sets[si].closed); }
+    else if(b.dataset.act==='alert'){ st.alertOpen=true; st.toast=false; }
+    else if(b.dataset.s!=null){ st.pick=[+b.dataset.s,+b.dataset.c]; st.toast=false; }
+    render(root,data,st);
+  });
+  render(root,data,st);
+  if(init.scrollTo){ const sc=root.querySelector('.scroll'); if(sc) sc.scrollTop=init.scrollTo; }
+}
+
+mount('d-fab', FAB);
+mount('p-fab-list', FAB);
+mount('p-fab-sheet', FAB, {pick:[3,2], scrollTo:420});
+mount('p-fab-grid', FAB, {view:'grid', scrollTo:250});
+mount('p-alert', FAB, {alertOpen:true});
+mount('p-alert-done', FAB, {alerted:true, toast:true});
+mount('d-ffs', FFS);
+mount('p-ffs-list', FFS);
+mount('p-ffs-sheet', FFS, {pick:[2,0], scrollTo:300});
+
+/* 03 · before / after */
+(function(){
+  const before = {no:'223/197', nm:'Charizard ex', r:'Special Illustration Rare', v:[['Holo',14,'grail',0],['Japanese print',3,'grail',0]]};
+  const after  = {no:'223/197', nm:'Charizard ex', r:'Special Illustration Rare', v:[['Holo',14,'grail',2],['Japanese print',3,'grail',0]]};
+  const all    = {no:'125/197', nm:'Charizard ex', r:'Double Rare', v:[['Holo',26,'rare',1],['Reverse Holo',4,'scarce',1]]};
+  const box=(lab,c)=>`<div><div class="lab">${lab}</div><div class="set" style="margin:0">${rowHTML({sets:[{cards:[c]}]},0,0,{show:'all'})}</div></div>`;
+  document.getElementById('cmp').innerHTML = box('Missing: dashed ring, outlined chips',before) + box('Owns some versions: ring outline, filled chip, ×2',after) + box('Owns every version: solid ring',all) +
+    `<div><div class="lab">Grid tile when owned</div><div style="max-width:180px">${tileHTML({sets:[{cards:[after]}]},0,0,{show:'all'})}</div></div>`;
+})();
+
+/* 06 · entry points */
+document.getElementById('entry-fab').innerHTML = `
+  <div class="banner"><span class="ic2">${I('layers')}</span><div><b>See every Charizard card</b><span>${totals(FAB)[1]} versions across ${FAB.sets.length} sets · mark the ones you own</span></div><a href="#d-fab">Open checklist →</a></div>
+  ${[['Charizard ex 223/197 Special Illustration Rare Obsidian Flames PSA 10','$412','grail'],['Charizard ex 199/165 SIR Pokemon 151 Near Mint','$168','grail'],['Charizard ex 125/197 Double Rare Obsidian Flames','$4.50','rare']].map(([t,p,tier])=>`
+  <div class="res tier-${tier}"><div class="ph"><span class="pl">PHOTO</span></div><div><b>${t}</b><div class="pr">${p}</div><span class="lk">${I('layers')}Every version of this card</span></div></div>`).join('')}`;
+document.getElementById('entry-ffs').innerHTML = `
+  <div class="wt"><div class="side"><i style="width:7px;height:7px;border-radius:50%;background:#e6b96b;display:inline-block"></i>Fields &amp; Floors · starred card</div>
+    <b>2024 Topps Chrome Update Paul Skenes RC Gold Refractor /50</b><div class="meta">$640 · auction ends in 3h</div>
+    <div class="btns"><span>View</span><span class="hl">Checklist</span></div></div>
+  <div class="wt"><div class="side">${I('bell')}Checklist alert</div>
+    <b>Paul Skenes · cards I'm missing</b><div class="meta">36 versions · 6 for sale now</div>
+    <div class="btns"><span>View matches</span><span class="hl">Checklist</span><span>Edit</span></div></div>
+  <div class="wt" style="border-style:dashed"><div class="side" style="color:var(--ink6)">On Foils &amp; Fables the same button sits on each card tile.</div></div>`;
+</script>
+</body>
+</html>

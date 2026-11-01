@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '../../lib/supabaseClient';
-import Seal from '../components/Seal';
 import { isNativeApp, signInWithAppleNative } from '../../lib/native';
 import { track } from '../../lib/track';
 import {  } from 'lucide-react';
@@ -84,14 +83,7 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col" style={{ background: 'var(--bg-base)' }}>
-      {/* Minimal header */}
-      <div className="flex items-center gap-3 px-6 pt-8 opacity-70">
-        <Seal className="w-6 h-6" />
-        <span className="font-serif text-base" style={{ color: 'var(--ink-200)' }}>
-          Fields &amp; Floors
-        </span>
-      </div>
+    <main className="min-h-[70vh] flex flex-col" style={{ background: 'var(--bg-base)' }}>
 
       {/* Centered card */}
       <div className="flex-1 flex items-center justify-center px-6 py-12">

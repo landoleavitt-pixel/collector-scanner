@@ -20,6 +20,10 @@
 //   expired       - boolean: if true, render the "listing expired" state
 //                   instead of normal modal content (used when ?card=<id>
 //                   loads but the listing is no longer in results)
+//   side          - 'fables' for Foils & Fables: no sports set lookup or
+//                   rarity tree, its own chips, watch payload and share link
+//   chips         - badges to show instead of the /N print-run chip
+//   watchPayload  - body for POST /api/watchlist (defaults to the sports shape)
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
@@ -56,7 +60,8 @@ export default function CardModal(props) {
   return createPortal(<CardModalInner {...props} />, document.body);
 }
 
-function CardModalInner({ item, printRun, onClose, expired = false }) {
+function CardModalInner({ item, printRun, onClose, expired = false, side = 'sports', chips = null, watchPayload = null }) {
+  const fables = side === 'fables';
   const cardRef = useRef(null);       // inner card — handles tilt (rotateX/Y)
   const flipRef = useRef(null);       // wrapper — handles flight (translate/scale)
   const overlayRef = useRef(null);
@@ -121,7 +126,7 @@ function CardModalInner({ item, printRun, onClose, expired = false }) {
         res = await fetch('/api/watchlist', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+          body: JSON.stringify(watchPayload || {
             listing_id: item.id,
             title: item.title,
             price: item.price,
@@ -160,13 +165,16 @@ function CardModalInner({ item, printRun, onClose, expired = false }) {
   async function handleShareCard(e) {
     e?.stopPropagation();
     if (!item?.id) return;
-    const url = `https://fieldsandfloors.com/share/card?card=${encodeURIComponent(item.id)}`;
+    const site = fables ? 'Foils & Fables' : 'Fields & Floors';
+    const url = fables
+      ? `https://fieldsandfloors.com/fables?card=${encodeURIComponent(item.id)}`
+      : `https://fieldsandfloors.com/share/card?card=${encodeURIComponent(item.id)}`;
     const text = item.title
-      ? `${item.title} · Fields & Floors`
-      : 'Check out this card on Fields & Floors';
+      ? `${item.title} · ${site}`
+      : `Check out this card on ${site}`;
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
-        await navigator.share({ title: item.title || 'Fields & Floors', text, url });
+        await navigator.share({ title: item.title || site, text, url });
         return;
       } catch (err) {
         if (err?.name === 'AbortError') return;
@@ -296,7 +304,7 @@ function CardModalInner({ item, printRun, onClose, expired = false }) {
   // ─ Identify the set + parallel from the listing title ─────────────
   // Done once per item open. parseSetFromTitle returns null when the
   // set isn't in our database, which RarityTree handles gracefully.
-  const detection = item && !expired ? parseSetFromTitle(item.title || '', { sport: item.sportHint }) : null;
+  const detection = item && !expired && !fables ? parseSetFromTitle(item.title || '', { sport: item.sportHint }) : null;
   const setData = detection ? getSet(detection.setKey) : null;
   const parallel = detection ? getParallel(detection.setKey, detection.parallelKey) : null;
   // Border color for the card frame. Prefer the matched parallel's color;
@@ -697,7 +705,8 @@ function CardModalInner({ item, printRun, onClose, expired = false }) {
 
               {/* Badges */}
               <div className="flex gap-1.5 mb-4 flex-wrap">
-                {printRun && (
+                {chips}
+                {printRun && !chips && (
                   <span className="text-[10px] uppercase tracking-[0.16em] font-bold px-2 py-1 rounded"
                         style={tierChipStyle(tierForRun(printRun))}>
                     /{printRun}
@@ -750,10 +759,10 @@ function CardModalInner({ item, printRun, onClose, expired = false }) {
                 </p>
               )}
 
-              {/* CTA row */}
-              <div className="flex gap-2 mb-4">
+              {/* CTA row. On phones "View on eBay" gets its own line. */}
+              <div className="flex flex-wrap sm:flex-nowrap gap-2 mb-4">
                 <a href={item.url} target="_blank" rel="noopener noreferrer" data-no-tilt
-                   className="flex-1 inline-flex items-center justify-center gap-1.5 text-[11px] uppercase tracking-[0.16em] font-semibold rounded px-4 py-2.5"
+                   className="flex-1 basis-full sm:basis-0 whitespace-nowrap inline-flex items-center justify-center gap-1.5 text-[11px] uppercase tracking-[0.16em] font-semibold rounded px-4 py-2.5"
                    style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
                   View on eBay
                   <ArrowUpRight size={12} strokeWidth={2} />
@@ -765,7 +774,7 @@ function CardModalInner({ item, printRun, onClose, expired = false }) {
                 <button onClick={toggleWatch} data-no-tilt disabled={watchBusy}
                         aria-label={isWatched ? 'Remove from watchlist' : 'Add to watchlist'}
                         aria-pressed={isWatched}
-                        className="flex-none inline-flex items-center justify-center gap-1.5 text-[11px] uppercase tracking-[0.16em] font-medium rounded px-4 py-2.5 transition-colors"
+                        className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 text-[11px] uppercase tracking-[0.16em] font-medium rounded px-4 py-2.5 transition-colors"
                         style={{
                           background: isWatched ? 'rgba(212,175,92,0.10)' : 'transparent',
                           color: isWatched ? 'var(--gold-bright)' : 'var(--ink-100)',
@@ -779,7 +788,7 @@ function CardModalInner({ item, printRun, onClose, expired = false }) {
                 </button>
                 <button onClick={handleShareCard} data-no-tilt
                         aria-label="Share this card"
-                        className="flex-none inline-flex items-center justify-center gap-1.5 text-[11px] uppercase tracking-[0.16em] font-medium rounded px-4 py-2.5 transition-colors"
+                        className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 text-[11px] uppercase tracking-[0.16em] font-medium rounded px-4 py-2.5 transition-colors"
                         style={{
                           background: 'transparent',
                           color: shareMsg ? 'var(--gold-bright)' : 'var(--ink-100)',
@@ -794,15 +803,15 @@ function CardModalInner({ item, printRun, onClose, expired = false }) {
                 <a href="/terms" className="underline decoration-[var(--line)] underline-offset-2 hover:text-[var(--ink-200)]">Terms</a>
               </p>
 
-              {/* Rarity ladder: always visible */}
-              <div className="mt-1" data-no-tilt>
+              {/* Rarity ladder: always visible (sports only) */}
+              {!fables && <div className="mt-1" data-no-tilt>
                 <RarityTree
                   setData={setData}
                   parallelKey={detection?.parallelKey || null}
                   printRun={detection?.run || printRun}
                   imageUrl={item.image}
                 />
-              </div>
+              </div>}
               </div>
             </div>
           </div>

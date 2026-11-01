@@ -1,17 +1,10 @@
 'use client';
 
-import { useState, useEffect, useLayoutEffect, useMemo, useRef, Suspense, Fragment, createContext, useContext } from 'react';
+import { useState, useEffect, useLayoutEffect, useMemo, useRef, Suspense, createContext, useContext } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 
-/* Upscale eBay thumbnail URLs from the small default (~225px) to a sharper 640px
-   version. eBay encodes the size as `s-l\d+` in the filename; we just swap it.
-   Safe no-op for non-eBay URLs or missing/empty inputs. */
-function upscaleEbayImage(url) {
-  if (!url) return url;
-  return url.replace(/\/s-l\d+\.(\w+)/, '/s-l640.$1');
-}
-import { ArrowRight, ArrowUpRight, ArrowUp, Star, Check, X, Crosshair, ArrowLeft, ImageOff, Search, Clock, Bell, TrendingDown, Hourglass, ListFilter } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Star, X, Crosshair, ArrowLeft, ImageOff, Search, Clock, Bell, TrendingDown, Hourglass, ListFilter } from 'lucide-react';
 import SaveSearchModal from './components/SaveSearchModal';
 import SignupPromptCard from './components/SignupPromptCard';
 import BidCountdown from './components/BidCountdown';
@@ -22,13 +15,20 @@ import { isReturningVisitor, markVisited, getRecentSearches, addRecentSearch } f
 import { hasShareParams, parseShareParams, buildShareParams } from '../lib/shareLink';
 import { track } from '../lib/track';
 import { CARD_COMPANIES, brandFilterLabels } from '../lib/cardBrands';
-import { TEAMS, TEAM_LEAGUES, suggestTeams, teamFromQuery, teamFilterLabels, titleMatchesTeam, getTeam } from '../lib/teams';
+import { TEAMS, TEAM_LEAGUES, teamFromQuery, teamFilterLabels, titleMatchesTeam, getTeam } from '../lib/teams';
 import { tidyRecentSearches } from '../lib/recentSearches';
-import { WatchlistContext, WatchlistProvider } from '../lib/watchlistContext';
+import { WatchlistProvider } from '../lib/watchlistContext';
 import { useUser } from '../lib/useUser';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PAYMENTS_LIVE } from '../lib/payments';
 import { isNativeApp } from '../lib/native';
+import { usePlayerSuggest, useSuggestBox, DidYouMeanLine, EditableSearchHeading } from './components/search/SuggestBox';
+import {
+  PRICE_NO_MAX, SectionLabel, SectionDivider, priceRangeLabel, PriceRangeSlider, SegmentedGroup, ResultsSidebar,
+  MobileFilterBar, MobileFilterDrawer, MobileSortSheet, SortDropdown, PendingSearchModal, BackToTop, LoadingState, NoResultsState,
+} from './components/search/SearchUI';
+import { WatchStar, usePendingStarSave, AlertBand } from './components/search/WatchStar';
+import { ResultCard, Badge, CornerMarks, upscaleEbayImage } from './components/search/ResultCard';
 import { detectPrintRun, hasAutoText } from '../lib/listingFilter';
 
 // Print run tiers — grouped visually by rarity.
@@ -68,7 +68,6 @@ const LEGACY_BASE_FILTERS = { ...DEFAULT_FILTERS, numberedCards: false };
 
 // "No maximum price". Older saved searches and share links used 5000 for
 // this (the old slider's top), so read 5000 as no max too.
-const PRICE_NO_MAX = 100000;
 function isPriceNoMax(v) {
   return v == null || v === 5000 || v >= PRICE_NO_MAX;
 }
@@ -873,10 +872,13 @@ function Home() {
                   }
                 }}
               />
-              <p className="text-[13px] mt-3" style={{ color: 'var(--ink-400)' }}>
-                <span style={{ color: 'var(--gold)' }}>{sortedResults.length}</span>{' '}
-                {sortedResults.length === 1 ? 'listing' : 'listings'}
-              </p>
+              {/* No count while searching: "0 listings" read as no results. */}
+              {!loading && (
+                <p className="text-[13px] mt-3" style={{ color: 'var(--ink-400)' }}>
+                  <span style={{ color: 'var(--gold)' }}>{sortedResults.length}</span>{' '}
+                  {sortedResults.length === 1 ? 'listing' : 'listings'}
+                </p>
+              )}
             </div>
             <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
               {/* Share the current criteria as a link that reproduces this
@@ -932,11 +934,11 @@ function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-x-12 gap-y-8 items-start">
             <div ref={sidebarRef} className="hidden lg:block scroll-mt-6">
               <ResultsSidebar
-                filters={filters}
-                setFilter={setFilter}
                 onSearch={() => handleSearch()}
                 hasPending={filtersDifferFromApplied()}
-              />
+              >
+                <FilterControls filters={filters} setFilter={setFilter} compact />
+              </ResultsSidebar>
             </div>
             <Results
               loading={loading}
@@ -968,9 +970,10 @@ function Home() {
               setPendingSearchOpen(true);
             }}
             filters={filters}
-            setFilter={setFilter}
             onSearch={() => { handleSearch(); setMobileFiltersOpen(false); }}
-          />
+          >
+            <FilterControls filters={filters} setFilter={setFilter} compact />
+          </MobileFilterDrawer>
           <MobileSortSheet
             open={mobileSortOpen}
             onClose={() => setMobileSortOpen(false)}
@@ -1210,8 +1213,9 @@ function announceIntroDone() {
 const useLayoutEffectSafe = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSearch, user, onCardClick, isReturning, recentSearches = [], presetHunts = [] }) {
-  // Player-name dropdown under the search field. Picking fills the field.
-  const suggest = useSuggestBox(query, (v) => setQuery(v));
+  // Player-name dropdown under the search field.
+  // Picking a suggestion searches it straight away (QA #15).
+  const suggest = useSuggestBox(query, (v) => { setQuery(v); onSuggested(v); });
   // One fetch feeds both the desktop floating card and the phone's small
   // "Live right now" row.
   const featured = useFeatured();
@@ -1340,6 +1344,7 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
                     type="button"
                     onClick={() => onChipSearch(h.query, h.filters)}
                     disabled={loading}
+                    aria-label={h.label}
                     className="group inline-flex items-center gap-2 text-[13px] pl-4 pr-2 py-1.5 rounded-full transition-colors disabled:opacity-40 hover:border-[var(--gold-deep)]"
                     style={{ border: '0.5px solid var(--line)', background: 'var(--bg-elev)', color: 'var(--ink-200)', minHeight: 36 }}
                   >
@@ -1662,7 +1667,8 @@ function SignedInHome({ query, setQuery, onSearch, onSuggested, recentSearches =
   // Save a card starred while signed out, now that they're back signed in.
   usePendingStarSave();
   // Same as-you-type player and team suggestions as the visitor search.
-  const suggest = useSuggestBox(query, (v) => setQuery(v));
+  // Picking a suggestion searches it straight away (QA #15).
+  const suggest = useSuggestBox(query, (v) => { setQuery(v); onSuggested(v); });
   const [native, setNative] = useState(false);
   useEffect(() => { setNative(isNativeApp()); }, []);
   const [saved, setSaved] = useState([]);
@@ -2072,114 +2078,6 @@ function HeroLiveRow({ featured, onCardClick }) {
   );
 }
 
-function CornerMarks() {
-  const stroke = 'var(--gold-deep)';
-  return (
-    <>
-      <span className="absolute top-2 left-2 w-2 h-2 border-l border-t" style={{ borderColor: stroke }} />
-      <span className="absolute top-2 right-2 w-2 h-2 border-r border-t" style={{ borderColor: stroke }} />
-      <span className="absolute bottom-2 left-2 w-2 h-2 border-l border-b" style={{ borderColor: stroke }} />
-      <span className="absolute bottom-2 right-2 w-2 h-2 border-r border-b" style={{ borderColor: stroke }} />
-    </>
-  );
-}
-
-/* EditableSearchHeading — the big italic player name on the results page.
-   Behaves like a static heading until clicked; then becomes an inline
-   input pre-filled with the current query. Submit (Enter) commits a new
-   search; Escape cancels; blur with no change just exits edit mode.
-
-   Designed to be the visible primary action on the results page so users
-   can pivot to a new search without scrolling back to the hero. */
-function EditableSearchHeading({ value, onSubmit }) {
-  const [editing, setEditing] = useState(false);
-  const [pending, setPending] = useState(value);
-  const inputRef = useRef(null);
-  // Picking a suggested name runs that search straight away.
-  const suggest = useSuggestBox(pending, (v) => { setPending(v); setEditing(false); onSubmit(v); });
-
-  // Keep local pending state in sync if parent's query changes externally
-  // (e.g. after a chip-search from the hero or a saved-search deep link).
-  useEffect(() => { if (!editing) setPending(value); }, [value, editing]);
-
-  // Focus + select-all once the input mounts so user can immediately retype.
-  useEffect(() => {
-    if (editing && inputRef.current) {
-      inputRef.current.focus();
-      inputRef.current.select();
-    }
-  }, [editing]);
-
-  function commit() {
-    setEditing(false);
-    onSubmit(pending);
-  }
-  function cancel() {
-    setEditing(false);
-    setPending(value);
-  }
-
-  if (editing) {
-    return (
-      <div ref={suggest.anchorRef}>
-      <input
-        ref={inputRef}
-        type="text"
-        value={pending}
-        onChange={(e) => { setPending(e.target.value); suggest.openBox(); }}
-        onKeyDown={(e) => {
-          if (suggest.handleKey(e)) return;
-          if (e.key === 'Enter') { e.preventDefault(); commit(); }
-          else if (e.key === 'Escape') { e.preventDefault(); cancel(); }
-        }}
-        {...suggest.inputProps}
-        onBlur={() => { suggest.close(); commit(); }}
-        className="font-display italic w-full bg-transparent border-0 border-b outline-none p-0 m-0"
-        style={{
-          fontSize: 'clamp(2rem, 5.5vw, 3.6rem)',
-          lineHeight: 1.05,
-          letterSpacing: '-0.015em',
-          color: 'var(--gold-bright)',
-          borderBottomColor: 'var(--gold)',
-        }}
-      />
-      {suggest.dropdown}
-      </div>
-    );
-  }
-
-  return (
-    <button
-      type="button"
-      onClick={() => setEditing(true)}
-      className="group block text-left p-0 m-0 bg-transparent border-0 cursor-text"
-      title="Click to search a different name"
-    >
-      <span
-        className="font-display italic transition-colors group-hover:text-[var(--gold-bright)]"
-        style={{
-          fontSize: 'clamp(2rem, 5.5vw, 3.6rem)',
-          lineHeight: 1.05,
-          letterSpacing: '-0.015em',
-          color: 'var(--gold)',
-          display: 'inline-block',
-          borderBottom: '0.5px dashed transparent',
-        }}
-        onMouseEnter={(e) => { e.currentTarget.style.borderBottomColor = 'var(--gold-deep)'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.borderBottomColor = 'transparent'; }}
-      >
-        {value}
-      </span>
-      <span
-        className="ml-3 text-[10px] uppercase tracking-[0.22em] opacity-0 group-hover:opacity-100 transition-opacity align-middle"
-        style={{ color: 'var(--ink-400)' }}
-      >
-        ✎ edit
-      </span>
-    </button>
-  );
-}
-
 /* ─────────────────────────────────────────────
    FilterControls — the actual filter UI, used inside both stages.
    Renders Type toggles, conditional Print Run tier picker, Listing,
@@ -2400,112 +2298,6 @@ function FilterControls({ filters, setFilter, compact = false }) {
   );
 }
 
-/* Section label — small uppercase eyebrow above each filter section */
-function SectionLabel({ children, className = '' }) {
-  return (
-    <h3 className={`text-[10px] uppercase tracking-[0.28em] text-[var(--ink-400)] mb-4 font-medium ${className}`}>
-      {children}
-    </h3>
-  );
-}
-
-function SectionDivider() {
-  return <div className="h-px bg-[var(--line-soft)]" />;
-}
-
-/* PriceRangeSlider — quick "Under $X" picks plus typeable min and max boxes.
-   A quick pick only fills in the max; the min stays whatever the user typed.
-   PRICE_NO_MAX means no maximum. Typed amounts can be anything (no $5,000
-   cap), and min/max swap if entered backwards. */
-const PRICE_QUICK_PICKS = [50, 100, 250, 500, 1000];
-
-function PriceBox({ label, value, placeholder, onCommit }) {
-  const shown = value == null ? '' : String(value);
-  const [draft, setDraft] = useState(shown);
-  const [editing, setEditing] = useState(false);
-  useEffect(() => { if (!editing) setDraft(shown); }, [shown, editing]);
-  // Read the box's own value, not state, so a fast type-then-leave can't
-  // commit a stale draft.
-  function commit(raw) {
-    setEditing(false);
-    const n = parseInt(String(raw).replace(/[^0-9]/g, ''), 10);
-    onCommit(Number.isFinite(n) ? n : null);
-  }
-  return (
-    <label className="flex-1 flex items-center gap-1.5 h-12 px-3 rounded-lg focus-within:border-[var(--gold-bright)]"
-           style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
-      <span className="text-[16px]" style={{ color: 'var(--ink-400)' }}>$</span>
-      <input
-        type="text"
-        inputMode="numeric"
-        pattern="[0-9]*"
-        value={editing ? draft : (value == null ? '' : Number(value).toLocaleString('en-US'))}
-        placeholder={placeholder}
-        onFocus={(e) => { setEditing(true); setDraft(shown); requestAnimationFrame(() => e.target.select()); }}
-        onChange={(e) => setDraft(e.target.value)}
-        onBlur={(e) => commit(e.target.value)}
-        onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur(); } }}
-        aria-label={label}
-        className="flex-1 min-w-0 bg-transparent border-0 outline-none text-[17px]"
-        style={{ color: 'var(--ink-100)' }}
-      />
-    </label>
-  );
-}
-
-function priceRangeLabel(min, max) {
-  const fmt = (n) => `$${Number(n).toLocaleString('en-US')}`;
-  const noMax = max == null || max >= PRICE_NO_MAX;
-  if (!min && noMax) return 'Any price';
-  if (!min) return `Under ${fmt(max)}`;
-  if (noMax) return `${fmt(min)} and up`;
-  return `${fmt(min)} to ${fmt(max)}`;
-}
-
-function PriceRangeSlider({ min, max, onChange }) {
-  const lo = min || 0;
-  const hi = max ?? PRICE_NO_MAX;
-
-  // Keep min ≤ max whichever way the user enters them.
-  const set = (a, b) => {
-    const x = a ?? 0;
-    const y = b ?? PRICE_NO_MAX;
-    if (x > y) onChange(y >= PRICE_NO_MAX ? 0 : y, x);
-    else onChange(x, y);
-  };
-
-  const pick = (cap) => set(lo, cap);
-  const chip = (label, cap) => {
-    const on = cap === hi;
-    return (
-      <button key={label} type="button" onClick={() => pick(cap)} aria-pressed={on}
-              className="h-10 px-3.5 rounded-full text-[14px] whitespace-nowrap transition-colors"
-              style={on
-                ? { border: '1px solid var(--gold-bright)', color: 'var(--gold-bright)', background: 'rgba(230,185,107,0.08)' }
-                : { border: '1px solid var(--line)', color: 'var(--ink-200)', background: 'var(--bg-elev)' }}>
-        {label}
-      </button>
-    );
-  };
-
-  return (
-    <div>
-      <div className="flex flex-wrap gap-2 mb-4">
-        {PRICE_QUICK_PICKS.map((cap) => chip(`Under $${cap.toLocaleString('en-US')}`, cap))}
-        {chip('No max', PRICE_NO_MAX)}
-      </div>
-      <div className="flex items-center gap-2.5">
-        <PriceBox label="Minimum price" value={lo > 0 ? lo : null} placeholder="No min" onCommit={(v) => set(v, hi)} />
-        <span className="text-[14px]" style={{ color: 'var(--ink-400)' }}>to</span>
-        <PriceBox label="Maximum price" value={hi >= PRICE_NO_MAX ? null : hi} placeholder="No max" onCommit={(v) => set(lo, v ?? PRICE_NO_MAX)} />
-      </div>
-      <p className="mt-3 text-[13px]" style={{ color: 'var(--ink-400)' }}>
-        Showing <span style={{ color: 'var(--ink-100)' }}>{priceRangeLabel(lo, hi)}</span>
-      </p>
-    </div>
-  );
-}
-
 /* Big toggle card — used for Card Type filters */
 function TypeToggleCard({ label, checked, onChange }) {
   return (
@@ -2535,74 +2327,6 @@ function TypeToggleCard({ label, checked, onChange }) {
         />
       </span>
     </button>
-  );
-}
-
-/* Segmented group — used for Listing Type and Condition rows */
-function SegmentedGroup({ value, onChange, options, vertical = false }) {
-  if (vertical) {
-    // Vertical mode — used in the sidebar where horizontal segmented controls
-    // would cramp the column. Each option is its own bordered card stacked
-    // top-to-bottom.
-    return (
-      <div className="flex flex-col gap-1.5">
-        {options.map(([v, l]) => {
-          const active = value === v;
-          return (
-            <button
-              key={v}
-              onClick={() => onChange(v)}
-              className="px-3.5 py-2.5 text-[13px] tracking-[0.04em] text-left transition-all border"
-              style={
-                active
-                  ? {
-                      borderColor: '#c9a447',
-                      background: 'linear-gradient(135deg, rgba(201,164,71,0.10), rgba(201,164,71,0.02))',
-                      color: '#f5efe0',
-                      fontWeight: 500,
-                    }
-                  : {
-                      borderColor: 'rgba(255,255,255,0.06)',
-                      background: 'rgba(20,17,13,0.6)',
-                      color: 'var(--ink-400)',
-                    }
-              }
-            >
-              {l}
-            </button>
-          );
-        })}
-      </div>
-    );
-  }
-  // Horizontal mode — original segmented control for Stage 2 panel.
-  return (
-    <div className="flex border border-[var(--line-soft)] bg-[var(--bg-elev)]/50">
-      {options.map(([v, l], idx) => {
-        const active = value === v;
-        return (
-          <button
-            key={v}
-            onClick={() => onChange(v)}
-            className={`flex-1 px-3 py-3 text-[13px] tracking-[0.06em] transition-colors text-center ${
-              idx !== options.length - 1 ? 'border-r border-[var(--line-soft)]' : ''
-            }`}
-            style={
-              active
-                ? {
-                    background: 'var(--gold-bright)',
-                    color: 'var(--ink-on-gold)',
-                    fontWeight: 600,
-                    borderRightColor: 'transparent',
-                  }
-                : { color: 'var(--ink-400)' }
-            }
-          >
-            {l}
-          </button>
-        );
-      })}
-    </div>
   );
 }
 
@@ -2671,54 +2395,6 @@ function FilterPanel({ query, setQuery, filters, setFilter, onSubmit, onCancel, 
   );
 }
 
-/* ─────────────────────────────────────────────
-   ResultsSidebar — Stage 3 left sidebar containing all filters + Search.
-   Uses FilterControls in compact mode (toggles + tier picker + listing/
-   condition stacked vertically, price slider full-width within column).
-   The Search button sits at the bottom of the sidebar with the pending
-   pulse animation when filters have unapplied changes.
-   ───────────────────────────────────────────── */
-function ResultsSidebar({ filters, setFilter, onSearch, hasPending }) {
-  return (
-    <aside className="border border-[var(--line-soft)] bg-[var(--bg-elev)]/30 px-5 py-6">
-      <h2 className="text-[10px] uppercase tracking-[0.28em] text-[var(--gold)] mb-5 pb-4 border-b border-[var(--line-soft)]">
-        Filters
-      </h2>
-
-      <FilterControls filters={filters} setFilter={setFilter} compact />
-
-      {/* Search button — bottom of sidebar */}
-      <div className="mt-7 pt-5 border-t border-[var(--line-soft)]">
-        <button
-          onClick={onSearch}
-          className={`group block w-full px-5 py-3 transition-all text-[12px] font-semibold tracking-[0.14em] uppercase text-center ${
-            hasPending ? 'pending-pulse' : ''
-          }`}
-          style={{
-            background: 'var(--gold-bright)',
-            color: 'var(--ink-on-gold)',
-          }}
-        >
-          Search <ArrowRight className="inline-block w-3.5 h-3.5 ml-1 -mt-0.5" strokeWidth={2} aria-hidden="true" />
-        </button>
-        {hasPending && (
-          <p className="text-[11px] text-[var(--gold)] italic text-center mt-3 leading-tight">
-            Filters changed. Press Search to update.
-          </p>
-        )}
-      </div>
-    </aside>
-  );
-}
-
-/* ─────────────────────────────────────────────
-   Mobile filter + sort (lg:hidden). Desktop keeps ResultsSidebar.
-   - MobileFilterBar: sticky Sort + Filters pills above the results grid.
-   - MobileSheet: shared bottom-sheet shell (scrim, grabber, body lock).
-   - MobileFilterDrawer: reuses FilterControls + a Search button.
-   - MobileSortSheet: instant client-side resort (no search).
-   ───────────────────────────────────────────── */
-
 // Count of "narrowing" filters, for the Filters pill badge. Print-run subset
 // is intentionally excluded to keep the number predictable.
 function countActiveFilters(f) {
@@ -2732,226 +2408,6 @@ function countActiveFilters(f) {
   if (f.brands?.length) n++;
   if (f.teams?.length) n++;
   return n;
-}
-
-function MobileFilterBar({ activeCount, onOpenFilters, onOpenSort }) {
-  const pill =
-    'flex-1 inline-flex items-center justify-center gap-2 h-11 rounded-full text-[12px] uppercase tracking-[0.12em] font-medium text-[var(--ink-100)]';
-  const pillStyle = { border: '1px solid var(--line)', background: 'var(--bg-elev)' };
-  return (
-    <div
-      className="lg:hidden sticky top-0 z-30 flex items-center gap-3 py-3 mb-6"
-      style={{ background: 'var(--bg-base)', borderBottom: '1px solid var(--line-soft)' }}
-    >
-      <button onClick={onOpenSort} className={pill} style={pillStyle}>
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="var(--ink-400)" strokeWidth="1.4">
-          <path d="M3 4h8M4 7h6M5 10h4" />
-        </svg>
-        Sort
-      </button>
-      <button onClick={onOpenFilters} className={pill} style={pillStyle}>
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="var(--ink-400)" strokeWidth="1.4">
-          <path d="M1 3h12M3 7h8M5 11h4" />
-        </svg>
-        Filters
-        {activeCount > 0 && (
-          <span
-            className="inline-flex items-center justify-center text-[11px] font-bold rounded-full"
-            style={{ minWidth: 18, height: 18, padding: '0 5px', background: 'var(--gold)', color: 'var(--ink-on-gold)', letterSpacing: 0 }}
-          >
-            {activeCount}
-          </span>
-        )}
-      </button>
-    </div>
-  );
-}
-
-function MobileSheet({ open, onClose, title, children, footer, full = false }) {
-  // Lock background scroll while the sheet is open.
-  useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
-  }, [open]);
-
-  if (typeof document === 'undefined') return null;
-
-  return createPortal(
-    <div className="lg:hidden" aria-hidden={!open}>
-      {/* Scrim */}
-      <div
-        onClick={onClose}
-        className="fixed inset-0 z-40"
-        style={{
-          background: 'rgba(5,4,3,0.62)',
-          opacity: open ? 1 : 0,
-          pointerEvents: open ? 'auto' : 'none',
-          transition: 'opacity 0.32s ease',
-        }}
-      />
-      {/* Sheet — bottom-anchored. CSS Grid (auto / auto / 1fr [/ auto]) gives
-          the scroll body exactly the leftover space and never collapses. dvh
-          on the height handles mobile browser chrome reliably. */}
-      <div
-        className="lg:hidden"
-        style={{
-          position: 'fixed',
-          left: 0, right: 0, bottom: 0,
-          zIndex: 50,
-          display: 'grid',
-          gridTemplateRows: footer ? 'auto auto 1fr auto' : 'auto auto 1fr',
-          height: full ? '94dvh' : 'auto',
-          maxHeight: full ? '94dvh' : '80vh',
-          background: 'var(--bg-elev)',
-          borderTop: '1px solid var(--line)',
-          borderRadius: '20px 20px 0 0',
-          boxShadow: '0 -24px 60px rgba(0,0,0,0.5)',
-          transform: open ? 'translateY(0)' : 'translateY(100%)',
-          transition: 'transform 0.42s cubic-bezier(0.16,1,0.3,1)',
-        }}
-      >
-        <button onClick={onClose} aria-label="Close" className="w-full flex justify-center pt-2.5 pb-1">
-          <span style={{ width: 38, height: 4, borderRadius: 999, background: 'var(--line)', display: 'block' }} />
-        </button>
-        <div className="flex items-center justify-between px-6 pb-4 pt-1" style={{ borderBottom: '1px solid var(--line-soft)' }}>
-          <span className="font-display italic text-2xl text-[var(--ink-100)]">{title}</span>
-          <button
-            onClick={onClose}
-            aria-label="Close"
-            className="w-9 h-9 flex items-center justify-center rounded-full text-[var(--ink-400)]"
-            style={{ border: '1px solid var(--line-soft)' }}
-          >
-            <X className="w-4 h-4" strokeWidth={1.75} aria-hidden="true" />
-          </button>
-        </div>
-        <div className="overflow-y-auto px-6 py-5" style={{ WebkitOverflowScrolling: 'touch', minHeight: 0 }}>
-          {children}
-        </div>
-        {footer && (
-          <div className="px-6 pt-4" style={{ borderTop: '1px solid var(--line)', paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
-            {footer}
-          </div>
-        )}
-      </div>
-    </div>,
-    document.body,
-  );
-}
-
-function MobileFilterDrawer({ open, onClose, filters, setFilter, onSearch, onCloseWithChanges }) {
-  // Snapshot filters the moment the drawer opens so we can detect changes
-  // at the point of any close gesture (scrim / grabber / ✕).
-  const snapshotRef = useRef(null);
-  useEffect(() => {
-    if (open) snapshotRef.current = JSON.stringify(filters);
-  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  function handleCloseRequest() {
-    const changed = snapshotRef.current && snapshotRef.current !== JSON.stringify(filters);
-    if (changed && onCloseWithChanges) {
-      onCloseWithChanges();   // caller shows the modal; drawer stays mounted
-    } else {
-      onClose();              // no changes — close immediately
-    }
-  }
-
-  return (
-    <MobileSheet
-      open={open}
-      onClose={handleCloseRequest}
-      title="Filters"
-      full
-      footer={
-        <button
-          onClick={onSearch}
-          className="w-full text-[13px] font-bold uppercase tracking-[0.14em]"
-          style={{
-            minHeight: 52,
-            borderRadius: 12,
-            background: 'var(--gold-bright)',
-            color: 'var(--ink-on-gold)',
-          }}
-        >
-          Search <ArrowRight className="inline-block w-3.5 h-3.5 ml-1 -mt-0.5" strokeWidth={2} aria-hidden="true" />
-        </button>
-      }
-    >
-      <FilterControls filters={filters} setFilter={setFilter} compact />
-    </MobileSheet>
-  );
-}
-
-function MobileSortSheet({ open, onClose, value, onChange }) {
-  const options = [
-    ['printrun-rarest', 'Rarest first'],
-    ['printrun-common', 'Most common first'],
-    ['price-low', 'Price: low to high'],
-    ['price-high', 'Price: high to low'],
-    ['ending-soon', 'Ending soonest'],
-    ['newest', 'Newest first'],
-  ];
-  return (
-    <MobileSheet open={open} onClose={onClose} title="Sort">
-      <div>
-        {options.map(([v, l]) => {
-          const sel = value === v;
-          return (
-            <button
-              key={v}
-              onClick={() => onChange(v)}
-              className="w-full flex items-center justify-between text-left text-[15px]"
-              style={{ minHeight: 50, borderBottom: '1px solid var(--line-soft)', color: sel ? 'var(--gold-bright)' : 'var(--ink-200)' }}
-            >
-              <span>{l}</span>
-              {sel && <span style={{ color: 'var(--gold-bright)' }}><Check className="inline-block w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" /></span>}
-            </button>
-          );
-        })}
-      </div>
-      <p className="text-[11px] italic mt-3 leading-relaxed" style={{ color: 'var(--ink-600)' }}>
-        Sort is instant. It reorders the cards you already have without a new search.
-      </p>
-    </MobileSheet>
-  );
-}
-
-/* ─────────────────────────────────────────────
-   SortDropdown — placed top-right of results header.
-   Sort updates instantly via client-side resort (no API call).
-   ───────────────────────────────────────────── */
-function SortDropdown({ value, onChange }) {
-  const options = [
-    ['printrun-rarest', 'Rarest first'],
-    ['printrun-common', 'Most common first'],
-    ['price-low', 'Price: low to high'],
-    ['price-high', 'Price: high to low'],
-    ['ending-soon', 'Ending soonest'],
-    ['newest', 'Newest first'],
-  ];
-  return (
-    <label className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-[var(--ink-400)]">
-      <span>Sort</span>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="bg-transparent border-b border-[var(--line)] focus:border-[var(--gold)] outline-none pb-1 pr-6 text-[var(--ink-100)] tracking-[0.04em] cursor-pointer appearance-none"
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='none' stroke='%23a89870' stroke-width='1.4' d='M1 1l4 4 4-4'/%3E%3C/svg%3E\")",
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'right 0 center',
-        }}
-      >
-        {options.map(([v, l]) => (
-          <option key={v} value={v} className="bg-[var(--bg-base)] text-[var(--ink-100)]">
-            {l}
-          </option>
-        ))}
-      </select>
-    </label>
-  );
 }
 
 function Filters({ filters, setFilter }) {
@@ -3279,136 +2735,9 @@ function ToggleRow({ label, checked, onChange }) {
   );
 }
 
-
-/* "Search with new filters?" modal — fires when filters drift from the
-   active search and the user closes the filter drawer or tries to interact
-   with stale results. Strongly nudges the user to either rerun the search
-   or revert their filter changes. */
-// `floating` = desktop variant: the prompt floats centered with NO blocking
-// backdrop and NO scroll lock, so the filter sidebar behind it stays fully
-// editable. The user can adjust as many filters as they like, then press
-// Search. The mobile variant (floating=false) keeps the dimmed, click-to-cancel
-// scrim since its filter drawer is already closed.
-function PendingSearchModal({ open, onSearch, onCancel, onDismiss, floating = false }) {
-  useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    if (!floating) document.body.style.overflow = 'hidden';
-    const onKey = (e) => { if (e.key === 'Escape') onCancel(); };
-    document.addEventListener('keydown', onKey);
-    return () => {
-      if (!floating) document.body.style.overflow = prev;
-      document.removeEventListener('keydown', onKey);
-    };
-  }, [open, onCancel, floating]);
-  if (!open) return null;
-  if (typeof document === 'undefined') return null;
-  return createPortal(
-    <div
-      className={`fixed inset-0 z-[60] flex items-center justify-center px-6 ${floating ? 'pointer-events-none' : ''}`}
-      aria-modal={floating ? undefined : 'true'}
-      role="dialog"
-    >
-      {/* Blocking scrim — mobile only. The floating desktop variant omits it
-          entirely so clicks pass through to the filters underneath. */}
-      {!floating && (
-        <div
-          onClick={onCancel}
-          className="absolute inset-0"
-          style={{ background: 'rgba(5,4,3,0.7)', backdropFilter: 'blur(3px)' }}
-        />
-      )}
-      <div
-        className={`relative w-full max-w-[400px] rounded-lg p-7 text-center ${floating ? 'pointer-events-auto' : ''}`}
-        style={{
-          background: 'var(--bg-elev)',
-          border: '1px solid var(--gold-deep)',
-          boxShadow: floating
-            ? '0 40px 100px -20px rgba(0,0,0,0.85), 0 0 40px -8px rgba(230,185,107,0.4)'
-            : '0 30px 80px -20px rgba(0,0,0,0.6), 0 0 32px -10px rgba(230,185,107,0.3)',
-        }}
-      >
-        {/* Dismiss × — closes the modal but keeps the user’s filter edits
-            so they can keep tweaking before searching. */}
-        {onDismiss && (
-          <button
-            onClick={onDismiss}
-            aria-label="Dismiss"
-            className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
-            style={{ border: '1px solid var(--line-soft)', background: 'var(--bg-base)' }}
-          >
-            <X className="w-4 h-4" strokeWidth={1.75} aria-hidden="true" />
-          </button>
-        )}
-        <p className="text-[10px] tracking-[0.3em] uppercase mb-4" style={{ color: 'var(--gold)' }}>
-          Filters changed
-        </p>
-        <h3 className="font-display italic text-[26px] leading-tight mb-3" style={{ color: 'var(--ink-100)' }}>
-          Search with new filters?
-        </h3>
-        <p className="text-[13px] leading-relaxed mb-6" style={{ color: 'var(--ink-400)' }}>
-          You’ve adjusted your filters since your last search. Run it again to see updated results.
-        </p>
-        <div className="flex flex-col gap-3">
-          <button
-            onClick={onSearch}
-            className="w-full min-h-[48px] rounded-lg text-[12px] font-bold uppercase tracking-[0.14em]"
-            style={{
-              background: 'var(--gold-bright)',
-              color: 'var(--ink-on-gold)',
-              border: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            Search <ArrowRight className="inline-block w-3.5 h-3.5 ml-1 -mt-0.5" strokeWidth={2} aria-hidden="true" />
-          </button>
-          <button
-            onClick={onCancel}
-            className="w-full min-h-[40px] text-[11px] tracking-[0.14em] uppercase"
-            style={{ background: 'transparent', color: 'var(--ink-400)', border: 'none', cursor: 'pointer' }}
-          >
-            Cancel · keep previous filters
-          </button>
-        </div>
-      </div>
-    </div>,
-    document.body,
-  );
-}
-
 /* ─────────────────────────────────────────────
    Results — refined cards with badge system
    ───────────────────────────────────────────── */
-// Floating button that appears after scrolling down, returns to top on click.
-function BackToTop() {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > 600);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  if (!visible) return null;
-
-  return (
-    <button
-      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-      aria-label="Back to top"
-      className="fixed bottom-6 right-6 z-50 w-11 h-11 rounded-full flex items-center justify-center transition-opacity hover:opacity-90"
-      style={{
-        background: 'var(--bg-elev)',
-        border: '0.5px solid var(--gold-deep)',
-        color: 'var(--gold)',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
-      }}
-    >
-      <ArrowUp className="w-4 h-4" strokeWidth={1.6} />
-    </button>
-  );
-}
-
 const PAGE_DISPLAY_SIZE = 200; // how many cards to render at once
 
 function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase, onSuggested, appliedFilters, resultMeta, hasPendingFilters, onPendingClick, onCardClick, nameFix = null, onNameFix, query = '', onAlert }) {
@@ -3428,7 +2757,7 @@ function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase
     return (
       <>
         <NoResultsState onSuggested={onSuggested} appliedFilters={appliedFilters} nameFix={nameFix} onNameFix={onNameFix} />
-        <AlertBand query={query} filters={appliedFilters} onAlert={onAlert} />
+        <AlertBand query={query} filters={appliedFilters} onAlert={onAlert} returnPath={sportsReturnPath(query, appliedFilters)} />
       </>
     );
 
@@ -3441,13 +2770,12 @@ function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase
       {capped && (
         <p className="text-[12px] text-[var(--ink-400)] mb-4 leading-relaxed">
           Showing the first {results.length} matches. This is a broad search.
-          Narrow it with filters like print run, auto, or condition to surface the
-          rarest cards.
+          Add more filters to narrow it down to the rarest cards.
         </p>
       )}
       <div className="divide-y divide-[var(--line-soft)]">
         {visible.flatMap((item, i) => {
-          const card = <ResultCard key={item.id} item={item} formatPrice={formatPrice} index={i} hasPendingFilters={hasPendingFilters} onPendingClick={onPendingClick} onCardClick={onCardClick} />;
+          const card = <SportsResultCard key={item.id} item={item} formatPrice={formatPrice} index={i} hasPendingFilters={hasPendingFilters} onPendingClick={onPendingClick} onCardClick={onCardClick} />;
           // Sign-up prompt for visitors who aren't signed in, after the 4th card.
           return i === 3 ? [card, <SignupPromptCard key="signup-prompt" />] : [card];
         })}
@@ -3468,7 +2796,7 @@ function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase
         </div>
       )}
 
-      <AlertBand query={query} filters={appliedFilters} onAlert={onAlert} />
+      <AlertBand query={query} filters={appliedFilters} onAlert={onAlert} returnPath={sportsReturnPath(query, appliedFilters)} />
     </div>
   );
 }
@@ -3502,348 +2830,14 @@ const WATCHLIST_PROVIDER_MOVED_TO_LIB = true; // placeholder removed below
 // of this file. This sentinel line is just a marker so future searches
 // for "WatchlistProvider" in this file lead readers to the lib instead.
 
-// Star toggle that saves/removes a listing from the user's watchlist.
-// Lives inside the result card's <a>, so clicks must not trigger the link.
-function WatchStar({ item }) {
-  const { user } = useUser();
-  const ctx = useContext(WatchlistContext);
-  const [busy, setBusy] = useState(false);
-
-  const saved = ctx ? ctx.isSaved(item.id) : false;
-  const [promptOpen, setPromptOpen] = useState(false);
-  usePendingStarSave();
-
-  async function saveNow() {
-    ctx?.markSaved(item.id);
-    try {
-      const res = await fetch('/api/watchlist', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(watchlistPayload(item)),
-      });
-      if (!res.ok) throw new Error(`Watchlist request failed (${res.status})`);
-    } catch (err) {
-      console.error('Watchlist save failed:', err?.message || err);
-      ctx?.markUnsaved(item.id);
-    }
-  }
-
-  async function toggle(e) {
-    // Critical: stop the parent <a> from navigating to eBay.
-    e.preventDefault();
-    e.stopPropagation();
-    if (busy) return;
-
-    // Logged-out visitors get the "Keep this card" sign-up prompt.
-    if (!user) {
-      setPromptOpen(true);
-      return;
-    }
-
-    setBusy(true);
-    // Optimistic update so the UI feels instant
-    const wasSaved = saved;
-    if (saved) ctx?.markUnsaved(item.id);
-    else ctx?.markSaved(item.id);
-
-    // Star burst — only on save (not unsave). Pop the button and fire 8 sparks.
-    if (!wasSaved) {
-      const btn = e.currentTarget;
-      btn.classList.remove('ff-pop');
-      void btn.offsetWidth;
-      btn.classList.add('ff-pop');
-      for (let i = 0; i < 8; i++) {
-        const sp = document.createElement('span');
-        sp.className = 'ff-spark';
-        const a = (Math.PI * 2 * i) / 8;
-        const d = 22 + Math.random() * 10;
-        sp.style.setProperty('--dx', Math.cos(a) * d + 'px');
-        sp.style.setProperty('--dy', Math.sin(a) * d + 'px');
-        btn.appendChild(sp);
-        setTimeout(() => sp.remove(), 650);
-      }
-    }
-
-    try {
-      let res;
-      if (saved) {
-        res = await fetch(`/api/watchlist/${encodeURIComponent(item.id)}`, { method: 'DELETE' });
-      } else {
-        res = await fetch('/api/watchlist', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(watchlistPayload(item)),
-        });
-      }
-      // fetch() only rejects on NETWORK failure — a 401/500 resolves
-      // normally, so without this check a server-side error left the star
-      // filled while nothing was saved. Surface it instead.
-      if (!res.ok) {
-        const detail = await res.json().catch(() => ({}));
-        throw new Error(detail?.error || `Watchlist request failed (${res.status})`);
-      }
-    } catch (err) {
-      // Revert optimistic update on failure
-      console.error('Watchlist save failed:', err?.message || err);
-      if (saved) ctx?.markSaved(item.id);
-      else ctx?.markUnsaved(item.id);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  return (
-    <>
-    <button
-      onClick={toggle}
-      aria-label={saved ? 'Remove from watchlist' : 'Save to watchlist'}
-      className="absolute top-2 right-2 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all"
-      style={{
-        background: 'rgba(10,9,7,0.55)',
-        backdropFilter: 'blur(4px)',
-        border: `0.5px solid ${saved ? 'var(--gold)' : 'rgba(201,149,74,0.3)'}`,
-        color: saved ? 'var(--gold-bright)' : 'var(--ink-400)',
-      }}
-    >
-      <Star className="w-4 h-4" strokeWidth={1.6} fill={saved ? 'currentColor' : 'none'} aria-hidden="true" />
-    </button>
-    {promptOpen && (
-      <KeepCardPrompt item={item} onClose={() => setPromptOpen(false)} onSaved={saveNow} />
-    )}
-    </>
-  );
+// Back to this exact search after sign-up: "/" (not the /share preview
+// route) with the share params, so the search re-runs.
+function sportsReturnPath(query, filters) {
+  const qs = query ? buildShareParams(query, filters || {}, ALL_PRESET_PRINT_RUNS) : '';
+  return qs ? `/?${qs}` : null;
 }
 
-/* ── Keep-this-card + alert band (signed-out sign-up moments) ───────────
-   Two places where a visitor actually wants an account: starring a card,
-   and wanting to hear when a new match lists. Both send them through
-   sign-up and back to the same search.
-
-   Return trip: the results page doesn't keep the search in its URL, so the
-   AlertBand (which knows the query and applied filters) records the current
-   search here; WatchStar turns it into a share link to come back to. The
-   starred card itself waits in localStorage (public eBay listing data only,
-   nothing personal) and is saved once the visitor is signed in. */
-let lastResultsSearch = null;
-
-function resultsReturnPath(fallbackCardId) {
-  if (lastResultsSearch?.query) {
-    // Straight back to "/" (not the /share preview route) so the search re-runs.
-    const qs = buildShareParams(lastResultsSearch.query, lastResultsSearch.filters || {}, ALL_PRESET_PRINT_RUNS);
-    if (qs) return `/?${qs}`;
-  }
-  return fallbackCardId ? `/?card=${encodeURIComponent(fallbackCardId)}` : '/';
-}
-
-function watchlistPayload(item) {
-  return {
-    listing_id: item.id,
-    title: item.title,
-    price: item.price,
-    currency: item.currency || 'USD',
-    image_url: item.image,
-    listing_url: item.url,
-    badges: buildBadgePayload(item),
-    is_auction: !!item.isAuction,
-    end_time: item.endTime || null,
-    bid_count: item.bidCount ?? null,
-    condition: item.condition || null,
-  };
-}
-
-const PENDING_STAR_KEY = 'ffPendingStar';
-const PENDING_STAR_TTL = 60 * 60 * 1000; // an hour is plenty for a sign-up round trip
-
-function stashPendingStar(item) {
-  try {
-    localStorage.setItem(PENDING_STAR_KEY, JSON.stringify({ at: Date.now(), payload: watchlistPayload(item) }));
-  } catch { /* storage blocked: they'll just star it again */ }
-}
-
-function takePendingStar() {
-  try {
-    const raw = localStorage.getItem(PENDING_STAR_KEY);
-    if (!raw) return null;
-    localStorage.removeItem(PENDING_STAR_KEY);
-    const { at, payload } = JSON.parse(raw);
-    if (!payload?.listing_id || Date.now() - at > PENDING_STAR_TTL) return null;
-    return payload;
-  } catch {
-    return null;
-  }
-}
-
-/* Once signed in, save the card they starred before signing up. Runs from
-   Hero and every WatchStar; the module flag keeps it to one save. */
-let pendingStarHandled = false;
-function usePendingStarSave() {
-  const { user } = useUser();
-  const ctx = useContext(WatchlistContext);
-  useEffect(() => {
-    if (!user || pendingStarHandled) return;
-    pendingStarHandled = true;
-    const payload = takePendingStar();
-    if (!payload) return;
-    ctx?.markSaved(payload.listing_id);
-    fetch('/api/watchlist', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    }).then((res) => { if (!res.ok) ctx?.markUnsaved(payload.listing_id); })
-      .catch(() => ctx?.markUnsaved(payload.listing_id));
-  }, [user, ctx]);
-}
-
-/* KeepCardPrompt — the sign-up ask when a signed-out visitor stars a card.
-   Web: Apple + Google + email. iOS app: Google blocks sign-in inside app web
-   views, so native Apple + email only; native Apple signs in without leaving
-   the page, so the card is saved on the spot. */
-function KeepCardPrompt({ item, onClose, onSaved }) {
-  const [native, setNative] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-  const closeRef = useRef(null);
-  useEffect(() => {
-    setNative(isNativeApp());
-    closeRef.current?.focus();
-    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
-
-  const next = resultsReturnPath(item.id);
-  const emailHref = `/signup?next=${encodeURIComponent(next)}&src=star`;
-
-  async function continueWith(provider) {
-    if (busy) return;
-    setError('');
-    setBusy(true);
-    try {
-      const { createClient } = await import('../lib/supabaseClient');
-      const supabase = createClient();
-      if (native && provider === 'apple') {
-        const { signInWithAppleNative } = await import('../lib/native');
-        await signInWithAppleNative(supabase);
-        track('signed_up', undefined, 'star'); // server only counts brand-new accounts
-        await onSaved();
-        onClose();
-        return;
-      }
-      stashPendingStar(item);
-      const { error: oauthError } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: { redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}&src=star` },
-      });
-      if (oauthError) throw oauthError;
-    } catch (e) {
-      // Closing Apple's sheet isn't an error worth showing.
-      if (!/cancel/i.test(e?.message || '')) setError('Sign-in didn’t go through. Try again, or use email.');
-      setBusy(false);
-    }
-  }
-
-  const btn = 'w-full h-11 rounded-lg flex items-center justify-center gap-2 text-[13px] font-semibold transition-opacity hover:opacity-90 disabled:opacity-50';
-  return createPortal(
-    <div
-      className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-4"
-      style={{ background: 'rgba(0,0,0,0.7)' }}
-      onClick={(e) => { e.stopPropagation(); onClose(); }}
-    >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="keep-card-title"
-        className="relative w-full max-w-[400px] rounded-xl p-6"
-        style={{ background: 'var(--bg-elev-2)', border: '0.5px solid var(--gold-deep)', boxShadow: '0 30px 60px rgba(0,0,0,0.6)' }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          ref={closeRef}
-          type="button"
-          onClick={onClose}
-          aria-label="Close"
-          className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center text-[18px] text-[var(--ink-400)] hover:text-[var(--ink-100)]"
-        >
-          <X className="w-4 h-4" strokeWidth={1.75} aria-hidden="true" />
-        </button>
-        <div className="font-mono text-[10px] uppercase tracking-[0.22em]" style={{ color: 'var(--gold)' }}>Free account</div>
-        <h2 id="keep-card-title" className="font-display italic text-[26px] leading-tight mt-2">Keep this card</h2>
-        {item.title && (
-          <p className="mt-2 text-[13px] leading-snug line-clamp-2" style={{ color: 'var(--ink-200)' }}>{item.title}</p>
-        )}
-        <p className="mt-2 text-[13px] leading-relaxed" style={{ color: 'var(--ink-400)' }}>
-          We’ll keep its price up to date and tell you if it sells. No credit card.
-        </p>
-        <div className="mt-5 grid gap-2">
-          <button type="button" disabled={busy} onClick={() => continueWith('apple')} className={btn} style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
-            Continue with Apple
-          </button>
-          {!native && (
-            <button type="button" disabled={busy} onClick={() => continueWith('google')} className={btn} style={{ background: 'transparent', color: 'var(--ink-100)', border: '0.5px solid var(--ink-600)' }}>
-              Continue with Google
-            </button>
-          )}
-          <Link
-            href={emailHref}
-            onClick={() => stashPendingStar(item)}
-            className={btn}
-            style={{ background: 'transparent', color: 'var(--ink-200)', border: '0.5px solid var(--line)' }}
-          >
-            Use email instead
-          </Link>
-        </div>
-        {error && <p className="mt-3 text-[13px] text-[var(--crit)]">{error}</p>}
-        <p className="mt-4 text-[11px] text-center" style={{ color: 'var(--ink-600)' }}>
-          Already have an account?{' '}
-          <Link href="/login" onClick={() => stashPendingStar(item)} className="underline underline-offset-2 hover:text-[var(--gold-bright)]">Sign in</Link>
-        </p>
-      </div>
-    </div>,
-    document.body,
-  );
-}
-
-/* AlertBand — under results (or under "no results"): the moment the alert
-   plan sells itself. Signed-in visitors open the save-search flow; signed-out
-   ones go through sign-up and come back to this search. Hidden until the
-   results call site passes the query. */
-function AlertBand({ query, filters, onAlert }) {
-  const { user } = useUser();
-  useEffect(() => {
-    if (query) lastResultsSearch = { query, filters };
-  }, [query, filters]);
-  if (!query) return null;
-
-  const next = resultsReturnPath(null);
-  const ctaClass = 'inline-flex items-center gap-2 h-11 px-5 rounded-full text-[13px] font-semibold whitespace-nowrap transition-opacity hover:opacity-90';
-  const ctaStyle = { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' };
-  return (
-    <div
-      className="mt-10 rounded-xl px-5 py-5 md:px-6 flex flex-wrap items-center justify-between gap-4"
-      style={{ border: '0.5px solid var(--gold-deep)', background: 'linear-gradient(90deg, rgba(201,149,74,0.09), transparent)' }}
-    >
-      <div className="min-w-0 max-w-[520px]">
-        <p className="font-display text-[20px] md:text-[22px] leading-snug">
-          Get an email when a new <em className="text-[var(--gold-bright)]">{query}</em> card lists.
-        </p>
-        <p className="mt-1 text-[13px]" style={{ color: 'var(--ink-400)' }}>
-          We check eBay every hour with these filters. {PAYMENTS_LIVE ? 'Your first alert is free.' : 'Alerts are free during early access.'}
-        </p>
-      </div>
-      {user ? (
-        <button type="button" onClick={onAlert} className={ctaClass} style={ctaStyle}>
-          Turn on alert <ArrowRight className="w-4 h-4" strokeWidth={2} aria-hidden="true" />
-        </button>
-      ) : (
-        <Link href={`/signup?next=${encodeURIComponent(next)}&src=alert`} className={ctaClass} style={ctaStyle}>
-          Turn on alert <ArrowRight className="w-4 h-4" strokeWidth={2} aria-hidden="true" />
-        </Link>
-      )}
-    </div>
-  );
-}
-
-function ResultCard({ item, formatPrice, index, hasPendingFilters, onPendingClick, onCardClick }) {
+function SportsResultCard({ item, formatPrice, index, hasPendingFilters, onPendingClick, onCardClick }) {
   // Heuristic badge detection from title
   const title = (item.title || '').toLowerCase();
   const hasAuto = hasAutoText(item.title || '');
@@ -3865,239 +2859,40 @@ function ResultCard({ item, formatPrice, index, hasPendingFilters, onPendingClic
   //   Scarce  — steel-gray
   // Applied as background gradient + left border on the link element.
   const tierStyle = tier ? tierRowStyle(tier) : null;
+  const hasBadges = !!(hasAuto || hasRookie || printRun || psaMatch || bgsMatch || sgcMatch || cgcMatch);
 
   return (
-    <a
-      href={item.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      onClick={(e) => {
-        // Desktop equivalent of the mobile pending-search modal: if filters
-        // differ from the active search, intercept the click and prompt the
-        // user to rerun the search first.
-        if (hasPendingFilters && onPendingClick) {
-          e.preventDefault();
-          onPendingClick();
-          return;
-        }
-        // Default: open the in-app card modal instead of navigating to eBay.
-        // The modal has its own "View on eBay" CTA for users who want the
-        // listing directly. We honor cmd/ctrl-click + middle-click as
-        // "open in new tab" since power users expect that behavior.
-        if (e.metaKey || e.ctrlKey || e.button === 1) return;
-        if (onCardClick) {
-          e.preventDefault();
-          onCardClick(item);
-        }
-      }}
-      className="group block rise"
-      style={tierStyle ? {
-        animationDelay: `${Math.min(index * 40, 400)}ms`,
-        ...tierStyle,
-      } : { animationDelay: `${Math.min(index * 40, 400)}ms` }}
-    >
-      {/* MOBILE (<lg) — compact list row: thumbnail left, badges pinned at bottom. */}
-      <div className="lg:hidden flex gap-4 py-5 pl-4 pr-3">
-        <div
-          data-listing-id={item.id}
-          className="ff-sheen-wrap relative w-[92px] flex-none aspect-[3/4] bg-[var(--bg-elev)] overflow-hidden"
-          onTouchStart={(e) => { e.currentTarget.classList.remove('ff-play'); void e.currentTarget.offsetWidth; e.currentTarget.classList.add('ff-play'); }}
-        >
-          <WatchStar item={item} />
-          {item.image ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={upscaleEbayImage(item.image)} alt={item.title} className="w-full h-full object-cover" />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-[var(--ink-600)] font-display text-3xl italic"><ImageOff className="w-7 h-7" strokeWidth={1.5} aria-hidden="true" /></div>
-          )}
-          {item.isAuction && (
-            <span className="absolute top-1.5 left-1.5 text-[10px] uppercase tracking-[0.16em] text-[var(--gold)] bg-[var(--bg-base)]/85 px-1 py-0.5 border border-[var(--gold-deep)]/30">
-              Live
-            </span>
-          )}
-          {item.isAuction && item.endTime && (
-            <BidCountdown endTime={item.endTime} />
-          )}
-        </div>
-        <div className="min-w-0 flex-1 flex flex-col">
-          <h3
-            className="font-display text-lg leading-[1.15] text-[var(--ink-100)] group-hover:text-[var(--gold-bright)] transition-colors"
-            style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
-          >
-            {item.title}
-          </h3>
-          <div className="text-[11px] leading-relaxed text-[var(--ink-400)] mt-1.5">
-            {item.seller && <span className="normal-case">{item.seller}</span>}
-            {item.sellerFeedback != null && (
-              <>
-                <span className="text-[var(--ink-600)] mx-1.5">·</span>
-                <span>{Number(item.sellerFeedback).toFixed(1)}%</span>
-              </>
-            )}
-          </div>
-          <div className="font-display text-[26px] leading-none text-[var(--ink-100)] group-hover:text-[var(--gold-bright)] transition-colors mt-2">
-            {formatPrice(item.price)}
-          </div>
-          {/* Badge row pinned to the bottom of the card */}
-          <div className="flex flex-wrap gap-1.5 mt-2.5">
-            {item.isAuction && (
-              <Badge auction>{item.bidCount != null ? `${item.bidCount} BIDS` : 'AUCTION'}</Badge>
-            )}
-            {hasAuto && <Badge>AUTO</Badge>}
-            {hasRookie && <Badge>RC</Badge>}
-            {printRun && <Badge mono tier={printRunTier(printRun)}>/{printRun}</Badge>}
-            {psaMatch && <Badge>PSA {psaMatch[1]}</Badge>}
-            {bgsMatch && <Badge>BGS {bgsMatch[1]}</Badge>}
-            {sgcMatch && <Badge>SGC {sgcMatch[1]}</Badge>}
-            {cgcMatch && <Badge>CGC {cgcMatch[1]}</Badge>}
-          </div>
-        </div>
-      </div>
-
-      {/* 3-column layout — title+badges+meta on left, image center as visual
-          focal point, price + CTA on right. items-center vertically aligns
-          all three columns so the row stays visually balanced even when the
-          title block grows tall. */}
-      <div className="hidden lg:grid grid-cols-1 md:grid-cols-[1.3fr_200px_1fr] gap-6 md:gap-7 items-center py-10 pl-4 md:pl-5">
-        {/* Left column: title, badges, meta */}
-        <div className="min-w-0 order-2 md:order-1">
-          <h3 className="font-display text-xl md:text-2xl leading-[1.15] text-[var(--ink-100)] group-hover:text-[var(--gold-bright)] transition-colors mb-4">
-            {item.title}
-          </h3>
-          <div className="flex flex-wrap gap-1.5 mb-4">
-            {item.isAuction && (
-              <Badge auction>
-                {item.bidCount != null ? `${item.bidCount} BIDS` : 'AUCTION'}
-              </Badge>
-            )}
-            {hasAuto && <Badge>AUTO</Badge>}
-            {hasRookie && <Badge>RC</Badge>}
-            {printRun && <Badge mono tier={printRunTier(printRun)}>/{printRun}</Badge>}
-            {psaMatch && <Badge>PSA {psaMatch[1]}</Badge>}
-            {bgsMatch && <Badge>BGS {bgsMatch[1]}</Badge>}
-            {sgcMatch && <Badge>SGC {sgcMatch[1]}</Badge>}
-            {cgcMatch && <Badge>CGC {cgcMatch[1]}</Badge>}
-            {!hasAuto && !hasRookie && !printRun && !psaMatch && !bgsMatch && !sgcMatch && !cgcMatch && item.condition && (
-              <Badge subtle>{item.condition}</Badge>
-            )}
-          </div>
-          {/* Single prose meta line — seller, feedback, listing type. */}
-          <div className="text-[11px] leading-relaxed text-[var(--ink-400)]">
-            {item.seller && (
-              <span className="normal-case">{item.seller}</span>
-            )}
-            {item.sellerFeedback != null && (
-              <>
-                <span className="text-[var(--ink-600)] mx-2">·</span>
-                <span>{Number(item.sellerFeedback).toFixed(1)}% feedback</span>
-              </>
-            )}
-            {(item.isBuyItNow || item.isAuction) && (
-              <>
-                <span className="text-[var(--ink-600)] mx-2">·</span>
-                {item.isAuction && !item.isBuyItNow && <span>Auction</span>}
-                {item.isBuyItNow && !item.isAuction && <span>Buy It Now</span>}
-                {item.isAuction && item.isBuyItNow && <span>Auction · or BIN</span>}
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Center column: image, the visual focal point */}
-        <div className="order-1 md:order-2 mx-auto md:mx-0">
-          <div
-            data-listing-id={item.id}
-            className="ff-sheen-wrap relative aspect-[3/4] w-[160px] md:w-[200px] bg-[var(--bg-elev)] overflow-hidden"
-            onTouchStart={(e) => { e.currentTarget.classList.remove('ff-play'); void e.currentTarget.offsetWidth; e.currentTarget.classList.add('ff-play'); }}
-          >
-            <CornerMarks />
-            <WatchStar item={item} />
-            {item.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={upscaleEbayImage(item.image)}
-                alt={item.title}
-                className="w-full h-full object-cover transition-all duration-700 group-hover:scale-[1.04]"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-[var(--ink-600)] font-display text-4xl italic">
-                <ImageOff className="w-7 h-7" strokeWidth={1.5} aria-hidden="true" />
-              </div>
-            )}
-            {item.isAuction && (
-              <span className="absolute top-2 left-2 text-[10px] uppercase tracking-[0.18em] text-[var(--gold)] bg-[var(--bg-base)]/85 backdrop-blur-sm px-1.5 py-0.5 border border-[var(--gold-deep)]/30">
-                Live
-              </span>
-            )}
-            {item.isAuction && item.endTime && (
-              <BidCountdown endTime={item.endTime} />
-            )}
-          </div>
-        </div>
-
-        {/* Right column: price + CTA, vertically centered to image */}
-        <div className="text-left md:text-right order-3">
-          <div className="font-display text-4xl md:text-5xl leading-none text-[var(--ink-100)] group-hover:text-[var(--gold-bright)] transition-colors">
-            {formatPrice(item.price)}
-          </div>
-          <div className="mt-4 inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.22em] text-[var(--ink-400)] group-hover:text-[var(--gold)] transition-colors">
-            View on eBay
-            <ArrowUpRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" strokeWidth={1.6} />
-          </div>
-        </div>
-      </div>
-    </a>
+    <ResultCard
+      item={item} formatPrice={formatPrice} index={index}
+      hasPendingFilters={hasPendingFilters} onPendingClick={onPendingClick} onCardClick={onCardClick}
+      payload={watchlistPayload(item)} rowStyle={tierStyle} hasBadges={hasBadges}
+      badges={<>
+        {hasAuto && <Badge>AUTO</Badge>}
+        {hasRookie && <Badge>RC</Badge>}
+        {printRun && <Badge mono tier={printRunTier(printRun)}>/{printRun}</Badge>}
+        {psaMatch && <Badge>PSA {psaMatch[1]}</Badge>}
+        {bgsMatch && <Badge>BGS {bgsMatch[1]}</Badge>}
+        {sgcMatch && <Badge>SGC {sgcMatch[1]}</Badge>}
+        {cgcMatch && <Badge>CGC {cgcMatch[1]}</Badge>}
+      </>}
+    />
   );
 }
 
-function Badge({ children, mono, subtle, auction, tier }) {
-  let className;
-  let inlineStyle;
-  if (auction) {
-    // Auction: warm red-amber to feel like a "live" indicator, distinct from gold
-    className = 'border-[#c97a3a] text-[#e6a86b] bg-[#c97a3a]/[0.10]';
-  } else if (tier === 'grail') {
-    // Grail tier (/1–/25) — rich warm gold
-    className = 'text-[var(--ink-on-gold)] font-bold';
-    inlineStyle = {
-      borderColor: '#ffc14d',
-      backgroundImage: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)',
-    };
-  } else if (tier === 'ultra') {
-    // Ultra Rare tier (/26–/99) — cool platinum-blue
-    className = 'text-[var(--ink-on-gold)] font-bold';
-    inlineStyle = {
-      borderColor: '#c8d4e0',
-      backgroundImage: 'linear-gradient(180deg, #e0e8f0 0%, #98a5b3 100%)',
-    };
-  } else if (tier === 'rare') {
-    // Rare tier (/100–/249) — deep bronze-orange
-    className = 'text-[var(--ink-on-gold)] font-bold';
-    inlineStyle = {
-      borderColor: '#d6722d',
-      backgroundImage: 'linear-gradient(180deg, #d6884a 0%, #8e4f1f 100%)',
-    };
-  } else if (tier === 'scarce') {
-    // Scarce tier (/250–/999) — steel-gray
-    className = 'text-[var(--ink-on-gold)] font-semibold';
-    inlineStyle = {
-      borderColor: '#5a6470',
-      backgroundImage: 'linear-gradient(180deg, #8a96a4 0%, #4a5360 100%)',
-    };
-  } else if (subtle) {
-    className = 'border-[var(--line)] text-[var(--ink-400)]';
-  } else {
-    // Default — for AUTO, RC, PSA, BGS, SGC, CGC
-    className = 'border-[var(--gold-deep)] text-[var(--gold-bright)] bg-[var(--gold)]/[0.06]';
-  }
-  return (
-    <span
-      className={`inline-flex items-center px-2.5 py-1 text-[11px] tracking-[0.1em] border ${className} ${mono ? 'font-mono uppercase' : 'uppercase'}`}
-      style={inlineStyle}
-    >
-      {children}
-    </span>
-  );
+function watchlistPayload(item) {
+  return {
+    listing_id: item.id,
+    title: item.title,
+    price: item.price,
+    currency: item.currency || 'USD',
+    image_url: item.image,
+    listing_url: item.url,
+    badges: buildBadgePayload(item),
+    is_auction: !!item.isAuction,
+    end_time: item.endTime || null,
+    bid_count: item.bidCount ?? null,
+    condition: item.condition || null,
+  };
 }
 
 /* ─────────────────────────────────────────────
@@ -4128,320 +2923,6 @@ function ResolveState({ onSuggested }) {
         ))}
       </div>
     </div>
-  );
-}
-
-function LoadingState({ phrase }) {
-  return (
-    <div className="pt-2">
-      <div className="flex items-baseline justify-between pb-4 mb-8 border-b border-[var(--line)]">
-        <span className="font-display text-lg">Searching</span>
-        <span className="font-mono text-[11px] text-[var(--gold)] tracking-wider shimmer">●</span>
-      </div>
-      <p key={phrase} className="font-display italic text-2xl text-[var(--ink-200)] rise" style={{ animationDuration: '0.5s' }}>
-        {phrase}…
-      </p>
-      <div className="mt-10 space-y-6">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="flex gap-6 opacity-50">
-            <div className="w-[120px] md:w-[160px] aspect-[3/4] bg-[var(--bg-elev)] shimmer" style={{ animationDelay: `${i * 200}ms` }} />
-            <div className="flex-1 space-y-3 pt-1">
-              <div className="h-5 bg-[var(--bg-elev)] w-3/4 shimmer" style={{ animationDelay: `${i * 200 + 100}ms` }} />
-              <div className="h-3 bg-[var(--bg-elev)] w-1/3 shimmer" style={{ animationDelay: `${i * 200 + 200}ms` }} />
-              <div className="h-3 bg-[var(--bg-elev)] w-1/2 shimmer" style={{ animationDelay: `${i * 200 + 300}ms` }} />
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function NoResultsState({ onSuggested, appliedFilters, nameFix = null, onNameFix }) {
-  return (
-    <div className="pt-2">
-      <div className="flex items-baseline justify-between pb-4 mb-8 border-b border-[var(--line)]">
-        <span className="font-display text-lg">No matches</span>
-        <span className="font-mono text-[11px] text-[var(--ink-600)] tracking-wider">00</span>
-      </div>
-      {nameFix ? (
-        <>
-          <p className="font-display italic text-2xl text-[var(--ink-200)] leading-snug text-balance max-w-md">
-            Nothing found. Did you mean <span style={{ color: 'var(--gold-bright)' }}>{nameFix}</span>?
-          </p>
-          <button
-            type="button"
-            onClick={() => onNameFix?.(nameFix)}
-            className="mt-5 inline-flex items-center gap-2 rounded-full text-[14px] font-semibold transition-opacity hover:opacity-90"
-            style={{ minHeight: 44, padding: '0 18px', background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}
-          >
-            Search {nameFix} <ArrowRight className="w-4 h-4" strokeWidth={2} />
-          </button>
-        </>
-      ) : (
-        <p className="font-display italic text-2xl text-[var(--ink-200)] leading-snug text-balance max-w-md">
-          No results found with your current filters. Adjust them and try again.
-        </p>
-      )}
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────────
-   Player-name help — autocomplete + "Did you mean".
-   The matcher and player list (lib/playerSuggest.js) load lazily after
-   first paint, so they never slow the landing page. Until they arrive the
-   search box simply works without suggestions.
-   ───────────────────────────────────────────── */
-let playerSuggestModule = null;
-function usePlayerSuggest() {
-  const [mod, setMod] = useState(null);
-  useEffect(() => {
-    let alive = true;
-    playerSuggestModule = playerSuggestModule || import('../lib/playerSuggest');
-    playerSuggestModule.then((m) => { if (alive) setMod(m); }).catch(() => {});
-    return () => { alive = false; };
-  }, []);
-  return mod;
-}
-
-/* Wires a text input to the suggestion dropdown. Returns props/handlers for
-   the input, a ref for the element the dropdown sits under, and the
-   dropdown itself (portalled to <body> so overflow-hidden parents never
-   clip it). */
-function useSuggestBox(value, onPick) {
-  const mod = usePlayerSuggest();
-  const anchorRef = useRef(null);
-  const [open, setOpen] = useState(false);
-  const [active, setActive] = useState(-1);
-  const [rect, setRect] = useState(null);
-
-  const rows = useMemo(() => {
-    if (!open) return [];
-    // Teams come first ("pira" → Pittsburgh Pirates); they need no loading.
-    const teams = suggestTeams(value, 5).map((t) => ({ kind: 'team', value: t.label, sport: `${t.league} team` }));
-    if (!mod) return teams;
-    const typed = mod.normalizeName(value);
-    if (typed.length < 2) return [];
-    let players = mod.suggestPlayers(value, 6);
-    // Mid-word ("wemb") isn't a typo: skip the fix while the last word is
-    // still the start of a name we're suggesting.
-    const lastWord = typed.split(' ').pop();
-    const stillTyping = players.some((p) => mod.normalizeName(p.name).split(' ').some((t) => t !== lastWord && t.startsWith(lastWord)));
-    const fix = stillTyping || teamFromQuery(value) ? null : mod.didYouMean(value);
-    // The fixed player's full name, if typing hasn't already surfaced it.
-    if (fix?.sport && !players.some((p) => p.name === fix.name)) players = [{ name: fix.name, sport: fix.sport }, ...players];
-    players = players.filter((p) => !fix || mod.normalizeName(p.name) !== mod.normalizeName(fix.query));
-    // With a team on the list, keep only players whose name really starts
-    // with what's typed ("duke" → Duke Clark), not near-misses.
-    if (teams.length) {
-      const words = typed.split(' ');
-      players = players.filter((p) => words.every((w) => mod.normalizeName(p.name).split(' ').some((t) => t.startsWith(w))));
-    }
-    const list = [
-      ...teams,
-      ...(fix ? [{ kind: 'fix', value: fix.query }] : []),
-      ...players.map((p) => ({ kind: 'player', value: p.name, sport: p.sport })),
-    ].slice(0, 7);
-    // Nothing to offer if the only row is exactly what's typed.
-    if (list.length === 1 && mod.normalizeName(list[0].value) === typed) return [];
-    return list;
-  }, [mod, open, value]);
-
-  useEffect(() => { setActive(-1); }, [value]);
-
-  const visible = open && rows.length > 0;
-  useLayoutEffect(() => {
-    if (!visible) return;
-    const update = () => {
-      const r = anchorRef.current?.getBoundingClientRect();
-      if (r) setRect({ left: r.left + window.scrollX, top: r.bottom + window.scrollY, width: r.width });
-    };
-    update();
-    window.addEventListener('resize', update);
-    window.addEventListener('scroll', update, true);
-    return () => {
-      window.removeEventListener('resize', update);
-      window.removeEventListener('scroll', update, true);
-    };
-  }, [visible, rows.length]);
-
-  const pick = (v) => { setOpen(false); onPick(v); };
-
-  // Returns true when the key was used by the dropdown.
-  function handleKey(e) {
-    if (!visible) return false;
-    if (e.key === 'ArrowDown') { e.preventDefault(); setActive((i) => (i + 1) % rows.length); return true; }
-    if (e.key === 'ArrowUp') { e.preventDefault(); setActive((i) => (i <= 0 ? rows.length - 1 : i - 1)); return true; }
-    if (e.key === 'Enter' && active >= 0) { e.preventDefault(); pick(rows[active].value); return true; }
-    if (e.key === 'Escape') { e.preventDefault(); setOpen(false); return true; }
-    return false;
-  }
-
-  const listId = useMemo(() => `ff-suggest-${Math.random().toString(36).slice(2, 8)}`, []);
-  const dropdown = visible && rect && typeof document !== 'undefined'
-    ? createPortal(
-        <PlayerSuggestDropdown
-          id={listId}
-          rows={rows}
-          active={active}
-          typed={value}
-          rect={rect}
-          onHover={setActive}
-          onPick={pick}
-        />,
-        document.body,
-      )
-    : null;
-
-  return {
-    anchorRef,
-    dropdown,
-    handleKey,
-    openBox: () => setOpen(true),
-    close: () => setOpen(false),
-    inputProps: {
-      role: 'combobox',
-      'aria-autocomplete': 'list',
-      'aria-expanded': visible,
-      'aria-controls': visible ? listId : undefined,
-      'aria-activedescendant': visible && active >= 0 ? `${listId}-${active}` : undefined,
-      autoComplete: 'off',
-      spellCheck: false,
-    },
-  };
-}
-
-// Wrap the typed words where they start a word in the name.
-function highlightTyped(name, typed) {
-  const words = String(typed || '').trim().split(/\s+/).filter(Boolean)
-    .map((w) => w.replace(/[^\p{L}\p{N}'.-]/gu, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-    .filter(Boolean);
-  if (!words.length) return name;
-  const re = new RegExp(`(^|[\\s'-])(${words.join('|')})`, 'gi');
-  const out = [];
-  let last = 0;
-  name.replace(re, (m, pre, word, idx) => {
-    const start = idx + pre.length;
-    if (start > last) out.push(name.slice(last, start));
-    out.push(<mark key={start} style={{ background: 'none', color: 'var(--gold-bright)', fontWeight: 500 }}>{word}</mark>);
-    last = start + word.length;
-    return m;
-  });
-  if (last < name.length) out.push(name.slice(last));
-  return out;
-}
-
-function PlayerSuggestDropdown({ id, rows, active, typed, rect, onHover, onPick }) {
-  const width = Math.min(Math.max(rect.width, 280), 560);
-  return (
-    <ul
-      id={id}
-      role="listbox"
-      aria-label="Player and team suggestions"
-      className="overflow-hidden"
-      style={{
-        position: 'absolute',
-        left: rect.left,
-        top: rect.top + 8,
-        width,
-        maxWidth: 'calc(100vw - 32px)',
-        zIndex: 60,
-        margin: 0,
-        padding: 0,
-        listStyle: 'none',
-        borderRadius: 12,
-        border: '0.5px solid var(--line)',
-        background: 'var(--bg-elev)',
-        boxShadow: '0 18px 40px rgba(0,0,0,0.55)',
-        fontFamily: 'Geist, system-ui, sans-serif',
-        fontStyle: 'normal',
-      }}
-    >
-      {rows.map((row, i) => {
-        const on = i === active;
-        // "Teams" / "Players" labels, only when the list has teams in it.
-        const group = row.kind === 'team' ? 'Teams' : 'Players';
-        const prevGroup = i > 0 ? (rows[i - 1].kind === 'team' ? 'Teams' : 'Players') : null;
-        const showGroup = rows.some((r) => r.kind === 'team') && group !== prevGroup;
-        return (
-          <Fragment key={`${row.kind}-${row.value}-${row.sport || ''}`}>
-          {showGroup && (
-            <li role="presentation" style={{ fontSize: 12, color: 'var(--ink-600)', padding: '10px 16px 6px', background: 'var(--bg-base)' }}>
-              {group}
-            </li>
-          )}
-          <li
-            id={`${id}-${i}`}
-            role="option"
-            aria-selected={on}
-            // mousedown, not click: keeps focus in the input so blur doesn't
-            // close the list (or commit the heading) before the pick lands.
-            onMouseDown={(e) => { e.preventDefault(); onPick(row.value); }}
-            onMouseEnter={() => onHover(i)}
-            className="flex items-center justify-between gap-3 cursor-pointer"
-            style={{
-              minHeight: 48,
-              padding: '0 16px',
-              fontSize: row.kind === 'fix' ? 14 : 15,
-              color: row.kind === 'fix' ? 'var(--ink-400)' : on ? 'var(--ink-100)' : 'var(--ink-200)',
-              background: on || row.kind === 'fix' ? 'var(--bg-elev-2)' : 'transparent',
-              borderBottom: i < rows.length - 1 ? '0.5px solid var(--line-soft)' : 'none',
-            }}
-          >
-            {row.kind === 'fix' ? (
-              <span>
-                Did you mean <strong style={{ color: 'var(--gold-bright)', fontWeight: 500 }}>{row.value}</strong>?
-              </span>
-            ) : (
-              <>
-                <span className="truncate">{highlightTyped(row.value, typed)}</span>
-                <span
-                  className="font-mono uppercase flex-none rounded-full"
-                  style={{
-                    fontSize: 10,
-                    letterSpacing: '0.14em',
-                    color: row.kind === 'team' ? 'var(--gold)' : 'var(--ink-600)',
-                    border: `0.5px solid ${row.kind === 'team' ? 'var(--gold-deep)' : 'var(--line)'}`,
-                    padding: '3px 8px',
-                  }}
-                >
-                  {row.sport}
-                </span>
-              </>
-            )}
-          </li>
-          </Fragment>
-        );
-      })}
-    </ul>
-  );
-}
-
-/* One quiet line under the results heading when the name looks misspelled. */
-function DidYouMeanLine({ fix, onPick, onDismiss }) {
-  return (
-    <p className="mt-3 text-[15px]" style={{ color: 'var(--ink-400)' }}>
-      Did you mean{' '}
-      <button
-        type="button"
-        onClick={onPick}
-        className="transition-colors hover:text-[var(--ink-100)]"
-        style={{ color: 'var(--gold-bright)', borderBottom: '0.5px solid var(--gold-deep)' }}
-      >
-        {fix}
-      </button>
-      ?
-      <button
-        type="button"
-        onClick={onDismiss}
-        aria-label="Dismiss suggestion"
-        className="ml-2 text-[13px] px-1 transition-colors hover:text-[var(--ink-200)]"
-        style={{ color: 'var(--ink-600)' }}
-      >
-        <X className="w-4 h-4" strokeWidth={1.75} aria-hidden="true" />
-      </button>
-    </p>
   );
 }
 

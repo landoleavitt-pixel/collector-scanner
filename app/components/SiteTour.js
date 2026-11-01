@@ -266,7 +266,7 @@ const STEPS = [
     label: 'Tiers',
     title: 'Spot the rare ones.',
     // Ranges mirror tierForRun() in rarityUtils.js. Keep them in sync.
-    text: 'Every numbered card in your results is colour-coded by how many were made. Gold (/1\u2013/25) is rarest, then silver (/26\u2013/99), bronze (/100\u2013/249) and steel (/250+).',
+    text: 'Every numbered card in your results is colour-coded by how many were made. Gold (/1\u2013/25) is rarest, then platinum (/26\u2013/99), bronze (/100\u2013/249) and steel (/250+).',
     Art: TierArt,
   },
   {

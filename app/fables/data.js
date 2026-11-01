@@ -108,6 +108,7 @@ export function toParams(q, f = {}, extra = {}) {
   if (f.grade) p.set('grade', f.grade);
   if (f.firstEd) p.set('firstEd', '1');
   if (f.serialOnly) p.set('serialOnly', '1');
+  if (f.listing && f.listing !== 'any') p.set('listing', f.listing);
   if (f.priceMin) p.set('priceMin', String(f.priceMin));
   if (f.priceMax && f.priceMax < 100000) p.set('priceMax', String(f.priceMax));
   if (f.sort && f.sort !== 'rarest') p.set('sort', f.sort);
@@ -133,11 +134,19 @@ export function fromParams(sp) {
       grade: sp.get('grade') || '',
       firstEd: sp.get('firstEd') === '1',
       serialOnly: sp.get('serialOnly') === '1',
+      listing: ['auction', 'bin'].includes(sp.get('listing')) ? sp.get('listing') : 'any',
       priceMin: Number(sp.get('priceMin')) || 0,
       priceMax: Number(sp.get('priceMax')) || 100000,
       sort: sp.get('sort') || 'rarest',
     },
   };
+}
+
+// The shared result row and card popup read isAuction / isBuyItNow, like
+// sports results.
+function withListingFlags(it) {
+  const opts = it.buyingOptions || [];
+  return { ...it, isAuction: opts.includes('AUCTION'), isBuyItNow: opts.includes('FIXED_PRICE') };
 }
 
 export async function searchCards(q, filters, offset = 0) {
@@ -149,13 +158,14 @@ export async function searchCards(q, filters, offset = 0) {
       return { items: [], total: 0, error: d.error || 'Search failed. Try again.' };
     }
     const d = await r.json();
-    return { items: d.items || [], total: d.total ?? (d.items || []).length, nextOffset: d.nextOffset ?? null };
+    const items = (d.items || []).map(withListingFlags);
+    return { items, total: d.total ?? items.length, nextOffset: d.nextOffset ?? null };
   } catch {
     // Engine not live yet: filter the stub so the UI can be exercised.
     const words = (q || '').toLowerCase().split(/\s+/).filter(Boolean);
     const items = STUB_ITEMS.filter((it) =>
       (!filters.game || it.game === filters.game) &&
       words.every((w) => it.title.toLowerCase().includes(w) || it.game.includes(w)));
-    return { items, total: items.length, nextOffset: null, stub: true };
+    return { items: items.map(withListingFlags), total: items.length, nextOffset: null, stub: true };
   }
 }

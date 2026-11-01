@@ -17,7 +17,7 @@ export const metadata = {
     template: '%s · Fields & Floors',
   },
   description:
-    'Search every numbered sports card on eBay by print run, autograph, rookie status and price. Save searches and get an email when a match lists.',
+    'Search numbered sports cards on eBay by print run, autograph, rookie status and price. Save searches and get an email when a match lists.',
   keywords: [
     'sports cards',
     'card collecting',
@@ -34,7 +34,7 @@ export const metadata = {
     siteName: 'Fields & Floors Collectors',
     title: 'Fields & Floors Collectors',
     description:
-      'Search every numbered sports card on eBay by print run, autograph, rookie status and price, then save searches and get an email when a new card lists.',
+      'Search numbered sports cards on eBay by print run, autograph, rookie status and price, then save searches and get an email when a new card lists.',
     url: 'https://fieldsandfloors.com',
     locale: 'en_US',
     // app/opengraph-image.png is auto-detected by Next.js — no explicit image needed
@@ -43,7 +43,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'Fields & Floors Collectors',
     description:
-      'Search every numbered sports card on eBay by print run, autograph and price.',
+      'Search numbered sports cards on eBay by print run, autograph and price.',
     // app/twitter-image.png would override the OG image for Twitter specifically;
     // omitting it falls back to the OG image, which is what we want.
   },
@@ -111,7 +111,7 @@ export default function RootLayout({ children }) {
         name: 'Fields & Floors',
         url: 'https://fieldsandfloors.com',
         logo: 'https://fieldsandfloors.com/icon.png',
-        description: 'Search every numbered sports card on eBay by print run, autograph and price.',
+        description: 'Search numbered sports cards on eBay by print run, autograph and price.',
       },
       {
         '@type': 'WebSite',

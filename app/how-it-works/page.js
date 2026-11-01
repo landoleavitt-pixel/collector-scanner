@@ -13,7 +13,7 @@ export default function HowItWorksPage() {
     <PageShell
       eyebrow="The Method"
       title="How it works."
-      lede="eBay search was built for everything. Fields & Floors is built for cards. Three things make the difference."
+      lede="eBay search was built for everything. Fields & Floors is built for cards. Here's what makes the difference."
     >
       <TourLink
         className="inline-flex items-center gap-2 mb-12 rounded-lg px-3.5 py-2 text-[13px] font-medium text-[var(--gold-bright)] hover:text-[var(--gold)] transition-colors"

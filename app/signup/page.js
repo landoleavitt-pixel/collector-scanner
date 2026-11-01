@@ -4,7 +4,6 @@ import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { createClient } from '../../lib/supabaseClient';
-import Seal from '../components/Seal';
 import SignupBenefits from '../components/SignupBenefits';
 import { isNativeApp, signInWithAppleNative } from '../../lib/native';
 import { track } from '../../lib/track';
@@ -93,14 +92,7 @@ function SignupForm() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col" style={{ background: 'var(--bg-base)' }}>
-      <div className="hidden md:flex items-center gap-3 px-6 pt-8 opacity-70">
-        <Seal className="w-6 h-6" />
-        <span className="font-serif text-base" style={{ color: 'var(--ink-200)' }}>
-          Fields &amp; Floors
-        </span>
-      </div>
-
+    <main className="min-h-[70vh] flex flex-col" style={{ background: 'var(--bg-base)' }}>
       <div className="flex-1 flex items-center justify-center px-6 py-8 md:py-12">
         <div className="w-full max-w-[920px] grid grid-cols-1 md:grid-cols-[1fr_400px] gap-6 md:gap-14 items-center">
         <SignupBenefits />
@@ -116,11 +108,9 @@ function SignupForm() {
             className="font-serif italic text-[26px] leading-tight text-center mb-1"
             style={{ color: 'var(--ink-200)' }}
           >
-            Start the hunt.
+            Create your free account.
           </h1>
-          <p className="text-[13px] text-center mb-6" style={{ color: 'var(--ink-400)' }}>
-            Save searches. Get notified. Find grails.
-          </p>
+          <div className="mb-6" />
 
           {confirmationSent ? (
             <div

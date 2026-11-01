@@ -231,7 +231,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
   const fablesUrl = () => `/fables?${toParams(search.query, search.filters || {})}`;
 
   function handleView() {
-    router.push(search.side === 'fables' ? fablesUrl() : `/?savedSearch=${search.id}`);
+    router.push(search.side === 'fables' ? `/fables?savedSearch=${search.id}` : `/?savedSearch=${search.id}`);
   }
 
   async function handleShare() {
@@ -258,7 +258,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
   }
 
   function handleEdit() {
-    router.push(search.side === 'fables' ? fablesUrl() : `/?editSearch=${search.id}`);
+    router.push(search.side === 'fables' ? `/fables?editSearch=${search.id}` : `/?editSearch=${search.id}`);
   }
 
   return (

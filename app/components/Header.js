@@ -154,14 +154,15 @@ export default function Header() {
             <span data-ff-brand className="inline-block">
               Fields <em className="text-[var(--gold)] not-italic">&amp;</em> Floors
             </span>{' '}
-            <em data-ff-collectors className="text-[var(--gold)] not-italic">Collectors</em>
+            {/* Inner pages on phones: just the name, so the bar stays one line. */}
+            <em data-ff-collectors className={`text-[var(--gold)] not-italic ${isHome ? '' : 'hidden sm:inline'}`}>Collectors</em>
           </span>
         </Link>
         )}
         <SideSwitch fables={isFables} className="hidden lg:inline-flex" />
         </div>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4 sm:gap-6 flex-none">
           {/* Primary nav. These three are the whole product for a signed-in
               user, so they live on the bar rather than behind the account
               menu — one click from any page. Hidden for anonymous visitors
@@ -223,9 +224,9 @@ export default function Header() {
           ) : isFables ? null : (
             <Link
               href="/"
-              className="text-[11px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
+              className="whitespace-nowrap text-[11px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
             >
-              <ArrowLeft className="inline-block w-3.5 h-3.5 mr-1 -mt-0.5" strokeWidth={2} aria-hidden="true" />Back to search
+              <ArrowLeft className="inline-block w-3.5 h-3.5 mr-1 -mt-0.5" strokeWidth={2} aria-hidden="true" /><span className="hidden sm:inline">Back to search</span><span className="sm:hidden">Search</span>
             </Link>
           )}
 
@@ -337,12 +338,14 @@ export default function Header() {
                 </div>
               ) : (
                 <div className="flex items-center gap-4">
-                  <Link
-                    href="/login"
-                    className="text-[12px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
-                  >
-                    Sign in
-                  </Link>
+                  {pathname !== '/login' && (
+                    <Link
+                      href="/login"
+                      className="whitespace-nowrap text-[12px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
+                    >
+                      Sign in
+                    </Link>
+                  )}
                   <Link
                     href="/signup"
                     className="hidden sm:inline-block text-[11px] uppercase tracking-[0.2em] font-semibold px-4 py-2 rounded-full transition-opacity hover:opacity-90"

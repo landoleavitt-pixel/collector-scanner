@@ -34,6 +34,12 @@ function NavList({ links }) {
   );
 }
 
+const FABLES_LINKS = [
+  { href: '/fables', label: 'Search cards' },
+  { href: '/watchlist-cards', label: 'Watchlist' },
+  { href: '/watchlist', label: 'Saved searches' },
+];
+
 export default function Footer() {
   return (
     <footer data-ff-footer className="relative z-10 mt-24 border-t border-[var(--line)]">
@@ -53,22 +59,32 @@ export default function Footer() {
               </span>
             </Link>
             <p data-sports-only className="text-sm text-[var(--ink-400)] max-w-xs leading-relaxed">
-              Search every numbered sports card on eBay by print run, autograph and price.
+              Search numbered sports cards on eBay by print run, autograph and price.
             </p>
           </div>
-          <div>
+          <div data-sports-only>
             <FilterLabel>Product</FilterLabel>
             <NavList links={PAYMENTS_LIVE ? PRODUCT_LINKS : PRODUCT_LINKS.filter((l) => l.href !== '/pricing')} />
           </div>
-          <div>
+          <div data-sports-only>
             <FilterLabel>Hobby</FilterLabel>
             <NavList links={HOBBY_LINKS} />
+          </div>
+          {/* The sports guides and tour talk about players and print runs, so
+              Foils & Fables links to its own search and the shared account pages. */}
+          <div data-fables-only>
+            <FilterLabel>Foils &amp; Fables</FilterLabel>
+            <NavList links={FABLES_LINKS} />
+          </div>
+          <div data-fables-only>
+            <FilterLabel>Also</FilterLabel>
+            <NavList links={[{ href: '/', label: 'Sports cards' }, { href: '/contact', label: 'Contact' }]} />
           </div>
         </div>
         <div data-ff-footer-legal className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pt-8 border-t border-[var(--line-soft)] text-[12px] text-[var(--ink-600)]">
           <div><span data-sports-only>© 2026 Fields &amp; Floors</span><span data-fables-only>© 2026 Foils &amp; Fables, a Fields &amp; Floors site</span></div>
           <div className="flex gap-6 items-center flex-wrap">
-            <TourLink className="hover:text-[var(--gold)] transition-colors">Site tour</TourLink>
+            <span data-sports-only><TourLink className="hover:text-[var(--gold)] transition-colors">Site tour</TourLink></span>
             <Link href="/contact" className="hover:text-[var(--gold)] transition-colors">Support</Link>
             <Link href="/privacy" className="hover:text-[var(--gold)] transition-colors">Privacy</Link>
             <Link href="/terms" className="hover:text-[var(--gold)] transition-colors">Terms</Link>
