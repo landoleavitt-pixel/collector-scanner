@@ -79,6 +79,9 @@ Everything Landon has decided, so no agent ever asks him the same thing twice. O
 - **All languages shown by default**, with a Language filter. Sealed, lots and proxies are hidden by default, same as sports; a sealed-box mode may come later. (2026-10-30)
 - No game names, logos or mascots in our brand, domain or app name, subtitle or keywords. Game names appear only as plain text in filters and copy, with a "Not affiliated with eBay or any game publisher" line. (2026-10-30)
 
+- **Select:** rank by the /N in the title, and show a colour name only when it means the same print run in every tier (option A in research/select-tiers.md). Measure how often titles name the tier before adding tier-aware ladders. (2026-10-31)
+- Insert colour lists stay out of the UI until checked against the makers' own checklists. (2026-10-31, Boss)
+
 ## Search
 - Spelling suggestions cover pro players **and college players**. The roster refresh is run by hand once a quarter. (2026-10-20, 2026-10-21)
 - Card company filter, including Leaf and the listed product lines. (2026-10-20)
