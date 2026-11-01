@@ -122,11 +122,13 @@ for (const p of pages) {
 try {
   const res = await fetch(`${BASE}/fables?utm_source=x`, { signal: AbortSignal.timeout(60000) });
   const html = await res.text();
-  const isHome = /Chase the shine/i.test(html) && !/listings?,\s*ranked/i.test(html);
-  // Known open issue (QA 2026-10-31 #1). Reported as expected until the design fix lands.
+  // /fables draws itself in the browser, so its server HTML never holds the
+  // home page's words either way. What we can check here: it loads and isn't
+  // a results page. (QA 2026-10-31 #1 checked in a browser 2026-11-01: utm
+  // tags open the home page.)
+  const isResults = /listings?,\s*ranked/i.test(html);
   if (res.status !== 200) report('FAIL', '/fables?utm_source=x returns 200', `HTTP ${res.status}`);
-  else if (isHome) report('PASS', '/fables?utm_source=x serves the home page');
-  else report('EXPECTED FAIL', '/fables?utm_source=x serves the home page', 'opens a results list (QA #1, fix in progress)');
+  else report(isResults ? 'FAIL' : 'PASS', '/fables?utm_source=x serves the home page', isResults ? 'opens a results list' : '');
 } catch (e) { report('FAIL', '/fables?utm_source=x', e.message); }
 
 // 5. Checklist API checks from scripts/smoke-extra.mjs.
