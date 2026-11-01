@@ -2545,6 +2545,41 @@
    "expect": {
     "rarity": "holo"
    }
+  },
+  {
+   "group": "Re-test 3 follow-ups",
+   "title": "Charizard ex 234/091 Sv: Paldean Fates Holo + Iono",
+   "expect": {
+    "lot": true
+   }
+  },
+  {
+   "group": "Re-test 3 follow-ups",
+   "title": "Pokemon Classic PSA 10 Venusaur Charizard Blastoise 3 Consecutive Certs",
+   "expect": {
+    "lot": true
+   }
+  },
+  {
+   "group": "Re-test 3 follow-ups",
+   "title": "Charizard 4/102 Base Set Holo + Free Toploader",
+   "expect": {
+    "lot": false
+   }
+  },
+  {
+   "group": "Re-test 3 follow-ups",
+   "title": "Mew ex 053 Sv: Scarlet & Violet Black Star Promo Cards Holo Sealed",
+   "expect": {
+    "lot": false
+   }
+  },
+  {
+   "group": "Re-test 3 follow-ups",
+   "title": "Pokemon 151 Booster Pack Sealed",
+   "expect": {
+    "lot": true
+   }
   }
  ]
 }

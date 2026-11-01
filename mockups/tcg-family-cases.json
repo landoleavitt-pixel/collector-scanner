@@ -528,6 +528,240 @@
    "expect": {
     "kind": "reject"
    }
+  },
+  {
+   "game": "pokemon",
+   "card": "Venusaur",
+   "title": "Pokémon TCG Base Set Charizard, Blastoise, Venusaur, Holo",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "charizard-ex",
+   "title": "Charizard ex 234/091 Sv: Paldean Fates Holo + Iono",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Iono",
+   "title": "Charizard ex 234/091 Sv: Paldean Fates Holo + Iono",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Lugia V",
+   "title": "Ho-Oh V & Lugia V PSA 10 Pokemon Card Set Japanese",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Rayquaza VMAX",
+   "title": "Pokemon Card Charizard VSTAR Vs Rayquaza VMAX",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Blastoise",
+   "title": "Pokemon Classic PSA 10 Venusaur Charizard Blastoise 3 Consecutive Certs",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Charizard",
+   "title": "Charizard Mewtwo VSTAR PSA 10 Japanese",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Charizard",
+   "title": "Hau (#41 Charizard Stamped) 120/149 Promo Battle Academy",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Blastoise",
+   "title": "Pokemon TCG Drowzee 011/032 Classic Blastoise Holo Japanese CGC 10",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Venusaur",
+   "title": "Kagayaku Venusaur K S10b Pokemon GO PSA 10",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Charizard",
+   "title": "Charizard 4/102 Base Set Holo + Free Toploader",
+   "expect": {
+    "kind": "exact"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "demonic-tutor",
+   "title": "Emeritus of Woe // Demonic Tutor (REGULAR) x1 - MTG SOS #80",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "demonic-tutor",
+   "title": "MTG Emeritus of Woe / Demonic Tutor Secrets of Strixhaven SOS",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Gengar VMAX",
+   "title": "Rare Gengar VMAX SGG High-Class Deck 002/019",
+   "expect": {
+    "kind": "language"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Giratina V",
+   "title": "2022 VSTAR Universe #110/172 Giratina V CGC 10",
+   "expect": {
+    "kind": "language"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Giratina V",
+   "title": "Giratina V SR Lost Abyss 110/100 PSA 10",
+   "expect": {
+    "kind": "language"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Rayquaza VMAX",
+   "title": "PSA10 Rayquaza VMAX 016/030 Special Deck Set Pokemon",
+   "expect": {
+    "kind": "language"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Mew ex",
+   "title": "Mew ex 053 Sv: Scarlet & Violet Black Star Promo Cards Holo Sealed",
+   "expect": {
+    "kind": "exact",
+    "versions": [
+     "svp:053:h"
+    ]
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "Lugia V",
+   "title": "Pokemon TCG Indonesia Lugia V PROMO 375/S-P Sealed",
+   "expect": {
+    "kind": "language"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "force-of-will",
+   "title": "Mtg Force Of Will 2Xm Foil",
+   "expect": {
+    "kind": "set",
+    "why": "Double Masters"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "force-of-will",
+   "title": "Mtg Force Of Will/Force Will Silver Scroll Foil",
+   "expect": {
+    "why": "Secrets of Strixhaven"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "doubling-season",
+   "title": "PSA 9 Magic: The Gathering Doubling Season #0011 TMNT 2026 English",
+   "expect": {
+    "kind": "exact",
+    "why": "Teenage Mutant Ninja Turtles"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "dockside-extortionist",
+   "title": "Dockside Extortionist [LIST 107/024] NM EN MTG",
+   "expect": {
+    "kind": "exact",
+    "why": "The List"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "demonic-tutor",
+   "title": "Mtg Demonic Tutor Uma",
+   "expect": {
+    "why": "Ultimate Masters"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "orcish-bowmasters",
+   "title": "Foil Orcish Bowmasters - 103 - NM - Prerelease Cards",
+   "expect": {
+    "kind": "exact",
+    "why": "Prerelease"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "gaeas-cradle",
+   "title": "1999 MTG WORLD CHAMPIONSHIPS TOKYO DECKS MATT LINDE #321 GAEA'S CRADLE PSA 6",
+   "expect": {
+    "kind": "exact",
+    "why": "World Championship Decks 1999"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "smothering-tithe",
+   "title": "Wizards of the Coast Smothering Tithe 022/259 Rare Regular English 2019 MTG",
+   "expect": {
+    "kind": "exact",
+    "why": "Ravnica Allegiance"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "jace-the-mind-sculptor",
+   "title": "MTG Jace, the Mind Sculptor Foil Eng #056/332",
+   "expect": {
+    "kind": "exact",
+    "why": "Double Masters #56"
+   }
   }
  ]
 }
