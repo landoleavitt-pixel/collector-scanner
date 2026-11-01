@@ -641,6 +641,42 @@
         "Elevate Checklist"
       ],
       "note": "Insert set. Colour list from the insert's own checklist."
+    },
+    {
+      "key": "2025-panini-select-football",
+      "kind": "tiered",
+      "product": "2025 Panini Select Football",
+      "label": "2025 Panini Select Football",
+      "sport": "football",
+      "year": 2025,
+      "brand": "panini-select",
+      "page": "2025-panini-select-football",
+      "sections": [
+        "Base Concourse Checklist",
+        "Base Premier Level Checklist",
+        "Base Club Level Checklist",
+        "Base Suite Level Checklist",
+        "Base Field Level Checklist"
+      ],
+      "note": "Select is printed in tiers. A colour name appears only where it has the same print run in every tier."
+    },
+    {
+      "key": "2024-25-panini-select-basketball",
+      "kind": "tiered",
+      "product": "2024-25 Panini Select Basketball",
+      "label": "2024-25 Panini Select Basketball",
+      "sport": "basketball",
+      "year": 2024,
+      "season": true,
+      "brand": "panini-select",
+      "page": "2024-25-panini-select-basketball",
+      "sections": [
+        "Base Concourse Checklist",
+        "Base Premier Level Checklist",
+        "Base Courtside Checklist",
+        "Base Mezzanine Level Checklist"
+      ],
+      "note": "Select is printed in tiers. A colour name appears only where it has the same print run in every tier."
     }
   ]
 }

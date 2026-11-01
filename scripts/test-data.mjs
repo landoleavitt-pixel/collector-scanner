@@ -54,5 +54,22 @@ check(find(tc, 'Green Refractor')?.cards === undefined, 'Green Refractor is on b
 check(find(tc, 'Purple Geometric Refractor')?.boxOnly === 'Breaker', 'Purple Geometric should be Breaker-only');
 check(find(tc, 'Green Refractor')?.boxOnly === undefined, 'Green Refractor is in several boxes, not boxOnly');
 
+// Panini Select (tiered): a colour name appears only where it has the same run
+// in every tier. Blue Prizm (249/175/99/99/75) and Pink Prizm (10/8/6/4/1) vary,
+// so neither name may appear; their runs become "Colour depends on tier" rows.
+const sf = EXTRA_SETS['2025-panini-select-football'];
+const sb = EXTRA_SETS['2024-25-panini-select-basketball'];
+for (const [key, t] of [['select football', sf], ['select basketball', sb]]) {
+  check(t && t.kind === 'tiered' && t.tiers.length >= 4, `${key}: tiered list with its tiers`);
+  const named = [...t.parallels.numbered, ...t.parallels.unnumbered].filter((p) => p.name !== 'Colour depends on tier');
+  const rows = t.parallels.numbered.filter((p) => p.name === 'Colour depends on tier');
+  check(rows.length > 0 && rows.every((p) => typeof p.run === 'number' && p.key === `tier-varies-${p.run}`), `${key}: depends rows carry a run`);
+  check(!named.some((p) => p.key.startsWith('tier-varies')), `${key}: a depends row has a colour name`);
+}
+check(!find(sf, 'Blue Prizm') && !find(sf, 'Pink Prizm'), 'Select football: varying colour names must not appear');
+check(find(sf, 'Silver Prizm') && find(sf, 'Zebra Prizm'), 'Select football: colours on every tier are named');
+check(sf.parallels.numbered.some((p) => p.key === 'tier-varies-75'), 'Select football: Blue Prizm /75 is a depends row');
+check(sf.parallels.numbered.some((p) => p.key === 'tier-varies-1'), 'Select football: Pink Prizm /1 is a depends row');
+
 console.log(fail ? `${fail} data check(s) failed` : `data checks pass (${Object.keys(EXTRA_SETS).length} lists)`);
 process.exit(fail ? 1 : 0);

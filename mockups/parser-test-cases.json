@@ -803,6 +803,71 @@
       "title": "2024-25 Panini Mosaic Basketball Elevate Purple Fluorescent Mosaic /175",
       "expect": "none",
       "why": "Elevate insert, not the base Mosaic list"
+    },
+    {
+      "group": "Panini Select, option A (2026-11-01): colour names only where the same in every tier; varying runs are a rung row with no colour",
+      "title": "Panini 2025 Select Football Premier Level Silver Prizm RC Cam Skattebo #195",
+      "expect": "2025-panini-select-football:silver-prizm",
+      "why": "Silver Prizm is on every tier, unnumbered"
+    },
+    {
+      "group": "Panini Select, option A (2026-11-01): colour names only where the same in every tier; varying runs are a rung row with no colour",
+      "title": "2025 Panini Select Football Cam Ward RC Zebra Prizm #2 Tennessee Titans",
+      "expect": "2025-panini-select-football:zebra-prizm",
+      "why": "Zebra Prizm is on every tier"
+    },
+    {
+      "group": "Panini Select, option A (2026-11-01): colour names only where the same in every tier; varying runs are a rung row with no colour",
+      "title": "Panini 2025 Select Football Premier Level Zebra #140 Alvin Kamara Saints",
+      "expect": "2025-panini-select-football:zebra-prizm"
+    },
+    {
+      "group": "Panini Select, option A (2026-11-01): colour names only where the same in every tier; varying runs are a rung row with no colour",
+      "title": "Panini 2025 Select Football DK Metcalf Club Level Prizm /799 #253 Steelers",
+      "expect": "2025-panini-select-football:-",
+      "why": "rung 799, colour depends on tier: no colour name"
+    },
+    {
+      "group": "Panini Select, option A (2026-11-01): colour names only where the same in every tier; varying runs are a rung row with no colour",
+      "title": "2025 Panini Select Football Derek Stingley Jr. #235 Prizm Club Level /249",
+      "expect": "2025-panini-select-football:-",
+      "why": "rung 249, colour depends on tier"
+    },
+    {
+      "group": "Panini Select, option A (2026-11-01): colour names only where the same in every tier; varying runs are a rung row with no colour",
+      "title": "2025 Panini Select Football Matthew Golden Packers #467 Prizm Field Level /35 RC",
+      "expect": "2025-panini-select-football:-",
+      "why": "rung 35 is White Prizm on every tier, but no colour is named in the title"
+    },
+    {
+      "group": "Panini Select, option A (2026-11-01): colour names only where the same in every tier; varying runs are a rung row with no colour",
+      "title": "2025 Panini Select Football Isaac TeSlaa Rookie Concourse Level Bronze /899 #70",
+      "expect": "2025-panini-select-football:-",
+      "why": "Bronze is not on the list; rung 899 only"
+    },
+    {
+      "group": "Panini Select, option A (2026-11-01): colour names only where the same in every tier; varying runs are a rung row with no colour",
+      "title": "Panini 2024-25 Select Basketball Darius Garland Cavaliers Concourse Prizm #39",
+      "expect": "2024-25-panini-select-basketball:-",
+      "why": "base card, no serial"
+    },
+    {
+      "group": "Panini Select, option A (2026-11-01): colour names only where the same in every tier; varying runs are a rung row with no colour",
+      "title": "2025 Panini Select Football Complete Your Set You Pick Football Card",
+      "expect": "none",
+      "why": "lot listing"
+    },
+    {
+      "group": "Panini Select, option A (2026-11-01): colour names only where the same in every tier; varying runs are a rung row with no colour",
+      "title": "2025 Panini Select Turbocharged Complete Your Set You Pick Football Card",
+      "expect": "none",
+      "why": "lot listing, Turbocharged is another product"
+    },
+    {
+      "group": "Panini Select, option A (2026-11-01): colour names only where the same in every tier; varying runs are a rung row with no colour",
+      "title": "2025 Panini Select Football Singles - Pick Your Cards! - No Minimums!",
+      "expect": "none",
+      "why": "lot listing"
     }
   ]
 }

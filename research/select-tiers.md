@@ -64,3 +64,16 @@ Start with **A**. It's correct on every card we can see today, and it still show
 
 1. OK to start with option A (rungs by print run, colour names only where safe)?
 2. OK to measure tier words in real titles before deciding on B?
+
+## Measured (2026-11-01): how often titles name the tier
+
+Two plain searches ("2025 Panini Select Football" and "2024-25 Panini Select Basketball", no tier words in the query), 404 Select listings from the site's own search:
+- **50% (203 of 404)** name a tier: Concourse, Premier, Club, Courtside, Suite, Mezzanine or Field Level.
+- Searches that include a tier word in the query are not used: they inflate the figure (78%).
+- Sample size is small and from one day. Re-measure before deciding on option B.
+
+## Built: option A (2026-11-01)
+
+- Ladder rows are print runs. A colour name appears only where it has the same run in every tier of its set (16 football colours, 5 basketball). Other names give a "Colour depends on tier" row at each run they can have, with no name.
+- Football: 30 numbered rows and 5 unnumbered colours. Basketball: 25 numbered rows and 2 unnumbered.
+- The parser places a Select title only on a named colour that is consistent across tiers, or on its run (rung) when no safe colour is named. Real titles checked: Silver Prizm, Zebra Prizm, and rung placements for Club and Field Level /249, /799 and /35.

@@ -86,15 +86,53 @@ function scopeFlags(name, secs) {
   return flags;
 }
 
+/**
+ * Tiered sets (Panini Select): each tier has its own colour list, and one colour
+ * name can carry a different print run per tier. A colour name is kept only
+ * where it has the same run in every tier it's listed in, and in every tier of
+ * the set. Any other name becomes a "Colour depends on tier" row at each run it
+ * can have, with no colour name, so a card is never given a colour its tier
+ * doesn't match.
+ */
+export function tieredList(set, secs) {
+  const tiers = set.sections.map((h) => {
+    const s = secs.find((x) => x.heading === h);
+    if (!s) throw new Error(`${set.key}: no section "${h}" on ${set.page}`);
+    return { tier: h, rows: s.parallels.filter((p) => !NOT_A_PARALLEL.test(p.name)) };
+  });
+  const seen = new Map();
+  for (const t of tiers) {
+    for (const p of t.rows) {
+      const name = p.name.replace(/\s*\/-?\d+$/, '');
+      if (!seen.has(name)) seen.set(name, []);
+      seen.get(name).push({ tier: t.tier, run: p.run ?? null, p });
+    }
+  }
+  const list = [];
+  const dependRuns = new Set();
+  for (const [name, hits] of seen) {
+    const runs = new Set(hits.map((h) => h.run));
+    if (hits.length === tiers.length && runs.size === 1) {
+      list.push({ ...hits[0].p, name });
+      continue;
+    }
+    for (const r of runs) if (r != null) dependRuns.add(r);
+  }
+  for (const r of [...dependRuns].sort((a, b) => b - a)) {
+    list.push({ key: `tier-varies-${r}`, name: 'Colour depends on tier', run: r, color: '#d8d8d8', gradient: ['#d8d8d8', '#9a9a9a'] });
+  }
+  return list;
+}
+
 function build(set, secs) {
   const find = (h) => {
     const s = secs.find((x) => x.heading === h);
     if (!s) throw new Error(`${set.key}: no section "${h}" on ${set.page}`);
     return s;
   };
-  const list = [];
+  const list = set.kind === 'tiered' ? tieredList(set, secs) : [];
   const byKey = new Map();
-  for (const h of set.sections) {
+  if (set.kind !== 'tiered') for (const h of set.sections) {
     for (const p of find(h).parallels) {
       if (NOT_A_PARALLEL.test(p.name) || p.name.length > 45) continue;
       // Series 2 lists "Gold /2025" as a colour: that number is the year, not a run.
@@ -166,6 +204,7 @@ function build(set, secs) {
     ...(set.college ? { college: true } : {}),
     ...(set.kind === 'auto' ? { kind: 'auto', line: set.line, parent: set.parent } : {}),
     ...(set.kind === 'insert' ? { kind: 'insert', product: set.product } : {}),
+    ...(set.kind === 'tiered' ? { kind: 'tiered', product: set.product, tiers: set.sections.map((h) => h.replace(/^Base /, '').replace(/ Checklist$/, '')) } : {}),
     ...(set.requireNamed ? { requireNamed: true } : {}),
     ...(set.note ? { note: set.note } : {}),
     ...(baseKey ? { baseKey } : {}),
