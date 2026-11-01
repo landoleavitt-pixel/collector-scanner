@@ -4,6 +4,7 @@ Things only you can do, because they need your accounts, money or signature. The
 
 ## Do now
 
+- [ ] **Deploy the email checker** (emails changed in today's update): in Terminal, in the project folder, run `npx supabase functions deploy poller`, then tell the boss.
 - [ ] Sign in and look at your new home page once (new matches, price drops, ending soon). Tell the boss if anything looks off.
 - [ ] **Stop counting your own visits:** open **fieldsandfloors.com/?internal=1** once on each browser and phone you use (or just sign in on it). The agents' browser is already done.
 

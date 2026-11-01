@@ -8,13 +8,11 @@ The single list of work that's finished or in progress but **not live yet**. The
 |---|---|---|---|---|---|
 | P1 | F&F/Fables parity: refresh popup, spelling suggestions, full audit; then checklist mockup | Design | 🟡 Building | app/fables, shared components, app/page.js | — |
 | P2 | Card-family engine: Scryfall + TCGdex catalogs, /api/tcg-versions, family search, owned_cards table, re-test | Engine | 🟡 Building | lib/tcg, app/api/tcg-*, app/api/owned, migration | SQL for Landon |
-| P3 | Rarity: rookie-only / box-only parallel flags, new 2025-26 sets | Rarity | 🟡 Building | lib/parallelData*, scripts | — |
-| P4 | Foils & Fables emails (branding, filter summary, links) | Spelling agent | 🟡 Building | poller, email helpers | poller redeploy |
 | P5 | App name ideas + two-sided App Store listing | Listing agent | 🟡 Drafting | APP_STORE_LISTING.md, appstore/ | Landon picks name |
-| P6 | QA pass of live site, both sides | Team-search agent | 🟡 Testing | research/qa-2026-10-31.md | — |
 | P7 | Catalog research phase 2 (Japanese Pokémon, One Piece, YGO/Lorcana terms) | Research | 🟡 Researching | research/catalogs-phase-2.md | — |
 | 7 | eBay Partner Network affiliate links | CFO | ⏸ Plan approved. Waiting on Landon's sign-up + Campaign ID; code held until batch ships | SiteTour.js, guides, reading-list copy + link tagging | — |
 | L05 | Proof strip | Landing | ⏹ Skipped: no honest live number yet (no fake figures) | — | — |
+| E-later | Fables versions: "Secret Lair Prize #8001" / "Buy-A-Box" titles to catalog set names; Magic titles with a number but no set ("022/259") | Engine | ⚪ Follow-up | lib/tcg | — |
 | S-poll | Lock down the alert checker: it can be triggered by anyone holding the public key; require a private secret header from the cron jobs instead | Debugger | ⚪ Follow-up (low risk today: it only re-runs checks and never re-sends) | poller, both cron jobs | poller deploy + Landon edits 2 cron jobs |
 
 **iOS release reminders:** run `npx cap sync ios` before every archive, so the app points at fieldsandfloors.com and not a test server. Check that the TestFlight build receives push notifications. Add the `ff_base_annual` product in App Store Connect and RevenueCat.
@@ -23,6 +21,7 @@ The single list of work that's finished or in progress but **not live yet**. The
 
 | When | What | Commit |
 |---|---|---|
+| 2026-11-01 | Fables works like F&F; Fables emails; sports label fixes; Select option A + rookie/box-only flags; checklist importer + /api/checklist; Terms/Privacy both brands + usage-stats switch and menu link; payments-off header; Sign in with Apple revoke on delete; Fables result-quality fixes + card-family fixes | 65d60a7 (poller deploy: Landon) |
 | 2026-10-31 | Foils & Fables at /fables: card-game search (5 games), Night foil look, side switch, shared watchlist, app chooser; eBay token cache fix | 6f506e7 |
 | 2026-10-30 | Rarity lists: Prizm Basketball 25-26, Topps Series 2 2026, Mosaic Basketball 24-25, UD Series 2 Hockey; Common print runs label on phones | fb93bfc |
 | 2026-10-30 | Sign-up page benefits; signed-out sign-up prompt after the 4th result (Option B) | bf6a5ae |
