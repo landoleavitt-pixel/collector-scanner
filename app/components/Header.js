@@ -319,6 +319,13 @@ export default function Header() {
                       >
                         Take the tour
                       </Link>
+                      <Link
+                        href="/privacy#usage-stats"
+                        onClick={() => setMenuOpen(false)}
+                        className="block px-4 py-2 text-[13px] text-[var(--ink-400)] hover:text-[var(--gold)] hover:bg-[rgba(212,175,92,0.05)] transition-colors"
+                      >
+                        Usage stats
+                      </Link>
                       <div
                         className="border-t mt-1"
                         style={{ borderColor: 'rgba(232,226,213,0.08)' }}
