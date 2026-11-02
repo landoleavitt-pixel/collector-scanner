@@ -1,8 +1,8 @@
-# App Store Listing: Fields & Fables (two-sided app, free early access)
+# App Store Listing: Floors & Fables (two-sided app, free early access)
 
 Everything for App Store Connect, ready to copy and paste. The iPhone app holds **both sides**: **Fields & Floors** (sports cards) and **Foils & Fables** (trading card games). It opens on a choose-your-side screen, then has a switch at the top. This listing is for **free early access, no in-app purchases**.
 
-The app name is **Fields & Fables** (Landon's pick, 2026-10-31; checks in section 0). Character counts are checked against Apple's limits.
+The app name is **Floors & Fables** (Landon, 2026-11-01; it replaces Fields & Fables, his 2026-10-31 pick, and matches the umbrella website floorsandfables.com). Character counts are checked against Apple's limits.
 
 Where to paste: App Store Connect → your app → the version under **iOS App** (text, screenshots, review notes), **App Information** (name, subtitle, category, age rating), and **App Privacy** (privacy answers).
 
@@ -12,17 +12,19 @@ Where to paste: App Store Connect → your app → the version under **iOS App**
 
 ---
 
-## 0. App name: Fields & Fables
+## 0. App name: Floors & Fables
 
 ### Name field (30 max)
 
 ```
-Fields & Fables
+Floors & Fables
 ```
 
-15 characters. It joins the two side names and keeps the same F&F initials, so the existing F&F monogram still fits. Optional: `Fields & Fables: Card Finder` (28) puts "card finder" into App Store search, since nobody searches for a new brand. Either is fine; the short one matches the home screen label.
+15 characters. It's the umbrella brand for the two sides (Fields & Floors and Foils & Fables) and keeps the same F&F initials, so the existing F&F monogram still fits. Optional: `Floors & Fables: Card Finder` (28) puts "card finder" into App Store search, since nobody searches for a new brand. Either is fine; the short one matches the home screen label.
 
-### Checks on the final name (2026-10-31)
+### Checks on the earlier name, Fields & Fables (2026-10-31)
+
+These checks were for **Fields & Fables**, the name before 2026-11-01. **Floors & Fables has not had an App Store or trademark check yet.** floorsandfables.com and .ca were unregistered on 2026-11-01 (DECISIONS.md, Umbrella brand). Creating the app record in App Store Connect confirms whether the name is free.
 
 This is a first screen, not clearance. Landon has decided on no trademark lawyer before launch.
 
@@ -75,7 +77,7 @@ Free during early access. Search live eBay listings for rare sports cards and tr
 ### Description (4,000 max, about 1,800 used)
 
 ```
-Fields & Fables is a search tool for collectors hunting rare cards on eBay. It has two sides, and you pick one each time you open the app: Fields & Floors for sports cards, and Foils & Fables for trading card games. A switch at the top moves between them, and one account covers both.
+Floors & Fables is a search tool for collectors hunting rare cards on eBay. It has two sides, and you pick one each time you open the app: Fields & Floors for sports cards, and Foils & Fables for trading card games. A switch at the top moves between them, and one account covers both.
 
 FIELDS & FLOORS: SPORTS CARDS
 Type a player, team or set and see live eBay listings sorted rarest first, so a /5 shows up before a /299. Every result is tagged by print run: Grail (/1 to /25), Ultra (/26 to /99), Rare (/100 to /249) and Scarce (/250 and up). Open any card to see how rare its print run is.
@@ -98,7 +100,7 @@ We don't sell cards. Tapping a listing opens it on eBay, and you buy from the se
 
 Sign in with Apple or email. You can delete your account at any time from the Account menu.
 
-Fields & Fables is independent. It is not affiliated with, endorsed by or sponsored by eBay Inc. or any card maker or game publisher.
+Floors & Fables is independent. It is not affiliated with, endorsed by or sponsored by eBay Inc. or any card maker or game publisher.
 ```
 
 > **Check before pasting:**
@@ -115,7 +117,7 @@ No spaces after commas. Words already in the subtitle (find, rare, sports, game,
 baseball,basketball,football,hockey,tcg,trading,holo,foil,rookie,parallel,serial,autograph,auction
 ```
 
-None of these repeat a word from the name "Fields & Fables" or the subtitle, so no characters are wasted.
+None of these repeat a word from the name "Floors & Fables" or the subtitle, so no characters are wasted.
 
 ### What's New (version 1.0)
 
@@ -210,9 +212,9 @@ Then tick these data types. For every one: **Used for tracking: No.** We share n
 ### Notes (paste into "Notes")
 
 ```
-Fields & Fables is a search tool for card collectors. It has two sides, chosen on a screen when the app opens: Fields & Floors (sports cards) and Foils & Fables (trading card games). A switch at the top moves between them, and one account covers both. It uses eBay's official Browse API to show live eBay listings, ranked rarest first.
+Floors & Fables is a search tool for card collectors. It has two sides, chosen on a screen when the app opens: Fields & Floors (sports cards) and Foils & Fables (trading card games). A switch at the top moves between them, and one account covers both. It uses eBay's official Browse API to show live eBay listings, ranked rarest first.
 
-The app is free during early access. There are no in-app purchases and no paid plans in this version. We don't sell anything: tapping a listing opens it on eBay in Safari, and the member buys from the seller on eBay. Fields & Fables is not affiliated with eBay or with any card maker or game publisher. Game names appear inside the app only as plain filter labels, to describe which listings a member wants to see.
+The app is free during early access. There are no in-app purchases and no paid plans in this version. We don't sell anything: tapping a listing opens it on eBay in Safari, and the member buys from the seller on eBay. Floors & Fables is not affiliated with eBay or with any card maker or game publisher. Game names appear inside the app only as plain filter labels, to describe which listings a member wants to see.
 
 Native features:
 - Push notifications: when a new listing matches a saved search, and bid reminders before an auction a member is watching ends (3 hours to 5 minutes before).
@@ -278,17 +280,19 @@ Our answer: screenshots are of the real app with real current eBay listings. Not
 
 ## 7. Other places the app name has to change
 
+**2026-11-01:** renamed again, Fields & Fables → **Floors & Fables**, in `capacitor.config.json`, `ios/App/App/capacitor.config.json`, `ios/App/App/Info.plist`, `mobile-shell/offline.html`, `ios/App/App/public/offline.html` and `IOS_APP_SETUP.md`. The table below is from the first rename and now names Floors & Fables. Shows in the app after the next Xcode build.
+
 The listing above is ready. These are the places outside App Store Connect's text fields that still say "Fields & Floors" as the **app** name. Native files are listed for whoever does the native change, not edited here. The website and the sports side keep the name Fields & Floors.
 
 | Place | What to change | Who |
 |---|---|---|
-| `capacitor.config.json` → `appName` | "Fields & Floors" → "Fields & Fables". Then `npx cap sync ios`, which copies it to `ios/App/App/capacitor.config.json` (don't edit that copy by hand). Leave `ios.scheme` alone; it's the Xcode scheme name, not shown to anyone | **Done** 2026-10-31 |
-| `ios/App/App/Info.plist` → `CFBundleDisplayName` | "Fields &amp; Floors" → "Fields &amp; Fables". This is the label under the home screen icon and the name in the Sign in with Apple sheet and in notification settings | **Done** 2026-10-31 (shows after the next build) |
+| `capacitor.config.json` → `appName` | "Fields & Floors" → "Floors & Fables". Then `npx cap sync ios`, which copies it to `ios/App/App/capacitor.config.json` (don't edit that copy by hand). Leave `ios.scheme` alone; it's the Xcode scheme name, not shown to anyone | **Done** 2026-10-31 |
+| `ios/App/App/Info.plist` → `CFBundleDisplayName` | "Fields &amp; Floors" → "Floors &amp; Fables". This is the label under the home screen icon and the name in the Sign in with Apple sheet and in notification settings | **Done** 2026-10-31 (shows after the next build) |
 | `mobile-shell/offline.html` (and its synced copy `ios/App/App/public/offline.html`) | The "you're offline" page shown when there's no connection: line 18 shows "Fields &amp; Floors" | **Done** 2026-10-31, synced |
-| App Store Connect → New App | Create the app record as "Fields & Fables" (bundle ID stays `com.fieldsandfloors.app`; it can't change and nobody sees it). Doing this early holds the name | Landon |
-| Apple Developer → Identifiers → `com.fieldsandfloors.app` → Description | Optional tidy-up to "Fields & Fables". Only Apple's portal shows it | Landon |
-| `IOS_APP_SETUP.md` section 4 step 1 | Says to create the app as "Fields & Floors"; change to "Fields & Fables" | **Done** 2026-10-31 |
-| Push notification and alert email wording (`supabase/functions/poller/index.ts`, `emails.ts`, `lib/huntConfirmedEmail.js`) | Check only: these say "Fields & Floors" for sports alerts, which is still right. Foils & Fables alerts should say "Foils & Fables". Neither should say "Fields & Fables" except where the whole app is meant | Agent (check) |
+| App Store Connect → New App | Create the app record as "Floors & Fables" (bundle ID stays `com.fieldsandfloors.app`; it can't change and nobody sees it). Doing this early holds the name | Landon |
+| Apple Developer → Identifiers → `com.fieldsandfloors.app` → Description | Optional tidy-up to "Floors & Fables". Only Apple's portal shows it | Landon |
+| `IOS_APP_SETUP.md` section 4 step 1 | Says to create the app as "Fields & Floors"; change to "Floors & Fables" | **Done** 2026-10-31 |
+| Push notification and alert email wording (`supabase/functions/poller/index.ts`, `emails.ts`, `lib/huntConfirmedEmail.js`) | Check only: these say "Fields & Floors" for sports alerts, which is still right. Foils & Fables alerts should say "Foils & Fables". Neither should say "Floors & Fables" except where the whole app is meant | Agent (check) |
 | `app/layout.js` metadata (page titles "Fields & Floors Collectors") | No change: that's the website. Only change it if the app should show a different title in the app switcher | None for now |
 
-The app icon and splash use the F&F monogram, which still fits Fields & Fables, so they don't need to change.
+The app icon and splash use the F&F monogram, which still fits Floors & Fables, so they don't need to change.

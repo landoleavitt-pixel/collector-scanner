@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Floors &amp; Fables Front Door</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&family=Geist:wght@400;500;600&display=swap');
+
+*{box-sizing:border-box}
+html,body{margin:0;background:#030303;color:#e8e6e1;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.page{max-width:1240px;margin:0 auto;padding:40px 16px 100px}
+h1.t{font:italic 400 44px/1.05 'Fraunces',serif;margin:0 0 10px}
+.lede{color:#a3a7b6;font-size:16px;max-width:640px;line-height:1.55;margin:0}
+.sec{border-top:1px solid #23262f;padding-top:18px;margin:48px 0 22px}
+.sec h2{font:italic 400 26px/1.1 'Fraunces',serif;margin:0}
+.cap{font-size:14px;color:#8c90a0;margin:12px 4px 0;max-width:360px}
+
+/* ── the chooser itself: neutral graphite, between warm gold and night foil ── */
+.door{--bg:#0d0d0f;--ink:#efede8;--ink4:#9c9a95;--line:#26262b;
+  background:radial-gradient(700px 360px at 50% -10%,rgba(255,255,255,.05),transparent 60%),var(--bg);color:var(--ink);
+  display:flex;flex-direction:column;align-items:center}
+.brand{display:flex;align-items:center;gap:10px;font:italic 400 30px/1 'Instrument Serif',serif;letter-spacing:-.01em}
+.brand .amp{background:linear-gradient(90deg,#e6b96b 0 50%,#9fe3f5 50% 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ask{font-size:20px;color:var(--ink4);margin:10px 0 0}
+.choices{display:grid;gap:14px;width:100%}
+.choice{position:relative;display:flex;flex-direction:column;justify-content:flex-end;border-radius:22px;overflow:hidden;padding:24px 22px;min-height:180px;border:1px solid var(--line)}
+.choice .nm{font-size:38px;line-height:1;font-style:italic}
+.choice .what{font-size:17px;margin-top:8px}
+.choice .go{position:absolute;right:20px;top:20px;width:52px;height:52px;border-radius:50%;display:grid;place-items:center}
+.choice .go svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.sports{background:linear-gradient(180deg,#1a150e,#0b0a08);color:#f7f1e1}
+.sports .nm{font-family:'Instrument Serif',serif}
+.sports .nm em{color:#e6b96b;font-style:normal}
+.sports .what{color:#b5aa90}
+.sports .go{background:#e6b96b;color:#1a1612}
+.games{background:radial-gradient(420px 260px at 75% 15%,rgba(143,211,232,.14),transparent 60%),linear-gradient(180deg,#121626,#080a12);color:#eef0f7}
+.games .nm{font-family:'Fraunces',serif}
+.games .nm em{background:linear-gradient(100deg,#9fe3f5,#b6a8f0,#f0b3d0,#f3d9a0);-webkit-background-clip:text;background-clip:text;color:transparent;font-style:normal}
+.games .what{color:#a3aac2}
+.games .go{background:#b9e6f2;color:#071018}
+.foot{font-size:13px;color:#6e6c68;text-align:center;line-height:1.5}
+
+/* phone frame */
+.phones{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start}
+.phone{width:375px;max-width:100%;height:760px;border-radius:42px;border:10px solid #16171b;box-shadow:0 0 0 1px #2a2b30,0 30px 80px rgba(0,0,0,.6);overflow:hidden}
+.phone .door{height:100%;padding:70px 18px 28px;justify-content:space-between}
+.phone .top{text-align:center}
+.phone .choices{margin:28px 0}
+.phone .choice{min-height:210px}
+
+/* desktop frame */
+.desk{border-radius:14px;border:1px solid #26262b;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.desk .door{padding:64px 32px 40px;min-height:620px}
+.desk .top{text-align:center}
+.desk .choices{grid-template-columns:1fr 1fr;max-width:920px;margin:40px 0 34px;gap:20px}
+.desk .choice{min-height:300px;padding:32px 28px}
+.desk .choice .nm{font-size:48px}
+.desk .choice .what{font-size:18px}
+.choice:hover{border-color:#3a3a42}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="go" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+</svg>
+
+<div class="page">
+  <h1 class="t">floorsandfables.com</h1>
+  <p class="lede">The front door: pick a side, one tap. fieldsandfloors.com stays exactly as it is today.</p>
+
+  <div class="sec"><h2>Phone</h2></div>
+  <div class="phones">
+    <div><div class="phone" id="phone"></div><p class="cap">Two equal choices. Tap either one.</p></div>
+  </div>
+
+  <div class="sec"><h2>Computer</h2></div>
+  <div class="desk" id="desk"></div>
+</div>
+
+<script>
+const door = `<div class="door">
+  <div class="top">
+    <div class="brand" style="justify-content:center">Floors <span class="amp">&amp;</span> Fables</div>
+    <p class="ask">What do you collect?</p>
+  </div>
+  <div class="choices">
+    <a class="choice sports" href="#"><span class="nm">Fields <em>&amp;</em> Floors</span><span class="what">Sports cards</span><span class="go"><svg><use href="#go"/></svg></span></a>
+    <a class="choice games" href="#"><span class="nm">Foils <em>&amp;</em> Fables</span><span class="what">Trading card games</span><span class="go"><svg><use href="#go"/></svg></span></a>
+  </div>
+  <p class="foot">One free account works on both.</p>
+</div>`;
+document.getElementById('phone').innerHTML = door;
+document.getElementById('desk').innerHTML = door;
+</script>
+</body>
+</html>

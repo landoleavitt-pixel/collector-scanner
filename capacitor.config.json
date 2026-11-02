@@ -1,6 +1,6 @@
 {
   "appId": "com.fieldsandfloors.app",
-  "appName": "Fields & Fables",
+  "appName": "Floors & Fables",
   "webDir": "mobile-shell",
   "server": {
     "url": "https://fieldsandfloors.com",
