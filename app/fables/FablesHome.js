@@ -23,6 +23,7 @@ import { useNameSuggest, useSuggestBox, DidYouMeanLine, EditableSearchHeading } 
 import {
   PRICE_NO_MAX, SectionLabel, SectionDivider, PriceRangeSlider, priceRangeLabel, SegmentedGroup, ResultsSidebar,
   MobileFilterBar, MobileFilterDrawer, MobileSortSheet, SortDropdown, PendingSearchModal, BackToTop, LoadingState, NoResultsState,
+  MoreFilters, ShippingFilters, shippingActive, shippingLabels,
 } from '../components/search/SearchUI';
 import { usePendingStarSave, AlertBand } from '../components/search/WatchStar';
 import { ResultCard, Badge, upscaleEbayImage } from '../components/search/ResultCard';
@@ -31,7 +32,12 @@ import { SIDE, fetchMeta, searchCards, toParams, fromParams, LANG_LABEL, serialO
 const DEFAULT_FILTERS = {
   game: '', rarity: [], lang: [], graded: 'any', grader: '', grade: '', firstEd: false, serialOnly: false,
   listing: 'any', priceMin: 0, priceMax: PRICE_NO_MAX, sort: 'rarest',
+  // More filters (research/fables-filters-2.md)
+  finish: [], art: [], promos: 'show', cond: [], freeShip: false, offers: false, shipFrom: '', returns: false,
 };
+// How many More filters are in use (for the fold's count and the badge).
+const moreActive = (f) => (f.finish?.length ? 1 : 0) + (f.art?.length ? 1 : 0) + (f.promos && f.promos !== 'show' ? 1 : 0)
+  + (f.graded === 'raw' && f.cond?.length ? 1 : 0) + shippingActive(f);
 // Filters that need a new search when changed. Sort is left out, as on sports:
 // it reorders without asking.
 const COMPARE_KEYS = Object.keys(DEFAULT_FILTERS).filter((k) => k !== 'sort');
@@ -88,7 +94,7 @@ function countActiveFilters(f) {
   if (f.serialOnly) n++;
   if (f.listing && f.listing !== 'any') n++;
   if ((f.priceMin || 0) > 0 || (f.priceMax ?? PRICE_NO_MAX) < PRICE_NO_MAX) n++;
-  return n;
+  return n + moreActive(f);
 }
 
 // Plain-text chips for what a search is filtered by (results heading and the
@@ -109,6 +115,14 @@ function filterLabels(f, meta) {
   const min = f.priceMin || 0;
   const max = f.priceMax ?? PRICE_NO_MAX;
   if (min > 0 || max < PRICE_NO_MAX) out.push({ label: priceRangeLabel(min, max) });
+  const more = meta?.more;
+  const labelOf = (lists, k) => Object.values(lists || {}).flat().find(([key]) => key === k)?.[1] || k;
+  (f.finish || []).forEach((k) => out.push({ label: labelOf(more?.finishes, k) }));
+  (f.art || []).forEach((k) => out.push({ label: labelOf(more?.arts, k) }));
+  if (f.promos === 'hide') out.push({ label: 'No promos' });
+  if (f.promos === 'only') out.push({ label: 'Promos only' });
+  if (f.graded === 'raw') (f.cond || []).forEach((k) => out.push({ label: more?.conditions?.find((c) => c.key === k)?.label || k }));
+  shippingLabels(f).forEach((c) => out.push(c));
   return out;
 }
 
@@ -156,7 +170,7 @@ export default function FablesHome() {
 
   useEffect(() => { fetchMeta().then(setMeta); setRecentSearches(getRecents()); }, []);
 
-  const setFilter = (key, value) => setFilters((f) => ({ ...f, [key]: value, ...(key === 'game' && value !== f.game ? { rarity: [] } : {}) }));
+  const setFilter = (key, value) => setFilters((f) => ({ ...f, [key]: value, ...(key === 'game' && value !== f.game ? { rarity: [], finish: [], art: [] } : {}) }));
   const appliedFilters = applied?.f || null;
   function filtersDifferFromApplied() {
     if (!appliedFilters) return false;
@@ -895,8 +909,59 @@ function FilterControls({ meta, filters, setFilter, compact = false }) {
           onChange={(min, max) => { setFilter('priceMin', min); setFilter('priceMax', max); }}
         />
       </div>
+      <SectionDivider />
+      <MoreFilters active={moreActive(filters)}>
+        <MoreFablesFilters meta={meta} filters={filters} setFilter={setFilter} />
+      </MoreFilters>
       <p className="text-[12px]" style={{ color: 'var(--ink-600)' }}>Sealed product, lots and proxies are hidden.</p>
     </div>
+  );
+}
+
+// Behind "More filters". Finish and special art show only for a picked game
+// that has them, and Condition only for raw cards. Title-read filters keep
+// only listings whose title says so; they never hide the rest of a game.
+function MoreFablesFilters({ meta, filters, setFilter }) {
+  const more = meta.more || {};
+  const finishes = filters.game ? more.finishes?.[filters.game] || [] : [];
+  const arts = filters.game ? more.arts?.[filters.game] || [] : [];
+  const toggleIn = (k, v) => setFilter(k, (filters[k] || []).includes(v) ? filters[k].filter((x) => x !== v) : [...(filters[k] || []), v]);
+  return (
+    <>
+      {finishes.length > 0 && (
+        <div>
+          <SectionLabel>Foil or holo</SectionLabel>
+          <div className="flex flex-wrap gap-2">
+            {finishes.map(([k, l]) => <Chip key={k} on={(filters.finish || []).includes(k)} onClick={() => toggleIn('finish', k)}>{l}</Chip>)}
+          </div>
+          <p className="text-[12px] mt-2" style={{ color: 'var(--ink-600)' }}>Shows listings whose title says so.</p>
+        </div>
+      )}
+      {arts.length > 0 && (
+        <div>
+          <SectionLabel>Special art</SectionLabel>
+          <div className="flex flex-wrap gap-2">
+            {arts.map(([k, l]) => <Chip key={k} on={(filters.art || []).includes(k)} onClick={() => toggleIn('art', k)}>{l}</Chip>)}
+          </div>
+        </div>
+      )}
+      {!filters.game && <p className="text-[13px]" style={{ color: 'var(--ink-600)' }}>Pick a game for foil and special-art filters.</p>}
+      {filters.graded === 'raw' && more.conditions?.length > 0 && (
+        <div>
+          <SectionLabel>Card condition</SectionLabel>
+          <div className="flex flex-wrap gap-2">
+            {more.conditions.map((c) => <Chip key={c.key} on={(filters.cond || []).includes(c.key)} onClick={() => toggleIn('cond', c.key)}>{c.label}</Chip>)}
+          </div>
+          <p className="text-[12px] mt-2" style={{ color: 'var(--ink-600)' }}>{more.conditionNote || 'Hides listings with no condition stated'}</p>
+        </div>
+      )}
+      <div>
+        <SectionLabel>Promo cards</SectionLabel>
+        <SegmentedGroup value={filters.promos || 'show'} onChange={(v) => setFilter('promos', v)}
+                        options={more.promos || [['show', 'Show'], ['hide', 'Hide'], ['only', 'Only promos']]} />
+      </div>
+      <ShippingFilters filters={filters} setFilter={setFilter} />
+    </>
   );
 }
 

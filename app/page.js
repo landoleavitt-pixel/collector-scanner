@@ -26,6 +26,7 @@ import { usePlayerSuggest, useSuggestBox, DidYouMeanLine, EditableSearchHeading 
 import {
   PRICE_NO_MAX, SectionLabel, SectionDivider, priceRangeLabel, PriceRangeSlider, SegmentedGroup, ResultsSidebar,
   MobileFilterBar, MobileFilterDrawer, MobileSortSheet, SortDropdown, PendingSearchModal, BackToTop, LoadingState, NoResultsState,
+  MoreFilters, ShippingFilters, shippingActive, shippingLabels,
 } from './components/search/SearchUI';
 import { WatchStar, usePendingStarSave, AlertBand } from './components/search/WatchStar';
 import { ResultCard, Badge, CornerMarks, upscaleEbayImage } from './components/search/ResultCard';
@@ -60,6 +61,11 @@ const DEFAULT_FILTERS = {
   brands: [],           // card companies, e.g. ['topps'] — lib/cardBrands.js
   brandLines: [],       // optional product lines within them, e.g. ['bowman-chrome']
   teams: [],            // Team filter, e.g. ['nba-dal'] — lib/teams.js
+  // Shipping and offers (More filters): eBay's own filters.
+  freeShip: false,
+  offers: false,
+  shipFrom: '',         // '' | 'US' | 'CA'
+  returns: false,
 };
 
 // Saved searches and share links written before numbered-by-default meant
@@ -278,7 +284,7 @@ function Home() {
     const compareKeys = [
       'autoCards', 'numberedCards', 'selectedPrintRuns', 'customPrintRuns',
       'rookieCards', 'listingType', 'condition', 'priceMin', 'priceMax',
-      'brands', 'brandLines', 'teams',
+      'brands', 'brandLines', 'teams', 'freeShip', 'offers', 'shipFrom', 'returns',
     ];
     for (const k of compareKeys) {
       if (JSON.stringify(filters[k]) !== JSON.stringify(appliedFilters[k])) return true;
@@ -536,6 +542,7 @@ function Home() {
     if (filters.listingType === 'auction') chips.push({ label: 'Auction', tier: 'neutral' });
     brandFilterLabels(filters.brands, filters.brandLines).forEach((label) => chips.push({ label, tier: 'neutral' }));
     teamFilterLabels(filters.teams).forEach((label) => chips.push({ label, tier: 'neutral' }));
+    shippingLabels(filters).forEach(({ label }) => chips.push({ label, tier: 'neutral' }));
 
     const min = filters.priceMin || 0;
     const max = filters.priceMax ?? PRICE_NO_MAX;
@@ -597,6 +604,10 @@ function Home() {
           brands: f.brands || [],
           brandLines: f.brandLines || [],
           teams: f.teams || [],
+          freeShip: !!f.freeShip,
+          offers: !!f.offers,
+          shipFrom: f.shipFrom || '',
+          returns: !!f.returns,
         }),
       });
       const data = await res.json();
@@ -2294,6 +2305,12 @@ function FilterControls({ filters, setFilter, compact = false }) {
           }}
         />
       </div>
+
+      <SectionDivider />
+
+      <MoreFilters active={shippingActive(filters)}>
+        <ShippingFilters filters={filters} setFilter={setFilter} />
+      </MoreFilters>
     </div>
   );
 }
@@ -2407,6 +2424,7 @@ function countActiveFilters(f) {
   if ((f.priceMin ?? 0) > 0 || !isPriceNoMax(f.priceMax ?? PRICE_NO_MAX)) n++;
   if (f.brands?.length) n++;
   if (f.teams?.length) n++;
+  n += shippingActive(f);
   return n;
 }
 
@@ -3054,6 +3072,7 @@ function activeFilterChips(f) {
   if (f.listingType === 'auction') chips.push({ label: 'Auction' });
   brandFilterLabels(f.brands, f.brandLines).forEach((label) => chips.push({ label }));
   teamFilterLabels(f.teams).forEach((label) => chips.push({ label }));
+  shippingLabels(f).forEach((c) => chips.push(c));
   const min = f.priceMin || 0;
   const max = f.priceMax ?? PRICE_NO_MAX;
   if (min > 0 || !isPriceNoMax(max)) chips.push({ label: priceRangeLabel(min, max === 5000 ? PRICE_NO_MAX : max) });

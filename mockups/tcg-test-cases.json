@@ -2608,6 +2608,146 @@
    "expect": {
     "lot": true
    }
+  },
+  {
+   "group": "More filters: finish and art",
+   "title": "Charizard 3/132 Secret Wonders Reverse Holo",
+   "hint": "pokemon",
+   "expect": {
+    "finish": [
+     "reverse"
+    ]
+   }
+  },
+  {
+   "group": "More filters: finish and art",
+   "title": "Charizard 4/102 Base Set Holo Rare",
+   "hint": "pokemon",
+   "expect": {
+    "finish": [
+     "holo"
+    ]
+   }
+  },
+  {
+   "group": "More filters: finish and art",
+   "title": "Venusaur Spirit Link 89/108 Evolutions Reverse Holofoil LP",
+   "hint": "pokemon",
+   "expect": {
+    "finish": [
+     "reverse"
+    ]
+   }
+  },
+  {
+   "group": "More filters: finish and art",
+   "title": "Blastoise 2/102 Base Set Non-Holo Error",
+   "hint": "pokemon",
+   "expect": {
+    "finish": []
+   }
+  },
+  {
+   "group": "More filters: finish and art",
+   "title": "Charizard ex 199/165 151 Special Illustration Rare Full Art",
+   "hint": "pokemon",
+   "expect": {
+    "art": [
+     "fullart",
+     "altart"
+    ]
+   }
+  },
+  {
+   "group": "More filters: finish and art",
+   "title": "Sheoldred, the Apocalypse #107 (Foil) Dominaria United",
+   "hint": "mtg",
+   "expect": {
+    "finish": [
+     "foil"
+    ]
+   }
+  },
+  {
+   "group": "More filters: finish and art",
+   "title": "Smothering Tithe (Foil Etched) 423 Double Masters 2022",
+   "hint": "mtg",
+   "expect": {
+    "finish": [
+     "etched"
+    ]
+   }
+  },
+  {
+   "group": "More filters: finish and art",
+   "title": "Mana Crypt Double Masters 270 Non-Foil NM",
+   "hint": "mtg",
+   "expect": {
+    "finish": [
+     "nonfoil"
+    ]
+   }
+  },
+  {
+   "group": "More filters: finish and art",
+   "title": "Sol Ring Commander 2021 263 Regular NM",
+   "hint": "mtg",
+   "expect": {
+    "finish": [
+     "nonfoil"
+    ]
+   }
+  },
+  {
+   "group": "More filters: finish and art",
+   "title": "Ragavan, Nimble Pilferer (Borderless) MH2 315",
+   "hint": "mtg",
+   "expect": {
+    "art": [
+     "borderless"
+    ]
+   }
+  },
+  {
+   "group": "More filters: finish and art",
+   "title": "Force of Will Retro Frame Dominaria Remastered",
+   "hint": "mtg",
+   "expect": {
+    "art": [
+     "retro"
+    ]
+   }
+  },
+  {
+   "group": "More filters: finish and art",
+   "title": "Elsa Spirit of Winter Enchanted Cold Foil Lorcana",
+   "hint": "lorcana",
+   "expect": {
+    "finish": [
+     "coldfoil"
+    ]
+   }
+  },
+  {
+   "group": "More filters: finish and art",
+   "title": "Mickey Mouse Foil 1/204 The First Chapter Lorcana",
+   "hint": "lorcana",
+   "expect": {
+    "finish": [
+     "foil"
+    ]
+   }
+  },
+  {
+   "group": "More filters: finish and art",
+   "title": "One Piece Luffy OP05-119 Manga Rare Parallel",
+   "hint": "onepiece",
+   "expect": {
+    "art": [
+     "altart",
+     "manga"
+    ]
+   }
   }
  ]
 }

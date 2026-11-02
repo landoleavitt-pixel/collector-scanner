@@ -128,6 +128,67 @@ export function PriceRangeSlider({ min, max, onChange }) {
   );
 }
 
+/* "More filters" — the extra filters fold away behind one button, so the
+   first screen keeps Game / Rarity / Graded / Price (the grandparent test).
+   Opens on its own when one of the filters inside is in use. */
+export function MoreFilters({ active = 0, children }) {
+  const [open, setOpen] = useState(active > 0);
+  useEffect(() => { if (active > 0) setOpen(true); }, [active]);
+  return (
+    <div>
+      <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open}
+              className="w-full flex items-center justify-between text-[13px] font-medium py-2"
+              style={{ color: 'var(--ink-200)' }}>
+        <span>More filters{active ? ` (${active})` : ''}</span>
+        <span aria-hidden="true" style={{ color: 'var(--ink-400)', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .15s' }}>⌄</span>
+      </button>
+      {open && <div className="pt-4 space-y-7">{children}</div>}
+    </div>
+  );
+}
+
+/* Toggle chip for the More filters section (both sides). */
+export function FilterChip({ on, onClick, children }) {
+  return (
+    <button type="button" onClick={onClick} aria-pressed={on}
+            className="text-[13px] inline-flex items-center rounded-full transition-all whitespace-nowrap"
+            style={{ minHeight: 36, padding: '0 14px', ...(on
+              ? { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', border: '1px solid var(--gold-bright)', fontWeight: 600 }
+              : { border: '1px solid var(--line)', background: 'var(--bg-elev-2)', color: 'var(--ink-200)', fontWeight: 500 }) }}>
+      {children}
+    </button>
+  );
+}
+
+/* Shipping and offers — eBay's own filters, the same on both sides.
+   filters: { freeShip, offers, shipFrom: '' | 'US' | 'CA', returns } */
+export const SHIPPING_DEFAULTS = { freeShip: false, offers: false, shipFrom: '', returns: false };
+export const shippingActive = (f) => (f.freeShip ? 1 : 0) + (f.offers ? 1 : 0) + (f.shipFrom ? 1 : 0) + (f.returns ? 1 : 0);
+export function shippingLabels(f) {
+  const out = [];
+  if (f.freeShip) out.push({ label: 'Free shipping' });
+  if (f.offers) out.push({ label: 'Accepts offers' });
+  if (f.shipFrom === 'US') out.push({ label: 'Ships from the US' });
+  if (f.shipFrom === 'CA') out.push({ label: 'Ships from Canada' });
+  if (f.returns) out.push({ label: 'Returns accepted' });
+  return out;
+}
+export function ShippingFilters({ filters, setFilter }) {
+  return (
+    <div>
+      <SectionLabel>Shipping and offers</SectionLabel>
+      <div className="flex flex-wrap gap-2">
+        <FilterChip on={!!filters.freeShip} onClick={() => setFilter('freeShip', !filters.freeShip)}>Free shipping</FilterChip>
+        <FilterChip on={!!filters.offers} onClick={() => setFilter('offers', !filters.offers)}>Accepts offers</FilterChip>
+        <FilterChip on={filters.shipFrom === 'US'} onClick={() => setFilter('shipFrom', filters.shipFrom === 'US' ? '' : 'US')}>Ships from the US</FilterChip>
+        <FilterChip on={filters.shipFrom === 'CA'} onClick={() => setFilter('shipFrom', filters.shipFrom === 'CA' ? '' : 'CA')}>Ships from Canada</FilterChip>
+        <FilterChip on={!!filters.returns} onClick={() => setFilter('returns', !filters.returns)}>Returns accepted</FilterChip>
+      </div>
+      {filters.offers && <p className="text-[12px] mt-2" style={{ color: 'var(--ink-600)' }}>Offers are only on Buy It Now listings.</p>}
+    </div>
+  );
+}
+
 /* Segmented group — used for Listing Type and Condition rows */
 export function SegmentedGroup({ value, onChange, options, vertical = false }) {
   if (vertical) {

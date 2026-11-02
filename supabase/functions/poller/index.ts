@@ -579,6 +579,11 @@ async function callAppSearch(query: string, filters: Record<string, unknown>): P
     brandLines: (filters.brandLines as string[]) ?? [],
     // Team filter (lib/teams.js). Empty = off.
     teams: (filters.teams as string[]) ?? [],
+    // Shipping and offers (More filters): eBay's own filters.
+    freeShip: filters.freeShip === true,
+    offers: filters.offers === true,
+    shipFrom: typeof filters.shipFrom === "string" ? filters.shipFrom : "",
+    returns: filters.returns === true,
   };
 
   // Signed so the site lets the checker past the per-visitor rate limit
@@ -608,10 +613,11 @@ async function callAppSearch(query: string, filters: Record<string, unknown>): P
 // Foils & Fables saved searches: GET /api/tcg-search with the saved filters
 // (same names as its query string). Mirrors savedSearchParams in
 // lib/tcg/search.js: newest listings, the whole filtered pool.
-const TCG_FILTER_KEYS = ["game", "rarity", "lang", "graded", "grader", "grade", "firstEd", "serialOnly", "priceMin", "priceMax", "listing"];
+// More filters (2026-11-01): finish, art, promos, cond, and shipping and offers.
+const TCG_FILTER_KEYS = ["game", "rarity", "lang", "graded", "grader", "grade", "firstEd", "serialOnly", "priceMin", "priceMax", "listing", "finish", "art", "promos", "cond", "freeShip", "offers", "shipFrom", "returns"];
 // Saved searches with a `card` are card-family searches: GET
 // /api/tcg-family-search. Mirrors familySavedParams in lib/tcg/familySearch.js.
-const FAMILY_FILTER_KEYS = ["game", "card", "cards", "versions", "lang", "graded", "priceMin", "priceMax", "listing"];
+const FAMILY_FILTER_KEYS = ["game", "card", "cards", "versions", "lang", "graded", "priceMin", "priceMax", "listing", "freeShip", "offers", "shipFrom", "returns"];
 function familyCardKeys(filters: Record<string, unknown>): string[] {
   const list = Array.isArray(filters?.cards) ? (filters.cards as unknown[]).map(String) : [];
   if (filters?.card) list.push(String(filters.card));
@@ -632,7 +638,7 @@ function tcgSearchUrl(query: string, filters: Record<string, unknown>): string {
   const params = new URLSearchParams({ q: query || "", sort: "newest", limit: "1000" });
   for (const k of TCG_FILTER_KEYS) {
     const v = filters?.[k];
-    if (v == null || v === "" || v === false) continue;
+    if (v == null || v === "" || v === false || (Array.isArray(v) && !v.length) || (k === "promos" && v === "show")) continue;
     params.set(k, Array.isArray(v) ? v.join(",") : v === true ? "1" : String(v));
   }
   return `${APP_BASE_URL}/api/tcg-search?${params}`;

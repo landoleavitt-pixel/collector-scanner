@@ -26,7 +26,8 @@ for (const f of fs.readdirSync(path.join(root, 'lib/tcg'))) {
     .replace(/from '\.\.\/\.\.\/(data\/tcg\/[a-z-]+\.json)'/g, (m, f) => `from '${path.join(root, f)}' with { type: 'json' }`);
   fs.writeFileSync(path.join(dir, f.replace(/\.js$/, '.mjs')), src);
 }
-fs.writeFileSync(path.join(dir, 'ebay-stub.mjs'), 'export const getAppToken = () => null; export const browseSearch = () => ({});');
+// The real lib/ebay.js (it only defines functions), so shared helpers import.
+fs.writeFileSync(path.join(dir, 'ebay-stub.mjs'), fs.readFileSync(path.join(root, 'lib/ebay.js'), 'utf8'));
 fs.symlinkSync(path.join(root, 'lib/tcg/catalog'), path.join(dir, 'catalog'));
 const { matchListing } = await import(pathToFileURL(path.join(dir, 'family.mjs')).href);
 const { cardVersions, findCards, familyCards } = await import(pathToFileURL(path.join(dir, 'catalog.mjs')).href);

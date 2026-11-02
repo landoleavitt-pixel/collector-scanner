@@ -10,7 +10,7 @@
 
 import { NextResponse } from 'next/server';
 import { isTrustedPoller } from '../../../lib/pollerAuth';
-import { getAppToken, browseSearch } from '../../../lib/ebay';
+import { getAppToken, browseSearch, readShipping, shippingFilters } from '../../../lib/ebay';
 import { makeBrandMatcher, brandQueryTerms } from '../../../lib/cardBrands';
 import { teamFromQuery, teamQueryKeywords } from '../../../lib/teams';
 import { catalogTeamsForTitle, matchesTeam, makeCatalogTeamMatcher, teamQueryPlayers, orGroups } from '../../../lib/playerTeams';
@@ -217,9 +217,15 @@ function buildSearchParams(criteria) {
     filters.push(`price:[${min}..${max}],priceCurrency:USD`);
   }
 
+  // Shipping and offers (More filters): eBay's own filters (lib/ebay.js).
+  filters.push(...shippingFilters(readShipping((k) => criteria[k])));
+
   // Listing type filter — Buy It Now vs Auction.
-  // eBay's buyingOptions values: FIXED_PRICE, AUCTION.
-  if (criteria.listingType === 'buyItNow') {
+  // eBay's buyingOptions values: FIXED_PRICE, AUCTION. "Accepts offers"
+  // asks for BEST_OFFER instead (only Buy It Now listings take offers).
+  if (criteria.offers === true) {
+    filters.push('buyingOptions:{BEST_OFFER}');
+  } else if (criteria.listingType === 'buyItNow') {
     filters.push('buyingOptions:{FIXED_PRICE}');
   } else if (criteria.listingType === 'auction') {
     filters.push('buyingOptions:{AUCTION}');
@@ -595,6 +601,8 @@ export async function POST(req) {
     }
 
     const criteria = await req.json();
+    // "Accepts offers" only exists on Buy It Now listings, so it's one query.
+    if (criteria?.offers === true) criteria.listingType = 'buyItNow';
 
     if (typeof criteria?.keywords !== 'string' || !criteria.keywords.trim()) {
       return NextResponse.json(

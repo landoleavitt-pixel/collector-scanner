@@ -112,6 +112,15 @@ export function toParams(q, f = {}, extra = {}) {
   if (f.priceMin) p.set('priceMin', String(f.priceMin));
   if (f.priceMax && f.priceMax < 100000) p.set('priceMax', String(f.priceMax));
   if (f.sort && f.sort !== 'rarest') p.set('sort', f.sort);
+  // More filters
+  if (f.finish?.length) p.set('finish', f.finish.join(','));
+  if (f.art?.length) p.set('art', f.art.join(','));
+  if (f.promos && f.promos !== 'show') p.set('promos', f.promos);
+  if (f.graded === 'raw' && f.cond?.length) p.set('cond', f.cond.join(','));
+  if (f.freeShip) p.set('freeShip', '1');
+  if (f.offers) p.set('offers', '1');
+  if (f.shipFrom) p.set('shipFrom', f.shipFrom);
+  if (f.returns) p.set('returns', '1');
   for (const [k, v] of Object.entries(extra)) p.set(k, String(v));
   return p;
 }
@@ -138,6 +147,14 @@ export function fromParams(sp) {
       priceMin: Number(sp.get('priceMin')) || 0,
       priceMax: Number(sp.get('priceMax')) || 100000,
       sort: sp.get('sort') || 'rarest',
+      finish: list('finish'),
+      art: list('art'),
+      promos: ['hide', 'only'].includes(sp.get('promos')) ? sp.get('promos') : 'show',
+      cond: list('cond'),
+      freeShip: sp.get('freeShip') === '1',
+      offers: sp.get('offers') === '1',
+      shipFrom: ['US', 'CA'].includes(sp.get('shipFrom')) ? sp.get('shipFrom') : '',
+      returns: sp.get('returns') === '1',
     },
   };
 }
