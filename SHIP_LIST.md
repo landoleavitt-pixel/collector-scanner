@@ -12,9 +12,6 @@ The single list of work that's finished or in progress but **not live yet**. The
 | P7 | Catalog research phase 2 (Japanese Pokémon, One Piece, YGO/Lorcana terms) | Research | 🟡 Researching | research/catalogs-phase-2.md | — |
 | 7 | eBay Partner Network affiliate links | CFO | ⏸ Plan approved. Waiting on Landon's sign-up + Campaign ID; code held until batch ships | SiteTour.js, guides, reading-list copy + link tagging | — |
 | L05 | Proof strip | Landing | ⏹ Skipped: no honest live number yet (no fake figures) | — | — |
-| P8 | Card checklist (English Pokémon) at /fables/checklist; then row wording, Find it (star skipped); engine: family lookup, set/number per listing, need-only alerts | Design + Engine | 🔵 In progress | app/fables/checklist, lib/tcg | owned_cards SQL done 2026-11-01; poller deploy after push (need-only alerts) |
-| P9 | Fables filters: foil type, condition (raw), special art, promos, shipping and offers (both sides) | Engine | 🟢 Built 4ffd9a7 | lib/tcg, filter UI, search APIs | poller deploy |
-| P10 | Rarity from card catalogs when a listing matches | Engine | 🟢 Built 4b57619 | lib/tcg | — |
 | P11 | floorsandfables.com chooser + foilsandfables.com routing; app renamed Floors & Fables | Design | 🔵 Building | middleware, chooser page | Landon buys domains + Vercel |
 | E-later | Fables versions: "Secret Lair Prize #8001" / "Buy-A-Box" titles to catalog set names; Magic titles with a number but no set ("022/259") | Engine | ⚪ Follow-up | lib/tcg | — |
 | S-poll | Lock down the alert checker: it can be triggered by anyone holding the public key; require a private secret header from the cron jobs instead | Debugger | ⚪ Follow-up (low risk today: it only re-runs checks and never re-sends) | poller, both cron jobs | poller deploy + Landon edits 2 cron jobs |
@@ -25,6 +22,7 @@ The single list of work that's finished or in progress but **not live yet**. The
 
 | When | What | Commit |
 |---|---|---|
+| 2026-11-01 | Card checklist (English Pokémon) with Find it and need-only alerts; rarity from card catalogs; 5 new Fables filters + shipping/offers on sports; Fables search fixes; Foils & Fables Collectors title; app renamed Floors & Fables; Usage stats menu link | dcd7881 (poller deploy: Landon) |
 | 2026-11-01 | Fables works like F&F; Fables emails; sports label fixes; Select option A + rookie/box-only flags; checklist importer + /api/checklist; Terms/Privacy both brands + usage-stats switch and menu link; payments-off header; Sign in with Apple revoke on delete; Fables result-quality fixes + card-family fixes | 65d60a7 (poller deploy: Landon) |
 | 2026-10-31 | Foils & Fables at /fables: card-game search (5 games), Night foil look, side switch, shared watchlist, app chooser; eBay token cache fix | 6f506e7 |
 | 2026-10-30 | Rarity lists: Prizm Basketball 25-26, Topps Series 2 2026, Mosaic Basketball 24-25, UD Series 2 Hockey; Common print runs label on phones | fb93bfc |
