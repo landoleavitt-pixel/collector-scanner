@@ -31,6 +31,9 @@ fs.symlinkSync(path.join(root, 'lib/tcg/catalog'), path.join(dir, 'catalog'));
 const { matchListing } = await import(pathToFileURL(path.join(dir, 'family.mjs')).href);
 const { cardVersions, findCards, familyCards } = await import(pathToFileURL(path.join(dir, 'catalog.mjs')).href);
 const { familySavedParams } = await import(pathToFileURL(path.join(dir, 'familySearch.mjs')).href);
+const { catalogRarity, applyCatalog } = await import(pathToFileURL(path.join(dir, 'catalogMatch.mjs')).href);
+const { getCard } = await import(pathToFileURL(path.join(dir, 'catalog.mjs')).href);
+const rarityOf = (game, key, title, titleRarity = null) => { const c = getCard(game, key); return catalogRarity(game, c, matchListing(game, c, title), titleRarity); };
 
 const { cases } = JSON.parse(fs.readFileSync(path.join(root, 'mockups/tcg-family-cases.json'), 'utf8'));
 let pass = 0;
@@ -61,11 +64,18 @@ const checks = [
   ['Saved family search with picked versions hides unsure listings', () => { const p = familySavedParams({ game: 'pokemon', card: 'charizard-ex', versions: ['sv03.5:199:h'], needOnly: true }); return p.get('card') === 'charizard-ex' && p.get('versions') === 'sv03.5:199:h' && p.get('unsure') === 'hide' && p.get('sort') === 'newest' && !p.has('needOnly'); }],
   ['Saved family search with no versions keeps unsure listings', () => familySavedParams({ game: 'mtg', card: 'sol-ring' }).get('unsure') === 'show'],
   ['Saved family search with a list of cards sends cards and q', () => { const p = familySavedParams({ game: 'pokemon', cards: ['charizard', 'charizard-ex'], needOnly: true }, 'Charizard'); return p.get('cards') === 'charizard,charizard-ex' && p.get('q') === 'Charizard'; }],
+  ['Catalog rarity beats the title: 151 #199 called "Ultra Rare" is a SIR', () => rarityOf('pokemon', 'charizard-ex', 'Charizard ex 199/165 151 Ultra Rare Holo') === 'sir'],
+  ['Catalog rarity: Base Set Charizard 4/102 is a Holo Rare', () => rarityOf('pokemon', 'Charizard', 'Charizard 4/102 Base Set Holo') === 'holo'],
+  ['Catalog rarity: Sheoldred DMU #107 is Mythic', () => rarityOf('mtg', 'sheoldred-the-apocalypse', 'Sheoldred, the Apocalypse #107 Dominaria United DMU') === 'mythic'],
+  ['Catalog rarity: serialized One Ring stays Serialized', () => rarityOf('mtg', 'the-one-ring', 'The One Ring Serialized 0001 LTR Borderless Poster') !== 'mythic'],
+  ['No catalog rarity for "version not in title"', () => rarityOf('pokemon', 'Charizard', 'Charizard Pokemon card nice') === null],
+  ['Several possible versions: the title\'s rarity if it is one of them', () => { const c = getCard('mtg', 'sol-ring'); const m = matchListing('mtg', c, 'Sol Ring Secret Lair Drop Foil'); return m.kind !== 'set' || catalogRarity('mtg', c, m, 'rare') === 'rare' || catalogRarity('mtg', c, m, 'rare') !== null; }],
+  ['applyCatalog relabels a search item and says where the rarity came from', () => { const out = applyCatalog([{ id: 't1', title: 'Charizard ex 199/165 151 Ultra Rare Holo', parsed: { game: 'pokemon', rarity: 'ultra', rarityName: 'Ultra Rare' } }], 'Charizard'); return out[0].parsed.rarity === 'sir' && out[0].raritySource === 'catalog' && out[0].catalog?.set === 'sv03.5'; }],
   ['Serialized One Ring is a grail', () => cardVersions('mtg', 'the-one-ring').sets.flatMap((s) => s.numbers.flatMap((n) => n.versions)).some((v) => v.rarityKey === 'serialized' && v.tier === 'grail')],
 ];
 for (const [name, fn] of checks) {
   let ok = false;
-  try { ok = fn(); } catch (e) { ok = false; }
+  try { ok = fn(); } catch (e) { ok = false; console.log('   ', name, '→', e.message); }
   if (ok) pass++;
   else fails.push({ title: name, bad: ['catalog check failed'] });
 }
