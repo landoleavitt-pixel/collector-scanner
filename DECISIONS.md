@@ -103,3 +103,6 @@ Everything Landon has decided, so no agent ever asks him the same thing twice. O
 - Once Landon approves, the boss pushes and deploys the poller. Landon pastes SQL into the Supabase SQL Editor himself. (2026-10-20)
 - Every privacy or security risk is stated plainly before Landon is asked to do anything. (2026-10-20)
 - Agents share one folder, so **commit only your own files with `git commit -- <your paths>`**. Never run `git add -A` or a plain `git commit` with other agents' changes staged. Never rewrite history. (2026-10-31)
+
+## Umbrella brand (2026-11-01)
+- **The website is "Floors & Fables"** and splits into two sides: **Fields & Floors** (sports) and **Foils & Fables** (card games). (2026-11-01, Landon) floorsandfables.com and .ca were unregistered on 2026-11-01; fieldsandfables.com is taken. Details (domain purchase, what fieldsandfloors.com does, app name) pending Landon's OK of the Boss plan.
