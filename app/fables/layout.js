@@ -2,14 +2,14 @@ import FablesSide from './FablesSide';
 
 export const metadata = {
   title: {
-    absolute: 'Foils & Fables',
+    absolute: 'Foils & Fables Collectors',
     template: '%s · Foils & Fables',
   },
   description:
     'Search trading card listings on eBay by rarity, language and grade, rarest first. Ranked by the rarity printed on the card.',
   openGraph: {
-    siteName: 'Foils & Fables',
-    title: 'Foils & Fables',
+    siteName: 'Foils & Fables Collectors',
+    title: 'Foils & Fables Collectors',
     description: 'Search trading card listings on eBay by rarity, language and grade, rarest first.',
   },
 };
