@@ -149,11 +149,6 @@ h1.t{font:italic 400 44px/1.05 'Fraunces',serif;margin:0 0 10px}
     <div><div class="fab phone" id="p7"></div><p class="cap">Just that version, for sale now.</p></div>
   </div>
 
-  <div class="sec"><h2>Option · A star on each missing version</h2></div>
-  <div class="phones">
-    <div><div class="fab phone" id="p8"></div><p class="cap">Star it to keep it in your favourites. Needs your OK.</p></div>
-  </div>
-
   <div class="sec"><h2>4 · How you get there</h2></div>
   <div class="phones">
     <div><div class="fab phone" id="p6"></div><p class="cap">A button above search results.</p></div>
@@ -246,14 +241,12 @@ function openPick(root, d, st) {
       const sale = c.photo && vi === 0;
       const act = v[1] ? '' : `<div class="vact">${sale
         ? `<button class="find">${I('search')}Find it</button>`
-        : `<span class="nosale">None for sale right now</span><button class="amini">${I('bell')}Alert me</button>`}${st.star ? `<button class="star ${v[2] ? 'on' : ''}" data-star="${vi}" aria-label="Star">${I('star')}</button>` : ''}</div>`;
+        : `<span class="nosale">None for sale right now</span><button class="amini">${I('bell')}Alert me</button>`}</div>`;
       return `<div class="vblock ${v[1] ? 'on' : ''}"><button class="opt" data-v="${vi}"><span class="sw" style="background:${SW[v[0]] || '#888'}"></span><span class="lb">${v[0]}</span><span class="check">${v[1] ? I('chk') : ''}</span></button>${act}</div>`;
     }).join('')}
     <button class="done" data-act="done">Done</button></div>`;
   scrim.classList.add('open');
   scrim.onclick = (e) => {
-    const sb = e.target.closest('[data-star]');
-    if (sb) { const v = c.v[+sb.dataset.star]; v[2] = v[2] ? 0 : 1; render(root, d, { ...st, scroll: root.querySelector('.scroll')?.scrollTop }); return; }
     const op = e.target.closest('.opt');
     if (op) { const v = c.v[+op.dataset.v]; v[1] = v[1] ? 0 : 1; render(root, d, { ...st, scroll: root.querySelector('.scroll')?.scrollTop }); return; }
     if (e.target === scrim || e.target.closest('[data-act="done"]')) { st.pick = null; render(root, d, { ...st, scroll: root.querySelector('.scroll')?.scrollTop }); }
@@ -294,7 +287,6 @@ mount('p3', FAB, { ask: true, scroll: 900 });
 mount('p4', FFS);
 mount('p5', FFS, { pick: [0, 0] });
 mount('d1', FAB);
-mount('p8', FAB, { pick: [2, 2], scroll: 380, star: true });
 
 // 3 · Find it results: one version's live listings
 document.getElementById('p7').innerHTML = `<div class="status"></div><div class="scroll">
