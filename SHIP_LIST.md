@@ -7,12 +7,12 @@ The single list of work that's finished or in progress but **not live yet**. The
 | # | What | Agent | Status | Files | Extra deploy step |
 |---|---|---|---|---|---|
 | P1 | F&F/Fables parity: refresh popup, spelling suggestions, full audit; then checklist mockup | Design | 🟡 Building | app/fables, shared components, app/page.js | — |
-| P2 | Card-family engine: Scryfall + TCGdex catalogs, /api/tcg-versions, family search, owned_cards table, re-test | Engine | 🟡 Building | lib/tcg, app/api/tcg-*, app/api/owned, migration | SQL for Landon |
+| P2 | Card-family engine: Scryfall + TCGdex catalogs, /api/tcg-versions, family search, owned_cards table, re-test | Engine | 🟡 Building | lib/tcg, app/api/tcg-*, app/api/owned, migration | owned_cards SQL done 2026-11-01 |
 | P5 | App name ideas + two-sided App Store listing | Listing agent | 🟡 Drafting | APP_STORE_LISTING.md, appstore/ | Landon picks name |
 | P7 | Catalog research phase 2 (Japanese Pokémon, One Piece, YGO/Lorcana terms) | Research | 🟡 Researching | research/catalogs-phase-2.md | — |
 | 7 | eBay Partner Network affiliate links | CFO | ⏸ Plan approved. Waiting on Landon's sign-up + Campaign ID; code held until batch ships | SiteTour.js, guides, reading-list copy + link tagging | — |
 | L05 | Proof strip | Landing | ⏹ Skipped: no honest live number yet (no fake figures) | — | — |
-| P8 | Card checklist (English Pokémon) at /fables/checklist; then row wording, Find it, star; engine: family lookup, set/number per listing, need-only alerts | Design + Engine | 🔵 In progress | app/fables/checklist, lib/tcg | SQL for Landon: owned_cards, then poller deploy (need-only alerts) |
+| P8 | Card checklist (English Pokémon) at /fables/checklist; then row wording, Find it, star; engine: family lookup, set/number per listing, need-only alerts | Design + Engine | 🔵 In progress | app/fables/checklist, lib/tcg | owned_cards SQL done 2026-11-01; poller deploy after push (need-only alerts) |
 | E-later | Fables versions: "Secret Lair Prize #8001" / "Buy-A-Box" titles to catalog set names; Magic titles with a number but no set ("022/259") | Engine | ⚪ Follow-up | lib/tcg | — |
 | S-poll | Lock down the alert checker: it can be triggered by anyone holding the public key; require a private secret header from the cron jobs instead | Debugger | ⚪ Follow-up (low risk today: it only re-runs checks and never re-sends) | poller, both cron jobs | poller deploy + Landon edits 2 cron jobs |
 
