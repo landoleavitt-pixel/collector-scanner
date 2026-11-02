@@ -62,7 +62,7 @@ const TIER_STYLE = {
   scarce: { background: 'linear-gradient(180deg,#7a8199,#4a5068)', color: '#eef0f7' },
 };
 // Row tint by tier, same strength as sports' tierRowStyle.
-const TIER_ROW = {
+export const TIER_ROW = {
   grail: { backgroundImage: 'linear-gradient(90deg, rgba(182,168,240,0.30) 0%, rgba(240,179,208,0.10) 22%, transparent 55%)', borderLeft: '2px solid #d7c4f2' },
   ultra: { backgroundImage: 'linear-gradient(90deg, rgba(201,211,245,0.22) 0%, rgba(201,211,245,0.06) 18%, transparent 40%)', borderLeft: '2px solid #c9d3f5' },
   rare: { backgroundImage: 'linear-gradient(90deg, rgba(159,227,245,0.20) 0%, rgba(159,227,245,0.05) 16%, transparent 32%)', borderLeft: '2px solid #9fe3f5' },
@@ -112,7 +112,7 @@ function filterLabels(f, meta) {
   return out;
 }
 
-function fablesPayload(item) {
+export function fablesPayload(item) {
   return {
     listing_id: item.id, title: item.title, price: item.price, currency: item.currency || 'USD',
     image_url: item.image, listing_url: item.url, is_auction: !!item.isAuction,
@@ -601,7 +601,7 @@ export function TcgChip({ item }) {
 }
 
 // Badges on a result row and in the card popup.
-function CardBadges({ item }) {
+export function CardBadges({ item }) {
   return (
     <>
       <TcgChip item={item} />
@@ -612,7 +612,7 @@ function CardBadges({ item }) {
     </>
   );
 }
-const hasCardBadges = (item) => !!(serialOf(item) || item.rarity || item.firstEdition || (item.language && item.language !== 'en') || item.shadowless || gradeText(item));
+export const hasCardBadges = (item) => !!(serialOf(item) || item.rarity || item.firstEdition || (item.language && item.language !== 'en') || item.shadowless || gradeText(item));
 
 function CardImage({ src, alt, className = '' }) {
   const [bad, setBad] = useState(false);

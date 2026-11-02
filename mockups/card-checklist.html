@@ -75,6 +75,20 @@ h1.t{font:italic 400 44px/1.05 'Fraunces',serif;margin:0 0 10px}
 .sheet .sub{font-size:16px;color:var(--ink4);margin:0 0 18px}
 .opt{width:100%;display:flex;align-items:center;gap:14px;min-height:64px;padding:10px 14px;border-radius:14px;border:1.5px solid var(--line);background:var(--bg);margin-bottom:10px;font-size:18px}
 .opt.on{border-color:var(--acc);background:var(--elev2)}
+.vblock{border-radius:14px;border:1.5px solid var(--line);background:var(--bg);margin-bottom:10px;overflow:hidden}
+.vblock.on{border-color:var(--acc);background:var(--elev2)}
+.vblock .opt{border:0;background:none;margin:0}
+.vact{padding:0 14px 12px;display:flex;align-items:center;gap:10px}
+.find{flex:1;min-height:52px;border-radius:12px;border:1.5px solid var(--acc);color:var(--acc);font-size:17px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px}
+.nosale{flex:1;font-size:15px;color:var(--ink4)}
+.amini{min-height:48px;padding:0 16px;border-radius:12px;border:1.5px solid var(--line);font-size:16px;font-weight:600;display:inline-flex;align-items:center;gap:8px}
+.star{width:52px;height:52px;border-radius:12px;border:1.5px solid var(--line);display:grid;place-items:center;color:var(--ink4);flex:none}
+.star.on{color:var(--acc);border-color:var(--acc)}
+.star.on svg{fill:currentColor}
+.rrow{display:flex;gap:12px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+.rrow .photo{width:72px}
+.rrow b{display:block;font-size:16px;font-weight:500;line-height:1.3}
+.rrow .pr{font:italic 400 24px var(--display);margin-top:4px}
 .sw{width:28px;height:28px;border-radius:8px;flex:none;border:1px solid rgba(255,255,255,.12)}
 .opt .lb{flex:1}
 .check{width:30px;height:30px;border-radius:50%;border:2.5px solid var(--ink6);display:grid;place-items:center;color:var(--on);flex:none}
@@ -107,6 +121,8 @@ h1.t{font:italic 400 44px/1.05 'Fraunces',serif;margin:0 0 10px}
   <symbol id="left" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></symbol>
   <symbol id="bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol>
   <symbol id="lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></symbol>
+  <symbol id="star" viewBox="0 0 24 24"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></symbol>
   <symbol id="layers" viewBox="0 0 24 24"><path d="M12 2l10 6-10 6L2 8z"/><path d="M2 14l10 6 10-6"/></symbol>
 </svg>
 
@@ -118,7 +134,7 @@ h1.t{font:italic 400 44px/1.05 'Fraunces',serif;margin:0 0 10px}
   <div class="sec"><h2>1 · The list</h2></div>
   <div class="phones">
     <div><div class="fab phone" id="p1"></div><p class="cap">Tap any card.</p></div>
-    <div><div class="fab phone" id="p2"></div><p class="cap">Pick the ones you have, then Done.</p></div>
+    <div><div class="fab phone" id="p2"></div><p class="cap">Tick the ones you have. Missing ones get one button.</p></div>
     <div><div class="fab phone" id="p3"></div><p class="cap">One tap for alerts.</p></div>
   </div>
 
@@ -128,12 +144,22 @@ h1.t{font:italic 400 44px/1.05 'Fraunces',serif;margin:0 0 10px}
     <div><div class="ffs phone" id="p5"></div><p class="cap">Colours, with how many were made.</p></div>
   </div>
 
-  <div class="sec"><h2>3 · How you get there</h2></div>
+  <div class="sec"><h2>3 · Find it</h2></div>
+  <div class="phones">
+    <div><div class="fab phone" id="p7"></div><p class="cap">Just that version, for sale now.</p></div>
+  </div>
+
+  <div class="sec"><h2>Option · A star on each missing version</h2></div>
+  <div class="phones">
+    <div><div class="fab phone" id="p8"></div><p class="cap">Star it to keep it in your favourites. Needs your OK.</p></div>
+  </div>
+
+  <div class="sec"><h2>4 · How you get there</h2></div>
   <div class="phones">
     <div><div class="fab phone" id="p6"></div><p class="cap">A button above search results.</p></div>
   </div>
 
-  <div class="sec"><h2>4 · On a computer</h2></div>
+  <div class="sec"><h2>5 · On a computer</h2></div>
   <div class="fab desk" id="d1"></div>
 </div>
 
@@ -185,23 +211,21 @@ function render(root, d, st) {
     const have = c.v.filter((v) => v[1]).length;
     const ring = have === 0 ? '' : have === c.v.length ? 'all' : 'some';
     const n = c.v.length;
-    const line = n === 1 ? (have ? 'You have it' : 'You need it')
-      : have === 0 ? `You need ${n}` : have === n ? 'You have them all' : `You have ${have} of ${n}`;
     const [t1, t2] = c.photo || [];
     const thumb = c.photo ? `<span class="thumb" style="--t1:${t1};--t2:${t2}" aria-label="Seller's photo"></span>` : '<span class="thumb none" aria-label="None for sale right now"></span>';
     return `<button class="card" data-s="${si}" data-c="${ci}">${thumb}
-      <span class="txt"><b>${c.nm}</b><span>No. ${c.no} · ${line}</span></span><span class="ring ${ring}">${ring === 'all' ? I('chk') : ''}</span></button>`;
+      <span class="txt"><b>${c.nm}</b><span>No. ${c.no}${n > 1 ? ` · ${n} versions` : ''}</span></span><span class="ring ${ring}">${ring === 'all' ? I('chk') : ''}</span></button>`;
   }).join('')).join('');
   const body = `<div class="back">${I('left')}Back</div>
     <div class="name">${d.name}</div>
-    <div class="have">You have <b>${o} of ${t}</b></div>
+    <div class="have">You have <b>${o} of ${t}</b> versions</div>
     <div class="bar"><i style="width:${(o / t) * 100}%"></i></div>
     <div class="private">${I('lock')}Only you can see this</div>
     ${list}
     <button class="more">Show ${d.older} older sets</button>
     ${st.alerted
       ? `<div class="alert on">${I('bell')}Alerts are on</div>`
-      : `<button class="alert" data-act="alert">${I('bell')}Alert me when one I need is for sale</button>`}`;
+      : `<button class="alert" data-act="alert">${I('bell')}Alert me when a ${d.name} card is for sale</button>`}`;
   root.innerHTML = desk
     ? `<div class="wrap">${body}</div><div class="scrim"></div>`
     : `<div class="status"></div><div class="scroll">${body}</div><div class="scrim"></div>`;
@@ -217,10 +241,19 @@ function openPick(root, d, st) {
   const scrim = root.querySelector('.scrim');
   scrim.innerHTML = `<div class="sheet"><div class="grab"></div>
     <h3>No. ${c.no} · ${c.nm}</h3><p class="sub">Which ones do you have?</p>
-    ${c.v.map((v, vi) => `<button class="opt ${v[1] ? 'on' : ''}" data-v="${vi}"><span class="sw" style="background:${SW[v[0]] || '#888'}"></span><span class="lb">${v[0]}</span><span class="check">${v[1] ? I('chk') : ''}</span></button>`).join('')}
+    ${c.v.map((v, vi) => {
+      // Sample: the first version is for sale when the card has a seller photo.
+      const sale = c.photo && vi === 0;
+      const act = v[1] ? '' : `<div class="vact">${sale
+        ? `<button class="find">${I('search')}Find it</button>`
+        : `<span class="nosale">None for sale right now</span><button class="amini">${I('bell')}Alert me</button>`}${st.star ? `<button class="star ${v[2] ? 'on' : ''}" data-star="${vi}" aria-label="Star">${I('star')}</button>` : ''}</div>`;
+      return `<div class="vblock ${v[1] ? 'on' : ''}"><button class="opt" data-v="${vi}"><span class="sw" style="background:${SW[v[0]] || '#888'}"></span><span class="lb">${v[0]}</span><span class="check">${v[1] ? I('chk') : ''}</span></button>${act}</div>`;
+    }).join('')}
     <button class="done" data-act="done">Done</button></div>`;
   scrim.classList.add('open');
   scrim.onclick = (e) => {
+    const sb = e.target.closest('[data-star]');
+    if (sb) { const v = c.v[+sb.dataset.star]; v[2] = v[2] ? 0 : 1; render(root, d, { ...st, scroll: root.querySelector('.scroll')?.scrollTop }); return; }
     const op = e.target.closest('.opt');
     if (op) { const v = c.v[+op.dataset.v]; v[1] = v[1] ? 0 : 1; render(root, d, { ...st, scroll: root.querySelector('.scroll')?.scrollTop }); return; }
     if (e.target === scrim || e.target.closest('[data-act="done"]')) { st.pick = null; render(root, d, { ...st, scroll: root.querySelector('.scroll')?.scrollTop }); }
@@ -231,8 +264,8 @@ function openAsk(root, d, st) {
   const [o, t] = count(d);
   const scrim = root.querySelector('.scrim');
   scrim.innerHTML = `<div class="sheet"><div class="grab"></div>
-    <h3>Alert you when one you need is for sale?</h3>
-    <p class="sub">That's ${t - o} ${d.name} cards. We'll email you.</p>
+    <h3>Alert you when a ${d.name} card is for sale?</h3>
+    <p class="sub">We'll email you.</p>
     <button class="done" data-act="yes">Yes, alert me</button>
     <button class="ghost" data-act="no">Not now</button></div>`;
   scrim.classList.add('open');
@@ -261,6 +294,17 @@ mount('p3', FAB, { ask: true, scroll: 900 });
 mount('p4', FFS);
 mount('p5', FFS, { pick: [0, 0] });
 mount('d1', FAB);
+mount('p8', FAB, { pick: [2, 2], scroll: 380, star: true });
+
+// 3 · Find it results: one version's live listings
+document.getElementById('p7').innerHTML = `<div class="status"></div><div class="scroll">
+  <div class="back">${I('left')}Back to the list</div>
+  <div class="name" style="font-size:34px;margin-bottom:6px">Charizard ex</div>
+  <div class="have" style="font-size:17px">No. 223 · Shiny</div>
+  <div style="font-size:14px;color:var(--ink4);margin:14px 0 4px">2 for sale on eBay now</div>
+  ${[['Charizard ex 223/197 Special Illustration Rare Obsidian Flames NM', '$412.00'], ['Charizard ex 223/197 SIR Obsidian Flames PSA 10', '$1,150.00']]
+    .map(([t, p]) => `<div class="rrow"><span class="photo"></span><div style="flex:1;min-width:0"><b>${t}</b><div class="pr">${p}</div></div><span class="star">${I('star')}</span></div>`).join('')}
+</div>`;
 
 // 3 · How you get there: search results with one button on top
 document.getElementById('p6').innerHTML = `<div class="status"></div><div class="scroll">

@@ -144,7 +144,7 @@ export function fromParams(sp) {
 
 // The shared result row and card popup read isAuction / isBuyItNow, like
 // sports results.
-function withListingFlags(it) {
+export function withListingFlags(it) {
   const opts = it.buyingOptions || [];
   return { ...it, isAuction: opts.includes('AUCTION'), isBuyItNow: opts.includes('FIXED_PRICE') };
 }

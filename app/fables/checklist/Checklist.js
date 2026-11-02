@@ -7,17 +7,18 @@
 //
 // Data
 //   Versions  /api/tcg-versions (TCGdex catalog, English Pokémon). A family
-//             ("Charizard") is every catalog card whose name holds that word:
-//             Charizard, Charizard ex, Mega Charizard X ex…
-//   Photos    one live search (/api/tcg-search) for the name; a listing is a
-//             row's photo when its title has that card's number ("223/197").
-//             Seller photos only, never catalog art; none → dashed card.
+//             ("Charizard") is ?family=1: every catalog card named with that
+//             word (Charizard, Charizard ex, Mega Charizard X ex…).
+//   Listings  the card-family search (/api/tcg-family-search), which pins each
+//             live listing to a version: a row's photo (seller photos only,
+//             never catalog art; none → dashed card) and which versions are
+//             for sale, for "Find it" (opens /fables/find for one version).
 //   Owned     /api/owned (owned_cards). Private to the member; marking needs a
 //             free account, viewing doesn't.
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ChevronLeft, Check, Lock, Bell } from 'lucide-react';
+import { ChevronLeft, Check, Lock, Bell, Search } from 'lucide-react';
 import { useUser } from '../../../lib/useUser';
 import { SIDE } from '../data';
 
@@ -26,7 +27,6 @@ const SETS_SHOWN = 4;
 const FOIL = 'linear-gradient(135deg,#9fe3f5,#b6a8f0,#f0b3d0,#f3d9a0)';
 
 const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/['’.]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
-const hasWord = (name, word) => (` ${norm(name)} `).includes(` ${norm(word)} `);
 
 // Plain names for versions (Landon: no collector jargon).
 function plainLabel(v) {
@@ -44,13 +44,6 @@ function swatch(plain) {
   return '#8a93a8';
 }
 
-// Title has this card's number: "223/197", "#223/197", "223 / 197".
-function numberMatcher(number, total) {
-  if (!total || !/^\d+$/.test(String(number))) return null;
-  const n = String(Number(number));
-  return new RegExp(`(?:^|[^\\d])0*${n}\\s*/\\s*0*${Number(total)}(?!\\d)`);
-}
-
 export default function Checklist() {
   const router = useRouter();
   const sp = useSearchParams();
@@ -59,6 +52,7 @@ export default function Checklist() {
   const [rows, setRows] = useState(null); // [{ id, set, setName, released, total, number, cardKey, cardName, versions }]
   const [source, setSource] = useState('');
   const [photos, setPhotos] = useState({}); // row id → image url
+  const [forSale, setForSale] = useState(null); // `${cardKey}|${versionKey}` → listings for sale now (null while checking)
   const [owned, setOwned] = useState(new Set()); // `${cardKey}|${versionKey}`
   const [ownedError, setOwnedError] = useState('');
   const [showAll, setShowAll] = useState(false);
@@ -72,8 +66,9 @@ export default function Checklist() {
     let alive = true;
     (async () => {
       try {
-        const found = await fetch(`/api/tcg-versions?game=${GAME}&q=${encodeURIComponent(name)}`).then((r) => r.json());
-        const family = (found.cards || []).filter((c) => hasWord(c.name, name));
+        // Every card named with those words (Charizard, Charizard ex, Mega Charizard X ex…).
+        const found = await fetch(`/api/tcg-versions?game=${GAME}&q=${encodeURIComponent(name)}&family=1`).then((r) => r.json());
+        const family = found.cards || [];
         const lists = await Promise.all(family.map((c) => fetch(`/api/tcg-versions?game=${GAME}&card=${encodeURIComponent(c.key)}`).then((r) => (r.ok ? r.json() : null)).catch(() => null)));
         const out = [];
         for (const body of lists) {
@@ -100,27 +95,33 @@ export default function Checklist() {
     return () => { alive = false; };
   }, [name]);
 
-  // One live search for photos.
+  // Live listings: one card-family search for the whole family (cached 15
+  // minutes on the server). Each listing is pinned to its catalog printing,
+  // which gives each row's photo and which versions are for sale right now.
   useEffect(() => {
     if (!rows?.length) return;
     let alive = true;
-    fetch(`/api/tcg-search?q=${encodeURIComponent(name)}&game=${GAME}&lang=en&limit=1000`)
-      .then((r) => (r.ok ? r.json() : { items: [] }))
+    const cardOf = {};
+    for (const r of rows) for (const v of r.versions) cardOf[v.key] = r.cardKey;
+    const keys = [...new Set(rows.map((r) => r.cardKey))];
+    fetch(`/api/tcg-family-search?game=${GAME}&cards=${encodeURIComponent(keys.join(','))}&lang=en&limit=1000`)
+      .then((r) => (r.ok ? r.json() : null)).catch(() => null)
       .then((d) => {
         if (!alive) return;
-        const items = (d.items || []).filter((it) => it.image);
-        const map = {};
-        for (const row of rows) {
-          const re = numberMatcher(row.number, row.total);
-          if (!re) continue;
-          const hit = items.find((it) => re.test(it.title || '') && hasWord(it.title, name));
-          if (hit) map[row.id] = hit.image.replace(/\/s-l\d+\.(\w+)/, '/s-l300.$1');
+        const pics = {};
+        const counts = {};
+        for (const [v, n] of Object.entries(d?.counts || {})) if (cardOf[v]) counts[`${cardOf[v]}|${v}`] = n;
+        for (const it of d?.items || []) {
+          const c = it.catalog;
+          if (!c || !it.image) continue;
+          const id = `${c.card}|${c.set}|${c.number}`;
+          if (!pics[id]) pics[id] = it.image.replace(/\/s-l\d+\.(\w+)/, '/s-l300.$1');
         }
-        setPhotos(map);
-      })
-      .catch(() => {});
+        setPhotos(pics);
+        setForSale(counts);
+      });
     return () => { alive = false; };
-  }, [rows, name]);
+  }, [rows]);
 
   // The member's own marks.
   useEffect(() => {
@@ -167,7 +168,12 @@ export default function Checklist() {
     setAlertState('saving');
     const r = await fetch('/api/saved-searches', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: `${title} cards`, query: title, filters: { game: GAME, lang: ['en'] }, notify_enabled: true, side: SIDE }),
+      body: JSON.stringify({
+        name: `${title} cards`, query: title, notify_enabled: true, side: SIDE,
+        // A card-family search: every card in the list, one alert. needOnly skips
+        // versions the member has once the alert checker supports it.
+        filters: { game: GAME, cards: [...new Set((rows || []).map((r) => r.cardKey))], needOnly: true, lang: ['en'] },
+      }),
     }).catch(() => null);
     const d = r ? await r.json().catch(() => ({})) : {};
     if (r && r.ok) setAlertState(d.watchLimited ? 'Saved, but your 5 alerts are in use. Pause one in Saved searches to turn this on.' : 'on');
@@ -196,7 +202,7 @@ export default function Checklist() {
       {rows && rows.length > 0 && (
         <>
           <p className="text-[18px] mb-2.5" style={{ color: 'var(--ink-200)' }}>
-            {user ? <>You have <b className="font-semibold" style={{ color: 'var(--ink-100)' }}>{have} of {total}</b></> : <>{total} cards to collect</>}
+            {user ? <>You have <b className="font-semibold" style={{ color: 'var(--ink-100)' }}>{have} of {total}</b> versions</> : <>{total} versions to collect</>}
           </p>
           <div className="h-2.5 rounded-full overflow-hidden mb-1.5" style={{ background: 'var(--bg-elev-2)' }}>
             <i className="block h-full rounded-full" style={{ width: `${total ? (have / total) * 100 : 0}%`, background: FOIL }} />
@@ -212,7 +218,6 @@ export default function Checklist() {
               {g.rows.map((r) => {
                 const n = r.versions.length;
                 const got = r.versions.filter((v) => owned.has(`${r.cardKey}|${v.key}`)).length;
-                const line = n === 1 ? (got ? 'You have it' : 'You need it') : got === 0 ? `You need ${n}` : got === n ? 'You have them all' : `You have ${got} of ${n}`;
                 return (
                   <button key={r.id} type="button" onClick={() => setPick(r.id)}
                           className="w-full flex items-center gap-3.5 min-h-[72px] px-3.5 py-3 rounded-2xl mb-2.5 text-left"
@@ -220,7 +225,7 @@ export default function Checklist() {
                     <Thumb src={photos[r.id]} />
                     <span className="flex-1 min-w-0">
                       <span className="block text-[17px] font-medium leading-snug" style={{ color: 'var(--ink-100)' }}>{r.cardName}</span>
-                      <span className="text-[15px]" style={{ color: 'var(--ink-400)' }}>No. {r.number}{user ? ` · ${line}` : n > 1 ? ` · comes in ${n} kinds` : ''}</span>
+                      <span className="text-[15px]" style={{ color: 'var(--ink-400)' }}>No. {r.number}{n > 1 ? ` · ${n} versions` : ''}</span>
                     </span>
                     <Ring got={got} n={n} />
                   </button>
@@ -255,30 +260,67 @@ export default function Checklist() {
         <Sheet onClose={() => setPick(null)}>
           <h3 className="font-display italic text-[28px] leading-tight mb-1">{picked.cardName}</h3>
           <p className="text-[16px] mb-4" style={{ color: 'var(--ink-400)' }}>No. {picked.number} · {picked.setName}</p>
+          <p className="text-[17px] mb-3" style={{ color: 'var(--ink-200)' }}>{user ? 'Which ones do you have?' : 'Versions'}</p>
+          {picked.versions.map((v) => {
+            const on = owned.has(`${picked.cardKey}|${v.key}`);
+            const plain = plainLabel(v);
+            const count = forSale ? forSale[`${picked.cardKey}|${v.key}`] || 0 : null;
+            const head = (
+              <>
+                <span className="w-7 h-7 rounded-lg flex-none" style={{ background: swatch(plain), border: '1px solid rgba(255,255,255,.12)' }} aria-hidden="true" />
+                <span className="flex-1">{plain}</span>
+                {user && (
+                  <span className="w-[30px] h-[30px] rounded-full grid place-items-center flex-none"
+                        style={on ? { background: FOIL, color: 'var(--ink-on-gold)' } : { border: '2.5px solid var(--ink-600)' }}>
+                    {on && <Check className="w-[17px] h-[17px]" strokeWidth={3} aria-hidden="true" />}
+                  </span>
+                )}
+              </>
+            );
+            return (
+              <div key={v.key} className="rounded-[14px] mb-2.5 overflow-hidden"
+                   style={{ background: on ? 'var(--bg-elev-2)' : 'var(--bg-base)', border: `1.5px solid ${on ? 'var(--gold-bright)' : 'var(--line)'}` }}>
+                {user ? (
+                  <button type="button" onClick={() => toggle(picked, v)} aria-pressed={on}
+                          className="w-full flex items-center gap-3.5 min-h-[64px] px-3.5 py-2.5 text-[18px] text-left">{head}</button>
+                ) : (
+                  <div className="flex items-center gap-3.5 min-h-[64px] px-3.5 py-2.5 text-[18px]">{head}</div>
+                )}
+                {!on && (
+                  <div className="px-3.5 pb-3">
+                    {count === null ? (
+                      <p className="text-[15px] py-2" style={{ color: 'var(--ink-400)' }}>Checking eBay…</p>
+                    ) : count > 0 ? (
+                      <a href={`/fables/find?${new URLSearchParams({ card: picked.cardKey, version: v.key, name: picked.cardName, no: picked.number, label: plain, back: here })}`}
+                         className="w-full min-h-[52px] rounded-xl flex items-center justify-center gap-2 text-[17px] font-semibold"
+                         style={{ border: '1.5px solid var(--gold-bright)', color: 'var(--gold-bright)' }}>
+                        <Search className="w-5 h-5" strokeWidth={2} aria-hidden="true" />Find it
+                      </a>
+                    ) : (
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="text-[15px]" style={{ color: 'var(--ink-400)' }}>None for sale right now</span>
+                        {alertState === 'on' ? (
+                          <span className="text-[15px]" style={{ color: 'var(--gold-bright)' }}>Alerts are on</span>
+                        ) : (
+                          <button type="button"
+                                  onClick={() => { setPick(null); if (user) setAsk(true); else window.location.assign(`/signup?src=alert&next=${encodeURIComponent(here)}`); }}
+                                  className="min-h-[48px] px-4 rounded-xl inline-flex items-center gap-2 text-[16px] font-semibold flex-none"
+                                  style={{ border: '1.5px solid var(--line)', color: 'var(--ink-100)' }}>
+                            <Bell className="w-[18px] h-[18px]" strokeWidth={2} aria-hidden="true" />Alert me
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
           {user ? (
-            <>
-              <p className="text-[17px] mb-3" style={{ color: 'var(--ink-200)' }}>Which ones do you have?</p>
-              {picked.versions.map((v) => {
-                const on = owned.has(`${picked.cardKey}|${v.key}`);
-                const plain = plainLabel(v);
-                return (
-                  <button key={v.key} type="button" onClick={() => toggle(picked, v)} aria-pressed={on}
-                          className="w-full flex items-center gap-3.5 min-h-[64px] px-3.5 py-2.5 rounded-[14px] mb-2.5 text-[18px] text-left"
-                          style={{ background: on ? 'var(--bg-elev-2)' : 'var(--bg-base)', border: `1.5px solid ${on ? 'var(--gold-bright)' : 'var(--line)'}` }}>
-                    <span className="w-7 h-7 rounded-lg flex-none" style={{ background: swatch(plain), border: '1px solid rgba(255,255,255,.12)' }} aria-hidden="true" />
-                    <span className="flex-1">{plain}</span>
-                    <span className="w-[30px] h-[30px] rounded-full grid place-items-center flex-none"
-                          style={on ? { background: FOIL, color: 'var(--ink-on-gold)' } : { border: '2.5px solid var(--ink-600)' }}>
-                      {on && <Check className="w-[17px] h-[17px]" strokeWidth={3} aria-hidden="true" />}
-                    </span>
-                  </button>
-                );
-              })}
-              <BigButton onClick={() => setPick(null)}>Done</BigButton>
-            </>
+            <BigButton onClick={() => setPick(null)}>Done</BigButton>
           ) : (
             <>
-              <p className="text-[17px] mb-4" style={{ color: 'var(--ink-200)' }}>Make a free account to mark the cards you have.</p>
+              <p className="text-[16px] mt-4 mb-2" style={{ color: 'var(--ink-200)' }}>Make a free account to mark the cards you have.</p>
               <BigButton onClick={() => window.location.assign(`/signup?src=checklist&next=${encodeURIComponent(here)}`)}>Make a free account</BigButton>
               <button type="button" onClick={() => window.location.assign(`/login?next=${encodeURIComponent(here)}`)}
                       className="w-full min-h-[56px] text-[17px] mt-1.5" style={{ color: 'var(--ink-400)' }}>
@@ -312,10 +354,10 @@ function Thumb({ src }) {
 
 function Ring({ got, n }) {
   if (got > 0 && got === n) {
-    return <span className="w-[34px] h-[34px] rounded-full grid place-items-center flex-none" style={{ background: FOIL, color: 'var(--ink-on-gold)' }} aria-label="You have them all"><Check className="w-[18px] h-[18px]" strokeWidth={3} aria-hidden="true" /></span>;
+    return <span className="w-[34px] h-[34px] rounded-full grid place-items-center flex-none" style={{ background: FOIL, color: 'var(--ink-on-gold)' }} aria-label="You have every version"><Check className="w-[18px] h-[18px]" strokeWidth={3} aria-hidden="true" /></span>;
   }
   if (got > 0) {
-    return <span className="w-[34px] h-[34px] rounded-full flex-none" style={{ border: '2.5px solid var(--gold-bright)', background: 'conic-gradient(var(--gold-bright) 0 50%, transparent 50% 100%)' }} aria-label={`You have ${got} of ${n}`} role="img" />;
+    return <span className="w-[34px] h-[34px] rounded-full flex-none" style={{ border: '2.5px solid var(--gold-bright)', background: 'conic-gradient(var(--gold-bright) 0 50%, transparent 50% 100%)' }} aria-label="You have some versions" role="img" />;
   }
   return <span className="w-[34px] h-[34px] rounded-full flex-none" style={{ border: '2.5px solid var(--ink-600)' }} aria-hidden="true" />;
 }
