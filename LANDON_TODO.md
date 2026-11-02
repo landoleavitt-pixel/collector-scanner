@@ -4,6 +4,7 @@ Things only you can do, because they need your accounts, money or signature. The
 
 ## Do now
 
+- [ ] **Buy floorsandfables.com and floorsandfables.ca** (about $15–30 CAD/yr each) at any domain seller (e.g. the one that holds fieldsandfloors.com). **Security note:** card details go only on the seller's own site, never in chat. Say no to paid extras except free privacy protection. Then tell the boss, who walks you through connecting it in Vercel.
 - [ ] **Deploy the email checker** (emails changed in today's update): in Terminal, in the project folder, run `npx supabase functions deploy poller`, then tell the boss.
 - [ ] Sign in and look at your new home page once (new matches, price drops, ending soon). Tell the boss if anything looks off.
 - [ ] **Stop counting your own visits:** open **fieldsandfloors.com/?internal=1** once on each browser and phone you use (or just sign in on it). The agents' browser is already done.
@@ -34,7 +35,7 @@ Full steps: [IOS_APP_SETUP.md](IOS_APP_SETUP.md). No in-app purchases, RevenueCa
 - [ ] Add the push key to Supabase (the boss gives you the exact command; the key file never goes in chat).
 - [ ] Run the app on your iPhone from Xcode with the boss walking you through it; test sign-in, a search and an alert.
 - [ ] **Make a demo account for Apple's reviewers:** sign up on fieldsandfloors.com with a separate email (e.g. a new Gmail) and a password you don't use anywhere else, save 2 searches with alerts on, and star 1 auction. **Security note:** this login goes to Apple only, in the App Review notes, so never reuse a real password. Then tell the boss, so the last 2 screenshots can be taken (steps in appstore/screenshots/README.md).
-- [ ] App Store Connect: create the app, **named "Fields & Fables"**. Do this as soon as your developer account is active, because creating it is what reserves the name. (Text, privacy answers and screenshots 1–3 are ready in APP_STORE_LISTING.md and appstore/screenshots/), fill in App Privacy (email, device ID for push, Product Interaction analytics), and add a demo account for reviewers. The boss drafts the text and screenshots.
+- [ ] App Store Connect: create the app, **named "Floors & Fables"**. Do this as soon as your developer account is active, because creating it is what reserves the name. (Text, privacy answers and screenshots 1–3 are ready in APP_STORE_LISTING.md and appstore/screenshots/), fill in App Privacy (email, device ID for push, Product Interaction analytics), and add a demo account for reviewers. The boss drafts the text and screenshots.
 - [ ] Before archiving, ask the boss to run `npx cap sync ios`; then submit.
 - [ ] **Sign in with Apple cleanup on account delete (Apple requires it):** (1) paste `supabase/migrations/20261101000000_apple_tokens.sql` into Supabase → SQL Editor and run it. (2) In Vercel → Settings → Environment Variables (Production) add `APPLE_TEAM_ID`, `APPLE_KEY_ID`, `APPLE_CLIENT_ID` (= `com.fieldsandfloors.app`) and `APPLE_PRIVATE_KEY` (the full contents of the .p8 key file), then redeploy. **Security note:** the .p8 key is a secret. Paste it only into Vercel, never into chat, email or a project file. If it ever leaks, revoke it in Apple Developer → Keys and make a new one. Until you do this, everything works as today; deleting an account just can't revoke the Apple token.
 
