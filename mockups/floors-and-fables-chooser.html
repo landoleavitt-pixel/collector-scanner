@@ -28,6 +28,7 @@ h1.t{font:italic 400 44px/1.05 'Fraunces',serif;margin:0 0 10px}
 .choice{position:relative;display:flex;flex-direction:column;justify-content:flex-end;border-radius:22px;overflow:hidden;padding:24px 22px;min-height:180px;border:1px solid var(--line)}
 .choice .nm{font-size:38px;line-height:1;font-style:italic}
 .choice .what{font-size:17px;margin-top:8px}
+.choice .list{font-size:14px;margin-top:6px;opacity:.75}
 .choice .go{position:absolute;right:20px;top:20px;width:52px;height:52px;border-radius:50%;display:grid;place-items:center}
 .choice .go svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 .sports{background:linear-gradient(180deg,#1a150e,#0b0a08);color:#f7f1e1}
@@ -68,7 +69,7 @@ h1.t{font:italic 400 44px/1.05 'Fraunces',serif;margin:0 0 10px}
 
 <div class="page">
   <h1 class="t">floorsandfables.com</h1>
-  <p class="lede">The front door: pick a side, one tap. fieldsandfloors.com stays exactly as it is today.</p>
+  <p class="lede">The front door: pick a side, one tap. Each side has its own domain: fieldsandfloors.com and foilsandfables.com.</p>
 
   <div class="sec"><h2>Phone</h2></div>
   <div class="phones">
@@ -86,10 +87,10 @@ const door = `<div class="door">
     <p class="ask">What do you collect?</p>
   </div>
   <div class="choices">
-    <a class="choice sports" href="#"><span class="nm">Fields <em>&amp;</em> Floors</span><span class="what">Sports cards</span><span class="go"><svg><use href="#go"/></svg></span></a>
-    <a class="choice games" href="#"><span class="nm">Foils <em>&amp;</em> Fables</span><span class="what">Trading card games</span><span class="go"><svg><use href="#go"/></svg></span></a>
+    <a class="choice sports" href="#"><span class="nm">Fields <em>&amp;</em> Floors</span><span class="what">Sports cards</span><span class="list">Hockey · Basketball · Baseball · Football</span><span class="go"><svg><use href="#go"/></svg></span></a>
+    <a class="choice games" href="#"><span class="nm">Foils <em>&amp;</em> Fables</span><span class="what">Trading card games</span><span class="list">Pokémon · Magic: The Gathering · Yu-Gi-Oh! · One Piece · Lorcana</span><span class="go"><svg><use href="#go"/></svg></span></a>
   </div>
-  <p class="foot">One free account works on both.</p>
+  <p class="foot">One free account works on both.<br>Not affiliated with eBay or any game publisher.</p>
 </div>`;
 document.getElementById('phone').innerHTML = door;
 document.getElementById('desk').innerHTML = door;

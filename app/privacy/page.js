@@ -3,7 +3,7 @@ import UsageStatsToggle from '../components/UsageStatsToggle';
 
 export const metadata = {
   title: 'Privacy Policy',
-  description: 'How Fields & Floors, Foils & Fables and the Fields & Fables app collect, use, and protect your information.',
+  description: 'How Fields & Floors, Foils & Fables and the Floors & Fables app collect, use, and protect your information.',
 };
 
 export default function PrivacyPage() {
@@ -11,14 +11,14 @@ export default function PrivacyPage() {
     <PageShell
       eyebrow="Legal"
       title="Privacy Policy."
-      lede="What we collect, why we collect it, and who we share it with. Covers Fields & Floors, Foils & Fables and the Fields & Fables app. Last updated October 2026."
+      lede="What we collect, why we collect it, and who we share it with. Covers Fields & Floors, Foils & Fables and the Floors & Fables app. Last updated October 2026."
     >
       <Prose>
         <p>
           Fields &amp; Floors Collectors ("Fields &amp; Floors," "we," "us") operates
           the website at fieldsandfloors.com, including Fields &amp; Floors (sports
           cards) and Foils &amp; Fables (trading card games), any other website we
-          operate for either of them, and the Fields &amp; Fables iPhone app
+          operate for either of them, and the Floors &amp; Fables iPhone app
           (together, the "service"). They are one service with one account, and this
           policy applies to all of it. Fields &amp; Floors Collectors is responsible
           for (the controller of) the personal information described here. This
@@ -215,7 +215,7 @@ export default function PrivacyPage() {
           <a href="mailto:hello@fieldsandfloors.com">hello@fieldsandfloors.com</a>.
         </p>
         <p style={{ fontSize: '0.85em', color: 'var(--ink-400)' }}>
-          Fields &amp; Floors, Foils &amp; Fables and the Fields &amp; Fables app
+          Fields &amp; Floors, Foils &amp; Fables and the Floors &amp; Fables app
           are an independent search tool. They are not affiliated with, endorsed
           by, or sponsored by eBay Inc. or any card maker or game publisher,
           including The Pok&eacute;mon Company, Nintendo, Creatures Inc., GAME

@@ -8,7 +8,7 @@ const CARD_DATA_LIVE = false;
 
 export const metadata = {
   title: 'Terms of Service',
-  description: 'The terms that govern your use of Fields & Floors, Foils & Fables and the Fields & Fables app.',
+  description: 'The terms that govern your use of Fields & Floors, Foils & Fables and the Floors & Fables app.',
 };
 
 export default function TermsPage() {
@@ -16,7 +16,7 @@ export default function TermsPage() {
     <PageShell
       eyebrow="Legal"
       title="Terms of Service."
-      lede="The agreement between you and Fields & Floors Collectors, covering Fields & Floors, Foils & Fables and the Fields & Fables app. Last updated October 2026."
+      lede="The agreement between you and Fields & Floors Collectors, covering Fields & Floors, Foils & Fables and the Floors & Fables app. Last updated October 2026."
     >
       <Prose>
         <p>
@@ -54,10 +54,10 @@ export default function TermsPage() {
           fieldsandfloors.com, of the sports card service offered under the name
           Fields &amp; Floors, of the trading card game service offered under the
           name Foils &amp; Fables, of the mobile application offered under the
-          name Fields &amp; Fables, and of any related website or mobile
+          name Floors &amp; Fables, and of any related website or mobile
           application (together, the &ldquo;Service&rdquo;). References in these
           Terms to Fields &amp; Floors as a service include Foils &amp; Fables and
-          the Fields &amp; Fables application unless the context requires
+          the Floors &amp; Fables application unless the context requires
           otherwise. &ldquo;Third-Party Marketplace&rdquo; means eBay.
           &ldquo;Card Data&rdquo; means card names, set, number, rarity, finish,
           version, and similar catalog information about cards that the Service
@@ -242,7 +242,7 @@ export default function TermsPage() {
       <Prose>
         <p>
           One account works across the whole Service, including Fields &amp; Floors,
-          Foils &amp; Fables, and the Fields &amp; Fables application, and any plan,
+          Foils &amp; Fables, and the Floors &amp; Fables application, and any plan,
           limit, or feature that applies to your account applies across all of
           them. You're responsible for keeping your login credentials secure and
           for activity under your account. Provide accurate information when you sign up.
