@@ -22,8 +22,8 @@ The single list of work that's finished or in progress but **not live yet**. The
 
 | When | What | Commit |
 |---|---|---|
-| 2026-11-01 | Card checklist (English Pokémon) with Find it and need-only alerts; rarity from card catalogs; 5 new Fables filters + shipping/offers on sports; Fables search fixes; Foils & Fables Collectors title; app renamed Floors & Fables; Usage stats menu link | dcd7881 (poller deploy: Landon) |
-| 2026-11-01 | Fables works like F&F; Fables emails; sports label fixes; Select option A + rookie/box-only flags; checklist importer + /api/checklist; Terms/Privacy both brands + usage-stats switch and menu link; payments-off header; Sign in with Apple revoke on delete; Fables result-quality fixes + card-family fixes | 65d60a7 (poller deploy: Landon) |
+| 2026-11-01 | Card checklist (English Pokémon) with Find it and need-only alerts; rarity from card catalogs; 5 new Fables filters + shipping/offers on sports; Fables search fixes; Foils & Fables Collectors title; app renamed Floors & Fables; Usage stats menu link | dcd7881 + poller deployed |
+| 2026-11-01 | Fables works like F&F; Fables emails; sports label fixes; Select option A + rookie/box-only flags; checklist importer + /api/checklist; Terms/Privacy both brands + usage-stats switch and menu link; payments-off header; Sign in with Apple revoke on delete; Fables result-quality fixes + card-family fixes | 65d60a7 + poller deployed |
 | 2026-10-31 | Foils & Fables at /fables: card-game search (5 games), Night foil look, side switch, shared watchlist, app chooser; eBay token cache fix | 6f506e7 |
 | 2026-10-30 | Rarity lists: Prizm Basketball 25-26, Topps Series 2 2026, Mosaic Basketball 24-25, UD Series 2 Hockey; Common print runs label on phones | fb93bfc |
 | 2026-10-30 | Sign-up page benefits; signed-out sign-up prompt after the 4th result (Option B) | bf6a5ae |

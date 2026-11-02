@@ -5,7 +5,6 @@ Things only you can do, because they need your accounts, money or signature. The
 ## Do now
 
 - [ ] **Buy foilsandfables.com and floorsandfables.com** (about $15–25 CAD/yr each; the .ca versions are optional) at any domain seller, e.g. the one that holds fieldsandfloors.com. **Security note:** card details go only on the seller's own site, never in chat. Say no to paid extras except free privacy protection. Then tell the boss, who walks you through connecting them in Vercel.
-- [ ] **Deploy the email checker** (emails, need-only checklist alerts and the new filters changed in today's two updates): in Terminal, in the project folder, run `npx supabase functions deploy poller`, then tell the boss.
 - [ ] Sign in and look at your new home page once (new matches, price drops, ending soon). Tell the boss if anything looks off.
 - [ ] **Stop counting your own visits:** open **fieldsandfloors.com/?internal=1** once on each browser and phone you use (or just sign in on it). The agents' browser is already done.
 
