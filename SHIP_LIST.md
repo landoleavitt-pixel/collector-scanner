@@ -13,6 +13,9 @@ The single list of work that's finished or in progress but **not live yet**. The
 | 7 | eBay Partner Network affiliate links | CFO | ⏸ Plan approved. Waiting on Landon's sign-up + Campaign ID; code held until batch ships | SiteTour.js, guides, reading-list copy + link tagging | — |
 | L05 | Proof strip | Landing | ⏹ Skipped: no honest live number yet (no fake figures) | — | — |
 | P8 | Card checklist (English Pokémon) at /fables/checklist; then row wording, Find it (star skipped); engine: family lookup, set/number per listing, need-only alerts | Design + Engine | 🔵 In progress | app/fables/checklist, lib/tcg | owned_cards SQL done 2026-11-01; poller deploy after push (need-only alerts) |
+| P9 | Fables filters: foil type, condition (raw), special art, promos, shipping and offers (both sides) | Engine | ⚪ Queued after catalog rarity | lib/tcg, filter UI, search APIs | maybe poller deploy |
+| P10 | Rarity from card catalogs when a listing matches | Engine | 🔵 In progress | lib/tcg | — |
+| P11 | floorsandfables.com chooser + foilsandfables.com routing; app renamed Floors & Fables | Design | 🔵 Building | middleware, chooser page | Landon buys domains + Vercel |
 | E-later | Fables versions: "Secret Lair Prize #8001" / "Buy-A-Box" titles to catalog set names; Magic titles with a number but no set ("022/259") | Engine | ⚪ Follow-up | lib/tcg | — |
 | S-poll | Lock down the alert checker: it can be triggered by anyone holding the public key; require a private secret header from the cron jobs instead | Debugger | ⚪ Follow-up (low risk today: it only re-runs checks and never re-sends) | poller, both cron jobs | poller deploy + Landon edits 2 cron jobs |
 
