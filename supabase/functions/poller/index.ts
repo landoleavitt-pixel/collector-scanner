@@ -617,7 +617,7 @@ async function callAppSearch(query: string, filters: Record<string, unknown>): P
 const TCG_FILTER_KEYS = ["game", "rarity", "lang", "graded", "grader", "grade", "firstEd", "serialOnly", "priceMin", "priceMax", "listing", "finish", "art", "promos", "cond", "freeShip", "offers", "shipFrom", "returns"];
 // Saved searches with a `card` are card-family searches: GET
 // /api/tcg-family-search. Mirrors familySavedParams in lib/tcg/familySearch.js.
-const FAMILY_FILTER_KEYS = ["game", "card", "cards", "versions", "lang", "graded", "priceMin", "priceMax", "listing", "freeShip", "offers", "shipFrom", "returns"];
+const FAMILY_FILTER_KEYS = ["game", "card", "cards", "versions", "rarity", "lang", "graded", "priceMin", "priceMax", "listing", "freeShip", "offers", "shipFrom", "returns"];
 function familyCardKeys(filters: Record<string, unknown>): string[] {
   const list = Array.isArray(filters?.cards) ? (filters.cards as unknown[]).map(String) : [];
   if (filters?.card) list.push(String(filters.card));

@@ -34,6 +34,8 @@ const { cardVersions, findCards, familyCards } = await import(pathToFileURL(path
 const { familySavedParams } = await import(pathToFileURL(path.join(dir, 'familySearch.mjs')).href);
 const { catalogRarity, applyCatalog } = await import(pathToFileURL(path.join(dir, 'catalogMatch.mjs')).href);
 const { getCard } = await import(pathToFileURL(path.join(dir, 'catalog.mjs')).href);
+const { rarityValuesToGroups } = await import(pathToFileURL(path.join(dir, 'ladders.mjs')).href);
+const allVersions = (game, key) => cardVersions(game, key).sets.flatMap((x) => x.numbers.flatMap((n) => n.versions));
 const rarityOf = (game, key, title, titleRarity = null) => { const c = getCard(game, key); return catalogRarity(game, c, matchListing(game, c, title), titleRarity); };
 
 const { cases } = JSON.parse(fs.readFileSync(path.join(root, 'mockups/tcg-family-cases.json'), 'utf8'));
@@ -72,6 +74,15 @@ const checks = [
   ['No catalog rarity for "version not in title"', () => rarityOf('pokemon', 'Charizard', 'Charizard Pokemon card nice') === null],
   ['Several possible versions: the title\'s rarity if it is one of them', () => { const c = getCard('mtg', 'sol-ring'); const m = matchListing('mtg', c, 'Sol Ring Secret Lair Drop Foil'); return m.kind !== 'set' || catalogRarity('mtg', c, m, 'rare') === 'rare' || catalogRarity('mtg', c, m, 'rare') !== null; }],
   ['applyCatalog relabels a search item and says where the rarity came from', () => { const out = applyCatalog([{ id: 't1', title: 'Charizard ex 199/165 151 Ultra Rare Holo', parsed: { game: 'pokemon', rarity: 'ultra', rarityName: 'Ultra Rare' } }], 'Charizard'); return out[0].parsed.rarity === 'sir' && out[0].raritySource === 'catalog' && out[0].catalog?.set === 'sv03.5'; }],
+  ['Versions carry rarityGroup: 151 #199 is Extremely rare', () => cardVersions('pokemon', 'charizard-ex').sets.find((x) => x.set === 'sv03.5').numbers.find((n) => n.number === '199').versions[0].rarityGroup === 'extremely_rare'],
+  ['Versions: SVP promo is Promo', () => cardVersions('pokemon', 'charizard-ex').sets.find((x) => x.set === 'svp').numbers[0].versions[0].rarityGroup === 'promo'],
+  ['Versions: Alpha Black Lotus is Vintage', () => cardVersions('mtg', 'black-lotus').sets.find((x) => x.set === 'lea').numbers[0].versions[0].rarityGroup === 'vintage'],
+  ['Versions: serialized One Ring is Extremely rare', () => allVersions('mtg', 'the-one-ring').some((v) => v.rarityKey === 'serialized' && v.rarityGroup === 'extremely_rare')],
+  ['Versions: Sheoldred prerelease is Promo, set card is Very rare', () => { const v = allVersions('mtg', 'sheoldred-the-apocalypse'); return v.some((x) => x.tags.includes('prerelease') && x.rarityGroup === 'promo') && v.find((x) => x.key === 'dmu:107:n').rarityGroup === 'very_rare'; }],
+  ['Every Magic version of a sample of cards has a group', () => ['sol-ring', 'lightning-bolt', 'ragavan-nimble-pilferer'].every((k) => allVersions('mtg', k).every((v) => v.rarityGroup))],
+  ['Pokémon V cards are Very rare, Shiny and Radiant Extremely rare', () => allVersions('pokemon', 'lugia-v').some((v) => v.rarity === 'Holo Rare V' && v.rarityGroup === 'very_rare') && allVersions('pokemon', 'radiant-charizard').every((v) => v.rarityGroup === 'extremely_rare')],
+  ['Old saved rarity values map to groups', () => rarityValuesToGroups(['sir'], ['pokemon'])[0] === 'extremely_rare' && rarityValuesToGroups(['pokemon:dr'], ['pokemon','mtg'])[0] === 'very_rare' && rarityValuesToGroups(['enchanted'], ['lorcana'])[0] === 'extremely_rare'],
+  ['Group values pass through; junk is dropped', () => JSON.stringify(rarityValuesToGroups(['promo', 'vintage', 'nonsense'], ['pokemon'])) === '["promo","vintage"]'],
   ['Serialized One Ring is a grail', () => cardVersions('mtg', 'the-one-ring').sets.flatMap((s) => s.numbers.flatMap((n) => n.versions)).some((v) => v.rarityKey === 'serialized' && v.tier === 'grail')],
 ];
 for (const [name, fn] of checks) {

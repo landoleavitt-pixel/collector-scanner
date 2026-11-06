@@ -2748,6 +2748,270 @@
      "manga"
     ]
    }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Charizard ex 199/165 Special Illustration Rare",
+   "hint": "pokemon",
+   "expect": {
+    "rarityGroup": "extremely_rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Mega Charizard X ex Mega Hyper Rare",
+   "hint": "pokemon",
+   "expect": {
+    "rarityGroup": "extremely_rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Gold Star Rayquaza 107/107",
+   "hint": "pokemon",
+   "expect": {
+    "rarityGroup": "extremely_rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Charizard ex 125/197 Double Rare",
+   "hint": "pokemon",
+   "expect": {
+    "rarityGroup": "very_rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Gardevoir Illustration Rare 245/198",
+   "hint": "pokemon",
+   "expect": {
+    "rarityGroup": "very_rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Charizard Holo Rare 4/102",
+   "hint": "pokemon",
+   "expect": {
+    "rarityGroup": "rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Pikachu Uncommon 58/102",
+   "hint": "pokemon",
+   "expect": {
+    "rarityGroup": "uncommon"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Pikachu Common 58/102",
+   "hint": "pokemon",
+   "expect": {
+    "rarityGroup": "common"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Pikachu Prize Pack Series Stamped",
+   "hint": "pokemon",
+   "expect": {
+    "rarityGroup": "promo"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Black Lotus Alpha",
+   "hint": "mtg",
+   "expect": {
+    "rarityGroup": "vintage"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Sheoldred Serialized 123/500",
+   "hint": "mtg",
+   "expect": {
+    "rarityGroup": "extremely_rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Sheoldred Mythic Showcase Dominaria United",
+   "hint": "mtg",
+   "expect": {
+    "rarityGroup": "extremely_rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Sheoldred Mythic Rare Dominaria United",
+   "hint": "mtg",
+   "expect": {
+    "rarityGroup": "very_rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Ancient Tomb Rare Borderless",
+   "hint": "mtg",
+   "expect": {
+    "rarityGroup": "very_rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Ancient Tomb Rare Tempest",
+   "hint": "mtg",
+   "expect": {
+    "rarityGroup": "rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Sheoldred Prerelease Promo Foil",
+   "hint": "mtg",
+   "expect": {
+    "rarityGroup": "promo"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Dockside Extortionist The List Rare",
+   "hint": "mtg",
+   "expect": {
+    "rarityGroup": "rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Yu-Gi-Oh Starlight Rare Accesscode",
+   "hint": "yugioh",
+   "expect": {
+    "rarityGroup": "extremely_rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Yu-Gi-Oh Ghost Rare Stardust",
+   "hint": "yugioh",
+   "expect": {
+    "rarityGroup": "extremely_rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Yu-Gi-Oh Secret Rare Dark Magician",
+   "hint": "yugioh",
+   "expect": {
+    "rarityGroup": "very_rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Yu-Gi-Oh Ultra Rare Dark Magician",
+   "hint": "yugioh",
+   "expect": {
+    "rarityGroup": "very_rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Yu-Gi-Oh Super Rare Dark Magician",
+   "hint": "yugioh",
+   "expect": {
+    "rarityGroup": "rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Yu-Gi-Oh Rare Dark Magician",
+   "hint": "yugioh",
+   "expect": {
+    "rarityGroup": "uncommon"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "One Piece Luffy OP05-119 Manga Rare",
+   "hint": "onepiece",
+   "expect": {
+    "rarityGroup": "extremely_rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "One Piece Zoro SEC OP01-025",
+   "hint": "onepiece",
+   "expect": {
+    "rarityGroup": "very_rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "One Piece Nami SR OP01-016",
+   "hint": "onepiece",
+   "expect": {
+    "rarityGroup": "rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "One Piece Treasure Cup Top 16 Zoro",
+   "hint": "onepiece",
+   "expect": {
+    "rarityGroup": "promo"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Lorcana Iconic Mickey",
+   "hint": "lorcana",
+   "expect": {
+    "rarityGroup": "extremely_rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Lorcana Enchanted Elsa",
+   "hint": "lorcana",
+   "expect": {
+    "rarityGroup": "extremely_rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Lorcana Epic Stitch",
+   "hint": "lorcana",
+   "expect": {
+    "rarityGroup": "very_rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Lorcana Legendary Stitch",
+   "hint": "lorcana",
+   "expect": {
+    "rarityGroup": "very_rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Lorcana Super Rare Stitch",
+   "hint": "lorcana",
+   "expect": {
+    "rarityGroup": "rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Pokemon Charizard card nice",
+   "hint": "pokemon",
+   "expect": {
+    "rarityGroup": null
+   }
   }
  ]
 }
