@@ -23,14 +23,14 @@ The single list of work that's finished or in progress but **not live yet**. The
 Landon wants the week's remaining usage spent, so all 4 agents run (above the usual limit of 3). Each stays on its own files.
 
 **Engine**
-- [ ] Rarity groups: rarityGroup field, filter, rarest-first order
+- [x] Rarity groups: rarityGroup field, filter, rarest-first order
 - [ ] Yu-Gi-Oh! and Lorcana "every version" catalogs
 - [ ] Set filter
 - [ ] Japanese cards with no language word; remaining multi-card and non-card listings
 
 **Design**
-- [ ] Rarity groups on results, popup, filters and checklist; big photo in the picker
-- [ ] Magic on the checklist
+- [x] Rarity groups on results, popup, filters and checklist; big photo in the picker
+- [x] Magic on the checklist
 - [ ] Mockup: Foils & Fables home and search built around the 3 reasons (for Landon)
 - [ ] Mockup: "continue signed in" between the two domains (for Landon)
 
