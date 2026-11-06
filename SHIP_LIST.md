@@ -12,11 +12,40 @@ The single list of work that's finished or in progress but **not live yet**. The
 | P7 | Catalog research phase 2 (Japanese Pokémon, One Piece, YGO/Lorcana terms) | Research | 🟡 Researching | research/catalogs-phase-2.md | — |
 | 7 | eBay Partner Network affiliate links | CFO | ⏸ Plan approved. Waiting on Landon's sign-up + Campaign ID; code held until batch ships | SiteTour.js, guides, reading-list copy + link tagging | — |
 | L05 | Proof strip | Landing | ⏹ Skipped: no honest live number yet (no fake figures) | — | — |
-| P11 | floorsandfables.com chooser + foilsandfables.com routing; app renamed Floors & Fables | Design | 🔵 Building | middleware, chooser page | Landon buys domains + Vercel |
+| P11 | floorsandfables.com chooser + foilsandfables.com routing; app renamed Floors & Fables | Design | 🟢 Built d57d4d4 | middleware, chooser page | Landon buys domains + Vercel |
 | E-later | Fables versions: "Secret Lair Prize #8001" / "Buy-A-Box" titles to catalog set names; Magic titles with a number but no set ("022/259") | Engine | ⚪ Follow-up | lib/tcg | — |
 | S-poll | Lock down the alert checker: it can be triggered by anyone holding the public key; require a private secret header from the cron jobs instead | Debugger | ⚪ Follow-up (low risk today: it only re-runs checks and never re-sends) | poller, both cron jobs | poller deploy + Landon edits 2 cron jobs |
 
 **iOS release reminders:** run `npx cap sync ios` before every archive, so the app points at fieldsandfloors.com and not a test server. Check that the TestFlight build receives push notifications. Add the `ff_base_annual` product in App Store Connect and RevenueCat.
+
+## Sprint to Sunday 2026-11-08 (usage resets about 4am Edmonton)
+
+Landon wants the week's remaining usage spent, so all 4 agents run (above the usual limit of 3). Each stays on its own files.
+
+**Engine**
+- [ ] Rarity groups: rarityGroup field, filter, rarest-first order
+- [ ] Yu-Gi-Oh! and Lorcana "every version" catalogs
+- [ ] Set filter
+- [ ] Japanese cards with no language word; remaining multi-card and non-card listings
+
+**Design**
+- [ ] Rarity groups on results, popup, filters and checklist; big photo in the picker
+- [ ] Magic on the checklist
+- [ ] Mockup: Foils & Fables home and search built around the 3 reasons (for Landon)
+- [ ] Mockup: "continue signed in" between the two domains (for Landon)
+
+**Helper (QA)**
+- [ ] Full test of the live site, both sides, phone and computer
+- [ ] Alert checker lock-down (S-poll), after Engine's rarity report
+
+**Research**
+- [ ] "Floors & Fables" App Store and trademark first look
+- [ ] Download links for the card makers' checklists, so Landon can save them quickly
+- [ ] Safe plan for sign-in across the two domains
+
+**Landon**
+- [ ] Buy foilsandfables.com and floorsandfables.com
+- [ ] Approve pushes and mockups
 
 ## Live (shipped)
 
