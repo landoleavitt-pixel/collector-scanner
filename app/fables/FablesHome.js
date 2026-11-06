@@ -11,7 +11,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Search, ArrowRight, ArrowLeft, Star, Bell, ListFilter, Clock, Crosshair, Bookmark, Layers } from 'lucide-react';
+import { Search, ArrowRight, ArrowLeft, Star, Bell, ListFilter, Clock, Crosshair, Bookmark, Layers, Check } from 'lucide-react';
 import { useUser } from '../../lib/useUser';
 import { PAYMENTS_LIVE } from '../../lib/payments';
 import { track } from '../../lib/track';
@@ -28,6 +28,7 @@ import {
 import { usePendingStarSave, AlertBand } from '../components/search/WatchStar';
 import { ResultCard, Badge, upscaleEbayImage } from '../components/search/ResultCard';
 import { SIDE, fetchMeta, searchCards, toParams, fromParams, LANG_LABEL, serialOf, gradeText } from './data';
+import { RARITY_GROUPS, RARITY_SOURCE, GROUP_ROW, groupOf, GroupChip } from './rarity';
 
 const DEFAULT_FILTERS = {
   game: '', rarity: [], lang: [], graded: 'any', grader: '', grade: '', firstEd: false, serialOnly: false,
@@ -52,10 +53,10 @@ const SORT_OPTIONS = [
 ];
 const RECENTS_KEY = 'ffFablesRecents';
 const HUNTS = [
-  ['Special Illustration Rares', { game: 'pokemon', rarity: ['sir'] }],
+  ['Extremely rare Pokémon', { game: 'pokemon', rarity: ['extremely_rare'] }],
   ['1st Edition, graded', { firstEd: true, graded: 'graded' }],
   ['Serialized Magic', { game: 'mtg', serialOnly: true }],
-  ['Enchanted Lorcana', { game: 'lorcana', rarity: ['enchanted'] }],
+  ['Extremely rare Lorcana', { game: 'lorcana', rarity: ['extremely_rare'] }],
   ['PSA 10s', { graded: 'graded', grader: 'PSA', grade: '10' }],
 ];
 
@@ -68,6 +69,8 @@ const TIER_STYLE = {
   scarce: { background: 'linear-gradient(180deg,#7a8199,#4a5068)', color: '#eef0f7' },
 };
 // Row tint by tier, same strength as sports' tierRowStyle.
+// Row tint: the rarity group, or the old tier until every item has a group.
+export const rowStyleFor = (item) => GROUP_ROW[item.rarityGroup] || TIER_ROW[item.tier] || null;
 export const TIER_ROW = {
   grail: { backgroundImage: 'linear-gradient(90deg, rgba(182,168,240,0.30) 0%, rgba(240,179,208,0.10) 22%, transparent 55%)', borderLeft: '2px solid #d7c4f2' },
   ultra: { backgroundImage: 'linear-gradient(90deg, rgba(201,211,245,0.22) 0%, rgba(201,211,245,0.06) 18%, transparent 40%)', borderLeft: '2px solid #c9d3f5' },
@@ -103,8 +106,7 @@ function filterLabels(f, meta) {
   const out = [];
   const game = meta?.games?.find((g) => g.key === f.game);
   if (game) out.push({ label: game.label });
-  const ladder = f.game ? meta?.ladders?.[f.game] || [] : [];
-  (f.rarity || []).forEach((k) => { const r = ladder.find((x) => x.key === k); out.push({ label: r?.label || k, tier: r?.tier }); });
+  (f.rarity || []).forEach((k) => { const g = groupOf(k); if (g) out.push({ label: g.label, group: k }); });
   (f.lang || []).forEach((k) => out.push({ label: LANG_LABEL[k] || k }));
   if (f.graded === 'graded') out.push({ label: [f.grader || 'Graded', f.grade ? (f.grade === '10' ? '10' : `${f.grade}+`) : ''].filter(Boolean).join(' ') });
   if (f.graded === 'raw') out.push({ label: 'Raw' });
@@ -170,7 +172,7 @@ export default function FablesHome() {
 
   useEffect(() => { fetchMeta().then(setMeta); setRecentSearches(getRecents()); }, []);
 
-  const setFilter = (key, value) => setFilters((f) => ({ ...f, [key]: value, ...(key === 'game' && value !== f.game ? { rarity: [], finish: [], art: [] } : {}) }));
+  const setFilter = (key, value) => setFilters((f) => ({ ...f, [key]: value, ...(key === 'game' && value !== f.game ? { finish: [], art: [] } : {}) }));
   const appliedFilters = applied?.f || null;
   function filtersDifferFromApplied() {
     if (!appliedFilters) return false;
@@ -366,7 +368,7 @@ export default function FablesHome() {
       onClose={closeCard}
       expired={selectedExpired}
       side={SIDE}
-      chips={selectedExpired ? null : <CardBadges item={selectedCardItem} />}
+      chips={selectedExpired ? null : <CardBadges item={selectedCardItem} meaning />}
       watchPayload={fablesPayload(selectedCardItem)}
     />
   );
@@ -461,7 +463,7 @@ export default function FablesHome() {
             </div>
           </div>
 
-          {applied?.q && (!appliedFilters?.game || appliedFilters.game === 'pokemon') && <EveryCardButton query={applied.q} />}
+          {applied?.q && !loading && <EveryCardButton query={applied.q} game={appliedFilters?.game || mainGame(res.items)} />}
 
           <MobileFilterBar
             activeCount={countActiveFilters(filters)}
@@ -537,33 +539,47 @@ export default function FablesHome() {
 
 /* ── "See every Charizard card" (opens the checklist) ────────────────── */
 
+// The game most of these results are from (null if under half).
+function mainGame(items) {
+  const top = (items || []).slice(0, 20).filter((it) => it.game);
+  const counts = {};
+  for (const it of top) counts[it.game] = (counts[it.game] || 0) + 1;
+  const best = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+  return best && best[1] * 2 >= top.length ? best[0] : null;
+}
 const normName = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/['’.]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
 
-// Shown above results when the search names a Pokémon we have a card list
-// for. The shortest catalog name inside the search is the family:
-// "charizard ex sir" → Charizard.
-function EveryCardButton({ query }) {
+// Shown above results when the search names a card we have a list for
+// (English Pokémon, Magic). `game` is the game filter, or else the game most of
+// the results are from, so a Lorcana "Stitch" search doesn't offer a Magic list.
+// The shortest catalog name inside the search is the family ("charizard ex sir"
+// → Charizard). Failing that, the search itself if it names a small family
+// ("ragavan" → Ragavan, Nimble Pilferer).
+const FAMILY_BUTTON_MAX = 40;
+function EveryCardButton({ query, game }) {
   const [family, setFamily] = useState(null);
   useEffect(() => {
-    let alive = true;
     setFamily(null);
+    if (game !== 'pokemon' && game !== 'mtg') return undefined;
+    let alive = true;
     const q = ` ${normName(query)} `;
+    const get = (params) => fetch(`/api/tcg-versions?game=${game}&${params}`).then((r) => (r.ok ? r.json() : { cards: [] })).catch(() => ({ cards: [] }));
     // The name lookup matches from the start of a name, so ask for each of the
     // first few words ("charizard ex sir" → "charizard", "ex", "sir").
     const words = [...new Set(normName(query).split(' ').filter((w) => w.length >= 3))].slice(0, 3);
-    Promise.all(words.map((w) => fetch(`/api/tcg-versions?game=pokemon&q=${encodeURIComponent(w)}`)
-      .then((r) => (r.ok ? r.json() : { cards: [] })).catch(() => ({ cards: [] }))))
-      .then((all) => {
-        const inside = all.flatMap((d) => d.cards || []).filter((c) => q.includes(` ${normName(c.name)} `));
-        inside.sort((a, b) => a.name.length - b.name.length);
-        if (alive) setFamily(inside[0]?.name || null);
-      })
-      .catch(() => {});
+    Promise.all([...words.map((w) => get(`q=${encodeURIComponent(w)}`)), get(`q=${encodeURIComponent(query)}&family=1`)]).then((all) => {
+      if (!alive) return;
+      const phrase = all.pop();
+      const inside = all.flatMap((d) => d.cards || []).filter((c) => q.includes(` ${normName(c.name)} `));
+      inside.sort((a, b) => a.name.length - b.name.length);
+      if (inside[0]) setFamily(inside[0].name);
+      else if (phrase.cards?.length && phrase.cards.length <= FAMILY_BUTTON_MAX) setFamily(query.trim().replace(/\b\w/g, (c) => c.toUpperCase()));
+    });
     return () => { alive = false; };
-  }, [query]);
+  }, [query, game]);
   if (!family) return null;
   return (
-    <Link href={`/fables/checklist?name=${encodeURIComponent(family)}`}
+    <Link href={`/fables/checklist?${game === 'mtg' ? 'game=mtg&' : ''}name=${encodeURIComponent(family)}`}
           className="w-full lg:w-auto lg:px-6 min-h-[56px] rounded-2xl inline-flex items-center justify-center gap-2 text-[16px] font-semibold mb-6"
           style={{ border: '1.5px solid var(--gold-bright)', color: 'var(--gold-bright)' }}>
       <Layers className="w-5 h-5" strokeWidth={2} aria-hidden="true" />See every {family} card
@@ -614,19 +630,34 @@ export function TcgChip({ item }) {
   );
 }
 
-// Badges on a result row and in the card popup.
-export function CardBadges({ item }) {
+// Badges on a result row and in the card popup: the rarity group with the
+// game's own rarity small beside it ("Extremely rare · Hyper Rare"), then the
+// other tags. Items without a group yet show the game's rarity chip as before.
+// `meaning` adds the popup's plain line ("Extremely rare: fewer than one in a
+// box of packs").
+export function CardBadges({ item, meaning = false }) {
+  const g = groupOf(item.rarityGroup);
+  const of = serialOf(item);
   return (
     <>
-      <TcgChip item={item} />
+      {g ? (
+        <>
+          <GroupChip group={item.rarityGroup} />
+          {item.rarity && item.rarity !== g.label && <span className="self-center text-[12px]" style={{ color: 'var(--ink-400)' }}>{item.rarity}</span>}
+          {of && <Badge mono>/{of}</Badge>}
+        </>
+      ) : <TcgChip item={item} />}
       {item.firstEdition && <Badge>1st Edition</Badge>}
       {item.language && item.language !== 'en' && item.language !== 'English' && <Badge>{LANG_LABEL[item.language] || item.language}</Badge>}
       {item.shadowless && <Badge>Shadowless</Badge>}
       {gradeText(item) && <Badge>{gradeText(item)}</Badge>}
+      {meaning && g && (
+        <p className="w-full text-[14px] mt-1" style={{ color: 'var(--ink-200)' }}><b className="font-semibold">{g.label}:</b> {g.meaning.charAt(0).toLowerCase() + g.meaning.slice(1)}.</p>
+      )}
     </>
   );
 }
-export const hasCardBadges = (item) => !!(serialOf(item) || item.rarity || item.firstEdition || (item.language && item.language !== 'en') || item.shadowless || gradeText(item));
+export const hasCardBadges = (item) => !!(item.rarityGroup || serialOf(item) || item.rarity || item.firstEdition || (item.language && item.language !== 'en') || item.shadowless || gradeText(item));
 
 function CardImage({ src, alt, className = '' }) {
   const [bad, setBad] = useState(false);
@@ -738,7 +769,7 @@ function RarestStrip({ compact = false, onCardClick }) {
             <CardImage src={it?.image} alt={it?.title || ''} className="mb-2" />
             <span className="block text-[12px] leading-snug h-[32px] overflow-hidden" style={{ color: 'var(--ink-200)' }}>{it?.title}</span>
             <span className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 mt-1.5 min-w-0">
-              {it ? <TcgChip item={it} /> : <span />}
+              {it ? (it.rarityGroup ? <GroupChip group={it.rarityGroup} /> : <TcgChip item={it} />) : <span />}
               <span className="text-[14px] font-medium">{it ? money(it.price, it.currency) : ''}</span>
             </span>
           </a>
@@ -756,7 +787,7 @@ function FilterChips({ meta, filters, onEdit }) {
     <div className="mt-3 flex flex-wrap items-center gap-2">
       {chips.map((c) => (
         <span key={c.label} className="inline-flex items-center rounded-full text-[12px]"
-              style={{ minHeight: 26, padding: '0 10px', ...(c.tier && TIER_STYLE[c.tier] ? TIER_STYLE[c.tier] : { color: 'var(--gold-bright)', background: 'rgba(143,211,232,0.06)', border: '0.5px solid var(--gold-deep)' }) }}>
+              style={{ minHeight: 26, padding: '0 10px', ...(c.group ? groupOf(c.group).chip : { color: 'var(--gold-bright)', background: 'rgba(143,211,232,0.06)', border: '0.5px solid var(--gold-deep)' }) }}>
           {c.label}
         </span>
       ))}
@@ -791,7 +822,7 @@ function ResultsList({ loading, loadingMore, res, error, query, appliedFilters, 
             <ResultCard
               key={item.id} item={item} formatPrice={formatPrice} index={i}
               hasPendingFilters={hasPendingFilters} onPendingClick={onPendingClick} onCardClick={onCardClick}
-              payload={fablesPayload(item)} rowStyle={TIER_ROW[item.tier] || null}
+              payload={fablesPayload(item)} rowStyle={rowStyleFor(item)}
               badges={<CardBadges item={item} />} hasBadges={hasCardBadges(item)}
             />
           );
@@ -834,7 +865,6 @@ function Chip({ on, onClick, children, tier }) {
 
 function FilterControls({ meta, filters, setFilter, compact = false }) {
   if (!meta) return <div className="h-40 rounded-xl shimmer" style={{ background: 'var(--bg-elev)' }} />;
-  const ladder = filters.game ? (meta.ladders?.[filters.game] || []) : [];
   const toggleIn = (k, v) => setFilter(k, filters[k].includes(v) ? filters[k].filter((x) => x !== v) : [...filters[k], v]);
   return (
     <div className={compact ? 'space-y-7' : 'space-y-10'}>
@@ -847,9 +877,25 @@ function FilterControls({ meta, filters, setFilter, compact = false }) {
       </div>
       <div>
         <SectionLabel>Rarity</SectionLabel>
-        {ladder.length
-          ? <div className="flex flex-wrap gap-2">{ladder.map((r) => <Chip key={r.key} tier={r.tier} on={filters.rarity.includes(r.key)} onClick={() => toggleIn('rarity', r.key)}>{r.label}</Chip>)}</div>
-          : <p className="text-[13px]" style={{ color: 'var(--ink-600)' }}>Pick a game to filter by its rarities.</p>}
+        {RARITY_GROUPS.map((g) => {
+          const on = filters.rarity.includes(g.key);
+          return (
+            <button key={g.key} type="button" onClick={() => toggleIn('rarity', g.key)} aria-pressed={on}
+                    className="w-full flex items-center gap-3 min-h-[58px] px-3 py-2 rounded-xl mb-2 text-left"
+                    style={{ background: on ? 'var(--bg-elev-2)' : 'var(--bg-base)', border: `1.5px solid ${on ? 'var(--gold-bright)' : 'var(--line)'}` }}>
+              <span className="w-[22px] h-[22px] rounded-md flex-none" style={g.dot ? { background: g.dot } : { border: '1px solid var(--line)' }} aria-hidden="true" />
+              <span className="flex-1 min-w-0">
+                <span className="block text-[16px] font-medium" style={{ color: 'var(--ink-100)' }}>{g.label}</span>
+                <span className="text-[13px]" style={{ color: 'var(--ink-400)' }}>{g.meaning}</span>
+              </span>
+              <span className="w-6 h-6 rounded-md grid place-items-center flex-none"
+                    style={on ? { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' } : { border: '2px solid var(--ink-600)' }}>
+                {on && <Check className="w-[15px] h-[15px]" strokeWidth={3} aria-hidden="true" />}
+              </span>
+            </button>
+          );
+        })}
+        <p className="text-[12px] mt-1" style={{ color: 'var(--ink-600)' }}>{RARITY_SOURCE}</p>
       </div>
       <SectionDivider />
       <div>

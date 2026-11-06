@@ -4,7 +4,7 @@
 // one card (/api/tcg-family-search?versions=<key>), as normal Foils & Fables
 // result rows: star, card popup with "View on eBay".
 //
-//   /fables/find?card=<card key>&version=<version key>&name=&no=&label=&back=
+//   /fables/find?[game=mtg&]card=<card key>&version=<version key>&name=&no=&label=&back=
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -14,7 +14,7 @@ import SignupPromptCard from '../../components/SignupPromptCard';
 import { ResultCard } from '../../components/search/ResultCard';
 import { LoadingState, BackToTop } from '../../components/search/SearchUI';
 import { SIDE, withListingFlags } from '../data';
-import { fablesPayload, CardBadges, hasCardBadges, TIER_ROW } from '../FablesHome';
+import { fablesPayload, CardBadges, hasCardBadges, rowStyleFor } from '../FablesHome';
 
 const money = (v) => (v == null ? '' : `$${Number(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
 // Only paths on this site.
@@ -22,6 +22,7 @@ const safeBack = (b) => (b && b.startsWith('/') && !b.startsWith('//') ? b : '/f
 
 export default function Find() {
   const sp = useSearchParams();
+  const game = sp.get('game') === 'mtg' ? 'mtg' : 'pokemon';
   const card = sp.get('card') || '';
   const version = sp.get('version') || '';
   const name = sp.get('name') || 'Card';
@@ -32,7 +33,7 @@ export default function Find() {
   const [more, setMore] = useState(false);
   const [selected, setSelected] = useState(null);
 
-  const url = (offset = 0) => `/api/tcg-family-search?${new URLSearchParams({ game: 'pokemon', card, versions: version, lang: 'en', limit: '48', ...(offset ? { offset: String(offset) } : {}) })}`;
+  const url = (offset = 0) => `/api/tcg-family-search?${new URLSearchParams({ game, card, versions: version, lang: 'en', limit: '48', ...(offset ? { offset: String(offset) } : {}) })}`;
 
   useEffect(() => {
     if (!card || !version) { setRes({ items: [], total: 0, nextOffset: null }); return; }
@@ -78,7 +79,7 @@ export default function Find() {
                 <ResultCard
                   key={item.id} item={item} formatPrice={money} index={i}
                   onCardClick={setSelected}
-                  payload={fablesPayload(item)} rowStyle={TIER_ROW[item.tier] || null}
+                  payload={fablesPayload(item)} rowStyle={rowStyleFor(item)}
                   badges={<CardBadges item={item} />} hasBadges={hasCardBadges(item)}
                 />
               );
@@ -99,7 +100,7 @@ export default function Find() {
 
       {selected && (
         <CardModal item={selected} printRun={null} onClose={() => setSelected(null)} side={SIDE}
-                   chips={<CardBadges item={selected} />} watchPayload={fablesPayload(selected)} />
+                   chips={<CardBadges item={selected} meaning />} watchPayload={fablesPayload(selected)} />
       )}
       <BackToTop />
     </main>

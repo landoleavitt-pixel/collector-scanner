@@ -1,14 +1,20 @@
 'use client';
 
 // Card checklist (DECISIONS.md "Card checklist view", mockups/card-checklist.html,
-// approved 2026-11-01). Every card of one Pokémon, newest set first. Each row:
-// seller's photo · name · have-it circle. Tap a row to pick which versions you
-// have. One button turns on an alert.
+// approved 2026-11-01). Every card of one Pokémon or Magic card, newest set
+// first or rarest first. Each row: seller's photo · name · rarity · have-it
+// circle. Tap a row to pick which versions you have (with its photo, large,
+// when one is for sale). One button turns on an alert.
+//
+//   /fables/checklist?name=Charizard            English Pokémon
+//   /fables/checklist?game=mtg&name=The One Ring  Magic
 //
 // Data
-//   Versions  /api/tcg-versions (TCGdex catalog, English Pokémon). A family
+//   Versions  /api/tcg-versions (TCGdex for English Pokémon, Scryfall for
+//             Magic, both credited at the foot of the list). A family
 //             ("Charizard") is ?family=1: every catalog card named with that
-//             word (Charizard, Charizard ex, Mega Charizard X ex…).
+//             word (Charizard, Charizard ex, Mega Charizard X ex…). Each
+//             version carries its rarityGroup (app/fables/rarity.js).
 //   Listings  the card-family search (/api/tcg-family-search), which pins each
 //             live listing to a version: a row's photo (seller photos only,
 //             never catalog art; none → dashed card) and which versions are
@@ -21,9 +27,12 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronLeft, Check, Lock, Bell, Search } from 'lucide-react';
 import { useUser } from '../../../lib/useUser';
 import { SIDE } from '../data';
+import { GroupDot, groupRank } from '../rarity';
 
-const GAME = 'pokemon';
 const SETS_SHOWN = 4;
+const RARE_ROWS_SHOWN = 30;
+// A word that names hundreds of cards ("Dragon") isn't one card's family.
+const FAMILY_MAX = 60;
 const FOIL = 'linear-gradient(135deg,#9fe3f5,#b6a8f0,#f0b3d0,#f3d9a0)';
 
 const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/['’.]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -37,9 +46,23 @@ function plainLabel(v) {
   if (l === 'normal') return 'Regular';
   return v.label || 'Regular';
 }
+// Magic's labels list finish and treatments: "Foil · Borderless · Surge foil"
+// → "Surge shiny, no border".
+const MTG_WORDS = { Borderless: 'no border', 'Extended art': 'wide art', Showcase: 'special art', 'Full art': 'full art', 'Retro frame': 'old-style frame', Serialized: 'numbered', qya: 'Elvish' };
+function plainMtgLabel(v) {
+  const [finish, ...tags] = String(v.label || 'Nonfoil').split(' · ');
+  let base = /etched/i.test(finish) ? 'Etched shiny' : /^foil/i.test(finish) ? 'Shiny' : 'Regular';
+  const rest = [];
+  for (const t of tags) {
+    if (/ foil$/i.test(t) && base === 'Shiny') base = `${t.replace(/ foil$/i, '')} shiny`;
+    else rest.push(MTG_WORDS[t] || t);
+  }
+  return [base, ...rest].join(', ');
+}
+const sized = (url, n) => (url ? url.replace(/\/s-l\d+\.(\w+)/, `/s-l${n}.$1`) : url);
 function swatch(plain) {
   if (plain.startsWith('Shiny frame')) return 'linear-gradient(135deg,#3a4160 40%,#9fe3f5)';
-  if (plain.includes('shiny') || plain === 'Shiny') return FOIL;
+  if (/shiny/i.test(plain)) return FOIL;
   if (plain.startsWith('First print')) return '#1d1d1d';
   return '#8a93a8';
 }
@@ -48,6 +71,8 @@ export default function Checklist() {
   const router = useRouter();
   const sp = useSearchParams();
   const name = (sp.get('name') || '').trim().slice(0, 60);
+  const GAME = sp.get('game') === 'mtg' ? 'mtg' : 'pokemon';
+  const label = (v) => (GAME === 'mtg' ? plainMtgLabel(v) : plainLabel(v));
   const { user } = useUser();
   const [rows, setRows] = useState(null); // [{ id, set, setName, released, total, number, cardKey, cardName, versions }]
   const [source, setSource] = useState('');
@@ -56,6 +81,7 @@ export default function Checklist() {
   const [owned, setOwned] = useState(new Set()); // `${cardKey}|${versionKey}`
   const [ownedError, setOwnedError] = useState('');
   const [showAll, setShowAll] = useState(false);
+  const [rarestFirst, setRarestFirst] = useState(false);
   const [pick, setPick] = useState(null); // row id
   const [ask, setAsk] = useState(false);
   const [alertState, setAlertState] = useState(''); // '' | 'saving' | 'on' | message
@@ -68,7 +94,7 @@ export default function Checklist() {
       try {
         // Every card named with those words (Charizard, Charizard ex, Mega Charizard X ex…).
         const found = await fetch(`/api/tcg-versions?game=${GAME}&q=${encodeURIComponent(name)}&family=1`).then((r) => r.json());
-        const family = found.cards || [];
+        const family = (found.cards || []).slice(0, FAMILY_MAX);
         const lists = await Promise.all(family.map((c) => fetch(`/api/tcg-versions?game=${GAME}&card=${encodeURIComponent(c.key)}`).then((r) => (r.ok ? r.json() : null)).catch(() => null)));
         const out = [];
         for (const body of lists) {
@@ -93,7 +119,7 @@ export default function Checklist() {
       }
     })();
     return () => { alive = false; };
-  }, [name]);
+  }, [name, GAME]);
 
   // Live listings: one card-family search for the whole family (cached 15
   // minutes on the server). Each listing is pinned to its catalog printing,
@@ -115,13 +141,13 @@ export default function Checklist() {
           const c = it.catalog;
           if (!c || !it.image) continue;
           const id = `${c.card}|${c.set}|${c.number}`;
-          if (!pics[id]) pics[id] = it.image.replace(/\/s-l\d+\.(\w+)/, '/s-l300.$1');
+          if (!pics[id]) pics[id] = it.image;
         }
         setPhotos(pics);
         setForSale(counts);
       });
     return () => { alive = false; };
-  }, [rows]);
+  }, [rows, GAME]);
 
   // The member's own marks.
   useEffect(() => {
@@ -130,7 +156,7 @@ export default function Checklist() {
       .then((r) => (r.ok ? r.json() : Promise.reject(r)))
       .then((d) => setOwned(new Set((d.owned || []).map((o) => `${o.card_key}|${o.version_key}`))))
       .catch(() => setOwnedError('Your cards couldn’t be loaded right now.'));
-  }, [user]);
+  }, [user, GAME]);
 
   const sets = useMemo(() => {
     const groups = [];
@@ -145,6 +171,13 @@ export default function Checklist() {
   const have = (rows || []).reduce((n, r) => n + r.versions.filter((v) => owned.has(`${r.cardKey}|${v.key}`)).length, 0);
   const needed = total - have;
   const shownSets = showAll ? sets : sets.slice(0, SETS_SHOWN);
+  // A row's rarity is its rarest version's group.
+  const rarestOf = (r) => r.versions.map((v) => v.rarityGroup).filter(Boolean).sort((a, b) => groupRank(a) - groupRank(b))[0] || null;
+  const hasGroups = (rows || []).some(rarestOf);
+  const byRarity = useMemo(() => {
+    const rank = (r) => groupRank(r.versions.map((v) => v.rarityGroup).filter(Boolean).sort((a, b) => groupRank(a) - groupRank(b))[0]);
+    return [...(rows || [])].sort((a, b) => rank(a) - rank(b) || b.released.localeCompare(a.released));
+  }, [rows]);
   const here = typeof window !== 'undefined' ? `${window.location.pathname}${window.location.search}` : '/fables';
 
   async function toggle(row, v) {
@@ -181,6 +214,25 @@ export default function Checklist() {
     setAsk(false);
   }
 
+  const cardRow = (r) => {
+    const n = r.versions.length;
+    const got = r.versions.filter((v) => owned.has(`${r.cardKey}|${v.key}`)).length;
+    const rarest = rarestOf(r);
+    return (
+      <button key={r.id} type="button" onClick={() => setPick(r.id)}
+              className="w-full flex items-center gap-3.5 min-h-[72px] px-3.5 py-3 rounded-2xl mb-2.5 text-left"
+              style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
+        <Thumb src={sized(photos[r.id], 300)} />
+        <span className="flex-1 min-w-0">
+          <span className="block text-[17px] font-medium leading-snug" style={{ color: 'var(--ink-100)' }}>{r.cardName}</span>
+          <span className="block text-[15px]" style={{ color: 'var(--ink-400)' }}>No. {r.number}{n > 1 ? ` · ${n} versions` : ''}</span>
+          {rarest && <span className="block mt-1"><GroupDot group={rarest} /></span>}
+        </span>
+        <Ring got={got} n={n} />
+      </button>
+    );
+  };
+
   const title = rows?.[0] ? (rows.find((r) => norm(r.cardName) === norm(name))?.cardName || name.replace(/\b\w/g, (c) => c.toUpperCase())) : name;
   const picked = pick ? rows?.find((r) => r.id === pick) : null;
 
@@ -195,7 +247,7 @@ export default function Checklist() {
       {rows === null && <Skeleton />}
       {rows && rows.length === 0 && (
         <p className="text-[17px] leading-relaxed" style={{ color: 'var(--ink-200)' }}>
-          We don’t have a card list for “{name}” yet. Lists cover English Pokémon cards for now.
+          We don’t have a card list for “{name}” yet. Lists cover English Pokémon and Magic cards for now.
         </p>
       )}
 
@@ -212,32 +264,43 @@ export default function Checklist() {
           </p>
           {ownedError && <p className="text-[14px] mb-3" style={{ color: 'var(--crit)' }}>{ownedError}</p>}
 
-          {shownSets.map((g) => (
-            <section key={g.set}>
-              <h2 className="font-display italic text-[22px] mt-6 mb-2.5" style={{ color: 'var(--ink-200)' }}>{g.name}{g.year && !g.name.includes(g.year) ? ` · ${g.year}` : ''}</h2>
-              {g.rows.map((r) => {
-                const n = r.versions.length;
-                const got = r.versions.filter((v) => owned.has(`${r.cardKey}|${v.key}`)).length;
-                return (
-                  <button key={r.id} type="button" onClick={() => setPick(r.id)}
-                          className="w-full flex items-center gap-3.5 min-h-[72px] px-3.5 py-3 rounded-2xl mb-2.5 text-left"
-                          style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
-                    <Thumb src={photos[r.id]} />
-                    <span className="flex-1 min-w-0">
-                      <span className="block text-[17px] font-medium leading-snug" style={{ color: 'var(--ink-100)' }}>{r.cardName}</span>
-                      <span className="text-[15px]" style={{ color: 'var(--ink-400)' }}>No. {r.number}{n > 1 ? ` · ${n} versions` : ''}</span>
-                    </span>
-                    <Ring got={got} n={n} />
-                  </button>
-                );
-              })}
-            </section>
-          ))}
-          {!showAll && sets.length > SETS_SHOWN && (
-            <button type="button" onClick={() => setShowAll(true)} className="w-full min-h-[56px] rounded-2xl text-[16px] mt-2"
-                    style={{ border: '1px dashed var(--line)', color: 'var(--ink-400)' }}>
-              Show {sets.length - SETS_SHOWN} older sets
-            </button>
+          {hasGroups && (
+            <div className="flex gap-1.5 p-1 rounded-xl mt-1 mb-1.5" role="group" aria-label="Order" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
+              {[[false, 'Newest sets'], [true, 'Rarest first']].map(([v, l]) => (
+                <button key={l} type="button" onClick={() => { setRarestFirst(v); setShowAll(false); }} aria-pressed={rarestFirst === v}
+                        className="flex-1 min-h-[40px] rounded-[9px] text-[15px] text-center"
+                        style={rarestFirst === v ? { background: 'var(--bg-elev-2)', color: 'var(--ink-100)', boxShadow: 'inset 0 0 0 1px var(--line)' } : { color: 'var(--ink-400)' }}>
+                  {l}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {rarestFirst ? (
+            <div className="mt-4">
+              {(showAll ? byRarity : byRarity.slice(0, RARE_ROWS_SHOWN)).map(cardRow)}
+              {!showAll && byRarity.length > RARE_ROWS_SHOWN && (
+                <button type="button" onClick={() => setShowAll(true)} className="w-full min-h-[56px] rounded-2xl text-[16px] mt-2"
+                        style={{ border: '1px dashed var(--line)', color: 'var(--ink-400)' }}>
+                  Show {byRarity.length - RARE_ROWS_SHOWN} more cards
+                </button>
+              )}
+            </div>
+          ) : (
+            <>
+              {shownSets.map((g) => (
+                <section key={g.set}>
+                  <h2 className="font-display italic text-[22px] mt-6 mb-2.5" style={{ color: 'var(--ink-200)' }}>{g.name}{g.year && !g.name.includes(g.year) ? ` · ${g.year}` : ''}</h2>
+                  {g.rows.map(cardRow)}
+                </section>
+              ))}
+              {!showAll && sets.length > SETS_SHOWN && (
+                <button type="button" onClick={() => setShowAll(true)} className="w-full min-h-[56px] rounded-2xl text-[16px] mt-2"
+                        style={{ border: '1px dashed var(--line)', color: 'var(--ink-400)' }}>
+                  Show {sets.length - SETS_SHOWN} older sets
+                </button>
+              )}
+            </>
           )}
 
           {alertState === 'on' ? (
@@ -258,17 +321,24 @@ export default function Checklist() {
 
       {picked && (
         <Sheet onClose={() => setPick(null)}>
+          {photos[picked.id] && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={sized(photos[picked.id], 640)} alt="Seller’s photo" className="block mx-auto mb-4 rounded-lg object-contain" style={{ maxHeight: '38vh', maxWidth: '100%', boxShadow: '0 8px 24px rgba(0,0,0,.45)' }} />
+          )}
           <h3 className="font-display italic text-[28px] leading-tight mb-1">{picked.cardName}</h3>
           <p className="text-[16px] mb-4" style={{ color: 'var(--ink-400)' }}>No. {picked.number} · {picked.setName}</p>
           <p className="text-[17px] mb-3" style={{ color: 'var(--ink-200)' }}>{user ? 'Which ones do you have?' : 'Versions'}</p>
           {picked.versions.map((v) => {
             const on = owned.has(`${picked.cardKey}|${v.key}`);
-            const plain = plainLabel(v);
+            const plain = label(v);
             const count = forSale ? forSale[`${picked.cardKey}|${v.key}`] || 0 : null;
             const head = (
               <>
                 <span className="w-7 h-7 rounded-lg flex-none" style={{ background: swatch(plain), border: '1px solid rgba(255,255,255,.12)' }} aria-hidden="true" />
-                <span className="flex-1">{plain}</span>
+                <span className="flex-1 min-w-0">
+                  {plain}
+                  {v.rarityGroup && <span className="block mt-0.5"><GroupDot group={v.rarityGroup} /></span>}
+                </span>
                 {user && (
                   <span className="w-[30px] h-[30px] rounded-full grid place-items-center flex-none"
                         style={on ? { background: FOIL, color: 'var(--ink-on-gold)' } : { border: '2.5px solid var(--ink-600)' }}>
@@ -291,7 +361,7 @@ export default function Checklist() {
                     {count === null ? (
                       <p className="text-[15px] py-2" style={{ color: 'var(--ink-400)' }}>Checking eBay…</p>
                     ) : count > 0 ? (
-                      <a href={`/fables/find?${new URLSearchParams({ card: picked.cardKey, version: v.key, name: picked.cardName, no: picked.number, label: plain, back: here })}`}
+                      <a href={`/fables/find?${new URLSearchParams({ ...(GAME === 'mtg' ? { game: GAME } : {}), card: picked.cardKey, version: v.key, name: picked.cardName, no: picked.number, label: plain, back: here })}`}
                          className="w-full min-h-[52px] rounded-xl flex items-center justify-center gap-2 text-[17px] font-semibold"
                          style={{ border: '1.5px solid var(--gold-bright)', color: 'var(--gold-bright)' }}>
                         <Search className="w-5 h-5" strokeWidth={2} aria-hidden="true" />Find it
