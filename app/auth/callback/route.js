@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { recordSignedUp } from '../../../lib/trackServer';
+import { safeNext } from '../../../lib/safeNext';
 
 export async function GET(request) {
   const { searchParams, origin } = new URL(request.url);
@@ -9,10 +10,7 @@ export async function GET(request) {
   const tokenHash = searchParams.get('token_hash');
   const type = searchParams.get('type');
   const src = searchParams.get('src');
-  // Only same-site paths. "@evil.com" or "//evil.com" would otherwise turn
-  // `${origin}${next}` into a redirect to another site after sign-in.
-  const rawNext = searchParams.get('next') ?? '/';
-  const next = rawNext.startsWith('/') && !rawNext.startsWith('//') && !rawNext.includes('\\') ? rawNext : '/';
+  const next = safeNext(searchParams.get('next'));
 
   const cookieStore = cookies();
   const supabase = createServerClient(

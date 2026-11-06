@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { safeNext } from '../../lib/safeNext';
 import { createClient } from '../../lib/supabaseClient';
 import SignupBenefits from '../components/SignupBenefits';
 import { isNativeApp, signInWithAppleNative } from '../../lib/native';
@@ -14,7 +15,7 @@ function SignupForm() {
   const router = useRouter();
   // Where to send the user after they finish signing up.
   // /pricing's CTA passes ?next=/subscribe so post-confirmation lands at checkout.
-  const next = searchParams.get('next') || '/';
+  const next = safeNext(searchParams.get('next'));
   // Which button sent them here (star | alert | banner | direct), for funnel tracking.
   const src = ['star', 'alert', 'banner', 'prompt', 'checklist'].includes(searchParams.get('src')) ? searchParams.get('src') : 'direct';
 
@@ -265,7 +266,7 @@ function SignupForm() {
             style={{ color: 'var(--ink-400)', borderTop: '0.5px solid rgba(232,226,213,0.08)' }}
           >
             Already have an account?{' '}
-            <Link href="/login" className="font-serif italic" style={{ color: 'var(--gold-bright)' }}>
+            <Link href={`/login?next=${encodeURIComponent(next)}&src=${encodeURIComponent(src)}`} className="font-serif italic" style={{ color: 'var(--gold-bright)' }}>
               Sign in
             </Link>
           </div>

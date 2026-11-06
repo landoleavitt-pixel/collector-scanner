@@ -34,7 +34,8 @@ import { parseSetFromTitle } from '../../lib/parseSetFromTitle';
 import { getSet, getParallel } from '../../lib/parallelData';
 import { gradientCss, tierChipStyle, tierForRun } from './rarityUtils';
 import { useWatchlist } from '../../lib/watchlistContext';
-import { useUser } from '../../lib/useUser';
+import { useUser, isSignedIn } from '../../lib/useUser';
+import { KeepCardPrompt } from './search/WatchStar';
 import { track } from '../../lib/track';
 
 // Upscale an eBay thumbnail URL to a higher-resolution variant so the
@@ -99,6 +100,7 @@ function CardModalInner({ item, printRun, onClose, expired = false, side = 'spor
   // defensive), useWatchlist() returns null and we hide the button.
   const watchlist = useWatchlist();
   const { user } = useUser();
+  const [promptOpen, setPromptOpen] = useState(false);
   const [watchBusy, setWatchBusy] = useState(false);
   const [shareMsg, setShareMsg] = useState('');
   const isWatched = watchlist && item ? watchlist.isSaved(item.id) : false;
@@ -106,11 +108,31 @@ function CardModalInner({ item, printRun, onClose, expired = false, side = 'spor
   async function toggleWatch(e) {
     e?.stopPropagation();
     if (!item || watchBusy || !watchlist) return;
-    // Logged-out users get sent to login (same behavior as WatchStar)
-    if (!user) {
-      if (typeof window !== 'undefined') window.location.href = '/login';
+    // Logged-out users get the same "Keep this card" prompt as WatchStar,
+    // which remembers this card through sign-in.
+    if (!(await isSignedIn(user))) {
+      setPromptOpen(true);
       return;
     }
+    await saveWatch();
+  }
+
+  // Mirror WatchStar's payload shape exactly so the row created by the
+  // modal looks the same as one created from the grid star.
+  const starPayload = () => watchPayload || {
+    listing_id: item.id,
+    title: item.title,
+    price: item.price,
+    currency: item.currency || 'USD',
+    image_url: item.image,
+    listing_url: item.url,
+    is_auction: !!item.isAuction,
+    end_time: item.endTime || null,
+    bid_count: item.bidCount ?? null,
+    condition: item.condition || null,
+  };
+
+  async function saveWatch() {
     setWatchBusy(true);
     const wasSaved = watchlist.isSaved(item.id);
     // Optimistic update so the button changes instantly
@@ -121,23 +143,10 @@ function CardModalInner({ item, printRun, onClose, expired = false, side = 'spor
       if (wasSaved) {
         res = await fetch(`/api/watchlist/${encodeURIComponent(item.id)}`, { method: 'DELETE' });
       } else {
-        // Mirror WatchStar's payload shape exactly so the row created
-        // by the modal looks the same as one created from the grid star.
         res = await fetch('/api/watchlist', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(watchPayload || {
-            listing_id: item.id,
-            title: item.title,
-            price: item.price,
-            currency: item.currency || 'USD',
-            image_url: item.image,
-            listing_url: item.url,
-            is_auction: !!item.isAuction,
-            end_time: item.endTime || null,
-            bid_count: item.bidCount ?? null,
-            condition: item.condition || null,
-          }),
+          body: JSON.stringify(starPayload()),
         });
       }
       // fetch() only rejects on NETWORK failure — a 401/500 resolves
@@ -512,6 +521,9 @@ function CardModalInner({ item, printRun, onClose, expired = false, side = 'spor
       style={overlayStyle}
       onClick={(e) => { if (e.target === overlayRef.current) handleClose(); }}
     >
+      {promptOpen && (
+        <KeepCardPrompt item={item} payload={starPayload()} onClose={() => setPromptOpen(false)} onSaved={saveWatch} />
+      )}
       <div className="min-h-full flex items-start lg:items-center justify-center">
         <div
           className="relative w-full max-w-5xl rounded-lg p-6 lg:p-10"

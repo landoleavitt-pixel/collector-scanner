@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '../../lib/supabaseClient';
 import { isNativeApp, signInWithAppleNative } from '../../lib/native';
 import { track } from '../../lib/track';
+import { safeNext } from '../../lib/safeNext';
 import {  } from 'lucide-react';
 
 export default function LoginPage() {
@@ -19,6 +20,22 @@ export default function LoginPage() {
   const [magicLinkSent, setMagicLinkSent] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  // Back to where they were (a shared card, a checklist, a search) after signing in.
+  const [query, setQuery] = useState('');
+  const nextPath = () => safeNext(new URLSearchParams(window.location.search).get('next'));
+  const callbackUrl = () => {
+    const src = new URLSearchParams(window.location.search).get('src') || 'direct';
+    return `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath())}&src=${encodeURIComponent(src)}`;
+  };
+  useEffect(() => {
+    setQuery(window.location.search);
+    // Already signed in: no form to fill, go straight there.
+    supabase.auth.getSession().then(({ data }) => {
+      if (data?.session) router.replace(nextPath());
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   async function handlePasswordSignIn(e) {
     e.preventDefault();
     setError('');
@@ -29,7 +46,7 @@ export default function LoginPage() {
       setError(error.message);
       return;
     }
-    router.push('/');
+    router.push(nextPath());
     router.refresh();
   }
 
@@ -42,7 +59,7 @@ export default function LoginPage() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback?src=direct` },
+      options: { emailRedirectTo: callbackUrl() },
     });
     setLoading(false);
     if (error) {
@@ -65,7 +82,7 @@ export default function LoginPage() {
       try {
         await signInWithAppleNative(supabase);
         track('signed_up', undefined, 'direct'); // server only counts brand-new accounts
-        router.push('/');
+        router.push(nextPath());
         router.refresh();
       } catch (e) {
         // Closing Apple's sheet isn't an error worth showing.
@@ -77,7 +94,7 @@ export default function LoginPage() {
     }
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: `${window.location.origin}/auth/callback?src=direct` },
+      options: { redirectTo: callbackUrl() },
     });
     if (error) setError(error.message);
   }
@@ -265,7 +282,7 @@ export default function LoginPage() {
             style={{ color: 'var(--ink-400)', borderTop: '0.5px solid rgba(232,226,213,0.08)' }}
           >
             New here?{' '}
-            <Link href="/signup" className="font-serif italic" style={{ color: 'var(--gold-bright)' }}>
+            <Link href={`/signup${query}`} className="font-serif italic" style={{ color: 'var(--gold-bright)' }}>
               Create account
             </Link>
           </div>

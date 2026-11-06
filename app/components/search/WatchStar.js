@@ -9,7 +9,7 @@ import { useState, useEffect, useRef, useContext } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { Star, X, ArrowRight } from 'lucide-react';
-import { useUser } from '../../../lib/useUser';
+import { useUser, isSignedIn } from '../../../lib/useUser';
 import { WatchlistContext } from '../../../lib/watchlistContext';
 import { PAYMENTS_LIVE } from '../../../lib/payments';
 import { isNativeApp } from '../../../lib/native';
@@ -48,7 +48,7 @@ export function WatchStar({ item, payload }) {
     if (busy) return;
 
     // Logged-out visitors get the "Keep this card" sign-up prompt.
-    if (!user) {
+    if (!(await isSignedIn(user))) {
       setPromptOpen(true);
       return;
     }
@@ -193,7 +193,7 @@ export function usePendingStarSave() {
    Web: Apple + Google + email. iOS app: Google blocks sign-in inside app web
    views, so native Apple + email only; native Apple signs in without leaving
    the page, so the card is saved on the spot. */
-function KeepCardPrompt({ item, payload, onClose, onSaved }) {
+export function KeepCardPrompt({ item, payload, onClose, onSaved }) {
   const [native, setNative] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -290,7 +290,7 @@ function KeepCardPrompt({ item, payload, onClose, onSaved }) {
         {error && <p className="mt-3 text-[13px] text-[var(--crit)]">{error}</p>}
         <p className="mt-4 text-[11px] text-center" style={{ color: 'var(--ink-600)' }}>
           Already have an account?{' '}
-          <Link href="/login" onClick={() => stashPendingStar(payload)} className="underline underline-offset-2 hover:text-[var(--gold-bright)]">Sign in</Link>
+          <Link href={`/login?next=${encodeURIComponent(next)}&src=star`} onClick={() => stashPendingStar(payload)} className="underline underline-offset-2 hover:text-[var(--gold-bright)]">Sign in</Link>
         </p>
       </div>
     </div>,
