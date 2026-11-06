@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foils and Fables Story</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&family=Geist:wght@400;500;600&display=swap');
+
+.fab{ --bg:#080a12; --elev:#10131f; --elev2:#161a29; --line:#242a3d; --soft:#1a1f2f;
+  --ink:#eef0f7; --ink2:#d5d9e8; --ink4:#9198b0; --ink6:#5d6480; --acc:#b9e6f2; --on:#071018;
+  --cta:linear-gradient(180deg,#c9eef8,#7fbfd4);
+  --foil:linear-gradient(100deg,#9fe3f5 0%,#b6a8f0 28%,#f0b3d0 52%,#f3d9a0 76%,#9fe3f5 100%); }
+*{box-sizing:border-box}
+html,body{margin:0;background:#030303;color:#e8e6e1;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+.page{max-width:1240px;margin:0 auto;padding:40px 16px 100px}
+h1.t{font:italic 400 44px/1.05 'Fraunces',serif;margin:0 0 10px}
+.lede{color:#a3a7b6;font-size:16px;max-width:640px;line-height:1.55;margin:0}
+.sec{border-top:1px solid #23262f;padding-top:18px;margin:48px 0 22px}
+.sec h2{font:italic 400 26px/1.1 'Fraunces',serif;margin:0}
+.cap{font-size:14px;color:#8c90a0;margin:12px 4px 0;max-width:360px;line-height:1.45}
+.phones{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start}
+.phone{width:375px;max-width:100%;height:800px;border-radius:42px;border:10px solid #16171b;box-shadow:0 0 0 1px #2a2b30,0 30px 80px rgba(0,0,0,.6);overflow:hidden;position:relative;color:var(--ink);
+  background:radial-gradient(500px 300px at 70% -5%,rgba(143,211,232,.08),transparent 60%),var(--bg)}
+.scroll{height:100%;overflow-y:auto;overflow-x:hidden;padding:52px 20px 40px}
+.scroll::-webkit-scrollbar{display:none}
+
+/* home */
+.brand{font:400 22px 'Fraunces',serif;text-align:center}
+.amp{background:var(--foil);-webkit-background-clip:text;background-clip:text;color:transparent}
+.head{font:400 42px/1.04 'Fraunces',serif;letter-spacing:-.01em;margin:38px 0 22px}
+.head em{background:var(--foil);-webkit-background-clip:text;background-clip:text;color:transparent}
+.box{display:flex;align-items:center;gap:10px;min-height:64px;padding:6px 6px 6px 18px;border-radius:16px;border:1.5px solid transparent;
+  background:linear-gradient(var(--elev),var(--elev)) padding-box,var(--foil) border-box}
+.box .ph{flex:1;font-size:18px;color:var(--ink4)}
+.box .go{width:52px;height:52px;border-radius:12px;background:var(--cta);color:var(--on);display:grid;place-items:center;flex:none}
+.ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.scope{font-size:13px;color:var(--ink6);margin:10px 2px 0}
+.why{margin-top:34px;display:grid;gap:26px}
+.w{display:flex;gap:16px;align-items:center}
+.w .art{width:92px;height:72px;flex:none;position:relative}
+.w b{display:block;font:400 21px/1.15 'Fraunces',serif;margin-bottom:4px}
+.w span.t2{font-size:15px;color:var(--ink4);line-height:1.35}
+.mc{position:absolute;width:40px;height:56px;border-radius:5px;box-shadow:0 4px 12px rgba(0,0,0,.5);
+  background:radial-gradient(40px 34px at 35% 25%,rgba(255,255,255,.25),transparent 60%),linear-gradient(160deg,var(--a),var(--b))}
+.ln{display:flex;align-items:center;gap:6px;height:20px;font-size:11px;color:var(--ink6);margin-bottom:4px}
+.ln i{flex:1;height:7px;border-radius:9px;background:var(--line)}
+.ln.ok i{background:var(--foil)}
+.ln svg{width:13px;height:13px}
+.rg{width:24px;height:24px;border-radius:50%;border:2px solid var(--ink6);position:absolute}
+.rg.f{border:0;background:var(--foil)}
+.shelf{margin-top:36px;padding-top:20px;border-top:1px solid var(--soft)}
+.shelf h3{font:400 13px Geist;color:var(--ink4);margin:0 0 12px}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tile .img{aspect-ratio:3/4;border-radius:8px;margin-bottom:8px;background:radial-gradient(90px 80px at 35% 25%,rgba(255,255,255,.2),transparent 60%),linear-gradient(160deg,var(--a),var(--b))}
+.tile b{display:block;font-size:14px;font-weight:500;line-height:1.3}
+.tile span{font-size:14px;color:var(--ink2)}
+.foot{font-size:12px;color:var(--ink6);text-align:center;margin-top:26px;line-height:1.5}
+
+/* search */
+.back{font-size:15px;color:var(--ink4);min-height:32px}
+.q{font:italic 400 42px/1 'Fraunces',serif;margin:6px 0 10px}
+.big{font-size:18px;color:var(--ink2)}
+.big b{color:var(--ink);font-weight:600}
+.hid{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--ink4);margin:10px 0 4px}
+.hid svg{width:17px;height:17px;color:#9fe3f5}
+.set{font:italic 400 21px 'Fraunces',serif;color:var(--ink2);margin:24px 0 10px}
+.v{display:flex;align-items:center;gap:14px;min-height:84px;padding:10px 12px;border-radius:16px;background:var(--elev);border:1px solid var(--line);margin-bottom:10px}
+.v .th{width:50px;height:68px;border-radius:6px;flex:none;background:radial-gradient(40px 34px at 35% 25%,rgba(255,255,255,.22),transparent 60%),linear-gradient(160deg,var(--a),var(--b))}
+.v .tx{flex:1;min-width:0}
+.v b{display:block;font-size:17px;font-weight:500;line-height:1.25}
+.v .s{font-size:14px;color:var(--ink4)}
+.v .fs{font-size:15px;color:var(--acc);margin-top:3px;font-weight:500}
+.lvl{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--ink4);margin-left:8px;font-weight:400}
+.lvl i{width:8px;height:8px;border-radius:50%}
+.unsure{padding:14px;border-radius:14px;border:1px dashed var(--line);font-size:15px;color:var(--ink2);margin-top:14px}
+.unsure small{display:block;font-size:13px;color:var(--ink4);margin-top:2px}
+.bell{width:100%;min-height:60px;border-radius:16px;background:var(--cta);color:var(--on);font-size:17px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:20px}
+.all{display:block;text-align:center;font-size:15px;color:var(--ink4);margin-top:14px;text-decoration:underline;text-underline-offset:3px}
+
+/* desktop */
+.desk{border-radius:14px;border:1px solid var(--line);color:var(--ink);overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6);
+  background:radial-gradient(1100px 480px at 70% -10%,rgba(143,211,232,.07),transparent 60%),var(--bg)}
+.dtop{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;font-size:13px;color:var(--ink4);border-bottom:1px solid var(--soft)}
+.dhero{max-width:760px;margin:0 auto;padding:64px 24px 26px;text-align:center}
+.dhero .head{font-size:64px;margin:0 0 28px}
+.dhero .scope{text-align:center}
+.dwhy{max-width:1040px;margin:0 auto;padding:30px 28px 60px;display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+.dwhy .w{flex-direction:column;align-items:flex-start;gap:14px}
+@media (max-width:900px){.dwhy{grid-template-columns:1fr}.dhero .head{font-size:44px}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></symbol>
+  <symbol id="chk" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol>
+  <symbol id="shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></symbol>
+</svg>
+
+<div class="page">
+  <h1 class="t">The Foils &amp; Fables story</h1>
+  <p class="lede">Three reasons, and the page proves each one: type a card once and see every version; only the real card; alerts only for the ones you're missing. Rarity stays a small helper. Sample numbers.</p>
+
+  <div class="sec"><h2>Phone</h2></div>
+  <div class="phones">
+    <div><div class="fab phone" id="home"></div><p class="cap">Home: one box, then the three reasons.</p></div>
+    <div><div class="fab phone" id="results"></div><p class="cap">Search: every version first. It says how many wrong listings it hid, and admits when it isn't sure.</p></div>
+  </div>
+
+  <div class="sec"><h2>Computer</h2></div>
+  <div class="fab desk" id="desk"></div>
+</div>
+
+<script>
+const I = (id) => `<svg class="ic"><use href="#${id}"/></svg>`;
+const box = `<div class="box"><span class="ph">Which card?</span><span class="go">${I('search')}</span></div>
+  <p class="scope">Every version for Pokémon and Magic. More games soon.</p>`;
+const mc = (l, t, r, a, b) => `<i class="mc" style="left:${l}px;top:${t}px;transform:rotate(${r}deg);--a:${a};--b:${b}"></i>`;
+const reasons = `
+  <div class="w"><span class="art">${mc(2, 10, -9, '#e0662c', '#4a1608')}${mc(26, 6, 0, '#6a4bd0', '#1b1240')}${mc(50, 10, 9, '#e3c15a', '#6a4a10')}</span>
+    <span><b>Type it once.</b><span class="t2">See every version for sale.</span></span></div>
+  <div class="w"><span class="art" style="padding-top:8px"><span class="ln"><svg class="ic"><use href="#x"/></svg><i></i></span><span class="ln ok" style="color:#9fe3f5"><svg class="ic"><use href="#chk"/></svg><i></i></span><span class="ln"><svg class="ic"><use href="#x"/></svg><i></i></span></span>
+    <span><b>Only the real card.</b><span class="t2">Lots, fake copies and look-alikes are hidden.</span></span></div>
+  <div class="w"><span class="art"><i class="rg f" style="left:4px;top:24px"></i><i class="rg f" style="left:34px;top:24px"></i><i class="rg" style="left:64px;top:24px"></i></span>
+    <span><b>Only what you're missing.</b><span class="t2">We tell you when one you need is listed.</span></span></div>`;
+
+document.getElementById('home').innerHTML = `<div class="scroll">
+  <div class="brand">Foils <span class="amp">&amp;</span> Fables</div>
+  <h3 class="head" style="font-weight:400">Every version of a card. <em>One search.</em></h3>
+  ${box}
+  <div class="why">${reasons}</div>
+  <div class="shelf"><h3>For sale now on eBay</h3><div class="tiles">
+    <div class="tile"><div class="img" style="--a:#d98a3a;--b:#3d2410"></div><b>Charizard ex</b><span>$168.00</span></div>
+    <div class="tile"><div class="img" style="--a:#2f3e70;--b:#0e1428"></div><b>The One Ring</b><span>$94.00</span></div>
+  </div></div>
+  <p class="foot">Free during early access. Not affiliated with eBay or any game publisher.</p>
+</div>`;
+
+const dot = (bg, w) => `<span class="lvl"><i style="background:${bg}"></i>${w}</span>`;
+const FOIL = 'var(--foil)', ULT = 'linear-gradient(180deg,#c9d3f5,#8b97c7)';
+const row = (n, s, fs, a, b, lvl) => `<div class="v"><span class="th" style="--a:${a};--b:${b}"></span><span class="tx"><b>${n}</b><span class="s">${s}${lvl}</span><div class="fs">${fs}</div></span></div>`;
+document.getElementById('results').innerHTML = `<div class="scroll">
+  <div class="back">‹ New search</div>
+  <div class="q">Charizard</div>
+  <div class="big"><b>130 versions</b>, 428 for sale</div>
+  <div class="hid"><svg class="ic"><use href="#shield"/></svg>We hid 212 listings that aren't this card.</div>
+  <div class="set">Obsidian Flames · 2023</div>
+  ${row('Charizard ex', 'No. 223 · Shiny', '14 for sale', '#d98a3a', '#3d2410', dot(FOIL, 'Extremely rare'))}
+  ${row('Charizard ex', 'No. 125 · Shiny', '26 for sale', '#2a2a2e', '#0c0c10', dot(ULT, 'Very rare'))}
+  <div class="set">151 · 2023</div>
+  ${row('Charizard ex', 'No. 199 · Shiny', '18 for sale', '#e0662c', '#4a1608', dot(FOIL, 'Extremely rare'))}
+  <div class="unsure">37 more are Charizard, but the seller didn't say which version.<small>Listed separately, so you can check them yourself.</small></div>
+  <button class="bell">${I('bell')}Alert me when one I need is listed</button>
+  <span class="all">See all 428 listings</span>
+</div>`;
+
+document.getElementById('desk').innerHTML = `<div class="dtop"><span class="brand" style="color:var(--ink)">Foils <span class="amp">&amp;</span> Fables</span><span>Sign in</span></div>
+  <div class="dhero"><h3 class="head" style="font-weight:400">Every version of a card. <em>One search.</em></h3>${box}</div>
+  <div class="dwhy">${reasons}</div>`;
+</script>
+</body>
+</html>

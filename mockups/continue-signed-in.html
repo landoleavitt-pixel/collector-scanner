@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Continue Signed In</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&family=Geist:wght@400;500;600&display=swap');
+
+.ffs{ --bg:#0a0907; --elev:#14110c; --elev2:#1a160f; --line:#2a251c; --soft:#1f1c16;
+  --ink:#f7f1e1; --ink2:#e8dfc9; --ink4:#a99e85; --ink6:#6b6354; --acc:#e6b96b; --on:#1a1612;
+  --display:'Instrument Serif',serif; --cta:linear-gradient(180deg,#f5d08a,#e6b96b); }
+.fab{ --bg:#080a12; --elev:#10131f; --elev2:#161a29; --line:#242a3d; --soft:#1a1f2f;
+  --ink:#eef0f7; --ink2:#d5d9e8; --ink4:#9198b0; --ink6:#5d6480; --acc:#b9e6f2; --on:#071018;
+  --display:'Fraunces',serif; --cta:linear-gradient(180deg,#c9eef8,#7fbfd4);
+  --foil:linear-gradient(100deg,#9fe3f5 0%,#b6a8f0 28%,#f0b3d0 52%,#f3d9a0 76%,#9fe3f5 100%); }
+*{box-sizing:border-box}
+html,body{margin:0;background:#030303;color:#e8e6e1;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.page{max-width:1240px;margin:0 auto;padding:40px 16px 100px}
+h1.t{font:italic 400 44px/1.05 'Fraunces',serif;margin:0 0 10px}
+.lede{color:#a3a7b6;font-size:16px;max-width:640px;line-height:1.55;margin:0}
+.sec{border-top:1px solid #23262f;padding-top:18px;margin:48px 0 22px}
+.sec h2{font:italic 400 26px/1.1 'Fraunces',serif;margin:0}
+.phones{display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start}
+.phone{width:330px;max-width:100%;height:640px;border-radius:38px;border:9px solid #16171b;box-shadow:0 0 0 1px #2a2b30,0 24px 60px rgba(0,0,0,.6);overflow:hidden;position:relative;background:var(--bg);color:var(--ink)}
+.cap{font-size:14px;color:#8c90a0;margin:12px 4px 0;max-width:330px;line-height:1.45}
+.step{font:600 12px Geist;color:#b9e6f2;letter-spacing:.1em;margin:0 4px 8px}
+.in{padding:44px 16px 20px}
+.hdr{display:flex;justify-content:space-between;align-items:center}
+.brand{font:400 21px var(--display)}
+.ffs .brand{font-style:italic}
+.brand em{font-style:normal;color:var(--acc)}
+.fab .brand em{background:var(--foil);-webkit-background-clip:text;background-clip:text;color:transparent}
+.me{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-size:13px;color:var(--ink2)}
+.signin{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink4)}
+.sw{display:flex;gap:2px;padding:3px;border-radius:999px;background:var(--elev);border:1px solid var(--line);margin:14px auto 0;width:fit-content;font-size:12px}
+.sw span{padding:7px 12px;border-radius:999px;color:var(--ink4);display:inline-flex;align-items:center;gap:6px}
+.sw span.on{background:var(--elev2);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+.sw i{width:7px;height:7px;border-radius:50%}
+.sw .tap{outline:2px solid #b9e6f2;outline-offset:2px;color:var(--ink)}
+.h{font:italic 400 30px/1.1 var(--display);margin:28px 0 14px}
+.box{min-height:54px;border-radius:14px;border:1px solid var(--line);background:var(--elev);display:flex;align-items:center;padding:0 16px;color:var(--ink4);font-size:16px}
+.lab{font-size:13px;color:var(--ink4);margin:22px 0 10px}
+.chip{display:inline-flex;align-items:center;min-height:38px;padding:0 13px;border-radius:999px;border:1px solid var(--line);font-size:14px;color:var(--ink2);margin:0 6px 8px 0}
+.mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:24px;
+  background:radial-gradient(420px 300px at 50% 40%,rgba(143,211,232,.09),transparent 65%),var(--bg)}
+.mid p{font:italic 400 25px/1.2 var(--display);margin:0}
+.spin{width:34px;height:34px;border-radius:50%;border:3px solid var(--line);border-top-color:#b9e6f2;animation:s 1s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+.note{margin-top:16px;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--elev);font-size:15px;color:var(--ink2)}
+.menu{margin-top:16px;border-radius:14px;border:1px solid var(--line);background:var(--elev);padding:6px 0;font-size:15px;color:var(--ink2)}
+.menu div{padding:12px 16px}
+.menu .em{font-size:13px;color:var(--ink4);border-bottom:1px solid var(--soft)}
+.menu .q{color:var(--ink4);font-size:14px}
+</style>
+</head>
+<body>
+<div class="page">
+  <h1 class="t">Continue signed in</h1>
+  <p class="lede">Signed in on one side, tap the switch, and you're signed in on the other. One calm step. No code, token or long address ever shows on screen, and it only runs when you tap.</p>
+
+  <div class="sec"><h2>The normal path</h2></div>
+  <div class="phones">
+    <div><p class="step">1 · TAP THE SWITCH</p><div class="ffs phone" id="a"></div><p class="cap">Signed in on Fields &amp; Floors. Tap "Foils &amp; Fables".</p></div>
+    <div><p class="step">2 · UNDER A SECOND</p><div class="fab phone" id="b"></div><p class="cap">One line, then it moves on by itself.</p></div>
+    <div><p class="step">3 · YOU'RE THERE</p><div class="fab phone" id="c"></div><p class="cap">Signed in, with your saved searches there.</p></div>
+  </div>
+
+  <div class="sec"><h2>The other cases</h2></div>
+  <div class="phones">
+    <div><div class="fab phone" id="d"></div><p class="cap">Not signed in: goes straight to the page, nothing extra. If the step ever fails, it looks the same, plus this one quiet line.</p></div>
+    <div><div class="fab phone" id="e"></div><p class="cap">Signing out says which site it means.</p></div>
+  </div>
+</div>
+<script>
+const sw = (fables, tap) => `<div class="sw"><span class="${fables ? '' : 'on'}"><i style="background:#e6b96b"></i>Fields &amp; Floors</span><span class="${fables ? 'on' : ''} ${tap ? 'tap' : ''}"><i style="background:linear-gradient(135deg,#9fe3f5,#b6a8f0,#f0b3d0,#f3d9a0)"></i>Foils &amp; Fables</span></div>`;
+const fabHdr = (right) => `<div class="hdr"><span class="brand">Foils <em>&amp;</em> Fables</span>${right}</div>`;
+document.getElementById('a').innerHTML = `<div class="in"><div class="hdr"><span class="brand">Fields <em>&amp;</em> Floors</span><span class="me">L</span></div>${sw(false, true)}
+  <div class="h">The Grail Hunter.</div><div class="box">Search a player or team</div>
+  <div class="lab">Your saved searches</div><span class="chip">Paul Skenes rookies</span><span class="chip">Caitlin Clark autos</span></div>`;
+document.getElementById('b').innerHTML = `<div class="mid"><span class="spin"></span><p>Taking you to Foils &amp; Fables…</p></div>`;
+document.getElementById('c').innerHTML = `<div class="in">${fabHdr('<span class="me">L</span>')}${sw(true)}
+  <div class="h">Which card?</div><div class="box">Type a card, like Charizard</div>
+  <div class="lab">Your saved searches</div><span class="chip">Charizard cards</span><span class="chip">The One Ring cards</span></div>`;
+document.getElementById('d').innerHTML = `<div class="in">${fabHdr('<span class="signin">Sign in</span>')}${sw(true)}
+  <div class="note">Please sign in again.</div>
+  <div class="h">Which card?</div><div class="box">Type a card, like Charizard</div></div>`;
+document.getElementById('e').innerHTML = `<div class="in">${fabHdr('<span class="me">L</span>')}
+  <div class="menu"><div class="em">you@example.com</div><div>Saved searches</div><div>Sign out of Foils &amp; Fables</div><div class="q">Sign out of both sites</div></div></div>`;
+</script>
+</body>
+</html>
