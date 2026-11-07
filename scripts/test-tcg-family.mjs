@@ -33,7 +33,7 @@ const { matchListing, titleSetHit } = await import(pathToFileURL(path.join(dir, 
 const { popularLists, familiesByLetter, lettersOf, searchLists } = await import(pathToFileURL(path.join(dir, 'lists.mjs')).href);
 const { setList, listingInSets, familyOnly } = await import(pathToFileURL(path.join(dir, 'setFilter.mjs')).href);
 const { cardVersions, findCards, familyCards, cardFamily } = await import(pathToFileURL(path.join(dir, 'catalog.mjs')).href);
-const { familySavedParams } = await import(pathToFileURL(path.join(dir, 'familySearch.mjs')).href);
+const { familySavedParams, readFamilyCriteria } = await import(pathToFileURL(path.join(dir, 'familySearch.mjs')).href);
 const { catalogRarity, catalogGroup, applyCatalog } = await import(pathToFileURL(path.join(dir, 'catalogMatch.mjs')).href);
 const { getCard } = await import(pathToFileURL(path.join(dir, 'catalog.mjs')).href);
 const { toResult } = await import(pathToFileURL(path.join(dir, 'search.mjs')).href);
@@ -121,6 +121,8 @@ const checks = [
   ['"The One Ring" files under O; # exists', () => familiesByLetter('mtg', 'O', 0, 5000).cards.some((c) => c.name === 'The One Ring') && lettersOf('mtg').some((x) => x.letter === '#')],
   ['Searching lists finds families', () => searchLists('pokemon', 'chariz')[0]?.name === 'Charizard' && searchLists('yugioh', 'dark magician')[0]?.name === 'Dark Magician'],
   ['A set with a typed name keeps only that family', () => { const f = familyOnly('mtg', 'Sheoldred'); return !f({ title: "Rona, Sheoldred's Faithful 147 DMU" }) && f({ title: 'Sheoldred, the Apocalypse DMU 107' }) && familyOnly('yugioh', 'Blue-Eyes') === null; }],
+  ['Find it for one version takes only listings pinned to it', () => { const c = readFamilyCriteria(new URLSearchParams({ game: 'yugioh', card: 'dark-magician-the-pharaohs-servant', versions: 'MAMO:EN001:grand-master-rare', lang: 'en' })); return c.q === 'dark magician the pharaoh\'s servant' || c.q.length > 0; }],
+  ['Find it uses the family name for its eBay search', () => readFamilyCriteria(new URLSearchParams({ game: 'pokemon', card: 'mega-charizard-y-ex', versions: 'x:1:n' })).q === 'charizard'],
   ['Old saved rarity values map to groups', () => rarityValuesToGroups(['sir'], ['pokemon'])[0] === 'extremely_rare' && rarityValuesToGroups(['pokemon:dr'], ['pokemon','mtg'])[0] === 'very_rare' && rarityValuesToGroups(['enchanted'], ['lorcana'])[0] === 'extremely_rare'],
   ['Group values pass through; junk is dropped', () => JSON.stringify(rarityValuesToGroups(['promo', 'vintage', 'nonsense'], ['pokemon'])) === '["promo","vintage"]'],
   ['Serialized One Ring is a grail', () => cardVersions('mtg', 'the-one-ring').sets.flatMap((s) => s.numbers.flatMap((n) => n.versions)).some((v) => v.rarityKey === 'serialized' && v.tier === 'grail')],

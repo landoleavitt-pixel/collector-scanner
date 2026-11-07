@@ -54,7 +54,7 @@ export async function GET(req) {
 
   try {
     const body = await searchFamily(criteria);
-    return NextResponse.json(body, { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=300' } });
+    return NextResponse.json(body, { headers: { 'Cache-Control': 'public, s-maxage=900, stale-while-revalidate=300' } });
   } catch (err) {
     console.error('TCG family search route error:', err);
     return NextResponse.json({ error: 'Search is temporarily unavailable. Please try again.' }, { status: 500, headers: noStore });

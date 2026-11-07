@@ -1522,6 +1522,100 @@
    "expect": {
     "kind": "reject"
    }
+  },
+  {
+   "game": "pokemon",
+   "card": "pikachu",
+   "title": "30th Celebration Pokemon Cards Pick Your Pikachu Singles",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "pikachu",
+   "title": "Pokemon 30th Anniversary Cards Reverse Holo Pikachu Rare EX Master Set Singles",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "pikachu",
+   "title": "Pokémon Trading Card - 30th Celebration Pikachu Rare - Choose Your Card",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "pikachu",
+   "title": "Pikachu 054/128 Double Rare 30th Anniversary Celebration Pokemon TCG",
+   "expect": {}
+  },
+  {
+   "game": "pokemon",
+   "card": "umbreon-ex",
+   "title": "(SEALED) Espeon ex Day #108 & Umbreon ex Night #110 Pokemon 30th Celebration",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "charizard",
+   "title": "Pokemon TCG Assorted Cards - EX/GX/V/VMAX/VSTAR/CHARIZARD - MINT CARDS!",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "charizard",
+   "title": "Charizard 4/102 30th Anniversary",
+   "expect": {
+    "versions": [
+     "30th-c:001:n"
+    ]
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "charizard",
+   "title": "Charizard (4/102) Holofoil from the Pokémon 30th Anniversary Celebration",
+   "expect": {
+    "versions": [
+     "30th-c:001:n"
+    ]
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "charizard",
+   "title": "Charizard 4/102 30th Celebrations Holo Rare 2026 English",
+   "expect": {
+    "versions": [
+     "30th-c:001:n"
+    ]
+   }
+  },
+  {
+   "game": "yugioh",
+   "card": "dark-magician-the-pharaohs-servant",
+   "title": "Dark Magician, the Pharaoh's Servant Yugioh MAMO-EN001 Overframe Starlight 1st",
+   "expect": {
+    "kind": "exact",
+    "why": "Starlight Rare"
+   }
+  },
+  {
+   "game": "yugioh",
+   "card": "dark-magician-the-pharaohs-servant",
+   "title": "Konami Yu-Gi-Oh! Dark Magician, the Pharaoh's Servant MAMO-EN001 Ultra 1st Ed",
+   "expect": {
+    "kind": "exact",
+    "why": "Ultra Rare"
+   }
   }
  ]
 }
