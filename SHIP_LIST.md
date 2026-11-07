@@ -17,7 +17,7 @@ The single list of work that's finished or in progress but **not live yet**. The
 | E-later | Fables versions: "Secret Lair Prize #8001" / "Buy-A-Box" titles to catalog set names; Magic titles with a number but no set ("022/259") | Engine | ⚪ Follow-up | lib/tcg | — |
 | S-poll | Lock down the alert checker: it can be triggered by anyone holding the public key; require a private secret header from the cron jobs instead | Debugger | ⚪ Follow-up (low risk today: it only re-runs checks and never re-sends) | poller, both cron jobs | poller deploy + Landon edits 2 cron jobs |
 
-**iOS release reminders:** run `npx cap sync ios` before every archive, so the app points at fieldsandfloors.com and not a test server. Check that the TestFlight build receives push notifications. Add the `ff_base_annual` product in App Store Connect and RevenueCat.
+**iOS release reminders:** run `npx cap sync ios` before every archive, so the app points at fieldsandfloors.com and not a test server. Check that the TestFlight build receives push notifications. Add the `ff_base_annual` product in App Store Connect and RevenueCat. **Before submitting, prove a release build on iOS 17:** the debug build closes at once on the iOS 17.5 simulator ("Library not loaded: SwiftUICore") although the project says iOS 15 minimum; archive a release build and run it on an iOS 17 simulator or device (QA 2026-11-07 #8). Also check the new notification ask: turn an alert on in the app, see the "Get your alerts" sheet, then iOS's prompt.
 
 ## Sprint to Sunday 2026-11-08 (usage resets about 4am Edmonton)
 

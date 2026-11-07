@@ -8,6 +8,7 @@ import { brandFilterLabels } from '../../lib/cardBrands';
 import { teamFilterLabels } from '../../lib/teams';
 import { isNativeApp } from '../../lib/native';
 import { X } from 'lucide-react';
+import { usePushAsk } from './PushAsk';
 
 const TIER_STYLES = {
   grail:   { bg: 'rgba(255,193,77,0.12)',  color: '#ffc14d', border: 'rgba(255,193,77,0.35)' },
@@ -173,6 +174,7 @@ function PaywallModal({ onClose }) {
 export default function WatchlistRow({ search, canUseAlerts }) {
   const router = useRouter();
   const [notifyEnabled, setNotifyEnabled] = useState(search.notify_enabled);
+  const pushAsk = usePushAsk(); // iPhone app: explain, then ask for notifications when an alert is first turned on
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
@@ -214,6 +216,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
       }
     }
     setBusy(false);
+    if (res.ok && newValue) await pushAsk.ask();
   }
 
   async function handleDelete() {
@@ -269,6 +272,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
   return (
     <>
       {showPaywall && <PaywallModal onClose={() => setShowPaywall(false)} />}
+      {pushAsk.node}
 
       <div
         data-side={fables ? 'fables' : undefined}

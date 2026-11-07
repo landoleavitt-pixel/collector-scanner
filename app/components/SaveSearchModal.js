@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '../../lib/supabaseClient';
 import { PAYMENTS_LIVE } from '../../lib/payments';
+import { usePushAsk } from './PushAsk';
 
 function suggestName(query) {
   if (!query) return '';
@@ -27,6 +28,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
   const router = useRouter();
   const [name, setName] = useState('');
   const [notifyEnabled, setNotifyEnabled] = useState(true);
+  const pushAsk = usePushAsk(); // iPhone app: explain, then ask for notifications when an alert is first turned on
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   // Whether this user can actually receive alerts. Saving a search is free
@@ -141,6 +143,10 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
       return;
     }
 
+    // iPhone app: an alert was just turned on, so explain and ask for
+    // notifications now (resolves at once on the website or if already asked).
+    if (effectiveNotify) await pushAsk.ask();
+
     onClose();
     // After an edit, send the user back to their saved-searches list so they
     // can see the updated row. After a create, refresh in place.
@@ -157,6 +163,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
       className="fixed inset-0 z-50 flex items-center justify-center px-4"
       style={{ background: 'rgba(0,0,0,0.6)' }}
     >
+      {pushAsk.node}
       <div
         onClick={(e) => e.stopPropagation()}
         className="w-full max-w-[420px] rounded-xl p-8"

@@ -47,9 +47,11 @@ export default function NativeBridge() {
         .eq('id', user.id)
         .single();
       if (cancelled) return;
-      // Early access: everyone gets alerts, so everyone is asked for push.
+      // Early access: everyone gets alerts. This only registers the phone when
+      // notifications were already allowed; the ask itself happens when
+      // someone first turns an alert on (components/PushAsk.js).
       if (!PAYMENTS_LIVE || data?.tier === 'base' || data?.is_founding_member) {
-        enablePush((path) => router.push(path)).catch(() => {});
+        enablePush((path) => router.push(path), { ask: false }).catch(() => {});
       }
     })();
 
