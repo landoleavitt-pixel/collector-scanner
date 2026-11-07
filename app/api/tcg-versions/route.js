@@ -13,6 +13,10 @@
 //     Sets newest first; numbers in card order. Show `source.note` with the
 //     list (Scryfall's terms: the data stays free to everyone and is credited).
 //
+//   ?game=mtg|pokemon|yugioh|lorcana&sets=1
+//     → { sets: [{ code, name, released }], source }: every set, newest first,
+//     for the Set filter.
+//
 //   ?game=mtg|pokemon&q=<typed name>[&limit=N]
 //     → { cards: [{ key, name, printings }] }, up to 10 (or N, max 300), for
 //     the card picker. Matches the start of any word of the name.
@@ -21,7 +25,8 @@
 //     (a whole family, e.g. every Charizard card), up to 300.
 
 import { NextResponse } from 'next/server';
-import { cardVersions, findCards, familyCards, CATALOG_GAMES } from '../../../lib/tcg/catalog';
+import { cardVersions, findCards, familyCards, catalogData, CATALOG_GAMES } from '../../../lib/tcg/catalog';
+import { setList } from '../../../lib/tcg/setFilter';
 
 export async function GET(req) {
   const p = new URL(req.url).searchParams;
@@ -31,6 +36,9 @@ export async function GET(req) {
   }
   // The catalog only changes when it's rebuilt and redeployed.
   const cache = { 'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=86400' };
+  if (p.get('sets') === '1') {
+    return NextResponse.json({ sets: setList(game), source: catalogData(game).source }, { headers: cache });
+  }
   if (p.get('q') != null && !p.get('card')) {
     const q = String(p.get('q')).slice(0, 80);
     if (p.get('family') === '1') {

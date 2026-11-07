@@ -113,6 +113,7 @@ export function toParams(q, f = {}, extra = {}) {
   if (f.priceMax && f.priceMax < 100000) p.set('priceMax', String(f.priceMax));
   if (f.sort && f.sort !== 'rarest') p.set('sort', f.sort);
   // More filters
+  if (f.set) p.set('set', f.set);
   if (f.finish?.length) p.set('finish', f.finish.join(','));
   if (f.art?.length) p.set('art', f.art.join(','));
   if (f.promos && f.promos !== 'show') p.set('promos', f.promos);
@@ -147,6 +148,7 @@ export function fromParams(sp) {
       priceMin: Number(sp.get('priceMin')) || 0,
       priceMax: Number(sp.get('priceMax')) || 100000,
       sort: sp.get('sort') || 'rarest',
+      set: sp.get('set') || '',
       finish: list('finish'),
       art: list('art'),
       promos: ['hide', 'only'].includes(sp.get('promos')) ? sp.get('promos') : 'show',

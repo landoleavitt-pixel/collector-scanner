@@ -29,7 +29,8 @@ for (const f of fs.readdirSync(path.join(root, 'lib/tcg'))) {
 // The real lib/ebay.js (it only defines functions), so shared helpers import.
 fs.writeFileSync(path.join(dir, 'ebay-stub.mjs'), fs.readFileSync(path.join(root, 'lib/ebay.js'), 'utf8'));
 fs.symlinkSync(path.join(root, 'lib/tcg/catalog'), path.join(dir, 'catalog'));
-const { matchListing } = await import(pathToFileURL(path.join(dir, 'family.mjs')).href);
+const { matchListing, titleSetHit } = await import(pathToFileURL(path.join(dir, 'family.mjs')).href);
+const { setList, listingInSets } = await import(pathToFileURL(path.join(dir, 'setFilter.mjs')).href);
 const { cardVersions, findCards, familyCards } = await import(pathToFileURL(path.join(dir, 'catalog.mjs')).href);
 const { familySavedParams } = await import(pathToFileURL(path.join(dir, 'familySearch.mjs')).href);
 const { catalogRarity, catalogGroup, applyCatalog } = await import(pathToFileURL(path.join(dir, 'catalogMatch.mjs')).href);
@@ -93,6 +94,15 @@ const checks = [
   ['A family of Elsa cards holds every Elsa', () => familyCards('lorcana', 'Elsa').length > 5 && familyCards('lorcana', 'Elsa').some((c) => c.key === 'elsa-ice-maker')],
   ['Dark Magician family finds Dark Magician Girl', () => familyCards('yugioh', 'Dark Magician').some((c) => c.key === 'dark-magician-girl')],
   ['Catalogs say where the data came from', () => cardVersions('yugioh', 'kuriboh').source.name === 'YGOPRODeck' && cardVersions('lorcana', 'be-prepared').source.name === 'Lorcast'],
+  ['A title names a set: Pokémon name, nickname, unique total', () => titleSetHit('pokemon', 'swsh7', 'Rayquaza VMAX 218/203 Evolving Skies') && titleSetHit('pokemon', 'sv03.5', 'Charizard ex 199 151 SIR')],
+  ['Base Set 2 is not Base Set', () => !titleSetHit('pokemon', 'base1', 'Charizard Base Set 2 4/130') && titleSetHit('pokemon', 'base4', 'Charizard Base Set 2 4/130')],
+  ['A different set is not a set hit', () => !titleSetHit('pokemon', 'swsh7', 'Charizard VMAX Darkness Ablaze 20/189')],
+  ['Yu-Gi-Oh! codes name a set', () => titleSetHit('yugioh', 'LOB', 'Blue-Eyes White Dragon LOB-EN001 PSA 9') && titleSetHit('yugioh', 'LOB', 'Dark Hole LOB-E041') && !titleSetHit('yugioh', 'MRD', 'Blue-Eyes White Dragon LOB-EN001')],
+  ['Magic codes and names name a set', () => titleSetHit('mtg', 'dmu', 'Sheoldred the Apocalypse DMU 107 Foil') && titleSetHit('mtg', 'dmu', 'Sheoldred Dominaria United') && !titleSetHit('mtg', 'dmu', 'Sheoldred Foil 107')],
+  ['Lorcana bracket, code and name name a set', () => titleSetHit('lorcana', '9', 'Elsa - Spirit of Winter [9 - 43/204] NM') && titleSetHit('lorcana', 'P3', 'Tinker Bell 11/P3 Promo') && titleSetHit('lorcana', '1', 'Elsa The First Chapter') && !titleSetHit('lorcana', '2', 'Elsa The First Chapter')],
+  ['A pinned listing is decided by its printing, not its words', () => listingInSets('pokemon', ['swsh7'], { title: 'Charizard Evolving Skies', catalogSets: ['base1'] }) === false],
+  ['Set lists are newest first', () => { const l = setList('lorcana'); return l.length > 10 && l[0].released >= l[l.length - 1].released && l.some((x) => x.name === 'The First Chapter'); }],
+  ['A family saved search keeps its set', () => familySavedParams({ game: 'pokemon', card: 'charizard', set: 'base1' }, 'Charizard').get('set') === 'base1'],
   ['Old saved rarity values map to groups', () => rarityValuesToGroups(['sir'], ['pokemon'])[0] === 'extremely_rare' && rarityValuesToGroups(['pokemon:dr'], ['pokemon','mtg'])[0] === 'very_rare' && rarityValuesToGroups(['enchanted'], ['lorcana'])[0] === 'extremely_rare'],
   ['Group values pass through; junk is dropped', () => JSON.stringify(rarityValuesToGroups(['promo', 'vintage', 'nonsense'], ['pokemon'])) === '["promo","vintage"]'],
   ['Serialized One Ring is a grail', () => cardVersions('mtg', 'the-one-ring').sets.flatMap((s) => s.numbers.flatMap((n) => n.versions)).some((v) => v.rarityKey === 'serialized' && v.tier === 'grail')],
