@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Card Lists</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&family=Geist:wght@400;500;600&display=swap');
+
+.fab{ --bg:#080a12; --elev:#10131f; --elev2:#161a29; --line:#242a3d; --soft:#1a1f2f;
+  --ink:#eef0f7; --ink2:#d5d9e8; --ink4:#9198b0; --ink6:#5d6480; --acc:#b9e6f2; --on:#071018;
+  --cta:linear-gradient(180deg,#c9eef8,#7fbfd4);
+  --foil:linear-gradient(100deg,#9fe3f5 0%,#b6a8f0 28%,#f0b3d0 52%,#f3d9a0 76%,#9fe3f5 100%); }
+*{box-sizing:border-box}
+html,body{margin:0;background:#030303;color:#e8e6e1;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.page{max-width:1240px;margin:0 auto;padding:40px 16px 100px}
+h1.t{font:italic 400 44px/1.05 'Fraunces',serif;margin:0 0 10px}
+.lede{color:#a3a7b6;font-size:16px;max-width:660px;line-height:1.55;margin:0}
+.sec{border-top:1px solid #23262f;padding-top:18px;margin:48px 0 22px}
+.sec h2{font:italic 400 26px/1.1 'Fraunces',serif;margin:0}
+.cap{font-size:14px;color:#8c90a0;margin:12px 4px 0;max-width:360px;line-height:1.45}
+.phones{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start}
+.phone{width:375px;max-width:100%;height:812px;border-radius:42px;border:10px solid #16171b;box-shadow:0 0 0 1px #2a2b30,0 30px 80px rgba(0,0,0,.6);overflow:hidden;position:relative;color:var(--ink);
+  background:radial-gradient(500px 300px at 70% -5%,rgba(143,211,232,.08),transparent 60%),var(--bg)}
+.scroll{height:100%;overflow-y:auto;overflow-x:hidden;padding:44px 0 110px}
+.scroll::-webkit-scrollbar{display:none}
+.pad{padding:0 18px}
+.ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* site header */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 18px 14px;border-bottom:1px solid var(--soft)}
+.brand{font:400 21px 'Fraunces',serif;display:flex;align-items:center;gap:9px}
+.mark{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font:italic 400 14px 'Fraunces',serif;color:#8fd3e8;border:1.5px solid transparent;background:linear-gradient(var(--bg),var(--bg)) padding-box,var(--foil) border-box}
+.amp{background:var(--foil);-webkit-background-clip:text;background-clip:text;color:transparent}
+.nav{display:flex;align-items:center;gap:16px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink4)}
+.nav .lists{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;border:1px solid var(--line);color:var(--ink);letter-spacing:.06em;text-transform:none;font-size:14px}
+.nav .lists.on{border-color:#8fd3e8;color:#b9e6f2}
+
+/* home */
+.head{font:400 40px/1.04 'Fraunces',serif;letter-spacing:-.01em;margin:28px 0 8px}
+.head em{background:var(--foil);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{font-size:18px;color:var(--ink2);margin:0 0 20px}
+.box{display:flex;align-items:center;gap:10px;min-height:64px;padding:6px 6px 6px 18px;border-radius:16px;border:1.5px solid transparent;
+  background:linear-gradient(var(--elev),var(--elev)) padding-box,var(--foil) border-box}
+.box .ph{flex:1;font-size:18px;color:var(--ink4)}
+.box .go{width:52px;height:52px;border-radius:12px;background:var(--cta);color:var(--on);display:grid;place-items:center;flex:none}
+.row-h{display:flex;justify-content:space-between;align-items:baseline;margin:30px 18px 12px}
+.row-h h3{font:400 22px 'Fraunces',serif;margin:0}
+.row-h a{font-size:15px;color:#b9e6f2;text-decoration:none}
+.strip{display:flex;gap:12px;overflow-x:auto;padding:0 18px 6px;scroll-snap-type:x mandatory}
+.strip::-webkit-scrollbar{display:none}
+.tile{flex:none;width:132px;scroll-snap-align:start;text-decoration:none;color:inherit}
+.photo{aspect-ratio:3/4;border-radius:10px;margin-bottom:8px;position:relative;overflow:hidden;
+  background:radial-gradient(70px 60px at 35% 25%,rgba(255,255,255,.22),transparent 60%),linear-gradient(160deg,var(--a),var(--b))}
+.photo::before{content:'';position:absolute;inset:12% 12% 24%;border-radius:5px;background:rgba(255,255,255,.13)}
+.photo.none{background:var(--elev);border:1.5px dashed var(--line)}
+.photo.none::before{display:none}
+.tile b{display:block;font-size:16px;font-weight:500;line-height:1.25}
+.tile span{font-size:14px;color:var(--ink4)}
+.tile .g{font-size:12px;color:var(--ink6)}
+.more{display:flex;align-items:center;justify-content:center;gap:8px;min-height:56px;margin:18px 18px 0;border-radius:16px;border:1.5px solid var(--line);color:var(--ink);font-size:16px;font-weight:500;text-decoration:none}
+.why{margin:28px 18px 0;display:grid;gap:14px;font-size:15px;color:var(--ink4)}
+.why div{display:flex;gap:12px;align-items:center}
+.why i{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--elev);border:1px solid var(--line);color:#b9e6f2;flex:none}
+
+/* lists page */
+.title{font:italic 400 38px/1 'Fraunces',serif;margin:24px 0 6px}
+.titlesub{font-size:16px;color:var(--ink4);margin:0 0 16px}
+.find{display:flex;align-items:center;gap:10px;min-height:54px;padding:0 16px;border-radius:14px;border:1px solid var(--line);background:var(--elev);color:var(--ink4);font-size:17px}
+.games{display:flex;gap:8px;overflow-x:auto;padding:16px 18px 2px}
+.games::-webkit-scrollbar{display:none}
+.gm{flex:none;min-height:42px;padding:0 16px;border-radius:999px;border:1px solid var(--line);display:grid;place-items:center;font-size:15px;color:var(--ink2);background:var(--elev)}
+.gm.on{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:600}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:0 18px}
+.grid .tile{width:auto}
+.az{padding:0 18px}
+.letter{font:italic 400 22px 'Fraunces',serif;color:var(--ink2);margin:22px 0 8px}
+.li{display:flex;align-items:center;justify-content:space-between;min-height:56px;padding:0 4px;border-bottom:1px solid var(--soft);font-size:17px}
+.li span{font-size:14px;color:var(--ink4)}
+.jump{position:absolute;right:3px;top:340px;display:flex;flex-direction:column;gap:1px;font-size:10px;color:#8fd3e8;text-align:center;z-index:5}
+
+/* app tab bar */
+.tabbar{position:absolute;left:12px;right:12px;bottom:18px;height:62px;border-radius:999px;background:rgba(16,19,31,.92);backdrop-filter:blur(12px);border:1px solid var(--line);display:flex;justify-content:space-around;align-items:center;font-size:11px;color:var(--ink4);z-index:10}
+.tabbar div{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:56px}
+.tabbar .on{color:#b9e6f2}
+
+/* desktop */
+.desk{border-radius:14px;border:1px solid var(--line);color:var(--ink);overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6);
+  background:radial-gradient(1100px 480px at 70% -10%,rgba(143,211,232,.07),transparent 60%),var(--bg)}
+.desk .hdr{padding:18px 32px}
+.dhero{max-width:760px;margin:0 auto;padding:56px 24px 6px;text-align:center}
+.dhero .head{font-size:60px;margin:0 0 10px}
+.dhero .sub{margin-bottom:26px}
+.dwrap{max-width:1080px;margin:0 auto;padding:0 32px 56px}
+.dwrap .row-h{margin:40px 0 14px}
+.dgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
+.dgrid .tile{width:auto}
+@media (max-width:900px){.dgrid{grid-template-columns:repeat(3,1fr)}.dhero .head{font-size:42px}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></symbol>
+  <symbol id="list" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></symbol>
+  <symbol id="star" viewBox="0 0 24 24"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></symbol>
+  <symbol id="bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol>
+  <symbol id="user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></symbol>
+  <symbol id="right" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+  <symbol id="chk" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="layers" viewBox="0 0 24 24"><path d="M12 2l10 6-10 6L2 8z"/><path d="M2 14l10 6 10-6"/></symbol>
+</svg>
+
+<div class="page">
+  <h1 class="t">Card lists, front and centre</h1>
+  <p class="lede">Find any card and see every version. Keep track of the ones you have. Card lists get their own place in the header, the app's tab bar and right under the search box. Sample cards and numbers.</p>
+
+  <div class="sec"><h2>Phone</h2></div>
+  <div class="phones">
+    <div><div class="fab phone" id="home"></div><p class="cap">Home: what to do, in two lines. Popular lists sit right under the box.</p></div>
+    <div><div class="fab phone" id="lists"></div><p class="cap">"Card lists": pick a game, tap a popular one, or find any name A–Z.</p></div>
+    <div><div class="fab phone" id="app"></div><p class="cap">In the app: "Lists" gets its own tab.</p></div>
+  </div>
+
+  <div class="sec"><h2>Computer</h2></div>
+  <div class="fab desk" id="desk"></div>
+</div>
+
+<script>
+const I = (id) => `<svg class="ic"><use href="#${id}"/></svg>`;
+// [name, versions, game, photo colours or null]
+const POP = [
+  ['Charizard', 130, 'Pokémon', ['#d98a3a', '#3d2410']],
+  ['Pikachu', 412, 'Pokémon', ['#e8c43a', '#5a4410']],
+  ['Black Lotus', 13, 'Magic', ['#2a2a2e', '#0c0c10']],
+  ['Blue-Eyes White Dragon', 85, 'Yu-Gi-Oh!', ['#5c8fd6', '#1a2a48']],
+  ['Elsa', 50, 'Lorcana', ['#8fc7e8', '#1a3348']],
+  ['The One Ring', 17, 'Magic', ['#c9a64a', '#3a2e10']],
+  ['Umbreon', 64, 'Pokémon', null],
+];
+const tile = ([n, v, g, p]) => `<a class="tile" href="#"><div class="photo ${p ? '' : 'none'}" ${p ? `style="--a:${p[0]};--b:${p[1]}"` : ''}></div><b>${n}</b><span>${v} versions</span><div class="g">${g}</div></a>`;
+const hdr = (on) => `<div class="hdr"><span class="brand"><span class="mark">F</span>Foils <span class="amp">&amp;</span> Fables</span>
+  <span class="nav"><span class="lists ${on ? 'on' : ''}">${I('list')}Card lists</span></span></div>`;
+const homeTop = `<h2 class="head">Find any card. <em>See every version.</em></h2>
+  <p class="sub">Then keep track of the ones you have.</p>
+  <div class="box"><span class="ph">Which card?</span><span class="go">${I('search')}</span></div>`;
+
+document.getElementById('home').innerHTML = `<div class="scroll">${hdr(false)}
+  <div class="pad">${homeTop}</div>
+  <div class="row-h"><h3>Popular card lists</h3><a href="#">See all</a></div>
+  <div class="strip">${POP.map(tile).join('')}</div>
+  <a class="more" href="#">${I('list')}Browse every card list</a>
+  <div class="why">
+    <div><i>${I('layers')}</i>Every version for sale, from one search.</div>
+    <div><i>${I('chk')}</i>Tick the ones you have. Only you can see them.</div>
+    <div><i>${I('bell')}</i>Get told when one you need is listed.</div>
+  </div>
+</div>`;
+
+const AZ = { C: [['Charizard', 130], ['Charmander', 96], ['Chien-Pao', 22]], D: [['Dark Magician', 173], ['Dragonite', 88]], E: [['Eevee', 205], ['Espeon', 71]] };
+const listsBody = (tabbar) => `<div class="scroll">${tabbar ? '' : hdr(true)}
+  <div class="pad"><h2 class="title" ${tabbar ? 'style="margin-top:14px"' : ''}>Card lists</h2>
+  <p class="titlesub">Every card, every version. Tick the ones you have.</p>
+  <div class="find">${I('search')}Find a card list</div></div>
+  <div class="games"><span class="gm on">Pokémon</span><span class="gm">Magic</span><span class="gm">Yu-Gi-Oh!</span><span class="gm">Lorcana</span></div>
+  <div class="row-h"><h3>Popular</h3></div>
+  <div class="grid">${POP.filter((p) => p[2] === 'Pokémon').concat([['Mewtwo', 118, 'Pokémon', ['#a98ad6', '#2a1a48']]]).map(tile).join('')}</div>
+  <div class="row-h"><h3>All Pokémon, A–Z</h3></div>
+  <div class="az">${Object.entries(AZ).map(([l, rows]) => `<div class="letter">${l}</div>${rows.map(([n, v]) => `<div class="li">${n}<span>${v} versions ›</span></div>`).join('')}`).join('')}</div>
+</div>`;
+document.getElementById('lists').innerHTML = listsBody(false) + `<div class="jump">${'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map((c) => `<span>${c}</span>`).join('')}</div>`;
+document.getElementById('app').innerHTML = listsBody(true) + `<div class="tabbar">
+  <div>${I('search')}Search</div><div class="on">${I('list')}Lists</div><div>${I('star')}Watchlist</div><div>${I('bell')}Alerts</div><div>${I('user')}Account</div></div>`;
+
+document.getElementById('desk').innerHTML = `${hdr(false).replace('<span class="nav">', '<span class="nav"><span>Search</span>').replace('</span></div>', '<span>Sign in</span></span></div>')}
+  <div class="dhero">${homeTop}</div>
+  <div class="dwrap"><div class="row-h"><h3>Popular card lists</h3><a href="#">Browse every card list</a></div>
+  <div class="dgrid">${POP.slice(0, 6).map(tile).join('')}</div></div>`;
+</script>
+</body>
+</html>
