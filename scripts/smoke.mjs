@@ -1,6 +1,6 @@
 // scripts/smoke.mjs
 //
-// Quick check of a running site before a push. Makes about 12 eBay-backed
+// Quick check of a running site before a push. Makes about 13 eBay-backed
 // requests per run (3 sports searches, 3 TCG searches, featured, rarest, and
 // the live-for-you call if SMOKE_COOKIE is set), plus page requests.
 //
@@ -108,6 +108,18 @@ for (const key of gameKeys.slice(0, 3)) {
     else report('PASS', name, `${items.length} items`);
     const proxies = items.filter((it) => /\bproxy\b/i.test(it.title || ''));
     report(proxies.length ? 'FAIL' : 'PASS', `tcg-search ${key} hides proxies`, proxies.length ? proxies[0].title.slice(0, 120) : '');
+  } catch (e) { report('FAIL', name, e.message); }
+}
+
+// Grades reach the response. Only a production build shows this breaking (QA 2026-11-06 #2).
+{
+  const name = 'tcg-search reads grades: PSA 10 filter returns "PSA 10" listings';
+  try {
+    const t = await getJson('/api/tcg-search?q=Charizard&game=pokemon&graded=graded&grader=PSA&grade=10&limit=5');
+    const items = t.body?.items || [];
+    if (t.status !== 200) report('FAIL', name, `HTTP ${t.status}`);
+    else if (!items.length) report('FAIL', name, 'no items');
+    else report(items.every((it) => it.gradeLabel === 'PSA 10') ? 'PASS' : 'FAIL', name, `${items.length} items`);
   } catch (e) { report('FAIL', name, e.message); }
 }
 

@@ -35,6 +35,8 @@ const { cardVersions, findCards, familyCards } = await import(pathToFileURL(path
 const { familySavedParams } = await import(pathToFileURL(path.join(dir, 'familySearch.mjs')).href);
 const { catalogRarity, catalogGroup, applyCatalog } = await import(pathToFileURL(path.join(dir, 'catalogMatch.mjs')).href);
 const { getCard } = await import(pathToFileURL(path.join(dir, 'catalog.mjs')).href);
+const { toResult } = await import(pathToFileURL(path.join(dir, 'search.mjs')).href);
+const { parseTitle } = await import(pathToFileURL(path.join(dir, 'parseTitle.mjs')).href);
 const { rarityValuesToGroups } = await import(pathToFileURL(path.join(dir, 'ladders.mjs')).href);
 const allVersions = (game, key) => cardVersions(game, key).sets.flatMap((x) => x.numbers.flatMap((n) => n.versions));
 const rarityOf = (game, key, title, titleRarity = null) => { const c = getCard(game, key); return catalogRarity(game, c, matchListing(game, c, title), titleRarity); };
@@ -103,6 +105,7 @@ const checks = [
   ['A pinned listing is decided by its printing, not its words', () => listingInSets('pokemon', ['swsh7'], { title: 'Charizard Evolving Skies', catalogSets: ['base1'] }) === false],
   ['Set lists are newest first', () => { const l = setList('lorcana'); return l.length > 10 && l[0].released >= l[l.length - 1].released && l.some((x) => x.name === 'The First Chapter'); }],
   ['A family saved search keeps its set', () => familySavedParams({ game: 'pokemon', card: 'charizard', set: 'base1' }, 'Charizard').get('set') === 'base1'],
+  ['A grade in a title reaches the search response', () => { const r = toResult({ id: '1', title: 'Charizard 4/102 PSA 10', price: 1, parsed: parseTitle('Charizard 4/102 PSA 10', { game: 'pokemon' }), graded: true }); return r.gradeLabel === 'PSA 10' && r.grade.grade === 10; }],
   ['Old saved rarity values map to groups', () => rarityValuesToGroups(['sir'], ['pokemon'])[0] === 'extremely_rare' && rarityValuesToGroups(['pokemon:dr'], ['pokemon','mtg'])[0] === 'very_rare' && rarityValuesToGroups(['enchanted'], ['lorcana'])[0] === 'extremely_rare'],
   ['Group values pass through; junk is dropped', () => JSON.stringify(rarityValuesToGroups(['promo', 'vintage', 'nonsense'], ['pokemon'])) === '["promo","vintage"]'],
   ['Serialized One Ring is a grail', () => cardVersions('mtg', 'the-one-ring').sets.flatMap((s) => s.numbers.flatMap((n) => n.versions)).some((v) => v.rarityKey === 'serialized' && v.tier === 'grail')],
