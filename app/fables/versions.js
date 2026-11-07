@@ -2,9 +2,13 @@
 // every version of a family from the catalog (/api/tcg-versions), what's for
 // sale from one family search (/api/tcg-family-search), and plain version names.
 
-// Games with a card catalog: every version, checklist and Find it.
+// Games with a card catalog: every version, checklist and Find it. To hold a
+// game back, remove it from this one line; everything else follows, including
+// the home line. Its searches go back to the normal list.
 export const VERSION_GAMES = ['pokemon', 'mtg', 'yugioh', 'lorcana'];
-export const VERSION_GAMES_TEXT = 'Pokémon, Magic, Yu-Gi-Oh! and Lorcana';
+export const GAME_NAMES = { pokemon: 'Pokémon', mtg: 'Magic', yugioh: 'Yu-Gi-Oh!', lorcana: 'Lorcana' };
+const names = VERSION_GAMES.map((g) => GAME_NAMES[g]);
+export const VERSION_GAMES_TEXT = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : names.join('');
 /** The game from a URL parameter (Pokémon when it's missing). */
 export const versionGame = (g) => (VERSION_GAMES.includes(g) ? g : 'pokemon');
 /** URL parameters for a game: Pokémon is the default and needs none. */

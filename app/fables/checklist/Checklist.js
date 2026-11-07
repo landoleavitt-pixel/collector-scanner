@@ -30,7 +30,7 @@ import { ChevronLeft, Check, Lock, Bell, Search } from 'lucide-react';
 import { useUser } from '../../../lib/useUser';
 import { SIDE } from '../data';
 import { GroupDot, groupRank } from '../rarity';
-import { VERSION_GAMES, VERSION_GAMES_TEXT, versionGame, versionLabel, cardNumber, gameParams, gameQuery, sized, loadFamily, loadFamilyListings, saveFamilyAlert } from '../versions';
+import { VERSION_GAMES, VERSION_GAMES_TEXT, GAME_NAMES, versionGame, versionLabel, cardNumber, gameParams, gameQuery, sized, loadFamily, loadFamilyListings, saveFamilyAlert } from '../versions';
 import { Sheet, BigButton } from '../sheet';
 
 const SETS_SHOWN = 4;
@@ -340,7 +340,6 @@ export default function Checklist() {
 
 // No list under this name: the spelling help ("Charzard" → Charizard), the same
 // name in another game, or a plain search. Never a dead end.
-const LABEL_GAME = { Pokémon: 'pokemon', Magic: 'mtg', 'Yu-Gi-Oh!': 'yugioh', Lorcana: 'lorcana' };
 function NotFound({ name, game }) {
   const names = useNameSuggest('fables');
   const [other, setOther] = useState(null);
@@ -353,7 +352,7 @@ function NotFound({ name, game }) {
     return () => { alive = false; };
   }, [name, game]);
   const fix = name && names ? names.didYouMean(name) : null;
-  const fixGame = fix ? LABEL_GAME[fix.sport] : null;
+  const fixGame = fix ? VERSION_GAMES.find((g) => GAME_NAMES[g] === fix.sport) || null : null;
   const searchFor = fix?.query || name;
   const big = 'w-full min-h-[60px] rounded-2xl flex items-center justify-center text-center px-4 text-[18px] font-semibold';
   const gold = { background: 'linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom))', color: 'var(--ink-on-gold)' };
