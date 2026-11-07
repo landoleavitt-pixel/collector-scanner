@@ -1234,6 +1234,83 @@
    "expect": {
     "kind": "exact"
    }
+  },
+  {
+   "game": "pokemon",
+   "card": "charizard",
+   "title": "Charizard 4/102 Pokemon 30th Anniversary Celebration Classic Collection MINT",
+   "expect": {
+    "kind": "exact",
+    "versions": [
+     "30th-c:001:n"
+    ]
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "charizard",
+   "title": "Pokemon Charizard 30th Celebration 2026 Classic Collection 4/102",
+   "expect": {
+    "kind": "exact",
+    "versions": [
+     "30th-c:001:n"
+    ]
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "charizard",
+   "title": "POKEMON 4/102 CHARIZARD 30TH CELEBRATION CLASSIC COLLECTION HOLO NM/M",
+   "expect": {
+    "kind": "exact",
+    "versions": [
+     "30th-c:001:n"
+    ]
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "charizard",
+   "title": "Charizard ME: 30th Celebration Classic Collection #4/102 holo Near Mint",
+   "expect": {
+    "kind": "exact",
+    "versions": [
+     "30th-c:001:n"
+    ]
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "charizard",
+   "title": "Charizard Celebrations Classic Collection 4/102 Holo",
+   "expect": {
+    "kind": "exact",
+    "versions": [
+     "cel25cc:CC002:h"
+    ]
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "charizard",
+   "title": "1999 Pokemon Base Set Charizard 4/102 Holo PSA 8",
+   "expect": {
+    "kind": "exact",
+    "versions": [
+     "base1:4:h"
+    ]
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "charizard",
+   "title": "Charizard Base Set 2 #4 Holo PSA 8",
+   "expect": {
+    "kind": "exact",
+    "versions": [
+     "base4:4:h"
+    ]
+   }
   }
  ]
 }
