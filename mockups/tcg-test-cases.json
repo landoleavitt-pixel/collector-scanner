@@ -3124,6 +3124,90 @@
    "expect": {
     "rarityGroup": "promo"
    }
+  },
+  {
+   "group": "QA 2026-11-06",
+   "title": "Pikachu Libre 14/30 XY Trainer Kit Non Holo Pokémon",
+   "hint": "pokemon",
+   "expect": {
+    "rarity": null
+   }
+  },
+  {
+   "group": "QA 2026-11-06",
+   "title": "Pokemon TCG Pikachu Libre 14/30 XY Trainer Non-Holo 2016 English 80 HP",
+   "hint": "pokemon",
+   "expect": {
+    "rarity": null
+   }
+  },
+  {
+   "group": "QA 2026-11-06",
+   "title": "Charizard 4/102 Holo Base Set",
+   "hint": "pokemon",
+   "expect": {
+    "rarity": "holo"
+   }
+  },
+  {
+   "group": "QA 2026-11-06",
+   "title": "Pokemon Mega Charizard Y - EX Manga Fan Card Art Full Art Holo - Not A Game Card",
+   "hint": "pokemon",
+   "expect": {
+    "proxy": true
+   }
+  },
+  {
+   "group": "QA 2026-11-06",
+   "title": "Charizard fan art card custom",
+   "hint": "pokemon",
+   "expect": {
+    "proxy": true
+   }
+  },
+  {
+   "group": "QA 2026-11-06",
+   "title": "JUMBO Charizard ex Oversized Promo Card 196",
+   "hint": "pokemon",
+   "expect": {
+    "nonCard": true
+   }
+  },
+  {
+   "group": "QA 2026-11-06",
+   "title": "Charizard Full Art Holo 199/165",
+   "hint": "pokemon",
+   "expect": {
+    "nonCard": false
+   }
+  },
+  {
+   "group": "QA 2026-11-06",
+   "title": "Pokemon Simplified Chinese 30th Celebration Pikachu ex SAR #127/103 Grade 10 #5",
+   "hint": "pokemon",
+   "expect": {
+    "art": []
+   }
+  },
+  {
+   "group": "QA 2026-11-06",
+   "title": "Pikachu Alternate Art 25/25",
+   "hint": "pokemon",
+   "expect": {
+    "art": [
+     "altart"
+    ]
+   }
+  },
+  {
+   "group": "QA 2026-11-06",
+   "title": "Umbreon VMAX Special Art 215/203",
+   "hint": "pokemon",
+   "expect": {
+    "art": [
+     "altart"
+    ]
+   }
   }
  ]
 }
