@@ -42,3 +42,11 @@ Start a new Boss session with: "Read BOSS_HANDOFF.md, DECISIONS.md, SHIP_LIST.md
 - **App name:** fieldsandfables.com already exists (registered 2026-03), so "Fields & Fables" is risky. Landon floated "CardAtlas": cardatlas.com is a parked domain (owned since 2016); App Store and trademark checks are still to do. "Rarest First": rarestfirst.com is free. Once he picks, update capacitor.config.json, Info.plist, mobile-shell/offline.html, IOS_APP_SETUP.md, APP_STORE_LISTING.md and DECISIONS.md.
 - Checklist mockup approval (when design sends it).
 - pricing page still says "every"; it's hidden, so low priority.
+
+
+## Update 2026-11-07 (Boss session local_c6e2e1cd-4c53-4768-b8b0-94dbedfa0c5e)
+- Live: ea6a097 (rarity groups, Magic checklist, shared-card sign-in fix) + 10b7ec0 (Apple hidden on web, Privacy Apple token, faster sports search). Poller last deployed 2026-11-01; next deploy adds set/rarity keys and the cron secret (Landon steps in LANDON_TODO.md).
+- Waiting on main, not pushed (about 60 commits): new Fables home and versions-first search, four games (Pokémon, Magic, Yu-Gi-Oh!, Lorcana), set filter, Vintage, grade fix (minifier bug), reprint fixes, per-side colours on saved searches and starred cards, push ask at first alert, card lists (design finishing), QA fixes. Gate: fresh test Pokémon 95.4% / Magic 95.3% precision (passes the 95% bar; per-card rule 26/40 still short). Delta Reign isn't in TCGdex yet, so its cards show "version not in title". Run the full pre-push test before pushing.
+- Open for Landon: sports home mockup headline (mockups/fields-floors-home-story.html); throwaway Supabase test project for one login (engine stopped until then); buy foilsandfables.com and floorsandfables.com; first Topps checklist file.
+- Saved for later: Japanese Pokémon plan; launch plan (research/launch-plan.md) once domains and the push are live.
+- Agents were run at 4 during the 2026-11-06/07 sprint because Landon asked to spend the week's usage; go back to max 3.
