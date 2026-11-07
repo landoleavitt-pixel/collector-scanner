@@ -17,6 +17,7 @@ import { PAYMENTS_LIVE } from '../../lib/payments';
 import { track } from '../../lib/track';
 import SignupPromptCard from '../components/SignupPromptCard';
 import SaveSearchModal from '../components/SaveSearchModal';
+import SaveSearchPrompt from '../components/search/SaveSearchPrompt';
 import ShareSearchButton from '../components/ShareSearchButton';
 import CardModal from '../components/CardModal';
 import { useNameSuggest, useSuggestBox, DidYouMeanLine, EditableSearchHeading } from '../components/search/SuggestBox';
@@ -27,18 +28,20 @@ import {
 } from '../components/search/SearchUI';
 import { usePendingStarSave, AlertBand } from '../components/search/WatchStar';
 import { ResultCard, Badge, upscaleEbayImage } from '../components/search/ResultCard';
+import SetFilter from './SetFilter';
 import { SIDE, fetchMeta, searchCards, toParams, fromParams, LANG_LABEL, serialOf, gradeText } from './data';
 import { RARITY_GROUPS, RARITY_SOURCE, GROUP_ROW, groupOf, GroupChip } from './rarity';
 import VersionsView from './VersionsView';
+import { VERSION_GAMES, VERSION_GAMES_TEXT, gameQuery } from './versions';
 
 const DEFAULT_FILTERS = {
   game: '', rarity: [], lang: [], graded: 'any', grader: '', grade: '', firstEd: false, serialOnly: false,
   listing: 'any', priceMin: 0, priceMax: PRICE_NO_MAX, sort: 'rarest',
   // More filters (research/fables-filters-2.md)
-  finish: [], art: [], promos: 'show', cond: [], freeShip: false, offers: false, shipFrom: '', returns: false,
+  set: '', finish: [], art: [], promos: 'show', cond: [], freeShip: false, offers: false, shipFrom: '', returns: false,
 };
 // How many More filters are in use (for the fold's count and the badge).
-const moreActive = (f) => (f.finish?.length ? 1 : 0) + (f.art?.length ? 1 : 0) + (f.promos && f.promos !== 'show' ? 1 : 0)
+const moreActive = (f) => (f.set ? 1 : 0) + (f.finish?.length ? 1 : 0) + (f.art?.length ? 1 : 0) + (f.promos && f.promos !== 'show' ? 1 : 0)
   + (f.graded === 'raw' && f.cond?.length ? 1 : 0) + shippingActive(f);
 // Filters that need a new search when changed. Sort is left out, as on sports:
 // it reorders without asking.
@@ -113,6 +116,7 @@ function filterLabels(f, meta) {
   if (min > 0 || max < PRICE_NO_MAX) out.push({ label: priceRangeLabel(min, max) });
   const more = meta?.more;
   const labelOf = (lists, k) => Object.values(lists || {}).flat().find(([key]) => key === k)?.[1] || k;
+  if (f.set) out.push({ label: `Set ${f.set}` });
   (f.finish || []).forEach((k) => out.push({ label: labelOf(more?.finishes, k) }));
   (f.art || []).forEach((k) => out.push({ label: labelOf(more?.arts, k) }));
   if (f.promos === 'hide') out.push({ label: 'No promos' });
@@ -153,6 +157,7 @@ export default function FablesHome() {
   const [error, setError] = useState(null);
   const [editingSearch, setEditingSearch] = useState(null);
   const [saveModalOpen, setSaveModalOpen] = useState(false);
+  const [savePromptOpen, setSavePromptOpen] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [mobileSortOpen, setMobileSortOpen] = useState(false);
   const [pendingSearchOpen, setPendingSearchOpen] = useState(false);
@@ -169,7 +174,7 @@ export default function FablesHome() {
 
   useEffect(() => { fetchMeta().then(setMeta); setRecentSearches(getRecents()); }, []);
 
-  const setFilter = (key, value) => setFilters((f) => ({ ...f, [key]: value, ...(key === 'game' && value !== f.game ? { finish: [], art: [] } : {}) }));
+  const setFilter = (key, value) => setFilters((f) => ({ ...f, [key]: value, ...(key === 'game' && value !== f.game ? { set: '', finish: [], art: [] } : {}) }));
   const appliedFilters = applied?.f || null;
   function filtersDifferFromApplied() {
     if (!appliedFilters) return false;
@@ -356,7 +361,7 @@ export default function FablesHome() {
 
   const gameLabel = meta?.games?.find((g) => g.key === (appliedFilters || filters).game)?.label;
   function handleOpenSave() {
-    if (!user) { router.push(`/login?next=${encodeURIComponent('/fables')}`); return; }
+    if (!user) { setSavePromptOpen(true); return; }
     setSaveModalOpen(true);
   }
   const saveModal = (
@@ -399,11 +404,11 @@ export default function FablesHome() {
   }
 
   if (stage === 'results') {
-    // Pokémon and Magic searches that name a card open on its versions; filters
-    // and every other game use the normal list below.
+    // Searches that name a card in a game with a catalog open on its versions;
+    // filters and One Piece use the normal list below.
     const plainSearch = loading ? (query.trim() && isDefault(filters)) : (applied?.q && isDefault(applied.f));
     const versionsGame = !loading && applied ? (applied.f.game || mainGame(res.items)) : null;
-    const canHaveVersions = plainSearch && !versionsOff && (loading || versionsGame === 'pokemon' || versionsGame === 'mtg');
+    const canHaveVersions = plainSearch && !versionsOff && (loading || VERSION_GAMES.includes(versionsGame));
     if (canHaveVersions && !showAllListings) {
       return (
         <main className="relative min-h-screen z-10">
@@ -429,6 +434,7 @@ export default function FablesHome() {
         <section className="max-w-[1200px] mx-auto px-6 lg:px-10 pt-10 pb-16 relative z-10 stage-in">
           <div className="flex flex-wrap items-end justify-between gap-6 pb-6 mb-8 border-b border-[var(--line)]">
             <div className="min-w-0 flex-1">
+              <h1 className="sr-only">{shownQuery || gameLabel || 'All games'} cards</h1>
               <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--ink-400)] mb-2">Searching for</p>
               <EditableSearchHeading
                 side="fables"
@@ -482,7 +488,7 @@ export default function FablesHome() {
               </button>
               <button
                 onClick={newSearch}
-                className="text-[11px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
+                className="py-3 -my-3 text-[11px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
               >
                 New search
               </button>
@@ -553,6 +559,9 @@ export default function FablesHome() {
           />
         </section>
         {saveModal}
+        {savePromptOpen && (
+          <SaveSearchPrompt query={query || gameLabel || ''} returnPath={`/fables?${toParams(query, filters)}`} onClose={() => setSavePromptOpen(false)} />
+        )}
         {cardModal}
         <BackToTop />
       </main>
@@ -581,8 +590,7 @@ function mainGame(items) {
 }
 const normName = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/['’.]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
 
-// Shown above results when the search names a card we have a list for
-// (English Pokémon, Magic). `game` is the game filter, or else the game most of
+// Shown above results when the search names a card we have a list for. `game` is the game filter, or else the game most of
 // the results are from, so a Lorcana "Stitch" search doesn't offer a Magic list.
 // The shortest catalog name inside the search is the family ("charizard ex sir"
 // → Charizard). Failing that, the search itself if it names a small family
@@ -592,7 +600,7 @@ function EveryCardButton({ query, game }) {
   const [family, setFamily] = useState(null);
   useEffect(() => {
     setFamily(null);
-    if (game !== 'pokemon' && game !== 'mtg') return undefined;
+    if (!VERSION_GAMES.includes(game)) return undefined;
     let alive = true;
     const q = ` ${normName(query)} `;
     const get = (params) => fetch(`/api/tcg-versions?game=${game}&${params}`).then((r) => (r.ok ? r.json() : { cards: [] })).catch(() => ({ cards: [] }));
@@ -611,7 +619,7 @@ function EveryCardButton({ query, game }) {
   }, [query, game]);
   if (!family) return null;
   return (
-    <Link href={`/fables/checklist?${game === 'mtg' ? 'game=mtg&' : ''}name=${encodeURIComponent(family)}`}
+    <Link href={`/fables/checklist?${gameQuery(game)}name=${encodeURIComponent(family)}`}
           className="w-full lg:w-auto lg:px-6 min-h-[56px] rounded-2xl inline-flex items-center justify-center gap-2 text-[16px] font-semibold mb-6"
           style={{ border: '1.5px solid var(--gold-bright)', color: 'var(--gold-bright)' }}>
       <Layers className="w-5 h-5" strokeWidth={2} aria-hidden="true" />See every {family} card
@@ -647,7 +655,7 @@ function SearchBar({ query, setQuery, onSubmit, onPick }) {
         </button>
       </form>
       {suggest.dropdown}
-      <p className="text-[13px] mt-2.5 px-0.5 md:text-center" style={{ color: 'var(--ink-600)' }}>Every version for Pokémon and Magic. More games soon.</p>
+      <p className="text-[13px] mt-2.5 px-0.5 md:text-center" style={{ color: 'var(--ink-600)' }}>Every version for {VERSION_GAMES_TEXT}.</p>
     </>
   );
 }
@@ -808,7 +816,11 @@ function SignedIn({ query, setQuery, onSearch, recents, error, onCardClick }) {
 function ForSaleShelf({ count, onCardClick }) {
   const [items, setItems] = useState(null);
   // A $100 floor keeps the shelf to real chase cards, not $1 prize-card listings.
-  useEffect(() => { searchCards('', { ...DEFAULT_FILTERS, priceMin: 100 }).then((r) => setItems(r.items.slice(0, count))); }, [count]);
+  useEffect(() => { searchCards('', { ...DEFAULT_FILTERS, priceMin: 100 }).then((r) => {
+    // Two sellers' listings of one card can share a title: show it once.
+    const seen = new Set();
+    setItems(r.items.filter((it) => { const t = normName(it.title); if (seen.has(t)) return false; seen.add(t); return true; }).slice(0, count));
+  }); }, [count]);
   if (items && !items.length) return null;
   return (
     <div>
@@ -1023,6 +1035,7 @@ function MoreFablesFilters({ meta, filters, setFilter }) {
   const toggleIn = (k, v) => setFilter(k, (filters[k] || []).includes(v) ? filters[k].filter((x) => x !== v) : [...(filters[k] || []), v]);
   return (
     <>
+      <SetFilter game={filters.game} value={filters.set || ''} onChange={(v) => setFilter('set', v)} />
       {finishes.length > 0 && (
         <div>
           <SectionLabel>Foil or holo</SectionLabel>

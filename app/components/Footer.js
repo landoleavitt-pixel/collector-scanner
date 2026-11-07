@@ -3,6 +3,7 @@ import Seal from './Seal';
 import { PRODUCT_LINKS, HOBBY_LINKS } from './navLinks';
 import { TourLink } from './SiteTour';
 import { PAYMENTS_LIVE } from '../../lib/payments';
+import { SPORTS_ORIGIN } from '../../lib/domains';
 
 function FilterLabel({ children }) {
   return (
@@ -19,7 +20,7 @@ function NavList({ links }) {
         <li key={link.href}>
           <Link
             href={link.href}
-            className="hover:text-[var(--gold)] transition-colors"
+            className="py-1.5 hover:text-[var(--gold)] transition-colors"
           >
             {link.label}
             {link.badge && (
@@ -78,7 +79,7 @@ export default function Footer() {
           </div>
           <div data-fables-only>
             <FilterLabel>Also</FilterLabel>
-            <NavList links={[{ href: '/', label: 'Sports cards' }, { href: '/contact', label: 'Contact' }]} />
+            <NavList links={[{ href: SPORTS_ORIGIN, label: 'Fields & Floors' }, { href: '/contact', label: 'Contact' }]} />
           </div>
         </div>
         <div data-ff-footer-legal className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pt-8 border-t border-[var(--line-soft)] text-[12px] text-[var(--ink-600)]">

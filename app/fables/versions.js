@@ -2,6 +2,17 @@
 // every version of a family from the catalog (/api/tcg-versions), what's for
 // sale from one family search (/api/tcg-family-search), and plain version names.
 
+// Games with a card catalog: every version, checklist and Find it.
+export const VERSION_GAMES = ['pokemon', 'mtg', 'yugioh', 'lorcana'];
+export const VERSION_GAMES_TEXT = 'Pokémon, Magic, Yu-Gi-Oh! and Lorcana';
+/** The game from a URL parameter (Pokémon when it's missing). */
+export const versionGame = (g) => (VERSION_GAMES.includes(g) ? g : 'pokemon');
+/** URL parameters for a game: Pokémon is the default and needs none. */
+export const gameParams = (game) => (game === 'pokemon' ? {} : { game });
+export const gameQuery = (game) => (game === 'pokemon' ? '' : `game=${game}&`);
+/** The number printed on the card: Yu-Gi-Oh! codes read LOB-EN001. */
+export const cardNumber = (game, row) => (game === 'yugioh' ? `${row.set}-${row.number}` : row.number);
+
 // A word that names hundreds of cards ("Dragon") isn't one card's family.
 export const FAMILY_MAX = 60;
 
@@ -27,7 +38,19 @@ function plainMtgLabel(v) {
   }
   return [base, ...rest].join(', ');
 }
-export const versionLabel = (game, v) => (game === 'mtg' ? plainMtgLabel(v) : plainPokemonLabel(v));
+// Lorcana: "Cold foil" is its one shiny finish. Yu-Gi-Oh! versions are told
+// apart by their printed rarity, so that name is the plain name.
+function plainLorcanaLabel(v) {
+  if (/cold foil/i.test(v.label || '')) return 'Shiny';
+  if (/non-?foil/i.test(v.label || '')) return 'Regular';
+  return v.label || 'Regular';
+}
+export function versionLabel(game, v) {
+  if (game === 'mtg') return plainMtgLabel(v);
+  if (game === 'lorcana') return plainLorcanaLabel(v);
+  if (game === 'yugioh') return v.label || 'Regular';
+  return plainPokemonLabel(v);
+}
 
 /** A different size of an eBay photo. */
 export const sized = (url, n) => (url ? url.replace(/\/s-l\d+\.(\w+)/, `/s-l${n}.$1`) : url);

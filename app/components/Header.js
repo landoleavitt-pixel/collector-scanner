@@ -354,7 +354,7 @@ export default function Header() {
                   {pathname !== '/login' && (
                     <Link
                       href="/login"
-                      className="whitespace-nowrap text-[12px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
+                      className="py-3 -my-3 whitespace-nowrap text-[12px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
                     >
                       Sign in
                     </Link>

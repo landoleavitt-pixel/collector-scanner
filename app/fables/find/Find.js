@@ -16,6 +16,7 @@ import SignupPromptCard from '../../components/SignupPromptCard';
 import { ResultCard } from '../../components/search/ResultCard';
 import { LoadingState, BackToTop } from '../../components/search/SearchUI';
 import { SIDE, withListingFlags } from '../data';
+import { versionGame } from '../versions';
 import { fablesPayload, CardBadges, hasCardBadges, rowStyleFor } from '../FablesHome';
 
 const money = (v) => (v == null ? '' : `$${Number(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
@@ -24,7 +25,7 @@ const safeBack = (b) => (b && b.startsWith('/') && !b.startsWith('//') ? b : '/f
 
 export default function Find() {
   const sp = useSearchParams();
-  const game = sp.get('game') === 'mtg' ? 'mtg' : 'pokemon';
+  const game = versionGame(sp.get('game'));
   const card = sp.get('card') || '';
   const version = sp.get('version') || '';
   const name = sp.get('name') || 'Card';
@@ -37,6 +38,15 @@ export default function Find() {
   const [res, setRes] = useState(null); // { items, total, nextOffset }
   const [more, setMore] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [credit, setCredit] = useState('');
+
+  // Each catalog's required credit line goes with its list.
+  useEffect(() => {
+    const key = card || cards.split(',')[0];
+    if (!key) return;
+    fetch(`/api/tcg-versions?game=${game}&card=${encodeURIComponent(key)}`).then((r) => (r.ok ? r.json() : null)).catch(() => null)
+      .then((d) => { if (d?.source?.note) setCredit(d.source.note); });
+  }, [card, cards, game]);
 
   const url = (offset = 0) => `/api/tcg-family-search?${new URLSearchParams({ game, card, versions: version, lang: 'en', limit: '48', ...(offset ? { offset: String(offset) } : {}) })}`;
 
@@ -53,8 +63,9 @@ export default function Find() {
     }
     if (!card || !version) { setRes({ items: [], total: 0, nextOffset: null }); return; }
     let alive = true;
-    fetch(url()).then((r) => (r.ok ? r.json() : null)).catch(() => null).then((d) => {
-      if (alive) setRes(d ? { items: (d.items || []).map(withListingFlags), total: d.total || 0, nextOffset: d.nextOffset ?? null } : { items: [], total: 0, nextOffset: null, error: true });
+    fetch(url()).then((r) => (r.status === 404 ? { notFound: true } : r.ok ? r.json() : null)).catch(() => null).then((d) => {
+      if (alive && d?.notFound) setRes({ items: [], total: 0, nextOffset: null, notFound: true });
+      else if (alive) setRes(d ? { items: (d.items || []).map(withListingFlags), total: d.total || 0, nextOffset: d.nextOffset ?? null } : { items: [], total: 0, nextOffset: null, error: true });
     });
     return () => { alive = false; };
   }, [card, version, unsure, cards, q, game]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -78,7 +89,7 @@ export default function Find() {
       {res === null && <LoadingState phrase="Searching eBay" />}
       {res && res.items.length === 0 && (
         <div className="rounded-2xl p-5" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
-          <p className="text-[18px]" style={{ color: 'var(--ink-100)' }}>{res.error ? 'eBay didn’t answer. Try again in a minute.' : 'None for sale right now'}</p>
+          <p className="text-[18px]" style={{ color: 'var(--ink-100)' }}>{res.notFound ? 'We can’t find this card.' : res.error ? 'eBay didn’t answer. Try again in a minute.' : 'None for sale right now'}</p>
           <a href={back} className="inline-flex items-center justify-center min-h-[52px] px-5 rounded-xl text-[16px] font-semibold mt-4"
              style={{ border: '1.5px solid var(--gold-bright)', color: 'var(--gold-bright)' }}>Back to the list</a>
         </div>
@@ -117,6 +128,7 @@ export default function Find() {
         <CardModal item={selected} printRun={null} onClose={() => setSelected(null)} side={SIDE}
                    chips={<CardBadges item={selected} meaning />} watchPayload={fablesPayload(selected)} />
       )}
+      {credit && <p className="text-[12px] mt-8 text-center" style={{ color: 'var(--ink-600)' }}>{credit} Photos are from sellers’ eBay listings.</p>}
       <BackToTop />
     </main>
   );

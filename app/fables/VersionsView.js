@@ -1,7 +1,7 @@
 'use client';
 
 // Versions-first search (mockups/fables-home-story.html, approved 2026-11-06):
-// for Pokémon and Magic, a search that names a card opens on every version for
+// for the games with a card catalog, a search that names a card opens on every version for
 // sale, set by set, and each promise shows on screen: how many listings we hid,
 // and how many we couldn't pin to a version. Other games, and searches that
 // don't name a family, keep the normal results list (onUnavailable).
@@ -14,7 +14,7 @@ import { EditableSearchHeading } from '../components/search/SuggestBox';
 import { LoadingState } from '../components/search/SearchUI';
 import { GroupDot } from './rarity';
 import { Sheet, BigButton } from './sheet';
-import { FAMILY_MAX, versionLabel, sized, familyKeys, loadFamily, loadFamilyListings, saveFamilyAlert } from './versions';
+import { FAMILY_MAX, versionLabel, cardNumber, gameParams, gameQuery, sized, familyKeys, loadFamily, loadFamilyListings, saveFamilyAlert } from './versions';
 
 const SETS_SHOWN = 4;
 const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/['’.]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -61,9 +61,9 @@ export default function VersionsView({ query, game, onUnavailable, onNewSearch, 
     for (const v of onSale) g.rows.push({ r, v, n: listings.counts[`${r.cardKey}|${v.key}`] });
   }
   const shown = showAll ? sets : sets.slice(0, SETS_SHOWN);
-  const findHref = (r, v, label) => `/fables/find?${new URLSearchParams({ ...(game === 'mtg' ? { game } : {}), card: r.cardKey, version: v.key, name: r.cardName, no: r.number, label, back: here })}`;
-  const unsureHref = `/fables/find?${new URLSearchParams({ ...(game === 'mtg' ? { game } : {}), cards: familyKeys(rows).join(','), q: query, unsure: '1', name: title, label: 'Seller didn’t say which version', back: here })}`;
-  const checklistHref = `/fables/checklist?${game === 'mtg' ? 'game=mtg&' : ''}name=${encodeURIComponent(title)}`;
+  const findHref = (r, v, label) => `/fables/find?${new URLSearchParams({ ...gameParams(game), card: r.cardKey, version: v.key, name: r.cardName, no: cardNumber(game, r), label, back: here })}`;
+  const unsureHref = `/fables/find?${new URLSearchParams({ ...gameParams(game), cards: familyKeys(rows).join(','), q: query, unsure: '1', name: title, label: 'Seller didn’t say which version', back: here })}`;
+  const checklistHref = `/fables/checklist?${gameQuery(game)}name=${encodeURIComponent(title)}`;
 
   async function turnOnAlert() {
     setAlertState('saving');
@@ -76,6 +76,7 @@ export default function VersionsView({ query, game, onUnavailable, onNewSearch, 
       <button type="button" onClick={onNewSearch} className="inline-flex items-center gap-1 text-[15px] min-h-[40px]" style={{ color: 'var(--ink-400)' }}>
         <ChevronLeft className="w-[18px] h-[18px]" strokeWidth={2} aria-hidden="true" />New search
       </button>
+      <h1 className="sr-only">Every version of {title}</h1>
       <div className="mt-1 mb-2.5">
         <EditableSearchHeading side="fables" value={title} onSubmit={(next) => { const t = (next || '').trim(); if (t && norm(t) !== norm(title)) onSearch(t); }} />
       </div>
@@ -105,7 +106,7 @@ export default function VersionsView({ query, game, onUnavailable, onNewSearch, 
                 <span className="flex-1 min-w-0">
                   <span className="block text-[17px] font-medium leading-tight" style={{ color: 'var(--ink-100)' }}>{r.cardName}</span>
                   <span className="flex flex-wrap items-center gap-x-2 text-[14px] mt-0.5" style={{ color: 'var(--ink-400)' }}>
-                    <span>No. {r.number} · {label}</span>
+                    <span>No. {cardNumber(game, r)} · {label}</span>
                     {v.rarityGroup && <GroupDot group={v.rarityGroup} small />}
                   </span>
                   <span className="block text-[15px] font-medium mt-0.5" style={{ color: 'var(--gold-bright)' }}>{n} for sale</span>

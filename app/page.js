@@ -6,6 +6,7 @@ import Link from 'next/link';
 
 import { ArrowRight, ArrowUpRight, Star, X, Crosshair, ArrowLeft, ImageOff, Search, Clock, Bell, TrendingDown, Hourglass, ListFilter } from 'lucide-react';
 import SaveSearchModal from './components/SaveSearchModal';
+import SaveSearchPrompt from './components/search/SaveSearchPrompt';
 import SignupPromptCard from './components/SignupPromptCard';
 import BidCountdown from './components/BidCountdown';
 import CardModal from './components/CardModal';
@@ -164,6 +165,7 @@ function Home() {
   const searchParams = useSearchParams();
   const { user, loading: userLoading } = useUser();
   const [saveModalOpen, setSaveModalOpen] = useState(false);
+  const [savePromptOpen, setSavePromptOpen] = useState(false);
   // When editing a saved search (?editSearch=<id>): holds {id, name, notify_enabled}
   // so the FilterPanel can show the edit eyebrow / CTA, and SaveSearchModal
   // can PATCH instead of POST. null = create-new behavior.
@@ -556,7 +558,7 @@ function Home() {
   // Open the save modal — or redirect to login if signed out.
   function handleOpenSave() {
     if (!user) {
-      router.push(`/login?next=${encodeURIComponent('/')}`);
+      setSavePromptOpen(true);
       return;
     }
     setSaveModalOpen(true);
@@ -849,6 +851,7 @@ function Home() {
               back to the hero. Listing count moves to a subtitle. */}
           <div className="flex flex-wrap items-end justify-between gap-6 pb-6 mb-8 border-b border-[var(--line)]">
             <div className="min-w-0 flex-1">
+              <h1 className="sr-only">{query} cards</h1>
               <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--ink-400)] mb-2">
                 Searching for
               </p>
@@ -927,7 +930,7 @@ function Home() {
                   setError(null);
                   setAppliedFilters(null);
                 }}
-                className="text-[11px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
+                className="py-3 -my-3 text-[11px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
               >
                 New search
               </button>
@@ -1005,6 +1008,9 @@ function Home() {
         </ResultsContext.Provider>
       )}
 
+      {savePromptOpen && (
+        <SaveSearchPrompt query={query} returnPath={sportsReturnPath(query, filters) || '/'} onClose={() => setSavePromptOpen(false)} />
+      )}
       <SaveSearchModal
         open={saveModalOpen}
         onClose={() => {
@@ -1452,7 +1458,7 @@ function RarityStrip({ onCardClick, onChipSearch }) {
             <button
               type="button"
               onClick={() => onChipSearch(data.player, { autoCards: true, numberedCards: true, selectedPrintRuns: RARITY_STRIP_RUNS })}
-              className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
+              className="py-3 -my-3 inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
             >
               See all <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.75} aria-hidden="true" />
             </button>
@@ -2143,7 +2149,7 @@ function FilterControls({ filters, setFilter, compact = false }) {
                   const allSelected = filters.selectedPrintRuns.length === ALL_PRESET_PRINT_RUNS.length;
                   setFilter('selectedPrintRuns', allSelected ? [] : ALL_PRESET_PRINT_RUNS);
                 }}
-                className="text-[10px] uppercase tracking-[0.18em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
+                className="py-2 -my-2 text-[10px] uppercase tracking-[0.18em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
               >
                 {filters.selectedPrintRuns.length === ALL_PRESET_PRINT_RUNS.length ? 'Clear all' : 'Select all'}
               </button>
@@ -2467,7 +2473,7 @@ function Filters({ filters, setFilter }) {
                   const allSelected = filters.selectedPrintRuns.length === ALL_PRESET_PRINT_RUNS.length;
                   setFilter('selectedPrintRuns', allSelected ? [] : ALL_PRESET_PRINT_RUNS);
                 }}
-                className="text-[10px] uppercase tracking-[0.18em] text-[var(--ink-600)] hover:text-[var(--gold)] transition-colors"
+                className="py-2 -my-2 text-[10px] uppercase tracking-[0.18em] text-[var(--ink-600)] hover:text-[var(--gold)] transition-colors"
               >
                 {filters.selectedPrintRuns.length === ALL_PRESET_PRINT_RUNS.length ? 'Clear all' : 'Select all'}
               </button>
@@ -2697,7 +2703,7 @@ function CustomPrintRunInput({ customRuns, onAdd, onRemove }) {
         <button
           onClick={handleAdd}
           disabled={!val.trim()}
-          className="text-[10px] uppercase tracking-[0.18em] text-[var(--gold)] disabled:text-[var(--ink-600)] disabled:cursor-not-allowed hover:text-[var(--gold-bright)] transition-colors"
+          className="py-2 -my-2 text-[10px] uppercase tracking-[0.18em] text-[var(--gold)] disabled:text-[var(--ink-600)] disabled:cursor-not-allowed hover:text-[var(--gold-bright)] transition-colors"
         >
           Add
         </button>

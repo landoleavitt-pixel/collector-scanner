@@ -20,11 +20,13 @@ export const RARITY_GROUPS = [
   { key: 'promo', label: 'Promo', meaning: 'Given out, not found in packs', chip: WARM, dot: '#c9a86a' },
   { key: 'vintage', label: 'Vintage', meaning: 'Older cards, rare because of age', chip: WARM, dot: '#c9a86a' },
 ];
-const BY_KEY = Object.fromEntries(RARITY_GROUPS.map((g, i) => [g.key, { ...g, rank: i }]));
+const BY_KEY = Object.fromEntries(RARITY_GROUPS.map((g) => [g.key, g]));
 
 export const groupOf = (key) => BY_KEY[key] || null;
-// For sorting: rarest first; unknown last.
-export const groupRank = (key) => (BY_KEY[key] ? BY_KEY[key].rank : 99);
+// For "Rarest first": Vintage leads (the old originals are the rarest of all),
+// Promo sits with the very rare, as the engine ranks results. Unknown last.
+const RANK = { vintage: 0, extremely_rare: 1, very_rare: 2, promo: 3, rare: 4, uncommon: 5, common: 6 };
+export const groupRank = (key) => RANK[key] ?? 99;
 export const RARITY_SOURCE = 'How often a card turns up in packs, from community pack-opening counts.';
 
 // Row tint by group, same strength as before (grail / ultra / rare).

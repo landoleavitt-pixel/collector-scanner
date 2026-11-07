@@ -1,17 +1,17 @@
 'use client';
 
 // Card checklist (DECISIONS.md "Card checklist view", mockups/card-checklist.html,
-// approved 2026-11-01). Every card of one Pokémon or Magic card, newest set
+// approved 2026-11-01). Every card of one name in a game with a catalog, newest set
 // first or rarest first. Each row: seller's photo · name · rarity · have-it
 // circle. Tap a row to pick which versions you have (with its photo, large,
 // when one is for sale). One button turns on an alert.
 //
 //   /fables/checklist?name=Charizard            English Pokémon
-//   /fables/checklist?game=mtg&name=The One Ring  Magic
+//   /fables/checklist?game=mtg&name=The One Ring  Magic (also yugioh, lorcana)
 //
 // Data
-//   Versions  /api/tcg-versions (TCGdex for English Pokémon, Scryfall for
-//             Magic, both credited at the foot of the list). A family
+//   Versions  /api/tcg-versions (each game's source is credited at the foot of
+//             the list, from source.note). A family
 //             ("Charizard") is ?family=1: every catalog card named with that
 //             word (Charizard, Charizard ex, Mega Charizard X ex…). Each
 //             version carries its rarityGroup (app/fables/rarity.js).
@@ -23,12 +23,14 @@
 //             free account, viewing doesn't.
 
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
+import { useNameSuggest } from '../../components/search/SuggestBox';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronLeft, Check, Lock, Bell, Search } from 'lucide-react';
 import { useUser } from '../../../lib/useUser';
 import { SIDE } from '../data';
 import { GroupDot, groupRank } from '../rarity';
-import { versionLabel, sized, loadFamily, loadFamilyListings, saveFamilyAlert } from '../versions';
+import { VERSION_GAMES, VERSION_GAMES_TEXT, versionGame, versionLabel, cardNumber, gameParams, gameQuery, sized, loadFamily, loadFamilyListings, saveFamilyAlert } from '../versions';
 import { Sheet, BigButton } from '../sheet';
 
 const SETS_SHOWN = 4;
@@ -39,7 +41,7 @@ const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toL
 
 function swatch(plain) {
   if (plain.startsWith('Shiny frame')) return 'linear-gradient(135deg,#3a4160 40%,#9fe3f5)';
-  if (/shiny/i.test(plain)) return FOIL;
+  if (/shiny|secret|ultra|super|ghost|gold|starlight|ultimate|parallel|platinum|collector/i.test(plain)) return FOIL;
   if (plain.startsWith('First print')) return '#1d1d1d';
   return '#8a93a8';
 }
@@ -48,7 +50,7 @@ export default function Checklist() {
   const router = useRouter();
   const sp = useSearchParams();
   const name = (sp.get('name') || '').trim().slice(0, 60);
-  const GAME = sp.get('game') === 'mtg' ? 'mtg' : 'pokemon';
+  const GAME = versionGame(sp.get('game'));
   const label = (v) => versionLabel(GAME, v);
   const { user } = useUser();
   const [rows, setRows] = useState(null); // [{ id, set, setName, released, total, number, cardKey, cardName, versions }]
@@ -150,7 +152,7 @@ export default function Checklist() {
         <Thumb src={sized(photos[r.id], 300)} />
         <span className="flex-1 min-w-0">
           <span className="block text-[17px] font-medium leading-snug" style={{ color: 'var(--ink-100)' }}>{r.cardName}</span>
-          <span className="block text-[15px]" style={{ color: 'var(--ink-400)' }}>No. {r.number}{n > 1 ? ` · ${n} versions` : ''}</span>
+          <span className="block text-[15px]" style={{ color: 'var(--ink-400)' }}>No. {cardNumber(GAME, r)}{n > 1 ? ` · ${n} versions` : ''}</span>
           {rarest && <span className="block mt-1"><GroupDot group={rarest} /></span>}
         </span>
         <Ring got={got} n={n} />
@@ -171,9 +173,7 @@ export default function Checklist() {
 
       {rows === null && <Skeleton />}
       {rows && rows.length === 0 && (
-        <p className="text-[17px] leading-relaxed" style={{ color: 'var(--ink-200)' }}>
-          We don’t have a card list for “{name}” yet. Lists cover English Pokémon and Magic cards for now.
-        </p>
+        <NotFound name={name} game={GAME} />
       )}
 
       {rows && rows.length > 0 && (
@@ -251,7 +251,7 @@ export default function Checklist() {
             <img src={sized(photos[picked.id], 640)} alt="Seller’s photo" className="block mx-auto mb-4 rounded-lg object-contain" style={{ maxHeight: '38vh', maxWidth: '100%', boxShadow: '0 8px 24px rgba(0,0,0,.45)' }} />
           )}
           <h3 className="font-display italic text-[28px] leading-tight mb-1">{picked.cardName}</h3>
-          <p className="text-[16px] mb-4" style={{ color: 'var(--ink-400)' }}>No. {picked.number} · {picked.setName}</p>
+          <p className="text-[16px] mb-4" style={{ color: 'var(--ink-400)' }}>No. {cardNumber(GAME, picked)} · {picked.setName}</p>
           <p className="text-[17px] mb-3" style={{ color: 'var(--ink-200)' }}>{user ? 'Which ones do you have?' : 'Versions'}</p>
           {picked.versions.map((v) => {
             const on = owned.has(`${picked.cardKey}|${v.key}`);
@@ -286,7 +286,7 @@ export default function Checklist() {
                     {count === null ? (
                       <p className="text-[15px] py-2" style={{ color: 'var(--ink-400)' }}>Checking eBay…</p>
                     ) : count > 0 ? (
-                      <a href={`/fables/find?${new URLSearchParams({ ...(GAME === 'mtg' ? { game: GAME } : {}), card: picked.cardKey, version: v.key, name: picked.cardName, no: picked.number, label: plain, back: here })}`}
+                      <a href={`/fables/find?${new URLSearchParams({ ...gameParams(GAME), card: picked.cardKey, version: v.key, name: picked.cardName, no: cardNumber(GAME, picked), label: plain, back: here })}`}
                          className="w-full min-h-[52px] rounded-xl flex items-center justify-center gap-2 text-[17px] font-semibold"
                          style={{ border: '1.5px solid var(--gold-bright)', color: 'var(--gold-bright)' }}>
                         <Search className="w-5 h-5" strokeWidth={2} aria-hidden="true" />Find it
@@ -335,6 +335,44 @@ export default function Checklist() {
         </Sheet>
       )}
     </main>
+  );
+}
+
+// No list under this name: the spelling help ("Charzard" → Charizard), the same
+// name in another game, or a plain search. Never a dead end.
+const LABEL_GAME = { Pokémon: 'pokemon', Magic: 'mtg', 'Yu-Gi-Oh!': 'yugioh', Lorcana: 'lorcana' };
+function NotFound({ name, game }) {
+  const names = useNameSuggest('fables');
+  const [other, setOther] = useState(null);
+  useEffect(() => {
+    if (!name) return undefined;
+    let alive = true;
+    const others = VERSION_GAMES.filter((g) => g !== game);
+    Promise.all(others.map((g) => fetch(`/api/tcg-versions?game=${g}&q=${encodeURIComponent(name)}&family=1`).then((r) => (r.ok ? r.json() : null)).catch(() => null)))
+      .then((all) => { if (alive) setOther(others.find((_, i) => all[i]?.cards?.length) || null); });
+    return () => { alive = false; };
+  }, [name, game]);
+  const fix = name && names ? names.didYouMean(name) : null;
+  const fixGame = fix ? LABEL_GAME[fix.sport] : null;
+  const searchFor = fix?.query || name;
+  const big = 'w-full min-h-[60px] rounded-2xl flex items-center justify-center text-center px-4 text-[18px] font-semibold';
+  const gold = { background: 'linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom))', color: 'var(--ink-on-gold)' };
+  const list = (g, n) => `/fables/checklist?${gameQuery(g)}name=${encodeURIComponent(n)}`;
+  return (
+    <div>
+      {fix ? (
+        <p className="text-[20px] mb-4" style={{ color: 'var(--ink-100)' }}>Did you mean <b className="font-semibold">{fix.query}</b>?</p>
+      ) : (
+        <p className="text-[18px] leading-relaxed mb-4" style={{ color: 'var(--ink-200)' }}>{name ? `We don’t have a card list for “${name}”.` : 'Which card?'}</p>
+      )}
+      {fixGame && <Link href={list(fixGame, fix.query)} className={big} style={gold}>See every {fix.query} card</Link>}
+      {!fix && other && <Link href={list(other, name)} className={big} style={gold}>See every {name} card</Link>}
+      <Link href={searchFor ? `/fables?q=${encodeURIComponent(searchFor)}` : '/fables'} className={`${big} mt-2.5`}
+            style={fixGame || (!fix && other) ? { border: '1.5px solid var(--line)', color: 'var(--ink-100)' } : gold}>
+        {searchFor ? `Search for ${searchFor}` : 'Search for a card'}
+      </Link>
+      <p className="text-[14px] mt-4" style={{ color: 'var(--ink-400)' }}>Lists cover {VERSION_GAMES_TEXT}. Search covers every game.</p>
+    </div>
   );
 }
 
