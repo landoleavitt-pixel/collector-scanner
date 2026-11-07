@@ -20,7 +20,7 @@ The site runs as free early access for now (2026-10-26), so none of this is need
 - [ ] Live mode: turn on **trial-ending reminder emails**, then tell the boss.
 - [ ] Live mode: add the **webhook** `https://fieldsandfloors.com/api/stripe/webhook` with the 6 events. Don't copy its secret anywhere yet.
 
-- [ ] **Before charging for alerts:** get written OK from YGOPRODeck (its guide doesn't cover paid apps). Lorcana version lists must stay free. The boss can draft the email.
+- [ ] **Before charging for alerts:** get written OK from YGOPRODeck (its guide doesn't cover paid apps). Lorcana version lists must stay free. Draft ready: [research/ygoprodeck-email-draft.md](research/ygoprodeck-email-draft.md). You send it from your own email when you're closer to charging.
 
 **Launch day (together):**
 - [ ] Upgrade Vercel to **Pro** (about $20 USD/month; required once you take payments).
