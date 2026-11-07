@@ -1466,6 +1466,62 @@
    "expect": {
     "kind": "language"
    }
+  },
+  {
+   "game": "mtg",
+   "card": "the-ur-dragon",
+   "title": "Scion of the Ur-Dragon #192 (NM) Commander 2017 C17 Magic MTG",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "the-ur-dragon",
+   "title": "The Ur-Dragon (Foil Etched) 594 Mythic Commander Masters",
+   "expect": {
+    "kind": "exact"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "cryptic-command",
+   "title": "Very Cryptic Command (B) R Unstable 49 NM",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "cryptic-command",
+   "title": "Cryptic Command - IMA - 48 - NM - MTG",
+   "expect": {
+    "kind": "exact"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "wasteland",
+   "title": "Wild Wasteland 71 Rare Universes Beyond: Fallout",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "thoughtseize",
+   "title": "Mtg Thoughtseize 4-Sheet Set English Old Frame Tsr-Bs",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "psyduck",
+   "title": "1999 TOPPS POKEMON TV #54 PSYDUCK PSA 8",
+   "expect": {
+    "kind": "reject"
+   }
   }
  ]
 }
