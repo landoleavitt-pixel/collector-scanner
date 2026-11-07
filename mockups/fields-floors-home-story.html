@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fields and Floors Story</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&family=Geist:wght@400;500;600&display=swap');
+
+.ffs{ --bg:#0a0907; --elev:#14110c; --elev2:#1a160f; --line:#2a251c; --soft:#1f1c16;
+  --ink:#f7f1e1; --ink2:#e8dfc9; --ink4:#a99e85; --ink6:#6b6354; --acc:#e6b96b; --gold:#c9954a; --on:#1a1612;
+  --cta:linear-gradient(180deg,#f5d08a,#e6b96b);
+  --t-grail:linear-gradient(180deg,#ffd97a,#d99c14); --t-ultra:linear-gradient(180deg,#e0e8f0,#98a5b3);
+  --t-rare:linear-gradient(180deg,#d6884a,#8e4f1f); --t-scarce:linear-gradient(180deg,#8a96a4,#4a5360); }
+*{box-sizing:border-box}
+html,body{margin:0;background:#030303;color:#e8e6e1;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.page{max-width:1240px;margin:0 auto;padding:40px 16px 100px}
+h1.t{font:italic 400 44px/1.05 'Fraunces',serif;margin:0 0 10px}
+.lede{color:#a3a7b6;font-size:16px;max-width:660px;line-height:1.55;margin:0}
+.sec{border-top:1px solid #23262f;padding-top:18px;margin:48px 0 22px}
+.sec h2{font:italic 400 26px/1.1 'Fraunces',serif;margin:0}
+.cap{font-size:14px;color:#8c90a0;margin:12px 4px 0;max-width:360px;line-height:1.45}
+.phones{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start}
+.phone{width:375px;max-width:100%;height:812px;border-radius:42px;border:10px solid #16171b;box-shadow:0 0 0 1px #2a2b30,0 30px 80px rgba(0,0,0,.6);overflow:hidden;position:relative;background:var(--bg);color:var(--ink)}
+.scroll{height:100%;overflow-y:auto;overflow-x:hidden;padding:44px 18px 40px}
+.scroll::-webkit-scrollbar{display:none}
+.ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.hdr{display:flex;align-items:center;justify-content:space-between;margin:0 -18px;padding:8px 18px 14px;border-bottom:1px solid var(--soft)}
+.brand{font:italic 400 21px 'Instrument Serif',serif}
+.brand em{color:var(--acc);font-style:normal}
+.signin{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink4)}
+
+/* home */
+.head{font:400 44px/1.02 'Instrument Serif',serif;letter-spacing:-.01em;margin:28px 0 8px}
+.head em{color:var(--acc)}
+.sub{font-size:18px;color:var(--ink2);margin:0 0 20px;line-height:1.35}
+.box{display:flex;align-items:center;gap:10px;min-height:64px;padding:6px 6px 6px 18px;border-radius:16px;border:1.5px solid #8f6a32;background:var(--elev)}
+.box .ph{flex:1;font-size:18px;color:var(--ink4)}
+.box .go{width:52px;height:52px;border-radius:12px;background:var(--cta);color:var(--on);display:grid;place-items:center;flex:none}
+.why{margin-top:30px;display:grid;gap:24px}
+.w{display:flex;gap:16px;align-items:center}
+.w .art{width:92px;flex:none}
+.w b{display:block;font:400 22px/1.15 'Instrument Serif',serif;margin-bottom:3px}
+.w .t2{font-size:15px;color:var(--ink4);line-height:1.35}
+.chip{display:inline-flex;align-items:center;justify-content:center;font:600 12px Geist;color:#1a1612;border-radius:6px;padding:4px 7px;margin:0 3px 4px 0}
+.c-grail{background:var(--t-grail)} .c-ultra{background:var(--t-ultra)} .c-rare{background:var(--t-rare)} .c-scarce{background:var(--t-scarce)}
+.tick{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink2);margin-bottom:5px}
+.tick i{width:16px;height:16px;border-radius:4px;background:var(--acc);display:grid;place-items:center;color:var(--on)}
+.tick svg{width:11px;height:11px;stroke-width:3}
+.key{margin-top:30px;padding-top:18px;border-top:1px solid var(--soft)}
+.key h3{font:400 13px Geist;color:var(--ink4);margin:0 0 12px}
+.keyrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.k{display:flex;align-items:center;gap:10px;font-size:15px}
+.k i{width:22px;height:22px;border-radius:6px;flex:none}
+.k span{display:block;font-size:13px;color:var(--ink4)}
+.foot{font-size:12px;color:var(--ink6);text-align:center;margin-top:24px;line-height:1.5}
+
+/* search */
+.back{font-size:15px;color:var(--ink4);min-height:32px}
+.q{font:italic 400 42px/1 'Instrument Serif',serif;margin:6px 0 14px;color:var(--acc)}
+.toggles{display:flex;gap:8px;flex-wrap:wrap}
+.tg{min-height:46px;padding:0 16px;border-radius:999px;border:1.5px solid var(--line);display:inline-flex;align-items:center;gap:8px;font-size:16px;color:var(--ink2);background:var(--elev)}
+.tg.on{border-color:var(--acc);color:var(--ink);background:var(--elev2)}
+.tg.on i{width:18px;height:18px;border-radius:50%;background:var(--acc);display:grid;place-items:center;color:var(--on)}
+.tg.on svg{width:12px;height:12px;stroke-width:3}
+.line{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--ink4);margin:16px 0 4px}
+.line b{color:var(--ink);font-weight:500}
+.r{display:flex;gap:14px;padding:16px 10px 16px 12px;border-bottom:1px solid var(--soft)}
+.r.t-grail{background:linear-gradient(90deg,rgba(255,180,30,.30) 0%,rgba(245,200,80,.10) 22%,transparent 55%);border-left:2px solid #ffc14d}
+.r.t-ultra{background:linear-gradient(90deg,rgba(180,200,220,.22) 0%,transparent 40%);border-left:2px solid #c8d4e0}
+.r.t-rare{background:linear-gradient(90deg,rgba(200,90,30,.20) 0%,transparent 32%);border-left:2px solid #d6722d}
+.ph2{width:78px;aspect-ratio:3/4;flex:none;border-radius:3px;background:radial-gradient(50px 44px at 35% 25%,rgba(255,255,255,.2),transparent 60%),linear-gradient(160deg,var(--a),var(--b))}
+.r b{display:block;font:400 18px/1.15 'Instrument Serif',serif}
+.r .pr{font:400 24px/1 'Instrument Serif',serif;margin:8px 0}
+.r .made{font-size:13px;color:var(--ink4);margin-left:4px}
+.tag{display:inline-flex;font-size:11px;letter-spacing:.08em;padding:3px 7px;border:1px solid #8f6a32;color:var(--acc);margin:0 4px 4px 0}
+
+/* desktop */
+.desk{border-radius:14px;border:1px solid var(--line);background:var(--bg);color:var(--ink);overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.desk .hdr{margin:0;padding:18px 32px}
+.dhero{max-width:760px;margin:0 auto;padding:56px 24px 6px;text-align:center}
+.dhero .head{font-size:68px;margin:0 0 10px}
+.dhero .sub{margin-bottom:26px}
+.dwhy{max-width:1040px;margin:0 auto;padding:30px 28px 50px;display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+.dwhy .w{flex-direction:column;align-items:flex-start;gap:12px}
+@media (max-width:900px){.dwhy{grid-template-columns:1fr}.dhero .head{font-size:44px}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></symbol>
+  <symbol id="chk" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol>
+</svg>
+
+<div class="page">
+  <h1 class="t">The Fields &amp; Floors story</h1>
+  <p class="lede">The same clean clarity as Foils &amp; Fables, built on what sports does best: rarest first, signed, rookie and numbered in one search, and real rarity colours. Sample cards and numbers.</p>
+
+  <div class="sec"><h2>Phone</h2></div>
+  <div class="phones">
+    <div><div class="ffs phone" id="home"></div><p class="cap">Home: one box, three reasons, and the four rarity colours explained once.</p></div>
+    <div><div class="ffs phone" id="results"></div><p class="cap">Search: the three big filters sit right on top, one tap each, all on here. The rarest cards come first, coloured by how many were made.</p></div>
+  </div>
+
+  <div class="sec"><h2>Computer</h2></div>
+  <div class="ffs desk" id="desk"></div>
+</div>
+
+<script>
+const I = (id) => `<svg class="ic"><use href="#${id}"/></svg>`;
+const hdr = `<div class="hdr"><span class="brand">Fields <em>&amp;</em> Floors</span><span class="signin">Sign in</span></div>`;
+const heroTop = `<h2 class="head" style="font-weight:400">Find any player's <em>rarest cards.</em></h2>
+  <p class="sub">Numbered, signed and rookie cards on eBay, rarest first.</p>
+  <div class="box"><span class="ph">Which player?</span><span class="go">${I('search')}</span></div>`;
+const tick = (t) => `<div class="tick"><i><svg class="ic"><use href="#chk"/></svg></i>${t}</div>`;
+const reasons = `
+  <div class="w"><span class="art"><span class="chip c-grail">/5</span><span class="chip c-ultra">/50</span><br><span class="chip c-rare">/150</span><span class="chip c-scarce">/299</span></span>
+    <span><b>Rarest first.</b><span class="t2">Cards with the fewest copies come to the top.</span></span></div>
+  <div class="w"><span class="art">${tick('Signed')}${tick('Rookie')}${tick('Numbered')}</span>
+    <span><b>All at once.</b><span class="t2">Tick signed, rookie and numbered together, in one search.</span></span></div>
+  <div class="w"><span class="art" style="color:var(--acc)">${I('bell')}</span>
+    <span><b>Told when it lists.</b><span class="t2">Save a search and we email you when a new one comes up.</span></span></div>`;
+const key = `<div class="key"><h3>How rare is it? The colour tells you.</h3><div class="keyrow">
+  <div class="k"><i style="background:var(--t-grail)"></i><div>Gold<span>1 to 25 made</span></div></div>
+  <div class="k"><i style="background:var(--t-ultra)"></i><div>Platinum<span>26 to 99 made</span></div></div>
+  <div class="k"><i style="background:var(--t-rare)"></i><div>Bronze<span>100 to 249 made</span></div></div>
+  <div class="k"><i style="background:var(--t-scarce)"></i><div>Steel<span>250 or more</span></div></div></div></div>`;
+
+document.getElementById('home').innerHTML = `<div class="scroll">${hdr}${heroTop}<div class="why">${reasons}</div>${key}
+  <p class="foot">Free during early access. Not affiliated with eBay.</p></div>`;
+
+const row = (t, p, run, tier, tags, a, b) => `<div class="r t-${tier}"><span class="ph2" style="--a:${a};--b:${b}"></span><span style="flex:1;min-width:0">
+  <b>${t}</b><div class="pr">${p}</div><span class="chip c-${tier}">/${run}</span><span class="made">${run} made</span><br>${tags.map((x) => `<span class="tag">${x}</span>`).join('')}</span></div>`;
+document.getElementById('results').innerHTML = `<div class="scroll">${hdr}
+  <div class="back" style="margin-top:12px">‹ New search</div>
+  <div class="q">Paul Skenes</div>
+  <div class="toggles"><span class="tg on"><i><svg class="ic"><use href="#chk"/></svg></i>Signed</span><span class="tg on"><i><svg class="ic"><use href="#chk"/></svg></i>Rookie</span><span class="tg on"><i><svg class="ic"><use href="#chk"/></svg></i>Numbered</span></div>
+  <div class="line"><span><b>212</b> cards, rarest first</span><span>More filters ›</span></div>
+  ${row('2024 Topps Chrome Update Paul Skenes RC Red Refractor Auto', '$4,800.00', 5, 'grail', ['SIGNED', 'ROOKIE'], '#b33a3a', '#3a0d0d')}
+  ${row('2024 Bowman Chrome Paul Skenes Gold Refractor Auto', '$2,150.00', 50, 'ultra', ['SIGNED', 'ROOKIE'], '#c9a64a', '#3a2e10')}
+  ${row('2024 Topps Chrome Update Paul Skenes RC Blue Auto', '$640.00', 150, 'rare', ['SIGNED', 'ROOKIE'], '#3b6fd8', '#0e1a3a')}
+</div>`;
+
+document.getElementById('desk').innerHTML = `${hdr}<div class="dhero">${heroTop}</div><div class="dwhy">${reasons}</div>`;
+</script>
+</body>
+</html>

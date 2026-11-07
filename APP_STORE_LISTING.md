@@ -83,7 +83,7 @@ FIELDS & FLOORS: SPORTS CARDS
 Type a player, team or set and see live eBay listings sorted rarest first, so a /5 shows up before a /299. Every result is tagged by print run: Grail (/1 to /25), Ultra (/26 to /99), Rare (/100 to /249) and Scarce (/250 and up). Open any card to see how rare its print run is.
 
 FOILS & FABLES: TRADING CARD GAMES
-Search a card or character and see live eBay listings ranked by the rarity printed on the card, with numbered cards first. Filter by game, rarity, language, grade, 1st edition and serial-numbered cards.
+Type a card once and see every version for sale on eBay, set by set, with the seller's photo. Lots, fake copies and look-alike cards are hidden, and when a seller doesn't say which version it is, we tell you instead of guessing. Each card shows how rare it is in plain words, from Common to Extremely rare. Keep a private list of the versions you have, and get told when one you're missing is listed. Filter by game, rarity, set, language, grade, 1st edition and serial-numbered cards.
 
 ON BOTH SIDES
 - Filter by price and condition
@@ -104,9 +104,9 @@ Floors & Fables is independent. It is not affiliated with, endorsed by or sponso
 ```
 
 > **Check before pasting:**
-> - The Foils & Fables filters match what's live on /fables (confirmed by the Boss, 2026-10-31): Game, Rarity, Language, Graded/Grader/Grade, 1st Edition, Serial-numbered and Price, with sealed, lots and proxies hidden.
+> - The Foils & Fables filters match what's live on /fables: Game, Rarity (the five plain groups plus Promo and Vintage), Set, Language, Graded/Grader/Grade, 1st Edition, Serial-numbered and Price, with sealed, lots and proxies hidden. Re-check on submission day.
+> - "Every version" covers four of the five games (not One Piece), so the copy says "every version" without promising it for every game. Card lists, the versions-first search and "only the ones you're missing" alerts were built 2026-11-06/07; confirm they're live before submitting.
 > - The 5 free alerts are shared across both sides (one account, one limit), which is what the copy says.
-> - Don't mention "every version of a card" or the card checklist until they are live. If they ship before submission, add one line under ON BOTH SIDES.
 > - No game names on purpose, even here. Many card apps name games in the description, but Apple can still ask for proof of permission, and nothing is lost by saying "trading card games".
 
 ### Keywords (100 max, 98 used)
