@@ -46,6 +46,16 @@ Full steps: [IOS_APP_SETUP.md](IOS_APP_SETUP.md). No in-app purchases, RevenueCa
 - [ ] Sign up at partnernetwork.ebay.com. **Security note:** it asks for your legal name, address, tax ID (SIN or business number) and payout details. Enter these only on eBay's own site, never through email links or through an agent.
 - [ ] Once approved, give the boss your 10-digit Campaign ID (not a secret). The agents then switch on affiliate links and the disclosure wording.
 
+## Lock the alert checker (do after the boss says the code is ready)
+
+Right now anyone who finds the alert checker's web address can start a run. It only re-runs checks (it never re-sends an alert), so the risk is low, but it should need a private password. **Do these in this order, so alerts never stop:**
+
+- [ ] **1. Make a password.** In Terminal run `openssl rand -hex 32` and copy the result. **Security note:** this password goes only into the two places below (Supabase), never into chat, email, GitHub or a project file. If it ever leaks, make a new one and redo steps 2 and 3.
+- [ ] **2. Save it in Supabase.** In the project folder run `npx supabase secrets set POLLER_CRON_SECRET=PASTE_THE_PASSWORD_HERE`.
+- [ ] **3. Make both timers send it.** Supabase → **Integrations → Cron** (or SQL Editor → `select jobid, jobname, schedule from cron.job;`). Open the hourly job and the 5-minute reminders job, and in each one's **HTTP request headers** add a header named `x-ff-cron-secret` with the password as its value. (Keep the existing Authorization header.) Safe to do before the new code is live: the checker ignores the header until step 4.
+- [ ] **4. Deploy the checker:** `npx supabase functions deploy poller` (the boss may do this one).
+- [ ] **5. Check it:** the boss runs two quick tests. A call without the header should be refused and a call with it should work. If alerts ever stop, remove `POLLER_CRON_SECRET` (`npx supabase secrets unset POLLER_CRON_SECRET`) and the checker goes back to accepting runs until it's fixed.
+
 ## Check after the next deploy
 
 - [ ] Star a card while signed out, sign up, and confirm you land back on the same search with the card starred.

@@ -41,6 +41,7 @@ export default function PrivacyPage() {
           <li><strong>Card collection lists (when this feature launches)</strong>: the cards and versions you mark as &ldquo;I own this&rdquo; on a card checklist. See &ldquo;Your card collection lists&rdquo; below.</li>
           <li><strong>Notification history</strong>: a record of which listings we've already alerted you about, so you never get the same one twice.</li>
           <li><strong>Push notification token (iOS app)</strong>: if you turn on notifications in the app, we store a code that Apple gives your device so we can send alerts to it. It is deleted when you sign out or delete your account.</li>
+          <li><strong>Sign in with Apple token (iOS app)</strong>: if you sign in with Apple in the app, Apple gives our server a token that proves the sign-in. We keep it, in a private place that only our server can read, for one reason: when you delete your account, we use it to tell Apple to cut the link between your Apple ID and our app, as Apple requires. It is never used to sign in as you or to read anything from your Apple account, and it is deleted when you delete your account.</li>
           <li><strong>Technical &amp; log data</strong>: information automatically recorded by our hosting and infrastructure providers, such as your IP address, browser and device type, access times, and error and security logs. This is used to operate, secure, and debug the service.</li>
           <li><strong>Usage analytics</strong>: aggregate, non-personal information about how pages are used (such as page views), collected through privacy-friendly analytics. It is usage-based only and does not identify you personally.</li>
           <li><strong>Anonymous usage events</strong>: which steps of the service are used (such as visiting, running a search, or opening a card), stored in our own database under a random ID kept on your device, with no name, email, or search words. No ads and no third-party tracking. You can turn these off at any time with the &ldquo;Share anonymous usage stats&rdquo; switch under <a href="#usage-stats">Your choices</a>; when it&rsquo;s off, your device sends none of them and forgets its random ID. We also skip them if your browser sends a Do Not Track or Global Privacy Control signal.</li>
@@ -169,7 +170,7 @@ export default function PrivacyPage() {
           We retain your account information and saved data while your account is
           active. If you delete your account from the account menu, we immediately
           delete your account, saved searches, watchlist, card collection lists,
-          notification history, and push tokens, on both sides of the service, and cancel any website (Stripe) subscription. Anonymous usage
+          notification history, push tokens, and any Sign in with Apple token, on both sides of the service, and cancel any website (Stripe) subscription. Anonymous usage
           events are kept but are no longer linked to you. Subscriptions bought in
           the iOS app are managed by Apple, so deleting your account does not cancel
           them: cancel those in your Apple ID subscription settings. Some data may

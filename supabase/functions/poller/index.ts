@@ -30,8 +30,36 @@ const resend = new Resend(RESEND_API_KEY);
 // prefix and length of the key — never the full secret.
 console.log(`Boot: RESEND_API_KEY prefix=${RESEND_API_KEY?.slice(0, 6)}, length=${RESEND_API_KEY?.length}, APP_BASE_URL=${APP_BASE_URL}`);
 
+// --- Who may start a run ---
+// The function is public (verify_jwt = false in supabase/config.toml), so
+// without this anyone who finds its address could start a run. The pg_cron
+// jobs send a private secret in the x-ff-cron-secret header; it must match
+// POLLER_CRON_SECRET. While that secret isn't set yet, runs are allowed as
+// before (and logged), so alerts keep working until the secret is in place.
+const CRON_SECRET = Deno.env.get("POLLER_CRON_SECRET") || "";
+if (!CRON_SECRET) console.warn("POLLER_CRON_SECRET is not set: the alert checker accepts runs from anyone");
+
+// Compares two strings without leaking how many leading characters match.
+async function sameSecret(given: string, wanted: string): Promise<boolean> {
+  const enc = new TextEncoder();
+  const [a, b] = await Promise.all([
+    crypto.subtle.digest("SHA-256", enc.encode(given)),
+    crypto.subtle.digest("SHA-256", enc.encode(wanted)),
+  ]);
+  const x = new Uint8Array(a);
+  const y = new Uint8Array(b);
+  let diff = 0;
+  for (let i = 0; i < x.length; i++) diff |= x[i] ^ y[i];
+  return diff === 0;
+}
+
 // --- Main handler ---
 Deno.serve(async (_req) => {
+  if (CRON_SECRET && !(await sameSecret(_req.headers.get("x-ff-cron-secret") || "", CRON_SECRET))) {
+    console.warn("Rejected a poller run without the right x-ff-cron-secret");
+    return jsonResponse({ ok: false, error: "Not allowed" }, 401);
+  }
+
   // Reminder-only run: a pg_cron job calls ?only=reminders every 5 minutes so
   // 30/15/5-minute reminders land on time. The hourly full run below also
   // checks reminders, as a backup.
