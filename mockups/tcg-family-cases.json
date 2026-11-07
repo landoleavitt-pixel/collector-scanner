@@ -1079,6 +1079,161 @@
      "base4:4:h"
     ]
    }
+  },
+  {
+   "game": "pokemon",
+   "card": "blastoise-vmax",
+   "title": "Pokemon Blastoise VMAX Japanese Blastoise Starter Set",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "rayquaza-vmax",
+   "title": "Pokemon Rayquaza V Rayquaza VMAX Evolving Skies PSA 10",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "mewtwo",
+   "title": "Switch (Mewtwo Stamped) Battle Academy Holo",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "gengar-vmax",
+   "title": "Gengar VMAX High-Class Deck Marnie Pokemon Card",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "gengar-vmax",
+   "title": "PokeGear 3.0 and Gengar VMAX Pokemon",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "mewtwo",
+   "title": "Mewtwo Menko Vintage Pokemon 1998",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "gengar-vmax",
+   "title": "Gengar VMAX 002/019 PSA 10",
+   "expect": {
+    "kind": "language",
+    "why": "not an English printing"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "giratina-v",
+   "title": "Giratina V SA 111/100 PSA 10",
+   "expect": {
+    "kind": "language",
+    "why": "Japanese"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "mew-ex",
+   "title": "Mewex SR SV2a Pokemon",
+   "expect": {
+    "kind": "language",
+    "why": "Japanese"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "iono",
+   "title": "Nanjamo SAR PSA 10 Pokemon",
+   "expect": {
+    "kind": "language",
+    "why": "Japanese"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "charizard-ex",
+   "title": "Charizard ex CS4AC 2024 Chinese-style PSA 10",
+   "expect": {
+    "kind": "language",
+    "why": "Chinese"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "charizard-ex",
+   "title": "Charizard ex sv3 Ruler Pokemon SAR",
+   "expect": {
+    "kind": "language"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "charizard-ex",
+   "title": "Charizard ex Special Art Card 2023",
+   "expect": {}
+  },
+  {
+   "game": "mtg",
+   "card": "lightning-bolt",
+   "title": "Wild Aesthir (Lightning Bolt) Foil MTG",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "lightning-bolt",
+   "title": "Lightning Bolt Canvas Board Art MTG",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "lightning-bolt",
+   "title": "3xMTG Lightning Bolt M11 Near Mint",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "richard-belmont",
+   "title": "Castlevania 8-bit Style Richard Belmont MTG",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "marnies-grimmsnarl-ex",
+   "title": "Marnie's Grimmsnarl ex 232/182 Destined Rivals",
+   "expect": {
+    "kind": "exact"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "iono",
+   "title": "Iono 254/193 Paldea Evolved SIR",
+   "expect": {
+    "kind": "exact"
+   }
   }
  ]
 }
