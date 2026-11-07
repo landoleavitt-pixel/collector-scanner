@@ -261,11 +261,17 @@ export default function WatchlistRow({ search, canUseAlerts }) {
     router.push(search.side === 'fables' ? `/fables?editSearch=${search.id}` : `/?editSearch=${search.id}`);
   }
 
+  // Each row wears its own side's colours: data-side="fables" swaps the
+  // shared tokens to Night foil for just this row (globals.css).
+  const fables = search.side === 'fables';
+  const accentRgb = fables ? '143,211,232' : '201,149,74';
+
   return (
     <>
       {showPaywall && <PaywallModal onClose={() => setShowPaywall(false)} />}
 
       <div
+        data-side={fables ? 'fables' : undefined}
         className="rounded-xl p-5 md:p-6 grid gap-5 lg:gap-6 grid-cols-1 lg:grid-cols-[1fr_auto_auto] items-start lg:items-center"
         style={{
           background: 'var(--ink-on-gold)',
@@ -278,7 +284,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
             ? '0.5px solid var(--gold)'
             : '0.5px solid rgba(232,226,213,0.08)',
           boxShadow: alertsLive
-            ? '0 0 0 1px rgba(201,149,74,0.18), 0 0 18px -6px rgba(201,149,74,0.35)'
+            ? `0 0 0 1px rgba(${accentRgb},0.18), 0 0 18px -6px rgba(${accentRgb},0.35)`
             : 'none',
           transition: 'border-color 0.2s, box-shadow 0.2s',
         }}
@@ -357,7 +363,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
             }
             className="relative w-7 h-4 rounded-full transition-colors disabled:opacity-50"
             style={{
-              background: alertsLive ? 'var(--gold-bright)' : '#3a3530',
+              background: alertsLive ? 'var(--gold-bright)' : (fables ? 'var(--line)' : '#3a3530'),
             }}
           >
             <div
@@ -413,7 +419,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
                 className="px-3.5 py-1.5 rounded-full text-[10px] tracking-[0.18em] uppercase transition-colors"
                 style={{
                   background: 'transparent',
-                  border: '0.5px solid rgba(201,149,74,0.40)',
+                  border: `0.5px solid rgba(${accentRgb},0.40)`,
                   color: 'var(--gold)',
                 }}
               >

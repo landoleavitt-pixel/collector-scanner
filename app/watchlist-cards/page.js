@@ -302,10 +302,13 @@ function WatchlistTile({ listing, onRemove, onToast, onCardClick }) {
     rare:   { color: 'var(--ink-on-gold)', backgroundImage: 'linear-gradient(180deg,#d6884a,#8e4f1f)', border: '0.5px solid #d6722d', fontWeight: 700 },
     scarce: { color: 'var(--ink-on-gold)', backgroundImage: 'linear-gradient(180deg,#8a96a4,#4a5360)', border: '0.5px solid #5a6470', fontWeight: 600 },
   };
-  const outChip = { color: 'var(--gold-bright)', background: 'rgba(201,149,74,0.06)', border: '0.5px solid var(--gold-deep)' };
+  // Each tile wears its own side's colours (data-side swaps the tokens, globals.css).
+  const fables = listing.side === 'fables';
+  const accentRgb = fables ? '143,211,232' : '201,149,74';
+  const outChip = { color: 'var(--gold-bright)', background: `rgba(${accentRgb},0.06)`, border: '0.5px solid var(--gold-deep)' };
 
   return (
-    <div className="rounded-xl overflow-hidden flex flex-col" style={{ background: 'var(--bg-elev)', border: '0.5px solid var(--line)' }}>
+    <div data-side={fables ? 'fables' : undefined} className="rounded-xl overflow-hidden flex flex-col" style={{ background: 'var(--bg-elev)', border: '0.5px solid var(--line)' }}>
       {/* Image — tagged with data-listing-id so the CardModal's FLIP
           animation can find this element as the flight origin. Whole
           area is clickable to open the modal. The remove (star) button
@@ -386,7 +389,7 @@ function WatchlistTile({ listing, onRemove, onToast, onCardClick }) {
               target="_blank"
               rel="noopener noreferrer"
               className="text-[10px] uppercase tracking-[0.18em] px-3 py-1.5 rounded-full transition-colors"
-              style={{ border: '0.5px solid rgba(201,149,74,0.5)', color: 'var(--gold)' }}
+              style={{ border: `0.5px solid rgba(${accentRgb},0.5)`, color: 'var(--gold)' }}
             >
               View
             </a>
