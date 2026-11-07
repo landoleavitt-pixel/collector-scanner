@@ -47,3 +47,33 @@ Targets as before: 95% of listings shown are the right card with the right label
 **Lorcana**
 - "Goofy - Musketeer Swordsman" shown once as Goofy - Musketeer.
 - An Ariel + Tinker Bell two-card listing shown once.
+
+---
+
+## Second fresh draw: Pokémon and Magic (2026-11-07)
+
+After the fixes in 31872ec (V-UNION, Japanese product names, older EX cards, 30th Classic Collection, new English sets, Sorcery, possessive names) and the card-list rebuild (b7ef522), a new draw of 40 cards never used in any test: 41 eBay calls, 30 listings per card scored by hand, every line read, no changes between drawing and scoring. Per-card scores: research/card-family-retest-fresh-2-scores.txt.
+
+| Game | Shown | Wrong card | Wrong label | Hidden by mistake | Precision | Recall | Cards passing |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Pokémon | 325 | 12 | 3 | 12 | **95.4%** | 96.3% | 10/20 |
+| Magic | 507 | 22 | 2 | 5 | **95.3%** | 99.0% | 16/20 |
+| Both | 832 | 34 | 5 | 17 | 95.3% | 98.0% | 26/40 |
+
+- Both games are now above 95% precision pooled. The per-card mark (35 of 40) is not met: many cards have few listings shown, so one or two misses fail a card.
+- **Delta Reign is still missing**: TCGdex hadn't published it on 2026-11-07. English Delta Reign cards now show as "version not in title" instead of "Japanese".
+
+**Biggest causes, and what changed after scoring (9bfc474, not re-tested):**
+- Magic: "Scion of the Ur-Dragon" (11), "Very Cryptic Command" (6) and "Wild Wasteland" (2) were shown for the shorter card. Cards whose names hold ours after other words are now rejected.
+- Pokémon: Topps TV and movie cards (3) were matched as card-game cards; Topps is now rejected. "4-Sheet Set" listings are now lots.
+- Not fixed: Pokémon ETB promos read as sealed (3 hidden), Japanese e-series and ADV numbers hidden, "MEW" (the 151 set code) read as the card Mew, Ditto [Squirtle] shown for Squirtle.
+
+Had the 9bfc474 fixes been in place, Magic would have scored about 98.9% on this draw (19 fewer wrong cards). That is an estimate from these same listings, so it flatters; a new draw would confirm it.
+
+## Keeping the card lists current
+
+Run this after a set releases, or monthly (about 40 requests, a minute or two; no keys):
+
+    node scripts/build-tcg-catalog.mjs
+
+then run the card tests (`node scripts/test-tcg-parser.mjs` and `node scripts/test-tcg-family.mjs`), commit `lib/tcg/catalog/*.json`, and deploy. TCGdex adds new Pokémon sets a few weeks after release, so a new set may need a second run.

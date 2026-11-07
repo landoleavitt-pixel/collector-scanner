@@ -1,0 +1,43 @@
+# Second fresh draw (2026-11-07), after the fixes in 31872ec. card shown wrongCard wrongLabel hidden
+pikachu 9 0 0 1
+mew 9 2 0 0
+gyarados 10 1 0 0
+rayquaza 7 2 0 0
+lucario 14 0 2 0
+mimikyu 10 0 0 5
+jigglypuff 23 0 0 0
+squirtle 22 3 0 1
+bulbasaur 19 2 0 0
+charmander 24 1 1 0
+psyduck 22 1 0 0
+alakazam 12 0 0 2
+machamp 17 0 0 2
+arcanine 22 0 0 0
+dragonite-v 17 0 0 0
+gengar-ex 7 0 0 0
+umbreon-gx 27 0 0 0
+leafeon-vmax 19 0 0 1
+glaceon-vmax 20 0 0 0
+moltres 15 0 0 0
+# pokemon notes: Topps TV/movie cards matched as TCG (3); "MEW" set code read as Mew; Ditto [Squirtle]; Rayquaza delta / Soul Link; Lucario 30th promo labelled SM promo; ETB promos read as sealed (3 hidden); Japanese e-series/ADV numbers hidden
+path-to-exile 28 1 0 0
+arcane-signet 28 0 2 2
+cultivate 10 0 0 1
+brainstorm 28 0 0 0
+dark-ritual 25 0 0 0
+llanowar-elves 22 0 0 0
+thoughtseize 29 1 0 0
+snapcaster-mage 28 0 0 1
+the-ur-dragon 28 11 0 0
+edgar-markov 19 0 0 0
+krenko-mob-boss 30 0 0 0
+chrome-mox 26 0 0 0
+mox-amber 28 0 0 0
+scalding-tarn 25 0 0 0
+polluted-delta 28 1 0 0
+wasteland 11 2 0 0
+cryptic-command 27 6 0 1
+dark-confidant 30 0 0 0
+noble-hierarch 28 0 0 0
+grim-lavamancer 29 0 0 0
+# mtg notes: Scion of the Ur-Dragon (11) and Very Cryptic Command (6) and Wild Wasteland (2) shown: longer names that hold ours after other words; "4-Sheet Set" read as one card; names run together with the set ("Cultivate139LP") hidden
