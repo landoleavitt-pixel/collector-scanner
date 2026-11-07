@@ -30,8 +30,9 @@ for (const f of fs.readdirSync(path.join(root, 'lib/tcg'))) {
 fs.writeFileSync(path.join(dir, 'ebay-stub.mjs'), fs.readFileSync(path.join(root, 'lib/ebay.js'), 'utf8'));
 fs.symlinkSync(path.join(root, 'lib/tcg/catalog'), path.join(dir, 'catalog'));
 const { matchListing, titleSetHit } = await import(pathToFileURL(path.join(dir, 'family.mjs')).href);
+const { popularLists, cardsByLetter, lettersOf } = await import(pathToFileURL(path.join(dir, 'lists.mjs')).href);
 const { setList, listingInSets } = await import(pathToFileURL(path.join(dir, 'setFilter.mjs')).href);
-const { cardVersions, findCards, familyCards } = await import(pathToFileURL(path.join(dir, 'catalog.mjs')).href);
+const { cardVersions, findCards, familyCards, cardFamily } = await import(pathToFileURL(path.join(dir, 'catalog.mjs')).href);
 const { familySavedParams } = await import(pathToFileURL(path.join(dir, 'familySearch.mjs')).href);
 const { catalogRarity, catalogGroup, applyCatalog } = await import(pathToFileURL(path.join(dir, 'catalogMatch.mjs')).href);
 const { getCard } = await import(pathToFileURL(path.join(dir, 'catalog.mjs')).href);
@@ -106,6 +107,17 @@ const checks = [
   ['Set lists are newest first', () => { const l = setList('lorcana'); return l.length > 10 && l[0].released >= l[l.length - 1].released && l.some((x) => x.name === 'The First Chapter'); }],
   ['A family saved search keeps its set', () => familySavedParams({ game: 'pokemon', card: 'charizard', set: 'base1' }, 'Charizard').get('set') === 'base1'],
   ['A grade in a title reaches the search response', () => { const r = toResult({ id: '1', title: 'Charizard 4/102 PSA 10', price: 1, parsed: parseTitle('Charizard 4/102 PSA 10', { game: 'pokemon' }), graded: true }); return r.gradeLabel === 'PSA 10' && r.grade.grade === 10; }],
+  ['A family is that card: Dark Magician alone', () => { const f = cardFamily('yugioh', 'Dark Magician'); return f.match === 'card' && f.cards.map((c) => c.key).join() === 'dark-magician'; }],
+  ['Black Lotus is not Black Lotus Lounge', () => !cardFamily('mtg', 'Black Lotus').cards.some((c) => /lounge/i.test(c.name)) && cardFamily('mtg', 'Black Lotus').cards.length === 1],
+  ['Sheoldred is every Sheoldred card', () => { const n = cardFamily('mtg', 'Sheoldred').cards.map((c) => c.name); return n.includes('Sheoldred, the Apocalypse') && n.includes('Sheoldred, Whispering One') && !n.some((x) => /'s /.test(x)); }],
+  ['Charizard is every Charizard, not Spirit Link', () => { const n = cardFamily('pokemon', 'Charizard').cards.map((c) => c.name); return n.includes('Charizard ex') && n.includes('Mega Charizard X ex') && n.includes("Blaine's Charizard") && !n.some((x) => /spirit link/i.test(x)); }],
+  ['Charizard ex typed is that card alone', () => cardFamily('pokemon', 'Charizard ex').cards.every((c) => /^charizard ex$/i.test(c.name))],
+  ['Elsa is every Elsa', () => cardFamily('lorcana', 'Elsa').cards.length > 5 && cardFamily('lorcana', 'Elsa').cards.every((c) => c.name.startsWith('Elsa'))],
+  ['A partial name falls back to words', () => cardFamily('yugioh', 'Blue-Eyes').match === 'words' && cardFamily('yugioh', 'Blue-Eyes').cards.length > 3],
+  ['Popular lists are families with version counts', () => { const l = popularLists('pokemon'); const c = l.find((x) => x.name === 'Charizard'); return l.length >= 10 && c.family && c.cards > 10 && c.versions > c.cards; }],
+  ['Every popular list is one card or its family, never a word match', () => ['pokemon', 'mtg', 'yugioh', 'lorcana'].every((g) => popularLists(g).length >= 10)],
+  ['A-Z lists: letters and cards', () => { const a = cardsByLetter('lorcana', 'E'); return a.total > 10 && a.cards.every((c) => /^e/i.test(c.name)) && lettersOf('mtg').some((x) => x.letter === '#'); }],
+  ['"The One Ring" files under O', () => cardsByLetter('mtg', 'O', 0, 500).cards.length > 0 && lettersOf('mtg').length > 20],
   ['Old saved rarity values map to groups', () => rarityValuesToGroups(['sir'], ['pokemon'])[0] === 'extremely_rare' && rarityValuesToGroups(['pokemon:dr'], ['pokemon','mtg'])[0] === 'very_rare' && rarityValuesToGroups(['enchanted'], ['lorcana'])[0] === 'extremely_rare'],
   ['Group values pass through; junk is dropped', () => JSON.stringify(rarityValuesToGroups(['promo', 'vintage', 'nonsense'], ['pokemon'])) === '["promo","vintage"]'],
   ['Serialized One Ring is a grail', () => cardVersions('mtg', 'the-one-ring').sets.flatMap((s) => s.numbers.flatMap((n) => n.versions)).some((v) => v.rarityKey === 'serialized' && v.tier === 'grail')],
