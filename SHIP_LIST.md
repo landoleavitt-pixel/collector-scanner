@@ -33,7 +33,7 @@ Landon wants the week's remaining usage spent, so all 4 agents run (above the us
 - [x] Rarity groups on results, popup, filters and checklist; big photo in the picker
 - [x] Magic on the checklist
 - [x] Mockup: Foils & Fables home and search built around the 3 reasons (approved)
-- [ ] Build the new Foils & Fables home and search
+- [x] Build the new Foils & Fables home and search
 - [x] Mockup: "continue signed in" between the two domains (approved)
 - [ ] Build the continue signed in screens and sign-out menu, after the engine
 
