@@ -30,7 +30,7 @@ for (const f of fs.readdirSync(path.join(root, 'lib/tcg'))) {
 fs.writeFileSync(path.join(dir, 'ebay-stub.mjs'), fs.readFileSync(path.join(root, 'lib/ebay.js'), 'utf8'));
 fs.symlinkSync(path.join(root, 'lib/tcg/catalog'), path.join(dir, 'catalog'));
 const { matchListing, titleSetHit } = await import(pathToFileURL(path.join(dir, 'family.mjs')).href);
-const { popularLists, cardsByLetter, lettersOf } = await import(pathToFileURL(path.join(dir, 'lists.mjs')).href);
+const { popularLists, familiesByLetter, lettersOf, searchLists } = await import(pathToFileURL(path.join(dir, 'lists.mjs')).href);
 const { setList, listingInSets } = await import(pathToFileURL(path.join(dir, 'setFilter.mjs')).href);
 const { cardVersions, findCards, familyCards, cardFamily } = await import(pathToFileURL(path.join(dir, 'catalog.mjs')).href);
 const { familySavedParams } = await import(pathToFileURL(path.join(dir, 'familySearch.mjs')).href);
@@ -115,9 +115,11 @@ const checks = [
   ['Elsa is every Elsa', () => cardFamily('lorcana', 'Elsa').cards.length > 5 && cardFamily('lorcana', 'Elsa').cards.every((c) => c.name.startsWith('Elsa'))],
   ['A partial name falls back to words', () => cardFamily('yugioh', 'Blue-Eyes').match === 'words' && cardFamily('yugioh', 'Blue-Eyes').cards.length > 3],
   ['Popular lists are families with version counts', () => { const l = popularLists('pokemon'); const c = l.find((x) => x.name === 'Charizard'); return l.length >= 10 && c.family && c.cards > 10 && c.versions > c.cards; }],
-  ['Every popular list is one card or its family, never a word match', () => ['pokemon', 'mtg', 'yugioh', 'lorcana'].every((g) => popularLists(g).length >= 10)],
-  ['A-Z lists: letters and cards', () => { const a = cardsByLetter('lorcana', 'E'); return a.total > 10 && a.cards.every((c) => /^e/i.test(c.name)) && lettersOf('mtg').some((x) => x.letter === '#'); }],
-  ['"The One Ring" files under O', () => cardsByLetter('mtg', 'O', 0, 500).cards.length > 0 && lettersOf('mtg').length > 20],
+  ['Every popular list is a real family, never a word match', () => ['pokemon', 'mtg', 'yugioh'].every((g) => popularLists(g).length >= 10) && popularLists('lorcana').length === 6],
+  ['A-Z lists are families: one Elsa, not every Elsa card', () => { const e = familiesByLetter('lorcana', 'E', 0, 500).cards.filter((c) => c.name === 'Elsa'); return e.length === 1 && e[0].cards > 5; }],
+  ['A family name opens the same family in the checklist', () => { const f = familiesByLetter('mtg', 'S', 0, 5000).cards.find((c) => c.name === 'Sheoldred'); return f && f.cards === cardFamily('mtg', f.name).cards.length; }],
+  ['"The One Ring" files under O; # exists', () => familiesByLetter('mtg', 'O', 0, 5000).cards.some((c) => c.name === 'The One Ring') && lettersOf('mtg').some((x) => x.letter === '#')],
+  ['Searching lists finds families', () => searchLists('pokemon', 'chariz')[0]?.name === 'Charizard' && searchLists('yugioh', 'dark magician')[0]?.name === 'Dark Magician'],
   ['Old saved rarity values map to groups', () => rarityValuesToGroups(['sir'], ['pokemon'])[0] === 'extremely_rare' && rarityValuesToGroups(['pokemon:dr'], ['pokemon','mtg'])[0] === 'very_rare' && rarityValuesToGroups(['enchanted'], ['lorcana'])[0] === 'extremely_rare'],
   ['Group values pass through; junk is dropped', () => JSON.stringify(rarityValuesToGroups(['promo', 'vintage', 'nonsense'], ['pokemon'])) === '["promo","vintage"]'],
   ['Serialized One Ring is a grail', () => cardVersions('mtg', 'the-one-ring').sets.flatMap((s) => s.numbers.flatMap((n) => n.versions)).some((v) => v.rarityKey === 'serialized' && v.tier === 'grail')],
