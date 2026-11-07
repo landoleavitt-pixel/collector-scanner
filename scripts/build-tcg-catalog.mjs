@@ -3,8 +3,10 @@
 // Builds the card catalogs behind "every version of a card" (Foils & Fables):
 //   lib/tcg/catalog/mtg.json      every paper Magic printing, from Scryfall
 //   lib/tcg/catalog/pokemon.json  every English Pokémon card, from TCGdex
+//   lib/tcg/catalog/yugioh.json   every Yu-Gi-Oh! TCG printing, from YGOPRODeck
+//   lib/tcg/catalog/lorcana.json  every Disney Lorcana card, from Lorcast
 //
-//   node scripts/build-tcg-catalog.mjs            both games
+//   node scripts/build-tcg-catalog.mjs            all games
 //   node scripts/build-tcg-catalog.mjs mtg        one game
 //
 // Text only: names, sets, numbers, rarities, finishes and treatments. No card
@@ -18,7 +20,15 @@
 // - TCGdex (https://tcgdex.dev), MIT licence. One GraphQL request returns
 //   every English card; TCG Pocket (the phone game) is left out.
 //
-// About 5 requests in all. Re-run once a month, or when a new set comes out.
+// - YGOPRODeck (https://ygoprodeck.com/api-guide/). 20 requests a second; they
+//   ask us to store the data locally, which is what this does. Free, but the
+//   guide doesn't cover paid apps: get written OK before alerts become paid
+//   (research/catalogs-phase-2.md). Two requests.
+// - Lorcast (https://lorcast.com/docs/api). 50-100 ms between requests, cache
+//   encouraged. Lorcana content can't be charged for, so version lists stay
+//   free (DECISIONS.md). One request per set, about 30.
+//
+// About 40 requests in all. Re-run once a month, or when a new set comes out.
 
 import fs from 'fs';
 import os from 'os';
@@ -169,5 +179,110 @@ async function buildPokemon() {
   });
 }
 
+// ── Yu-Gi-Oh! (YGOPRODeck) ──────────────────────────────────────────────────
+// Rarity names as the source writes them → one spelling. Anything else is a
+// data-entry slip ("2", "New", "Reprint", "European debut"), not a rarity.
+const YGO_SPELLING = {
+  'PLatinum Secret Rare': 'Platinum Secret Rare', Starfoil: 'Starfoil Rare', 'Extra Secret': 'Extra Secret Rare',
+  'Duel Terminal Normal Rare Parallel Rare': 'Duel Terminal Rare Parallel Rare',
+};
+const YGO_NOT_RARITY = /^(?:\d+|new|new artwork|reprint|cr|force-smw|.*debut)$/i;
+// "LOB-EN001" → set LOB, number EN001. Codes with no card number ("DB49",
+// "SR03-ENTKN", "MF03-EN0??") can't be matched to a listing, so they're left out.
+const YGO_CODE = /^([A-Z0-9]+)-([A-Z]{0,4}\d+[A-Za-z]?)$/;
+
+async function buildYugioh() {
+  const { data } = await getJson('https://db.ygoprodeck.com/api/v7/cardinfo.php');
+  const setList = await getJson('https://db.ygoprodeck.com/api/v7/cardsets.php');
+  // A code prefix can be shared (ETCO is Eternity Code and its Premiere! promo),
+  // so a prefix takes the name most of its cards were printed under.
+  const dates = Object.fromEntries(setList.map((s) => [s.set_name, s]));
+  const prefixNames = {};
+  for (const c of data) {
+    for (const p of c.card_sets || []) {
+      const m = String(p.set_code || '').match(YGO_CODE);
+      if (m) (prefixNames[m[1]] ||= {})[p.set_name] = (prefixNames[m[1]][p.set_name] || 0) + 1;
+    }
+  }
+  const sets = {};
+  for (const [prefix, counts] of Object.entries(prefixNames)) {
+    const name = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
+    sets[prefix] = [name, dates[name]?.tcg_date || null, dates[name]?.num_of_cards || null, null];
+  }
+  const rarities = [];
+  const rIdx = (raw) => {
+    const name = YGO_NOT_RARITY.test(raw || '') || !raw ? 'None' : YGO_SPELLING[raw] || raw;
+    let i = rarities.indexOf(name);
+    if (i < 0) i = rarities.push(name) - 1;
+    return i;
+  };
+  const cards = {};
+  for (const c of data) {
+    if (!c.card_sets?.length || c.frameType === 'token') continue;
+    // One row per printed code; a code can come in several rarities.
+    const rows = new Map();
+    for (const p of c.card_sets) {
+      const m = String(p.set_code || '').match(YGO_CODE);
+      if (!m) continue;
+      const row = rows.get(p.set_code) || [m[1], m[2], []];
+      const i = rIdx(p.set_rarity);
+      if (!row[2].includes(i)) row[2].push(i);
+      rows.set(p.set_code, row);
+    }
+    if (rows.size) cards[slug(c.name)] = { n: c.name, p: [...rows.values()] };
+  }
+  const used = new Set(Object.values(cards).flatMap((c) => c.p.map((p) => p[0])));
+  write('yugioh.json', {
+    v: 1,
+    game: 'yugioh',
+    built: today,
+    source: { name: 'YGOPRODeck', url: 'https://ygoprodeck.com', note: 'Card data from YGOPRODeck. Not affiliated with Konami. Japanese-only printings aren\'t listed.' },
+    rarities,
+    sets: Object.fromEntries(Object.entries(sets).filter(([k]) => used.has(k))),
+    cards,
+  });
+}
+
+// ── Lorcana (Lorcast) ───────────────────────────────────────────────────────
+// Lorcast has no finish field. Its foil-only rarities (from its own prices:
+// these never have a non-foil price) get one version, promos one version with
+// no finish named, and the rest come non-foil and cold foil.
+const LORCANA_FINISH = { Enchanted: 'f', Epic: 'f', Iconic: 'f', Promo: 'p' };
+
+async function buildLorcana() {
+  const { results } = await getJson('https://api.lorcast.com/v0/sets');
+  const sets = {};
+  const cards = {};
+  const rarities = [];
+  for (const s of results) {
+    await new Promise((r) => setTimeout(r, 120));
+    const list = await getJson(`https://api.lorcast.com/v0/sets/${encodeURIComponent(s.code)}/cards`);
+    const rows = Array.isArray(list) ? list : list.results || [];
+    if (!rows.length) continue;
+    sets[s.code] = [s.name, s.released_at || null, rows.length, null];
+    for (const c of rows) {
+      if (c.lang && c.lang !== 'en') continue;
+      const name = c.version ? `${c.name} - ${c.version}` : c.name;
+      const rarity = String(c.rarity || 'None').replace(/_/g, ' ').replace(/\brare\b/, 'Rare');
+      let i = rarities.indexOf(rarity);
+      if (i < 0) i = rarities.push(rarity) - 1;
+      const card = (cards[slug(name)] ||= { n: name, p: [] });
+      card.p.push([s.code, String(c.collector_number), i, LORCANA_FINISH[rarity] || 'nf']);
+    }
+  }
+  write('lorcana.json', {
+    v: 1,
+    game: 'lorcana',
+    built: today,
+    source: { name: 'Lorcast', url: 'https://lorcast.com', note: 'Card data from Lorcast. Not published or endorsed by Disney or Ravensburger. Free to everyone.' },
+    rarities,
+    // finish letters: n non-foil, f cold foil, p promo (finish not stated)
+    sets,
+    cards,
+  });
+}
+
+if (which === 'all' || which === 'yugioh') await buildYugioh();
+if (which === 'all' || which === 'lorcana') await buildLorcana();
 if (which === 'all' || which === 'mtg') await buildMtg();
 if (which === 'all' || which === 'pokemon') await buildPokemon();

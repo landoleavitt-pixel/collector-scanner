@@ -833,6 +833,241 @@
    "expect": {
     "kind": "promo"
    }
+  },
+  {
+   "game": "yugioh",
+   "card": "blue-eyes-white-dragon",
+   "title": "Yu-Gi-Oh! Blue-Eyes White Dragon LOB-EN001 Ultra Rare PSA 9",
+   "expect": {
+    "kind": "exact",
+    "versions": [
+     "LOB:EN001:ultra-rare"
+    ]
+   }
+  },
+  {
+   "game": "yugioh",
+   "card": "blue-eyes-white-dragon",
+   "title": "Blue-Eyes White Dragon LOB-001 PSA 9 Japanese",
+   "expect": {
+    "kind": "language"
+   }
+  },
+  {
+   "game": "yugioh",
+   "card": "blue-eyes-white-dragon",
+   "title": "Forest LOB-046 Common The Legend of Blue Eyes White Dragon Unlimited",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "yugioh",
+   "card": "dark-magician",
+   "title": "PSA 10 Dark Magician Girl WPP4-JP066 Quarter Century",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "yugioh",
+   "card": "dark-magician-girl",
+   "title": "Yu-Gi-Oh! Dark Magician Girl RA05-EN084 Starlight Rare",
+   "expect": {
+    "kind": "exact",
+    "why": "Starlight Rare"
+   }
+  },
+  {
+   "game": "yugioh",
+   "card": "accesscode-talker",
+   "title": "Access Code Talker RA02-EN044 Ultra Rare 1st Edition",
+   "expect": {
+    "kind": "exact"
+   }
+  },
+  {
+   "game": "yugioh",
+   "card": "accesscode-talker",
+   "title": "Accesscode Talker RA02-EN044 Quarter Century Secret Rare",
+   "expect": {
+    "kind": "exact",
+    "why": "Quarter Century Secret Rare"
+   }
+  },
+  {
+   "game": "yugioh",
+   "card": "slifer-the-sky-dragon",
+   "title": "Yugioh Slifer the Sky Dragon LC01-EN002 25th Anniversary QCSR PSA 9",
+   "expect": {
+    "kind": "unknown"
+   }
+  },
+  {
+   "game": "yugioh",
+   "card": "slifer-the-sky-dragon",
+   "title": "Metal Reflect Slime #EGS1-EN036 Egyptian God: Slifer the Sky Dragon",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "yugioh",
+   "card": "slifer-the-sky-dragon",
+   "title": "PSA 10 Slifer the Sky Dragon, Obelisk the Tormentor, and Winged Dragon of Ra",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "yugioh",
+   "card": "slifer-the-sky-dragon",
+   "title": "Slifer the Sky Dragon Millennium Gold Rare 1 card",
+   "expect": {
+    "kind": "unknown"
+   }
+  },
+  {
+   "game": "yugioh",
+   "card": "snake-eye-ash",
+   "title": "Snake-Eye Ash (UTR) - OTS Tournament Pack 25 (OP25)",
+   "expect": {
+    "kind": "exact"
+   }
+  },
+  {
+   "game": "yugioh",
+   "card": "snake-eye-ash",
+   "title": "Yugioh Card Snake-Eye Ash AGOV-KR007 Korean Ver Super Rare",
+   "expect": {
+    "kind": "language"
+   }
+  },
+  {
+   "game": "yugioh",
+   "card": "ash-blossom-joyous-spring",
+   "title": "Ash Blossom & Joyous Spring - RA05-EN091 - 1st Edition - NM ×3",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "yugioh",
+   "card": "ash-blossom-joyous-spring",
+   "title": "Ash Blossom and Joyous Spring SDBT-EN014 Common 1st Edition",
+   "expect": {
+    "kind": "exact"
+   }
+  },
+  {
+   "game": "yugioh",
+   "card": "kuriboh",
+   "title": "PSA 10 Hane-Kuriboh Ultimate Rare Relief TLM-JP005 Japanese",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "yugioh",
+   "card": "exodia-the-forbidden-one",
+   "title": "2002 Yu-Gi-Oh Asian Exodia the Forbidden One #LOB-124 HOLO",
+   "expect": {
+    "kind": "language"
+   }
+  },
+  {
+   "game": "lorcana",
+   "card": "elsa-spirit-of-winter",
+   "title": "Disney Lorcana Elsa Spirit of Winter Enchanted 207/204 PSA 9",
+   "expect": {
+    "kind": "exact",
+    "versions": [
+     "1:207:f"
+    ]
+   }
+  },
+  {
+   "game": "lorcana",
+   "card": "elsa-spirit-of-winter",
+   "title": "Elsa - Spirit of Winter Legendary [9 - 43/204] NM",
+   "expect": {
+    "kind": "exact",
+    "versions": [
+     "9:43:n"
+    ]
+   }
+  },
+  {
+   "game": "lorcana",
+   "card": "elsa-spirit-of-winter",
+   "title": "Elsa Enchanted 2023 Lorcana",
+   "expect": {
+    "kind": "unknown"
+   }
+  },
+  {
+   "game": "lorcana",
+   "card": "stitch-rock-star",
+   "title": "PSA 10 Stitch Rock Star Enchanted 30/P1-JA-1 Disney Lorcana",
+   "expect": {
+    "kind": "language"
+   }
+  },
+  {
+   "game": "lorcana",
+   "card": "stitch-rock-star",
+   "title": "Stitch - Rock Star (Store Championship) 30 Disney Lorcana Promo Cards Holo",
+   "expect": {
+    "kind": "exact"
+   }
+  },
+  {
+   "game": "lorcana",
+   "card": "stitch-rock-star",
+   "title": "2024 Lorcana Stitch Rockstar #30/P1 LGS Promo",
+   "expect": {
+    "kind": "exact"
+   }
+  },
+  {
+   "game": "lorcana",
+   "card": "be-prepared",
+   "title": "Foil Be Prepared Disney Lorcana DLC Promo 15/C3",
+   "expect": {
+    "kind": "promo"
+   }
+  },
+  {
+   "game": "lorcana",
+   "card": "be-prepared",
+   "title": "Scar 128/204 The First Chapter Rare MP Lorcana",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "lorcana",
+   "card": "mickey-mouse-true-friend",
+   "title": "Lorcana Mickey Mouse True Friend 36/P2 Puzzle Promo Foil",
+   "expect": {
+    "kind": "exact"
+   }
+  },
+  {
+   "game": "lorcana",
+   "card": "robin-hood-beloved-outlaw",
+   "title": "Robin Hood Color Sketch & Auto! Lorcana CGC 8",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "lorcana",
+   "card": "maleficent-monstrous-dragon",
+   "title": "Maleficent Monstrous Dragon 5 Fabled Set Champs Prize Lorcana PSA 10",
+   "expect": {
+    "kind": "promo"
+   }
   }
  ]
 }

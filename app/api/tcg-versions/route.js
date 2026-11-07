@@ -1,9 +1,10 @@
 // app/api/tcg-versions/route.js
 //
 // GET /api/tcg-versions: every version of one card, for the checklist view.
-// Magic (Scryfall) and English Pokémon (TCGdex). No eBay calls.
+// Magic (Scryfall), English Pokémon (TCGdex), Yu-Gi-Oh! (YGOPRODeck) and Lorcana
+// (Lorcast). No eBay calls.
 //
-//   ?game=mtg|pokemon&card=<card key or exact name>
+//   ?game=mtg|pokemon|yugioh|lorcana&card=<card key or exact name>
 //     → { game, card: { key, name, reservedList? }, sets: [
 //         { set, name, released, total? | type?, numbers: [
 //           { number, rarity, versions: [
@@ -26,7 +27,7 @@ export async function GET(req) {
   const p = new URL(req.url).searchParams;
   const game = p.get('game');
   if (!CATALOG_GAMES.includes(game)) {
-    return NextResponse.json({ error: 'game must be mtg or pokemon' }, { status: 400, headers: { 'Cache-Control': 'no-store' } });
+    return NextResponse.json({ error: `game must be one of ${CATALOG_GAMES.join(', ')}` }, { status: 400, headers: { 'Cache-Control': 'no-store' } });
   }
   // The catalog only changes when it's rebuilt and redeployed.
   const cache = { 'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=86400' };
