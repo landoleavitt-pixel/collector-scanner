@@ -27,12 +27,15 @@ Landon wants the week's remaining usage spent, so all 4 agents run (above the us
 - [ ] Yu-Gi-Oh! and Lorcana "every version" catalogs
 - [ ] Set filter
 - [ ] Japanese cards with no language word; remaining multi-card and non-card listings
+- [ ] Continue signed in: server steps, proven first (needs SQL from Landon)
 
 **Design**
 - [x] Rarity groups on results, popup, filters and checklist; big photo in the picker
 - [x] Magic on the checklist
-- [ ] Mockup: Foils & Fables home and search built around the 3 reasons (for Landon)
-- [ ] Mockup: "continue signed in" between the two domains (for Landon)
+- [x] Mockup: Foils & Fables home and search built around the 3 reasons (approved)
+- [ ] Build the new Foils & Fables home and search
+- [x] Mockup: "continue signed in" between the two domains (approved)
+- [ ] Build the continue signed in screens and sign-out menu, after the engine
 
 **Helper (QA)**
 - [ ] Full test of the live site, both sides, phone and computer
