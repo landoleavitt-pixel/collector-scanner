@@ -2,8 +2,10 @@
 
 // "Find it" from the card checklist: live eBay listings for one version of
 // one card (/api/tcg-family-search?versions=<key>), as normal Foils & Fables
-// result rows: star, card popup with "View on eBay".
+// result rows: star, card popup with "View on eBay". With unsure=1, the family's
+// listings we couldn't pin to one version (from the versions-first search).
 //
+//   /fables/find?[game=mtg&]cards=<keys>&q=<family name>&unsure=1&name=&label=&back=
 //   /fables/find?[game=mtg&]card=<card key>&version=<version key>&name=&no=&label=&back=
 
 import { useEffect, useState } from 'react';
@@ -29,6 +31,9 @@ export default function Find() {
   const no = sp.get('no');
   const label = sp.get('label');
   const back = safeBack(sp.get('back'));
+  const unsure = sp.get('unsure') === '1';
+  const cards = sp.get('cards') || '';
+  const q = sp.get('q') || '';
   const [res, setRes] = useState(null); // { items, total, nextOffset }
   const [more, setMore] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -36,13 +41,23 @@ export default function Find() {
   const url = (offset = 0) => `/api/tcg-family-search?${new URLSearchParams({ game, card, versions: version, lang: 'en', limit: '48', ...(offset ? { offset: String(offset) } : {}) })}`;
 
   useEffect(() => {
+    if (unsure) {
+      let alive = true;
+      fetch(`/api/tcg-family-search?${new URLSearchParams({ game, cards, q, lang: 'en', limit: '1000', unsure: 'show' })}`)
+        .then((r) => (r.ok ? r.json() : null)).catch(() => null).then((d) => {
+          if (!alive) return;
+          const items = (d?.items || []).filter((it) => !(it.match?.kind === 'exact' && it.match.versions?.length === 1)).map(withListingFlags);
+          setRes(d ? { items, total: items.length, nextOffset: null } : { items: [], total: 0, nextOffset: null, error: true });
+        });
+      return () => { alive = false; };
+    }
     if (!card || !version) { setRes({ items: [], total: 0, nextOffset: null }); return; }
     let alive = true;
     fetch(url()).then((r) => (r.ok ? r.json() : null)).catch(() => null).then((d) => {
       if (alive) setRes(d ? { items: (d.items || []).map(withListingFlags), total: d.total || 0, nextOffset: d.nextOffset ?? null } : { items: [], total: 0, nextOffset: null, error: true });
     });
     return () => { alive = false; };
-  }, [card, version]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [card, version, unsure, cards, q, game]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function loadMore() {
     if (res?.nextOffset == null || more) return;

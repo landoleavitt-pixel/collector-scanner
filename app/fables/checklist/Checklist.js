@@ -28,38 +28,15 @@ import { ChevronLeft, Check, Lock, Bell, Search } from 'lucide-react';
 import { useUser } from '../../../lib/useUser';
 import { SIDE } from '../data';
 import { GroupDot, groupRank } from '../rarity';
+import { versionLabel, sized, loadFamily, loadFamilyListings, saveFamilyAlert } from '../versions';
+import { Sheet, BigButton } from '../sheet';
 
 const SETS_SHOWN = 4;
 const RARE_ROWS_SHOWN = 30;
-// A word that names hundreds of cards ("Dragon") isn't one card's family.
-const FAMILY_MAX = 60;
 const FOIL = 'linear-gradient(135deg,#9fe3f5,#b6a8f0,#f0b3d0,#f3d9a0)';
 
 const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/['’.]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
 
-// Plain names for versions (Landon: no collector jargon).
-function plainLabel(v) {
-  const l = (v.label || '').toLowerCase();
-  if (l.includes('reverse')) return 'Shiny frame';
-  if (v.firstEdition || l.includes('1st edition')) return v.finish === 'holo' || l.includes('holo') ? 'First print, shiny' : 'First print';
-  if (l.includes('holo')) return 'Shiny';
-  if (l === 'normal') return 'Regular';
-  return v.label || 'Regular';
-}
-// Magic's labels list finish and treatments: "Foil · Borderless · Surge foil"
-// → "Surge shiny, no border".
-const MTG_WORDS = { Borderless: 'no border', 'Extended art': 'wide art', Showcase: 'special art', 'Full art': 'full art', 'Retro frame': 'old-style frame', Serialized: 'numbered', qya: 'Elvish' };
-function plainMtgLabel(v) {
-  const [finish, ...tags] = String(v.label || 'Nonfoil').split(' · ');
-  let base = /etched/i.test(finish) ? 'Etched shiny' : /^foil/i.test(finish) ? 'Shiny' : 'Regular';
-  const rest = [];
-  for (const t of tags) {
-    if (/ foil$/i.test(t) && base === 'Shiny') base = `${t.replace(/ foil$/i, '')} shiny`;
-    else rest.push(MTG_WORDS[t] || t);
-  }
-  return [base, ...rest].join(', ');
-}
-const sized = (url, n) => (url ? url.replace(/\/s-l\d+\.(\w+)/, `/s-l${n}.$1`) : url);
 function swatch(plain) {
   if (plain.startsWith('Shiny frame')) return 'linear-gradient(135deg,#3a4160 40%,#9fe3f5)';
   if (/shiny/i.test(plain)) return FOIL;
@@ -72,7 +49,7 @@ export default function Checklist() {
   const sp = useSearchParams();
   const name = (sp.get('name') || '').trim().slice(0, 60);
   const GAME = sp.get('game') === 'mtg' ? 'mtg' : 'pokemon';
-  const label = (v) => (GAME === 'mtg' ? plainMtgLabel(v) : plainLabel(v));
+  const label = (v) => versionLabel(GAME, v);
   const { user } = useUser();
   const [rows, setRows] = useState(null); // [{ id, set, setName, released, total, number, cardKey, cardName, versions }]
   const [source, setSource] = useState('');
@@ -90,64 +67,23 @@ export default function Checklist() {
   useEffect(() => {
     if (!name) { setRows([]); return; }
     let alive = true;
-    (async () => {
-      try {
-        // Every card named with those words (Charizard, Charizard ex, Mega Charizard X ex…).
-        const found = await fetch(`/api/tcg-versions?game=${GAME}&q=${encodeURIComponent(name)}&family=1`).then((r) => r.json());
-        const family = (found.cards || []).slice(0, FAMILY_MAX);
-        const lists = await Promise.all(family.map((c) => fetch(`/api/tcg-versions?game=${GAME}&card=${encodeURIComponent(c.key)}`).then((r) => (r.ok ? r.json() : null)).catch(() => null)));
-        const out = [];
-        for (const body of lists) {
-          if (!body?.sets) continue;
-          if (body.source?.note) setSource(body.source.note);
-          for (const s of body.sets) {
-            for (const n of s.numbers) {
-              out.push({
-                id: `${body.card.key}|${s.set}|${n.number}`,
-                set: s.set, setName: s.name, released: s.released || '', total: s.total,
-                number: n.number, cardKey: body.card.key, cardName: body.card.name, versions: n.versions,
-              });
-            }
-          }
-        }
-        // Newest set first; card order within a set.
-        out.sort((a, b) => b.released.localeCompare(a.released) || a.set.localeCompare(b.set)
-          || (parseInt(a.number, 10) || 0) - (parseInt(b.number, 10) || 0) || String(a.number).localeCompare(String(b.number)));
-        if (alive) setRows(out);
-      } catch {
-        if (alive) setRows([]);
-      }
-    })();
+    loadFamily(GAME, name)
+      .then((f) => { if (alive) { setSource(f.source); setRows(f.rows); } })
+      .catch(() => { if (alive) setRows([]); });
     return () => { alive = false; };
   }, [name, GAME]);
 
-  // Live listings: one card-family search for the whole family (cached 15
-  // minutes on the server). Each listing is pinned to its catalog printing,
-  // which gives each row's photo and which versions are for sale right now.
+  // Live listings: each row's photo and which versions are for sale right now.
   useEffect(() => {
     if (!rows?.length) return;
     let alive = true;
-    const cardOf = {};
-    for (const r of rows) for (const v of r.versions) cardOf[v.key] = r.cardKey;
-    const keys = [...new Set(rows.map((r) => r.cardKey))];
-    fetch(`/api/tcg-family-search?game=${GAME}&cards=${encodeURIComponent(keys.join(','))}&lang=en&limit=1000`)
-      .then((r) => (r.ok ? r.json() : null)).catch(() => null)
-      .then((d) => {
-        if (!alive) return;
-        const pics = {};
-        const counts = {};
-        for (const [v, n] of Object.entries(d?.counts || {})) if (cardOf[v]) counts[`${cardOf[v]}|${v}`] = n;
-        for (const it of d?.items || []) {
-          const c = it.catalog;
-          if (!c || !it.image) continue;
-          const id = `${c.card}|${c.set}|${c.number}`;
-          if (!pics[id]) pics[id] = it.image;
-        }
-        setPhotos(pics);
-        setForSale(counts);
-      });
+    loadFamilyListings(GAME, name, rows).then((d) => {
+      if (!alive) return;
+      setPhotos(d?.photos || {});
+      setForSale(d?.counts || {});
+    });
     return () => { alive = false; };
-  }, [rows, GAME]);
+  }, [rows, GAME, name]);
 
   // The member's own marks.
   useEffect(() => {
@@ -199,18 +135,7 @@ export default function Checklist() {
 
   async function turnOnAlert() {
     setAlertState('saving');
-    const r = await fetch('/api/saved-searches', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: `${title} cards`, query: title, notify_enabled: true, side: SIDE,
-        // A card-family search: every card in the list, one alert. needOnly skips
-        // versions the member has once the alert checker supports it.
-        filters: { game: GAME, cards: [...new Set((rows || []).map((r) => r.cardKey))], needOnly: true, lang: ['en'] },
-      }),
-    }).catch(() => null);
-    const d = r ? await r.json().catch(() => ({})) : {};
-    if (r && r.ok) setAlertState(d.watchLimited ? 'Saved, but your 5 alerts are in use. Pause one in Saved searches to turn this on.' : 'on');
-    else setAlertState(d.error || 'That didn’t work. Try again.');
+    setAlertState(await saveFamilyAlert(GAME, title, rows));
     setAsk(false);
   }
 
@@ -311,7 +236,7 @@ export default function Checklist() {
             <button type="button" onClick={() => (user ? setAsk(true) : window.location.assign(`/signup?src=alert&next=${encodeURIComponent(here)}`))}
                     className="w-full min-h-[60px] rounded-2xl flex items-center justify-center gap-2.5 text-[18px] font-semibold mt-7"
                     style={{ background: 'linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom))', color: 'var(--ink-on-gold)' }}>
-              <Bell className="w-5 h-5" strokeWidth={2} aria-hidden="true" />Alert me when a {title} card is for sale
+              <Bell className="w-5 h-5" strokeWidth={2} aria-hidden="true" />Alert me when one I need is listed
             </button>
           )}
           {alertState && alertState !== 'on' && alertState !== 'saving' && <p className="text-[14px] mt-3" style={{ color: 'var(--ink-200)' }}>{alertState}</p>}
@@ -403,8 +328,8 @@ export default function Checklist() {
 
       {ask && (
         <Sheet onClose={() => setAsk(false)}>
-          <h3 className="font-display italic text-[28px] leading-tight mb-1">Alert you when a {title} card is for sale?</h3>
-          <p className="text-[16px] mb-5" style={{ color: 'var(--ink-400)' }}>We’ll email you.</p>
+          <h3 className="font-display italic text-[28px] leading-tight mb-1">Alert you when one you need is listed?</h3>
+          <p className="text-[16px] mb-5" style={{ color: 'var(--ink-400)' }}>We skip the ones you’ve marked as yours. We’ll email you.</p>
           <BigButton onClick={turnOnAlert} disabled={alertState === 'saving'}>{alertState === 'saving' ? 'Saving…' : 'Yes, alert me'}</BigButton>
           <button type="button" onClick={() => setAsk(false)} className="w-full min-h-[56px] text-[17px] mt-1.5" style={{ color: 'var(--ink-400)' }}>Not now</button>
         </Sheet>
@@ -438,37 +363,6 @@ function Skeleton() {
       {Array.from({ length: 5 }).map((_, i) => (
         <div key={i} className="h-[72px] rounded-2xl mb-2.5 shimmer" style={{ background: 'var(--bg-elev)' }} />
       ))}
-    </div>
-  );
-}
-
-function BigButton({ children, onClick, disabled }) {
-  return (
-    <button type="button" onClick={onClick} disabled={disabled}
-            className="w-full min-h-[60px] rounded-2xl text-[18px] font-semibold mt-2 disabled:opacity-60"
-            style={{ background: 'linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom))', color: 'var(--ink-on-gold)' }}>
-      {children}
-    </button>
-  );
-}
-
-// Bottom sheet on phones, centred box on wider screens.
-function Sheet({ children, onClose }) {
-  useEffect(() => {
-    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', onKey);
-    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = prev; };
-  }, [onClose]);
-  return (
-    <div className="fixed inset-0 z-[80] flex items-end md:items-center justify-center" style={{ background: 'rgba(0,0,0,.6)' }} onClick={onClose}>
-      <div role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}
-           className="w-full md:w-[440px] max-h-[88vh] overflow-y-auto rounded-t-3xl md:rounded-3xl px-[18px] pt-3.5 pb-7"
-           style={{ background: 'var(--bg-elev)', borderTop: '1px solid var(--line)', paddingBottom: 'max(28px, env(safe-area-inset-bottom))' }}>
-        <div className="w-10 h-[5px] rounded-full mx-auto mb-4 md:hidden" style={{ background: 'var(--line)' }} />
-        {children}
-      </div>
     </div>
   );
 }

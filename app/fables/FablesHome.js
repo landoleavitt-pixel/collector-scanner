@@ -11,7 +11,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Search, ArrowRight, ArrowLeft, Star, Bell, ListFilter, Clock, Crosshair, Bookmark, Layers, Check } from 'lucide-react';
+import { Search, ArrowRight, Clock, Crosshair, Bookmark, Layers, Check, X } from 'lucide-react';
 import { useUser } from '../../lib/useUser';
 import { PAYMENTS_LIVE } from '../../lib/payments';
 import { track } from '../../lib/track';
@@ -29,6 +29,7 @@ import { usePendingStarSave, AlertBand } from '../components/search/WatchStar';
 import { ResultCard, Badge, upscaleEbayImage } from '../components/search/ResultCard';
 import { SIDE, fetchMeta, searchCards, toParams, fromParams, LANG_LABEL, serialOf, gradeText } from './data';
 import { RARITY_GROUPS, RARITY_SOURCE, GROUP_ROW, groupOf, GroupChip } from './rarity';
+import VersionsView from './VersionsView';
 
 const DEFAULT_FILTERS = {
   game: '', rarity: [], lang: [], graded: 'any', grader: '', grade: '', firstEd: false, serialOnly: false,
@@ -52,13 +53,6 @@ const SORT_OPTIONS = [
   ['newest', 'Newest first'],
 ];
 const RECENTS_KEY = 'ffFablesRecents';
-const HUNTS = [
-  ['Extremely rare Pokémon', { game: 'pokemon', rarity: ['extremely_rare'] }],
-  ['1st Edition, graded', { firstEd: true, graded: 'graded' }],
-  ['Serialized Magic', { game: 'mtg', serialOnly: true }],
-  ['Extremely rare Lorcana', { game: 'lorcana', rarity: ['extremely_rare'] }],
-  ['PSA 10s', { graded: 'graded', grader: 'PSA', grade: '10' }],
-];
 
 // Tier chip colours for this side. Names on chips are the card's own printed
 // rarity, so no tier names are shown.
@@ -167,6 +161,9 @@ export default function FablesHome() {
   const [dismissedFix, setDismissedFix] = useState(null);
   const [selectedCardItem, setSelectedCardItem] = useState(null);
   const [selectedExpired, setSelectedExpired] = useState(false);
+  // Versions-first search: the shopper asked for the full list, or this search has no versions view.
+  const [showAllListings, setShowAllListings] = useState(false);
+  const [versionsOff, setVersionsOff] = useState(false);
   const sidebarRef = useRef(null);
   const searchSeq = useRef(0);
 
@@ -207,6 +204,7 @@ export default function FablesHome() {
     if (overrideQuery !== undefined) setQuery(overrideQuery);
     if (overrideFilters) setFilters(overrideFilters);
     if (q) { addRecent(q); setRecentSearches(getRecents()); }
+    if (q !== applied?.q) { setShowAllListings(false); setVersionsOff(false); }
     setError(null);
     setLoading(true);
     setStage('results');
@@ -344,6 +342,18 @@ export default function FablesHome() {
   );
   const searchFix = (fixed) => handleSearch(fixed);
 
+  function newSearch() {
+    setStage('idle');
+    setQuery('');
+    setFilters(DEFAULT_FILTERS);
+    setRes({ items: [], total: 0, nextOffset: null });
+    setError(null);
+    setApplied(null);
+    setShowAllListings(false);
+    setVersionsOff(false);
+    window.scrollTo({ top: 0 });
+  }
+
   const gameLabel = meta?.games?.find((g) => g.key === (appliedFilters || filters).game)?.label;
   function handleOpenSave() {
     if (!user) { router.push(`/login?next=${encodeURIComponent('/fables')}`); return; }
@@ -389,6 +399,29 @@ export default function FablesHome() {
   }
 
   if (stage === 'results') {
+    // Pokémon and Magic searches that name a card open on its versions; filters
+    // and every other game use the normal list below.
+    const plainSearch = loading ? (query.trim() && isDefault(filters)) : (applied?.q && isDefault(applied.f));
+    const versionsGame = !loading && applied ? (applied.f.game || mainGame(res.items)) : null;
+    const canHaveVersions = plainSearch && !versionsOff && (loading || versionsGame === 'pokemon' || versionsGame === 'mtg');
+    if (canHaveVersions && !showAllListings) {
+      return (
+        <main className="relative min-h-screen z-10">
+          {loading
+            ? <div className="max-w-[720px] mx-auto px-5 md:px-6 pt-8 pb-16"><LoadingState phrase="Searching eBay" /></div>
+            : <VersionsView
+                query={applied.q}
+                game={versionsGame}
+                onUnavailable={() => setVersionsOff(true)}
+                onNewSearch={newSearch}
+                onSearch={(t) => handleSearch(t, { ...filters })}
+                onShowAll={() => setShowAllListings(true)}
+              />}
+          {cardModal}
+          <BackToTop />
+        </main>
+      );
+    }
     const resultsReturn = applied ? `/fables?${toParams(applied.q, applied.f)}` : null;
     const pending = filtersDifferFromApplied();
     return (
@@ -425,7 +458,7 @@ export default function FablesHome() {
               {!loading && (
                 <p className="text-[13px] mt-3" style={{ color: 'var(--ink-400)' }}>
                   <span style={{ color: 'var(--gold)' }}>{res.total}</span>{' '}
-                  {res.total === 1 ? 'listing' : 'listings'}, ranked by the rarity printed on the card{res.stub ? ' (sample data)' : ''}
+                  {res.total === 1 ? 'listing' : 'listings'}, rarest first{res.stub ? ' (sample data)' : ''}
                 </p>
               )}
             </div>
@@ -448,14 +481,7 @@ export default function FablesHome() {
                 Save this search
               </button>
               <button
-                onClick={() => {
-                  setStage('idle');
-                  setQuery('');
-                  setFilters(DEFAULT_FILTERS);
-                  setRes({ items: [], total: 0, nextOffset: null });
-                  setError(null);
-                  setApplied(null);
-                }}
+                onClick={newSearch}
                 className="text-[11px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
               >
                 New search
@@ -463,7 +489,13 @@ export default function FablesHome() {
             </div>
           </div>
 
-          {applied?.q && !loading && <EveryCardButton query={applied.q} game={appliedFilters?.game || mainGame(res.items)} />}
+          {applied?.q && !loading && (canHaveVersions ? (
+            <button type="button" onClick={() => setShowAllListings(false)}
+                    className="w-full lg:w-auto lg:px-6 min-h-[56px] rounded-2xl inline-flex items-center justify-center gap-2 text-[16px] font-semibold mb-6"
+                    style={{ border: '1.5px solid var(--gold-bright)', color: 'var(--gold-bright)' }}>
+              <Layers className="w-5 h-5" strokeWidth={2} aria-hidden="true" />See every version
+            </button>
+          ) : <EveryCardButton query={applied.q} game={appliedFilters?.game || mainGame(res.items)} />)}
 
           <MobileFilterBar
             activeCount={countActiveFilters(filters)}
@@ -589,7 +621,7 @@ function EveryCardButton({ query, game }) {
 
 /* ── search box (home) ───────────────────────────────────────────────── */
 
-function SearchBar({ query, setQuery, onSubmit, onPick, big = false }) {
+function SearchBar({ query, setQuery, onSubmit, onPick }) {
   // Picking a suggestion searches it straight away, as on sports.
   const suggest = useSuggestBox(query, (v) => { setQuery(v); onPick?.(v); }, { side: 'fables' });
   return (
@@ -597,9 +629,8 @@ function SearchBar({ query, setQuery, onSubmit, onPick, big = false }) {
       <form
         ref={suggest.anchorRef}
         onSubmit={(e) => { e.preventDefault(); suggest.close(); onSubmit(); }}
-        className="flex items-center gap-2.5 rounded-xl pl-4 pr-1.5 py-1.5 ff-foil-edge"
+        className="flex items-center gap-2.5 min-h-[64px] rounded-2xl pl-[18px] pr-1.5 py-1.5 ff-foil-edge"
       >
-        <Search className="w-[18px] h-[18px] flex-none" strokeWidth={1.75} style={{ color: 'var(--ink-400)' }} aria-hidden="true" />
         <input
           value={query}
           onChange={(e) => { setQuery(e.target.value); suggest.openBox(); }}
@@ -607,14 +638,16 @@ function SearchBar({ query, setQuery, onSubmit, onPick, big = false }) {
           onFocus={suggest.openBox}
           onBlur={suggest.close}
           {...suggest.inputProps}
-          placeholder="Search a card, character or set" aria-label="Search a card, character or set"
-          className={`flex-1 min-w-0 bg-transparent outline-none ${big ? 'text-[17px] py-3' : 'text-[16px] py-2.5'}`} style={{ color: 'var(--ink-100)' }}
+          placeholder="Which card?" aria-label="Which card?"
+          className="flex-1 min-w-0 bg-transparent outline-none text-[18px] py-2" style={{ color: 'var(--ink-100)' }}
         />
-        <button type="submit" className="inline-flex items-center gap-1.5 rounded-lg px-3.5 h-11 text-[13px] font-semibold flex-none" style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
-          Show cards <ArrowRight className="w-4 h-4" strokeWidth={2} aria-hidden="true" />
+        <button type="submit" aria-label="Show cards" className="w-[52px] h-[52px] rounded-xl grid place-items-center flex-none"
+                style={{ background: 'linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom))', color: 'var(--ink-on-gold)' }}>
+          <Search className="w-[22px] h-[22px]" strokeWidth={2} aria-hidden="true" />
         </button>
       </form>
       {suggest.dropdown}
+      <p className="text-[13px] mt-2.5 px-0.5 md:text-center" style={{ color: 'var(--ink-600)' }}>Every version for Pokémon and Magic. More games soon.</p>
     </>
   );
 }
@@ -673,41 +706,63 @@ function CardImage({ src, alt, className = '' }) {
 
 /* ── signed-out home ─────────────────────────────────────────────────── */
 
+// The three reasons (research/fables-why.md), each with a tiny picture.
+function ReasonCards() {
+  const card = (left, top, turn, a, b) => (
+    <i key={left} className="absolute w-10 h-14 rounded-[5px]" style={{ left, top, transform: `rotate(${turn}deg)`, boxShadow: '0 4px 12px rgba(0,0,0,.5)', background: `radial-gradient(40px 34px at 35% 25%,rgba(255,255,255,.25),transparent 60%),linear-gradient(160deg,${a},${b})` }} />
+  );
+  return <>{card(2, 10, -9, '#e0662c', '#4a1608')}{card(26, 6, 0, '#6a4bd0', '#1b1240')}{card(50, 10, 9, '#e3c15a', '#6a4a10')}</>;
+}
+function ReasonLines() {
+  const line = (ok, i) => (
+    <span key={i} className="flex items-center gap-1.5 h-5 mb-1" style={{ color: ok ? 'var(--gold)' : 'var(--ink-600)' }}>
+      {ok ? <Check className="w-[13px] h-[13px] flex-none" strokeWidth={2.5} /> : <X className="w-[13px] h-[13px] flex-none" strokeWidth={2.5} />}
+      <i className="flex-1 h-[7px] rounded-full" style={{ background: ok ? 'var(--foil)' : 'var(--line)' }} />
+    </span>
+  );
+  return <span className="block pt-2">{[false, true, false].map(line)}</span>;
+}
+function ReasonRings() {
+  const ring = (filled, left) => <i key={left} className="absolute w-6 h-6 rounded-full" style={{ left, top: 24, ...(filled ? { background: 'var(--foil)' } : { border: '2px solid var(--ink-600)' }) }} />;
+  return <>{ring(true, 4)}{ring(true, 34)}{ring(false, 64)}</>;
+}
+const REASONS = [
+  [ReasonCards, 'Type it once.', 'See every version for sale.'],
+  [ReasonLines, 'Only the real card.', 'Lots, fake copies and look-alikes are hidden.'],
+  [ReasonRings, 'Only what you’re missing.', 'We tell you when one you need is listed.'],
+];
+
 function SignedOut({ query, setQuery, onSearch, error, onCardClick }) {
   usePendingStarSave();
   return (
     <>
-      <section className="max-w-[1100px] mx-auto px-6 lg:px-10 pt-10 md:pt-16 pb-8 grid md:grid-cols-[1.1fr_.9fr] gap-8 md:gap-10 items-center">
-        <div className="min-w-0">
-          <h1 className="font-display text-[44px] md:text-[64px] leading-[0.98] tracking-[-0.01em] mb-2">
-            Chase the <em className="ff-foil-text not-italic md:italic">shine</em>.
-          </h1>
-          <p className="font-display italic text-[18px] mb-4" style={{ color: 'var(--gold)' }}>Just try it.</p>
-          <SearchBar query={query} setQuery={setQuery} onSubmit={() => onSearch()} onPick={(v) => onSearch(v)} big />
-          {error && <p className="text-[13px] mt-2" style={{ color: 'var(--crit)' }}>{error}</p>}
-          <div className="flex flex-wrap gap-2 mt-3">
-            {HUNTS.map(([label, f]) => (
-              <button key={label} type="button" onClick={() => onSearch('', { ...DEFAULT_FILTERS, ...f })}
-                      className="text-[13px] rounded-full px-3 py-1.5" style={{ color: 'var(--ink-200)', border: '1px solid var(--line)' }}>
-                {label}
-              </button>
-            ))}
-          </div>
-          <p className="text-[12px] mt-3" style={{ color: 'var(--ink-600)' }}>Ranked by the rarity printed on the card. Not affiliated with eBay or any game publisher.</p>
-        </div>
-        <div className="min-w-0"><RarestStrip compact onCardClick={onCardClick} /></div>
+      <section className="max-w-[760px] mx-auto px-5 md:px-6 pt-7 md:pt-16">
+        <h1 className="font-display text-[42px] md:text-[64px] leading-[1.04] tracking-[-0.01em] mb-[22px] md:mb-7 md:text-center">
+          Every version of a card. <em className="ff-foil-text">One search.</em>
+        </h1>
+        <SearchBar query={query} setQuery={setQuery} onSubmit={() => onSearch()} onPick={(v) => onSearch(v)} />
+        {error && <p className="text-[13px] mt-2" style={{ color: 'var(--crit)' }}>{error}</p>}
       </section>
-      <section className="max-w-[1100px] mx-auto px-6 lg:px-10 pt-6 pb-4">
-        <h2 className="sr-only">How it works</h2>
-        <ul className="list-none m-0 p-0 grid grid-cols-1 md:grid-cols-3 border-y" style={{ borderColor: 'var(--line)' }}>
-          {[[ListFilter, 'Pick a game and rarity'], [Star, 'Star cards'], [Bell, 'Get alerted']].map(([Icon, label], i) => (
-            <li key={label} className={`flex items-center gap-3 py-4 md:py-5 md:px-5 text-[16px] font-medium ${i ? 'border-t md:border-t-0 md:border-l' : ''}`} style={{ borderColor: 'var(--line-soft)' }}>
-              <Icon className="w-[22px] h-[22px] flex-none" strokeWidth={1.75} style={{ color: 'var(--gold-bright)' }} aria-hidden="true" />{label}
+      <section className="max-w-[1040px] mx-auto px-5 md:px-7 pt-8 md:pt-10">
+        <h2 className="sr-only">Why use it</h2>
+        <ul className="list-none m-0 p-0 grid gap-[26px] md:grid-cols-3 md:gap-8">
+          {REASONS.map(([Art, head, line]) => (
+            <li key={head} className="flex md:flex-col items-center md:items-start gap-4 md:gap-3.5">
+              <span className="relative block w-[92px] h-[72px] flex-none" aria-hidden="true"><Art /></span>
+              <span>
+                <b className="block font-display font-normal text-[21px] leading-[1.15] mb-1">{head}</b>
+                <span className="text-[15px] leading-snug" style={{ color: 'var(--ink-400)' }}>{line}</span>
+              </span>
             </li>
           ))}
         </ul>
-        {!PAYMENTS_LIVE && <p className="text-center text-[15px] mt-8" style={{ color: 'var(--ink-200)' }}>Free during early access. Alerts on up to 5 saved searches.</p>}
       </section>
+      <section className="md:hidden max-w-[760px] mx-auto px-5 mt-9">
+        <div className="pt-5 border-t" style={{ borderColor: 'var(--line-soft)' }}><ForSaleShelf count={2} onCardClick={onCardClick} /></div>
+      </section>
+      <p className="max-w-[760px] mx-auto px-5 text-center text-[12px] leading-relaxed mt-7 md:mt-2 pb-4" style={{ color: 'var(--ink-600)' }}>
+        {!PAYMENTS_LIVE && 'Free during early access. '}Not affiliated with eBay or any game publisher.
+      </p>
     </>
   );
 }
@@ -743,35 +798,29 @@ function SignedIn({ query, setQuery, onSearch, recents, error, onCardClick }) {
           ))}
         </div>
       )}
-      <div className="mt-9"><RarestStrip onCardClick={onCardClick} /></div>
+      <div className="mt-9"><ForSaleShelf count={5} onCardClick={onCardClick} /></div>
     </section>
   );
 }
 
-/* ── rarest right now ────────────────────────────────────────────────── */
+/* ── for sale now ───────────────────────────────────────────────────── */
 
-function RarestStrip({ compact = false, onCardClick }) {
+function ForSaleShelf({ count, onCardClick }) {
   const [items, setItems] = useState(null);
-  // A $100 floor keeps the showcase to real chase cards, not $1 prize-card listings.
-  useEffect(() => { searchCards('', { ...DEFAULT_FILTERS, priceMin: 100 }).then((r) => setItems(r.items.slice(0, compact ? 4 : 5))); }, [compact]);
+  // A $100 floor keeps the shelf to real chase cards, not $1 prize-card listings.
+  useEffect(() => { searchCards('', { ...DEFAULT_FILTERS, priceMin: 100 }).then((r) => setItems(r.items.slice(0, count))); }, [count]);
   if (items && !items.length) return null;
   return (
     <div>
-      <div className="flex items-baseline justify-between mb-3">
-        <h2 className="font-display italic text-[22px]">{compact ? <>Rarest <span className="ff-foil-text">right now</span></> : 'Rarest right now'}</h2>
-        <span className="text-[13px]" style={{ color: 'var(--ink-400)' }}>Live on eBay</span>
-      </div>
-      <div className={`grid gap-3 ${compact ? 'grid-cols-2' : 'grid-cols-2 md:grid-cols-5'}`}>
-        {(items || Array.from({ length: compact ? 4 : 5 }, () => null)).map((it, i) => (
+      <h2 className="text-[13px] font-normal mb-3" style={{ color: 'var(--ink-400)' }}>For sale now on eBay</h2>
+      <div className={`grid gap-3 ${count > 2 ? 'grid-cols-2 md:grid-cols-5' : 'grid-cols-2'}`}>
+        {(items || Array.from({ length: count }, () => null)).map((it, i) => (
           <a key={it?.id || i} href={it?.url || undefined} target="_blank" rel="noopener noreferrer"
              onClick={(e) => { if (it && onCardClick && !(e.metaKey || e.ctrlKey)) { e.preventDefault(); onCardClick(it); } }}
-             className="block min-w-0 rounded-lg p-2" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line-soft)' }}>
-            <CardImage src={it?.image} alt={it?.title || ''} className="mb-2" />
-            <span className="block text-[12px] leading-snug h-[32px] overflow-hidden" style={{ color: 'var(--ink-200)' }}>{it?.title}</span>
-            <span className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 mt-1.5 min-w-0">
-              {it ? (it.rarityGroup ? <GroupChip group={it.rarityGroup} /> : <TcgChip item={it} />) : <span />}
-              <span className="text-[14px] font-medium">{it ? money(it.price, it.currency) : ''}</span>
-            </span>
+             className="block min-w-0">
+            <CardImage src={it?.image} alt={it?.title || ''} className="mb-2 rounded-lg" />
+            <span className="block text-[14px] font-medium leading-snug line-clamp-2">{it?.title}</span>
+            <span className="text-[14px]" style={{ color: 'var(--ink-200)' }}>{it ? money(it.price, it.currency) : ''}</span>
           </a>
         ))}
       </div>

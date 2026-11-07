@@ -6,7 +6,7 @@ export const metadata = {
     template: '%s · Foils & Fables',
   },
   description:
-    'Search trading card listings on eBay by rarity, language and grade, rarest first. Ranked by the rarity printed on the card.',
+    'Search trading card listings on eBay from one box. Lots and fake copies are hidden, and alerts can skip the cards you already have.',
   openGraph: {
     siteName: 'Foils & Fables Collectors',
     title: 'Foils & Fables Collectors',
