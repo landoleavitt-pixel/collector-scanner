@@ -20,12 +20,14 @@
 //   ?game=mtg|pokemon&q=<typed name>[&limit=N]
 //     → { cards: [{ key, name, printings }] }, up to 10 (or N, max 300), for
 //     the card picker. Matches the start of any word of the name.
-//   ?game=mtg|pokemon&q=<name>&family=1
-//     → { cards, total }: every card whose name holds the name as whole words
-//     (a whole family, e.g. every Charizard card), up to 300.
+//   ?game=…&q=<name>&family=1
+//     → { cards, total, match }: the cards that are this card (lib/tcg/catalog.js
+//     cardFamily): every Charizard, not Charizard Spirit Link; Dark Magician
+//     alone, not Toon Dark Magician. match 'words' when nothing fit that way
+//     and the list is every card holding the words. Up to 300.
 
 import { NextResponse } from 'next/server';
-import { cardVersions, findCards, familyCards, catalogData, CATALOG_GAMES } from '../../../lib/tcg/catalog';
+import { cardVersions, findCards, cardFamily, catalogData, CATALOG_GAMES } from '../../../lib/tcg/catalog';
 import { setList } from '../../../lib/tcg/setFilter';
 
 export async function GET(req) {
@@ -42,8 +44,8 @@ export async function GET(req) {
   if (p.get('q') != null && !p.get('card')) {
     const q = String(p.get('q')).slice(0, 80);
     if (p.get('family') === '1') {
-      const cards = familyCards(game, q);
-      return NextResponse.json({ cards, total: cards.length }, { headers: cache });
+      const { cards, match } = cardFamily(game, q);
+      return NextResponse.json({ cards, total: cards.length, match }, { headers: cache });
     }
     return NextResponse.json({ cards: findCards(game, q, parseInt(p.get('limit'), 10) || 10) }, { headers: cache });
   }
