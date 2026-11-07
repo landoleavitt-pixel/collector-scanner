@@ -48,6 +48,8 @@ Supabase → Authentication → Providers → Apple → enable. Under **Client I
 
 Until these are set, sign-in and account deletion work as before; deletion just can't revoke the Apple token.
 
+The website hides "Continue with Apple" until Sign in with Apple is also set up for the web (an Apple Services ID in Supabase's Apple provider); then set `NEXT_PUBLIC_APPLE_WEB=1` in Vercel and redeploy. The app's native Apple button is unaffected.
+
 ## 4. App Store Connect
 
 1. appstoreconnect.apple.com → **Apps → +** → New App. Platform iOS, name "Floors & Fables" (the app holds both sides: Fields & Floors and Foils & Fables), bundle ID `com.fieldsandfloors.app`.

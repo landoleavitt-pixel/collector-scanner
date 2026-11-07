@@ -190,9 +190,12 @@ export function usePendingStarSave() {
 }
 
 /* KeepCardPrompt — the sign-up ask when a signed-out visitor stars a card.
-   Web: Apple + Google + email. iOS app: Google blocks sign-in inside app web
-   views, so native Apple + email only; native Apple signs in without leaving
-   the page, so the card is saved on the spot. */
+   Web: Google + email, and Apple only once NEXT_PUBLIC_APPLE_WEB=1 (the web
+   Apple sign-in needs the Apple Services ID set up in Supabase; without it
+   the button ends on a raw Supabase error). iOS app: Google blocks sign-in
+   inside app web views, so native Apple + email only; native Apple signs in
+   without leaving the page, so the card is saved on the spot. */
+const APPLE_ON_WEB = process.env.NEXT_PUBLIC_APPLE_WEB === '1';
 export function KeepCardPrompt({ item, payload, onClose, onSaved }) {
   const [native, setNative] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -238,6 +241,10 @@ export function KeepCardPrompt({ item, payload, onClose, onSaved }) {
   }
 
   const btn = 'w-full h-11 rounded-lg flex items-center justify-center gap-2 text-[13px] font-semibold transition-opacity hover:opacity-90 disabled:opacity-50';
+  // The first button is the solid gold one: Apple in the app, Google on the web.
+  const showApple = native || APPLE_ON_WEB;
+  const primaryStyle = { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' };
+  const outlineStyle = { background: 'transparent', color: 'var(--ink-100)', border: '0.5px solid var(--ink-600)' };
   return createPortal(
     <div
       className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-4"
@@ -270,12 +277,14 @@ export function KeepCardPrompt({ item, payload, onClose, onSaved }) {
           We’ll keep its price up to date and tell you if it sells. No credit card.
         </p>
         <div className="mt-5 grid gap-2">
-          <button type="button" disabled={busy} onClick={() => continueWith('apple')} className={btn} style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
-            Continue with Apple
-          </button>
           {!native && (
-            <button type="button" disabled={busy} onClick={() => continueWith('google')} className={btn} style={{ background: 'transparent', color: 'var(--ink-100)', border: '0.5px solid var(--ink-600)' }}>
+            <button type="button" disabled={busy} onClick={() => continueWith('google')} className={btn} style={primaryStyle}>
               Continue with Google
+            </button>
+          )}
+          {showApple && (
+            <button type="button" disabled={busy} onClick={() => continueWith('apple')} className={btn} style={native ? primaryStyle : outlineStyle}>
+              Continue with Apple
             </button>
           )}
           <Link
