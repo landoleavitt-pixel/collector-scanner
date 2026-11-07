@@ -50,6 +50,7 @@ Landon wants the week's remaining usage spent, so all 4 agents run (above the us
 - [ ] Design: card lists front and center (mockup first), clearer first five seconds
 - [ ] Engine: card lists browse endpoint; one card per list (no Toon Dark Magician); speed; clean re-test; set filter checks
 - [ ] Research: popular card lists per game
+- [ ] Engine: Pokémon accuracy to 95%+ (clean test 89.6%) and catalog rebuild; push held until then
 
 **Added 2026-11-06 evening**
 - [ ] Design: sports home and search mockup; App Store screenshots and listing; tour and guide wording
