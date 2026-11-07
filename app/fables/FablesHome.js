@@ -84,6 +84,23 @@ const money = (v, c = 'USD') => (v == null ? '' : `${c === 'USD' ? '$' : ''}${Nu
 const isDefault = (f) => COMPARE_KEYS.every((k) => JSON.stringify(f[k]) === JSON.stringify(DEFAULT_FILTERS[k]));
 const origin = () => (typeof window !== 'undefined' ? window.location.origin : 'https://fieldsandfloors.com');
 
+// A set's name for its filter chip ("Dominaria United", not "dmu"). The list is
+// cached by the CDN; it's only fetched when a set is picked.
+function useSetName(game, code) {
+  const [names, setNames] = useState({});
+  const key = `${game}|${code}`;
+  useEffect(() => {
+    if (!game || !code || names[key]) return undefined;
+    let alive = true;
+    fetch(`/api/tcg-versions?game=${encodeURIComponent(game)}&sets=1`).then((r) => (r.ok ? r.json() : null)).catch(() => null).then((d) => {
+      const name = d?.sets?.find((s) => s.code === code)?.name;
+      if (alive) setNames((n) => ({ ...n, [key]: name || code }));
+    });
+    return () => { alive = false; };
+  }, [game, code, key, names]);
+  return names[key] || null;
+}
+
 function countActiveFilters(f) {
   let n = 0;
   if (f.game) n++;
@@ -99,7 +116,7 @@ function countActiveFilters(f) {
 
 // Plain-text chips for what a search is filtered by (results heading and the
 // save modal).
-function filterLabels(f, meta) {
+function filterLabels(f, meta, setName) {
   const out = [];
   const game = meta?.games?.find((g) => g.key === f.game);
   if (game) out.push({ label: game.label });
@@ -116,7 +133,7 @@ function filterLabels(f, meta) {
   if (min > 0 || max < PRICE_NO_MAX) out.push({ label: priceRangeLabel(min, max) });
   const more = meta?.more;
   const labelOf = (lists, k) => Object.values(lists || {}).flat().find(([key]) => key === k)?.[1] || k;
-  if (f.set) out.push({ label: `Set ${f.set}` });
+  if (f.set) out.push({ label: setName || 'Set' });
   (f.finish || []).forEach((k) => out.push({ label: labelOf(more?.finishes, k) }));
   (f.art || []).forEach((k) => out.push({ label: labelOf(more?.arts, k) }));
   if (f.promos === 'hide') out.push({ label: 'No promos' });
@@ -359,6 +376,7 @@ export default function FablesHome() {
     window.scrollTo({ top: 0 });
   }
 
+  const saveSetName = useSetName(filters.game, filters.set);
   const gameLabel = meta?.games?.find((g) => g.key === (appliedFilters || filters).game)?.label;
   function handleOpenSave() {
     if (!user) { setSavePromptOpen(true); return; }
@@ -370,7 +388,7 @@ export default function FablesHome() {
       onClose={() => { setSaveModalOpen(false); if (editingSearch) setEditingSearch(null); }}
       query={query || gameLabel || ''}
       filters={filters}
-      chips={filterLabels(filters, meta).map((c) => ({ label: c.label, tier: 'neutral' }))}
+      chips={filterLabels(filters, meta, saveSetName).map((c) => ({ label: c.label, tier: 'neutral' }))}
       editingSearch={editingSearch}
       side={SIDE}
     />
@@ -843,7 +861,7 @@ function ForSaleShelf({ count, onCardClick }) {
 /* ── results ─────────────────────────────────────────────────────────── */
 
 function FilterChips({ meta, filters, onEdit }) {
-  const chips = filterLabels(filters, meta);
+  const chips = filterLabels(filters, meta, useSetName(filters.game, filters.set));
   return (
     <div className="mt-3 flex flex-wrap items-center gap-2">
       {chips.map((c) => (
