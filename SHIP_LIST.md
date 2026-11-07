@@ -46,6 +46,11 @@ Landon wants the week's remaining usage spent, so all 4 agents run (above the us
 - [ ] Download links for the card makers' checklists, so Landon can save them quickly
 - [ ] Safe plan for sign-in across the two domains
 
+**Added 2026-11-07 (top priority)**
+- [ ] Design: card lists front and center (mockup first), clearer first five seconds
+- [ ] Engine: card lists browse endpoint; one card per list (no Toon Dark Magician); speed; clean re-test; set filter checks
+- [ ] Research: popular card lists per game
+
 **Added 2026-11-06 evening**
 - [ ] Design: sports home and search mockup; App Store screenshots and listing; tour and guide wording
 - [ ] Helper: pre-push test of main; iPhone app in the Simulator; speed warm-up
