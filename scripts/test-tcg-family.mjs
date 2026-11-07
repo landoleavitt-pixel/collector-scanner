@@ -32,7 +32,7 @@ fs.symlinkSync(path.join(root, 'lib/tcg/catalog'), path.join(dir, 'catalog'));
 const { matchListing } = await import(pathToFileURL(path.join(dir, 'family.mjs')).href);
 const { cardVersions, findCards, familyCards } = await import(pathToFileURL(path.join(dir, 'catalog.mjs')).href);
 const { familySavedParams } = await import(pathToFileURL(path.join(dir, 'familySearch.mjs')).href);
-const { catalogRarity, applyCatalog } = await import(pathToFileURL(path.join(dir, 'catalogMatch.mjs')).href);
+const { catalogRarity, catalogGroup, applyCatalog } = await import(pathToFileURL(path.join(dir, 'catalogMatch.mjs')).href);
 const { getCard } = await import(pathToFileURL(path.join(dir, 'catalog.mjs')).href);
 const { rarityValuesToGroups } = await import(pathToFileURL(path.join(dir, 'ladders.mjs')).href);
 const allVersions = (game, key) => cardVersions(game, key).sets.flatMap((x) => x.numbers.flatMap((n) => n.versions));
@@ -81,6 +81,9 @@ const checks = [
   ['Versions: Sheoldred prerelease is Promo, set card is Very rare', () => { const v = allVersions('mtg', 'sheoldred-the-apocalypse'); return v.some((x) => x.tags.includes('prerelease') && x.rarityGroup === 'promo') && v.find((x) => x.key === 'dmu:107:n').rarityGroup === 'very_rare'; }],
   ['Every Magic version of a sample of cards has a group', () => ['sol-ring', 'lightning-bolt', 'ragavan-nimble-pilferer'].every((k) => allVersions('mtg', k).every((v) => v.rarityGroup))],
   ['Pokémon V cards are Very rare, Shiny and Radiant Extremely rare', () => allVersions('pokemon', 'lugia-v').some((v) => v.rarity === 'Holo Rare V' && v.rarityGroup === 'very_rare') && allVersions('pokemon', 'radiant-charizard').every((v) => v.rarityGroup === 'extremely_rare')],
+  ['Every version of Base Set Charizard is Vintage, 1st Edition too', () => cardVersions('pokemon', 'charizard').sets.find((x) => x.set === 'base1').numbers.flatMap((n) => n.versions).every((v) => v.rarityGroup === 'vintage')],
+  ['Neo Genesis Lugia is Vintage; Legendary Collection is not', () => allVersions('pokemon', 'lugia').some((v) => v.key.startsWith('neo1:') && v.rarityGroup === 'vintage') && cardVersions('pokemon', 'charizard').sets.find((x) => x.set === 'lc').numbers.flatMap((n) => n.versions).every((v) => v.rarityGroup !== 'vintage')],
+  ['A Base Set listing is Vintage even if the title says nothing old', () => catalogGroup('pokemon', getCard('pokemon', 'charizard'), matchListing('pokemon', 'charizard', 'Charizard 4/102 Holo'))?.group === 'vintage'],
   ['Old saved rarity values map to groups', () => rarityValuesToGroups(['sir'], ['pokemon'])[0] === 'extremely_rare' && rarityValuesToGroups(['pokemon:dr'], ['pokemon','mtg'])[0] === 'very_rare' && rarityValuesToGroups(['enchanted'], ['lorcana'])[0] === 'extremely_rare'],
   ['Group values pass through; junk is dropped', () => JSON.stringify(rarityValuesToGroups(['promo', 'vintage', 'nonsense'], ['pokemon'])) === '["promo","vintage"]'],
   ['Serialized One Ring is a grail', () => cardVersions('mtg', 'the-one-ring').sets.flatMap((s) => s.numbers.flatMap((n) => n.versions)).some((v) => v.rarityKey === 'serialized' && v.tier === 'grail')],

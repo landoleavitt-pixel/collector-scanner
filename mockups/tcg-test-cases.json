@@ -3012,6 +3012,118 @@
    "expect": {
     "rarityGroup": null
    }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "1999 Pokemon Base Set Charizard 4/102 1st Edition Holo PSA 8",
+   "hint": "pokemon",
+   "expect": {
+    "rarityGroup": "vintage"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Charizard Base Set Shadowless 4/102 Holo Rare",
+   "hint": "pokemon",
+   "expect": {
+    "rarityGroup": "vintage"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "1999 Pokemon Game #4 Charizard Holo PSA 7",
+   "hint": "pokemon",
+   "expect": {
+    "rarityGroup": "vintage"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Scyther Jungle 10/64 Holo",
+   "hint": "pokemon",
+   "expect": {
+    "rarityGroup": "vintage"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Dragonite Fossil 4/62 Holo",
+   "hint": "pokemon",
+   "expect": {
+    "rarityGroup": "vintage"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Dark Charizard Team Rocket 4/82 1st Edition",
+   "hint": "pokemon",
+   "expect": {
+    "rarityGroup": "vintage"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Lugia Neo Genesis 9/111 Holo",
+   "hint": "pokemon",
+   "expect": {
+    "rarityGroup": "vintage"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Blaine's Charizard Gym Challenge 2/132",
+   "hint": "pokemon",
+   "expect": {
+    "rarityGroup": "vintage"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Team Rocket's Mewtwo ex 231/182 Special Illustration Rare Destined Rivals",
+   "hint": "pokemon",
+   "expect": {
+    "rarityGroup": "extremely_rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Charizard Celebrations Classic Collection Base Set 4/102 Holo Rare",
+   "hint": "pokemon",
+   "expect": {
+    "rarityGroup": "rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Scarlet & Violet Base Set Miraidon ex Ultra Rare",
+   "hint": "pokemon",
+   "expect": {
+    "rarityGroup": "very_rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Mysterious Fossil Ultra Rare 2023",
+   "hint": "pokemon",
+   "expect": {
+    "rarityGroup": "very_rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Charizard 2000 HP Ultra Rare",
+   "hint": "pokemon",
+   "expect": {
+    "rarityGroup": "very_rare"
+   }
+  },
+  {
+   "group": "Rarity groups",
+   "title": "Wizards Black Star Promo Pikachu 1 Base Set Promo",
+   "hint": "pokemon",
+   "expect": {
+    "rarityGroup": "promo"
+   }
   }
  ]
 }
