@@ -1311,6 +1311,161 @@
      "base4:4:h"
     ]
    }
+  },
+  {
+   "game": "pokemon",
+   "card": "pikachu-v",
+   "title": "Pikachu V-Union SWSH140 Holo Promo Sword & Shield Promo Pokemon NM",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "pikachu-v",
+   "title": "2021 Pokemon Sword Shield Black Star Promo Pikachu V Union #141 PSA 10",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "pikachu-v",
+   "title": "2020 Pokemon Sword & Shield Vivid Voltage #043 Pikachu V PSA 9",
+   "expect": {
+    "kind": "exact"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "eevee",
+   "title": "Pokemon Card Flareon V SR SA Eevee Heroes 073/069 Japanese",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "eevee",
+   "title": "PSA 10 Pokemon Aroma Lady SR Eevee Heroes Card From Japan",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "mewtwo-ex",
+   "title": "Team Rocket Mewtwo ex SAR 237/193 MEGA Dream ex Pokemon Card From Japan",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "blastoise-ex",
+   "title": "Blastoise EX XY122 XY Holo",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "venusaur-ex",
+   "title": "[PSA9] Pokemon Card Venusaur EX SR 061/060 2013",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "blastoise-ex",
+   "title": "Blastoise ex 200/165 Sv: Scarlet & Violet 151 SIR PSA 9",
+   "expect": {
+    "kind": "exact"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "lugia",
+   "title": "Pokemon TCG  Lugia 149/147 30th Holo Rare English Card",
+   "expect": {
+    "kind": "exact",
+    "why": "30th Classic Collection"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "lugia",
+   "title": "Lugia 121/128 Rare 30th Celebration Pokemon Holo Near Mint",
+   "expect": {
+    "kind": "exact",
+    "why": "30th Celebration 121/128"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "lugia",
+   "title": "Pokemon TCG Lugia 149/147 Aquapolis Holo Rare Holo English 80 HP",
+   "expect": {
+    "kind": "exact",
+    "why": "Aquapolis"
+   }
+  },
+  {
+   "game": "yugioh",
+   "card": "black-luster-soldier-envoy-of-the-beginning",
+   "title": "Black Luster Soldier TOCH-EN029 1st Edition-Collector's Rare Yugioh PSA 10",
+   "expect": {
+    "kind": "exact"
+   }
+  },
+  {
+   "game": "yugioh",
+   "card": "black-luster-soldier-envoy-of-the-beginning",
+   "title": "Konami Yu-Gi-Oh! Black Luster Soldier MAMA-EN047 Ultra Rare 1st Edition",
+   "expect": {
+    "kind": "exact"
+   }
+  },
+  {
+   "game": "yugioh",
+   "card": "black-luster-soldier",
+   "title": "Black Luster Soldier TOCH-EN029 1st Edition PSA 10",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "city-of-traitors",
+   "title": "Sorcery Contested Realm: City of Traitors - NM",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "mtg",
+   "card": "city-of-traitors",
+   "title": "City of Traitors [EXO - 143]",
+   "expect": {
+    "kind": "exact"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "eevee",
+   "title": "Eevee 114/103 Me06: Delta Reign Holo",
+   "expect": {
+    "kind": "unknown"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "gengar-vmax",
+   "title": "Gengar VMAX 002/019 PSA 10",
+   "expect": {
+    "kind": "language"
+   }
   }
  ]
 }
