@@ -30,6 +30,7 @@ export default function Header() {
   const { user, loading } = useUser();
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false); // shows the admin links in the account menu
   const menuRef = useRef(null);
 
   // Close menu on outside click
@@ -55,6 +56,12 @@ export default function Header() {
   const [billingSource, setBillingSource] = useState(null);
   const [native, setNative] = useState(false);
   useEffect(() => { setNative(isNativeApp()); }, []);
+  useEffect(() => {
+    if (!user) { setIsAdmin(false); return; }
+    let live = true;
+    fetch('/api/admin/me').then((r) => (r.ok ? r.json() : null)).then((d) => { if (live) setIsAdmin(!!d?.admin); }).catch(() => {});
+    return () => { live = false; };
+  }, [user]);
   useEffect(() => {
     if (!user) { setTier(null); setBillingSource(null); return; }
     let cancelled = false;
@@ -343,6 +350,20 @@ export default function Header() {
                       >
                         Usage stats
                       </Link>
+                      {isAdmin && (
+                        <div className="border-t mt-1 pt-1" style={{ borderColor: 'rgba(232,226,213,0.08)' }}>
+                          {[['/admin/visitors', 'Visitors'], ['/admin/funnel', 'Funnel'], ['/admin/usage', 'eBay usage']].map(([href, label]) => (
+                            <Link
+                              key={href}
+                              href={href}
+                              onClick={() => setMenuOpen(false)}
+                              className="block px-4 py-2 text-[13px] text-[var(--ink-400)] hover:text-[var(--gold)] hover:bg-[rgba(212,175,92,0.05)] transition-colors"
+                            >
+                              {label}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
                       <div
                         className="border-t mt-1"
                         style={{ borderColor: 'rgba(232,226,213,0.08)' }}

@@ -56,6 +56,15 @@ Right now anyone who finds the alert checker's web address can start a run. It o
 - [ ] **4. Deploy the checker:** `npx supabase functions deploy poller` (the boss may do this one).
 - [ ] **5. Check it:** the boss runs two quick tests. A call without the header should be refused and a call with it should work. If alerts ever stop, remove `POLLER_CRON_SECRET` (`npx supabase secrets unset POLLER_CRON_SECRET`) and the checker goes back to accepting runs until it's fixed.
 
+## See visitor numbers on the site (after PostHog is switched on)
+
+The page **/admin/visitors** (Account menu → Visitors, admins only) shows PostHog's numbers for both sites. It says "Waiting for the PostHog key" until you do this:
+
+- [ ] In PostHog: your profile → **Personal API keys → Create**. Give it **read-only access to queries only**, limited to this one project. Copy the key once. **Security note:** this key can read your analytics, so treat it like a password: paste it only into Vercel, never into chat, email, GitHub or a project file. If it leaks, delete it in PostHog and make a new one.
+- [ ] Find the **project number**: it's in the PostHog address after `/project/` (for example `.../project/12345/...`).
+- [ ] In Vercel (Production) add `POSTHOG_PERSONAL_API_KEY` (the key) and `POSTHOG_PROJECT_ID` (the number), then redeploy. Only if your PostHog is not on the EU cloud, also add `POSTHOG_API_HOST` (for example `https://us.posthog.com`).
+- [ ] Open /admin/visitors while signed in as admin and check the numbers look right. It can take a few minutes after the first visits for numbers to appear.
+
 ## Check after the next deploy
 
 - [ ] Star a card while signed out, sign up, and confirm you land back on the same search with the card starred.

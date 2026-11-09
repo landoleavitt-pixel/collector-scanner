@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '../../lib/supabaseClient';
 import { PAYMENTS_LIVE } from '../../lib/payments';
 import { usePushAsk } from './PushAsk';
+import { trackPostHogOnly } from '../../lib/track';
 
 function suggestName(query) {
   if (!query) return '';
@@ -142,6 +143,9 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
       setError(data.error || 'Something went wrong.');
       return;
     }
+
+    // For the visitors page (PostHog only): an alert was saved. No search words.
+    if (effectiveNotify) trackPostHogOnly('alert_saved');
 
     // iPhone app: an alert was just turned on, so explain and ask for
     // notifications now (resolves at once on the website or if already asked).

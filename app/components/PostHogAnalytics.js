@@ -11,8 +11,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { useUser } from '../../lib/useUser';
-import { STATS_CHANGED_EVENT } from '../../lib/track';
-import { posthogConfigured, syncPostHog, capturePageview } from '../../lib/posthog';
+import { STATS_CHANGED_EVENT, setTrackMirror } from '../../lib/track';
+import { posthogConfigured, syncPostHog, capturePageview, captureEvent } from '../../lib/posthog';
 
 export default function PostHogAnalytics() {
   const { user, loading } = useUser();
@@ -20,6 +20,13 @@ export default function PostHogAnalytics() {
   const side = pathname?.startsWith('/fables') ? 'fables' : 'sports';
   const [rulesChanged, setRulesChanged] = useState(0);
   const lastPath = useRef(null);
+
+  // Funnel events from track() (searched, card_opened, starred, signed_up) also go to PostHog.
+  useEffect(() => {
+    if (!posthogConfigured()) return undefined;
+    setTrackMirror(captureEvent);
+    return () => setTrackMirror(null);
+  }, []);
 
   useEffect(() => {
     if (!posthogConfigured()) return undefined;
