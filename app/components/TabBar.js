@@ -20,6 +20,7 @@ const ICONS = {
   search: <><circle cx="11" cy="11" r="6.5" /><path d="M16 16l4.5 4.5" /></>,
   star: <path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.6l1-5.8L3.5 9.7l5.9-.9z" />,
   bell: <><path d="M6 16.5V11a6 6 0 0112 0v5.5l1.5 2h-15z" /><path d="M10 20.5a2 2 0 004 0" /></>,
+  list: <><rect x="4.5" y="3.5" width="15" height="17" rx="2" /><path d="M8.5 8.5h7M8.5 12h7M8.5 15.5h4" /></>,
   user: <><circle cx="12" cy="8.5" r="3.8" /><path d="M4.5 20c1.3-3.6 4.2-5.5 7.5-5.5s6.2 1.9 7.5 5.5" /></>,
 };
 
@@ -43,6 +44,8 @@ export default function TabBar() {
   const home = pathname?.startsWith('/fables') ? '/fables' : '/';
   const tabs = [
     { key: 'search', label: 'Search', icon: 'search', href: home, active: pathname === home },
+    // Card lists are a main destination on Foils & Fables (approved 2026-11-07).
+    ...(home === '/fables' ? [{ key: 'lists', label: 'Lists', icon: 'list', href: '/fables/lists', active: pathname?.startsWith('/fables/lists') }] : []),
     { key: 'watch', label: 'Watchlist', icon: 'star', href: gate('/watchlist-cards'), active: pathname === '/watchlist-cards' },
     { key: 'alerts', label: 'Alerts', icon: 'bell', href: gate('/watchlist'), active: pathname === '/watchlist' },
     { key: 'account', label: 'Account', icon: 'user', href: user ? null : '/login', active: pathname === '/login' || pathname === '/subscribe' },
@@ -51,7 +54,7 @@ export default function TabBar() {
   return (
     <nav
       aria-label="App"
-      className="fixed left-3.5 right-3.5 bottom-3 z-[35] grid grid-cols-4 h-[62px] rounded-[22px]"
+      className={`fixed left-3.5 right-3.5 bottom-3 z-[35] grid ${tabs.length === 5 ? 'grid-cols-5' : 'grid-cols-4'} h-[62px] rounded-[22px]`}
       style={{
         background: 'rgba(26,22,15,0.82)',
         backdropFilter: 'blur(18px)',

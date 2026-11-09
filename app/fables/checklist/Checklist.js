@@ -28,6 +28,7 @@ import { useNameSuggest } from '../../components/search/SuggestBox';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronLeft, Check, Lock, Bell, Search } from 'lucide-react';
 import { useUser } from '../../../lib/useUser';
+import { usePushAsk } from '../../components/PushAsk';
 import { SIDE } from '../data';
 import { GroupDot, groupRank } from '../rarity';
 import { VERSION_GAMES, VERSION_GAMES_TEXT, GAME_NAMES, versionGame, versionLabel, cardNumber, gameParams, gameQuery, sized, loadFamily, loadFamilyListings, saveFamilyAlert } from '../versions';
@@ -64,6 +65,7 @@ export default function Checklist() {
   const [pick, setPick] = useState(null); // row id
   const [ask, setAsk] = useState(false);
   const [alertState, setAlertState] = useState(''); // '' | 'saving' | 'on' | message
+  const pushAsk = usePushAsk();
 
   // Versions for every card in the family.
   useEffect(() => {
@@ -137,8 +139,11 @@ export default function Checklist() {
 
   async function turnOnAlert() {
     setAlertState('saving');
-    setAlertState(await saveFamilyAlert(GAME, title, rows));
+    const result = await saveFamilyAlert(GAME, title, rows);
+    setAlertState(result);
     setAsk(false);
+    // In the iPhone app, the first alert is when we ask about notifications.
+    if (result === 'on') await pushAsk.ask();
   }
 
   const cardRow = (r) => {
@@ -334,6 +339,7 @@ export default function Checklist() {
           <button type="button" onClick={() => setAsk(false)} className="w-full min-h-[56px] text-[17px] mt-1.5" style={{ color: 'var(--ink-400)' }}>Not now</button>
         </Sheet>
       )}
+      {pushAsk.node}
     </main>
   );
 }

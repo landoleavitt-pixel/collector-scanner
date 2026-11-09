@@ -595,11 +595,19 @@ function SiteTourInner() {
     }
     if (!autoEligible.current) return;
     return afterIntro(() => {
+      // The tour is about sports (players, print runs). In the app the side
+      // chooser opens on "/" too, so skip it if they went to Foils & Fables.
+      if (window.location.pathname.startsWith('/fables')) return;
       autoEligible.current = false;
       markTourSeen();
       setOpen(true);
     });
   }, []);
+
+  // Never over Foils & Fables: close (without marking it seen) if they got there.
+  useEffect(() => {
+    if (pathname?.startsWith('/fables')) setOpen(false);
+  }, [pathname]);
 
   // Replay via /?tour=1.
   useEffect(() => {

@@ -8,6 +8,8 @@ import { brandFilterLabels } from '../../lib/cardBrands';
 import { teamFilterLabels } from '../../lib/teams';
 import { isNativeApp } from '../../lib/native';
 import { X } from 'lucide-react';
+import { groupOf } from '../fables/rarity';
+import useSetName from '../fables/useSetName';
 import { usePushAsk } from './PushAsk';
 
 const TIER_STYLES = {
@@ -17,6 +19,32 @@ const TIER_STYLES = {
   scarce:  { bg: 'rgba(90,100,112,0.15)', color: '#9aa4b0', border: 'rgba(90,100,112,0.4)' },
   neutral: { bg: 'rgba(232,226,213,0.04)', color: '#a8a090', border: 'rgba(232,226,213,0.12)' },
 };
+
+// Foils & Fables saved searches use their own filters (app/fables/FablesHome.js).
+const FABLES_GAMES = { pokemon: 'Pokémon', mtg: 'Magic', yugioh: 'Yu-Gi-Oh!', onepiece: 'One Piece', lorcana: 'Lorcana' };
+const FABLES_LANGS = { en: 'English', ja: 'Japanese', other: 'Other languages' };
+function buildFablesChips(f, setName) {
+  const chips = [];
+  if (FABLES_GAMES[f.game]) chips.push({ label: FABLES_GAMES[f.game], tier: 'neutral' });
+  if (f.needOnly) chips.push({ label: 'Only ones I need', tier: 'neutral' });
+  (f.rarity || []).forEach((k) => { const g = groupOf(k); chips.push({ label: g ? g.label : k, tier: 'neutral' }); });
+  if (f.set) chips.push({ label: setName || 'One set', tier: 'neutral' });
+  const lang = Array.isArray(f.lang) ? f.lang : f.lang ? String(f.lang).split(',') : [];
+  lang.forEach((k) => chips.push({ label: FABLES_LANGS[k] || k, tier: 'neutral' }));
+  if (f.graded === 'graded') chips.push({ label: [f.grader || 'Graded', f.grade ? (f.grade === '10' ? '10' : `${f.grade}+`) : ''].filter(Boolean).join(' '), tier: 'neutral' });
+  if (f.graded === 'raw') chips.push({ label: 'Raw', tier: 'neutral' });
+  if (f.firstEd) chips.push({ label: '1st Edition', tier: 'neutral' });
+  if (f.serialOnly) chips.push({ label: 'Serial-numbered', tier: 'neutral' });
+  if (f.listing === 'bin') chips.push({ label: 'Buy It Now', tier: 'neutral' });
+  if (f.listing === 'auction') chips.push({ label: 'Auction', tier: 'neutral' });
+  const min = f.priceMin || 0;
+  const max = f.priceMax ?? 100000;
+  if (min > 0 || max < 100000) chips.push({ label: max < 100000 ? `$${min}–$${max}` : `$${min} and up`, tier: 'neutral' });
+  const more = (f.finish?.length || 0) + (f.art?.length || 0) + (f.cond?.length ? 1 : 0) + (f.promos && f.promos !== 'show' ? 1 : 0)
+    + (f.freeShip ? 1 : 0) + (f.offers ? 1 : 0) + (f.shipFrom ? 1 : 0) + (f.returns ? 1 : 0);
+  if (more) chips.push({ label: `+${more} more`, tier: 'neutral' });
+  return chips;
+}
 
 function buildChips(filters) {
   if (!filters) return [];
@@ -188,7 +216,9 @@ export default function WatchlistRow({ search, canUseAlerts }) {
   // everything that isn't.
   const alertsLive = canUseAlerts && notifyEnabled;
 
-  const chips = buildChips(search.filters);
+  const fables = search.side === 'fables';
+  const setName = useSetName(fables ? search.filters?.game : null, fables ? search.filters?.set : null);
+  const chips = fables ? buildFablesChips(search.filters || {}, setName) : buildChips(search.filters);
 
   async function toggleNotify() {
     // Free users (non-founding-members) hit the paywall instead of toggling
@@ -266,7 +296,6 @@ export default function WatchlistRow({ search, canUseAlerts }) {
 
   // Each row wears its own side's colours: data-side="fables" swaps the
   // shared tokens to Night foil for just this row (globals.css).
-  const fables = search.side === 'fables';
   const accentRgb = fables ? '143,211,232' : '201,149,74';
 
   return (

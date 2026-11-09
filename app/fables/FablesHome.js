@@ -11,7 +11,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Search, ArrowRight, Clock, Crosshair, Bookmark, Layers, Check, X } from 'lucide-react';
+import { Search, ArrowRight, Clock, Crosshair, Bookmark, Layers, Check, Bell, List } from 'lucide-react';
 import { useUser } from '../../lib/useUser';
 import { PAYMENTS_LIVE } from '../../lib/payments';
 import { track } from '../../lib/track';
@@ -32,6 +32,8 @@ import SetFilter from './SetFilter';
 import { SIDE, fetchMeta, searchCards, toParams, fromParams, LANG_LABEL, serialOf, gradeText } from './data';
 import { RARITY_GROUPS, RARITY_SOURCE, GROUP_ROW, groupOf, GroupChip } from './rarity';
 import VersionsView from './VersionsView';
+import useSetName from './useSetName';
+import { PopularListsRow } from './CardListTiles';
 import { VERSION_GAMES, VERSION_GAMES_TEXT, gameQuery } from './versions';
 
 const DEFAULT_FILTERS = {
@@ -83,23 +85,6 @@ function addRecent(q) {
 const money = (v, c = 'USD') => (v == null ? '' : `${c === 'USD' ? '$' : ''}${Number(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}${c !== 'USD' ? ` ${c}` : ''}`);
 const isDefault = (f) => COMPARE_KEYS.every((k) => JSON.stringify(f[k]) === JSON.stringify(DEFAULT_FILTERS[k]));
 const origin = () => (typeof window !== 'undefined' ? window.location.origin : 'https://fieldsandfloors.com');
-
-// A set's name for its filter chip ("Dominaria United", not "dmu"). The list is
-// cached by the CDN; it's only fetched when a set is picked.
-function useSetName(game, code) {
-  const [names, setNames] = useState({});
-  const key = `${game}|${code}`;
-  useEffect(() => {
-    if (!game || !code || names[key]) return undefined;
-    let alive = true;
-    fetch(`/api/tcg-versions?game=${encodeURIComponent(game)}&sets=1`).then((r) => (r.ok ? r.json() : null)).catch(() => null).then((d) => {
-      const name = d?.sets?.find((s) => s.code === code)?.name;
-      if (alive) setNames((n) => ({ ...n, [key]: name || code }));
-    });
-    return () => { alive = false; };
-  }, [game, code, key, names]);
-  return names[key] || null;
-}
 
 function countActiveFilters(f) {
   let n = 0;
@@ -664,7 +649,7 @@ function SearchBar({ query, setQuery, onSubmit, onPick }) {
           onFocus={suggest.openBox}
           onBlur={suggest.close}
           {...suggest.inputProps}
-          placeholder="Which card?" aria-label="Which card?"
+          placeholder="Which card? Try Charizard" aria-label="Which card?"
           className="flex-1 min-w-0 bg-transparent outline-none text-[18px] py-2" style={{ color: 'var(--ink-100)' }}
         />
         <button type="submit" aria-label="Show cards" className="w-[52px] h-[52px] rounded-xl grid place-items-center flex-none"
@@ -732,61 +717,42 @@ function CardImage({ src, alt, className = '' }) {
 
 /* ── signed-out home ─────────────────────────────────────────────────── */
 
-// The three reasons (research/fables-why.md), each with a tiny picture.
-function ReasonCards() {
-  const card = (left, top, turn, a, b) => (
-    <i key={left} className="absolute w-10 h-14 rounded-[5px]" style={{ left, top, transform: `rotate(${turn}deg)`, boxShadow: '0 4px 12px rgba(0,0,0,.5)', background: `radial-gradient(40px 34px at 35% 25%,rgba(255,255,255,.25),transparent 60%),linear-gradient(160deg,${a},${b})` }} />
-  );
-  return <>{card(2, 10, -9, '#e0662c', '#4a1608')}{card(26, 6, 0, '#6a4bd0', '#1b1240')}{card(50, 10, 9, '#e3c15a', '#6a4a10')}</>;
-}
-function ReasonLines() {
-  const line = (ok, i) => (
-    <span key={i} className="flex items-center gap-1.5 h-5 mb-1" style={{ color: ok ? 'var(--gold)' : 'var(--ink-600)' }}>
-      {ok ? <Check className="w-[13px] h-[13px] flex-none" strokeWidth={2.5} /> : <X className="w-[13px] h-[13px] flex-none" strokeWidth={2.5} />}
-      <i className="flex-1 h-[7px] rounded-full" style={{ background: ok ? 'var(--foil)' : 'var(--line)' }} />
-    </span>
-  );
-  return <span className="block pt-2">{[false, true, false].map(line)}</span>;
-}
-function ReasonRings() {
-  const ring = (filled, left) => <i key={left} className="absolute w-6 h-6 rounded-full" style={{ left, top: 24, ...(filled ? { background: 'var(--foil)' } : { border: '2px solid var(--ink-600)' }) }} />;
-  return <>{ring(true, 4)}{ring(true, 34)}{ring(false, 64)}</>;
-}
-const REASONS = [
-  [ReasonCards, 'Type it once.', 'See every version for sale.'],
-  [ReasonLines, 'Only the real card.', 'Lots, fake copies and look-alikes are hidden.'],
-  [ReasonRings, 'Only what you’re missing.', 'We tell you when one you need is listed.'],
+const REASON_LINES = [
+  [Layers, 'Every version for sale, from one search. A version is the same card in a different set, finish or language.'],
+  [Check, 'Mark the cards you own on its card list. Only you can see them.'],
+  [Bell, 'Get told when a version you don’t own yet is listed.'],
 ];
 
-function SignedOut({ query, setQuery, onSearch, error, onCardClick }) {
+function SignedOut({ query, setQuery, onSearch, error }) {
   usePendingStarSave();
   return (
     <>
-      <section className="max-w-[760px] mx-auto px-5 md:px-6 pt-7 md:pt-16">
-        <h1 className="font-display text-[42px] md:text-[64px] leading-[1.04] tracking-[-0.01em] mb-[22px] md:mb-7 md:text-center">
-          Every version of a card. <em className="ff-foil-text">One search.</em>
+      <section className="max-w-[760px] mx-auto px-5 md:px-6 pt-7 md:pt-14">
+        <h1 className="font-display text-[40px] md:text-[60px] leading-[1.04] tracking-[-0.01em] mb-2 md:text-center">
+          Find any card. <em className="ff-foil-text">See every version.</em>
         </h1>
+        <p className="text-[18px] mb-5 md:mb-7 md:text-center" style={{ color: 'var(--ink-200)' }}>Then keep track of the ones you have.</p>
         <SearchBar query={query} setQuery={setQuery} onSubmit={() => onSearch()} onPick={(v) => onSearch(v)} />
         {error && <p className="text-[13px] mt-2" style={{ color: 'var(--crit)' }}>{error}</p>}
       </section>
-      <section className="max-w-[1040px] mx-auto px-5 md:px-7 pt-8 md:pt-10">
-        <h2 className="sr-only">Why use it</h2>
-        <ul className="list-none m-0 p-0 grid gap-[26px] md:grid-cols-3 md:gap-8">
-          {REASONS.map(([Art, head, line]) => (
-            <li key={head} className="flex md:flex-col items-center md:items-start gap-4 md:gap-3.5">
-              <span className="relative block w-[92px] h-[72px] flex-none" aria-hidden="true"><Art /></span>
-              <span>
-                <b className="block font-display font-normal text-[21px] leading-[1.15] mb-1">{head}</b>
-                <span className="text-[15px] leading-snug" style={{ color: 'var(--ink-400)' }}>{line}</span>
+      <div className="max-w-[1080px] mx-auto px-5 md:px-8 mt-8 md:mt-10">
+        <PopularListsRow />
+        <Link href="/fables/lists" className="flex md:inline-flex items-center justify-center gap-2 min-h-[56px] md:px-8 mt-4 rounded-2xl text-[16px] font-medium"
+              style={{ border: '1.5px solid var(--line)', color: 'var(--ink-100)' }}>
+          <List className="w-5 h-5" strokeWidth={2} aria-hidden="true" />Browse every card list
+        </Link>
+        <ul className="list-none m-0 p-0 mt-7 grid gap-3.5 md:grid-cols-3 md:gap-6">
+          {REASON_LINES.map(([Icon, line]) => (
+            <li key={line} className="flex items-center gap-3 text-[15px]" style={{ color: 'var(--ink-400)' }}>
+              <span className="w-[30px] h-[30px] rounded-[9px] grid place-items-center flex-none" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)', color: 'var(--gold-bright)' }}>
+                <Icon className="w-4 h-4" strokeWidth={2} aria-hidden="true" />
               </span>
+              {line}
             </li>
           ))}
         </ul>
-      </section>
-      <section className="md:hidden max-w-[760px] mx-auto px-5 mt-9">
-        <div className="pt-5 border-t" style={{ borderColor: 'var(--line-soft)' }}><ForSaleShelf count={2} onCardClick={onCardClick} /></div>
-      </section>
-      <p className="max-w-[760px] mx-auto px-5 text-center text-[12px] leading-relaxed mt-7 md:mt-2 pb-4" style={{ color: 'var(--ink-600)' }}>
+      </div>
+      <p className="max-w-[760px] mx-auto px-5 text-center text-[12px] leading-relaxed mt-8 pb-4" style={{ color: 'var(--ink-600)' }}>
         {!PAYMENTS_LIVE && 'Free during early access. '}Not affiliated with eBay or any game publisher.
       </p>
     </>
@@ -824,6 +790,7 @@ function SignedIn({ query, setQuery, onSearch, recents, error, onCardClick }) {
           ))}
         </div>
       )}
+      <div className="mt-9"><PopularListsRow /></div>
       <div className="mt-9"><ForSaleShelf count={5} onCardClick={onCardClick} /></div>
     </section>
   );

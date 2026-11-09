@@ -8,14 +8,25 @@ import SideSwitch from './SideSwitch';
 import { useUser } from '../../lib/useUser';
 import { createClient } from '../../lib/supabaseClient';
 import { isNativeApp, unregisterPush, openAppleSubscriptions } from '../../lib/native';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, List } from 'lucide-react';
 import { PAYMENTS_LIVE } from '../../lib/payments';
+
+const AUTH_PAGES = ['/signup', '/login', '/forgot-password', '/reset-password'];
 
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const isHome = pathname === '/';
-  const isFables = pathname?.startsWith('/fables');
+  // Sign-in pages opened from Foils & Fables (next=/fables…) keep its look and name.
+  const [authFables, setAuthFables] = useState(false);
+  useEffect(() => {
+    const onAuthPage = AUTH_PAGES.includes(pathname);
+    const fromFables = onAuthPage && (new URLSearchParams(window.location.search).get('next') || '').startsWith('/fables');
+    setAuthFables(fromFables);
+    if (fromFables) document.documentElement.setAttribute('data-side', 'fables');
+    else if (onAuthPage) document.documentElement.removeAttribute('data-side');
+  }, [pathname]);
+  const isFables = pathname?.startsWith('/fables') || authFables;
   const { user, loading } = useUser();
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -234,6 +245,10 @@ export default function Header() {
             </Link>
           )}
 
+          {/* Card lists are a main destination on Foils & Fables (approved
+              2026-11-07). The app has a Lists tab instead. */}
+          {isFables && !native && <CardListsLink pathname={pathname} className="hidden lg:inline-flex" label="Card lists" />}
+
           {/* Auth state */}
           {!loading && (
             <>
@@ -377,8 +392,10 @@ export default function Header() {
       </div>
 
       {/* Side switch on smaller screens: its own row, never hidden in a menu. */}
-      <div className="lg:hidden flex justify-center px-4 pb-3 -mt-3">
+      <div className="lg:hidden flex justify-center items-center gap-2 px-4 pb-3 -mt-3">
         <SideSwitch fables={isFables} />
+        {/* Phones: beside the switch, where the bar has room. */}
+        {isFables && !native && <CardListsLink pathname={pathname} label="Lists" />}
       </div>
 
       {/* Mobile nav — a scrollable pill row rather than a hamburger. Three
@@ -525,5 +542,21 @@ function CloseAccountDialog({ onClose, appleBilled }) {
         </div>
       </div>
     </div>
+  );
+}
+
+// Card lists are a main destination on Foils & Fables (approved 2026-11-07).
+// The iOS app has a Lists tab instead.
+function CardListsLink({ pathname, className = '', label }) {
+  const on = pathname?.startsWith('/fables/lists');
+  return (
+    <Link
+      href="/fables/lists"
+      aria-current={on ? 'page' : undefined}
+      className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 min-h-[40px] text-[14px] transition-colors ${className}`}
+      style={on ? { border: '1px solid var(--gold)', color: 'var(--gold-bright)' } : { border: '1px solid var(--line)', color: 'var(--ink-100)' }}
+    >
+      <List className="w-4 h-4 flex-none" strokeWidth={2} aria-hidden="true" />{label}
+    </Link>
   );
 }

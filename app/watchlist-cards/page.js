@@ -381,8 +381,8 @@ function WatchlistTile({ listing, onRemove, onToast, onCardClick }) {
           {b.isAuction && <span className="text-[10px] uppercase tracking-[0.08em] px-1.5 py-0.5 rounded" style={{ color: '#e6a86b', background: 'rgba(201,122,58,0.10)', border: '0.5px solid #c97a3a' }}>Auction</span>}
           {!b.isAuction && b.isBuyItNow && <span className="text-[10px] uppercase tracking-[0.08em] px-1.5 py-0.5 rounded" style={outChip}>Buy It Now</span>}
         </div>
-        <div className="flex items-center justify-between">
-          <span className="font-display italic text-[22px]" style={{ color: 'var(--gold)' }}>{price}</span>
+        <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1.5">
+          <span className="font-display italic text-[20px] sm:text-[22px] min-w-0" style={{ color: 'var(--gold)' }}>{price}</span>
           {listing.listing_url && (
             <a
               href={listing.listing_url}

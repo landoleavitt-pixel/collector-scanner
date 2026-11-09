@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ChevronLeft, Bell, ShieldCheck } from 'lucide-react';
 import { useUser } from '../../lib/useUser';
+import { usePushAsk } from '../components/PushAsk';
 import { EditableSearchHeading } from '../components/search/SuggestBox';
 import { LoadingState } from '../components/search/SearchUI';
 import { GroupDot } from './rarity';
@@ -26,6 +27,7 @@ export default function VersionsView({ query, game, onUnavailable, onNewSearch, 
   const [showAll, setShowAll] = useState(false);
   const [ask, setAsk] = useState(false);
   const [alertState, setAlertState] = useState('');
+  const pushAsk = usePushAsk();
 
   useEffect(() => {
     let alive = true;
@@ -67,8 +69,11 @@ export default function VersionsView({ query, game, onUnavailable, onNewSearch, 
 
   async function turnOnAlert() {
     setAlertState('saving');
-    setAlertState(await saveFamilyAlert(game, title, rows));
+    const result = await saveFamilyAlert(game, title, rows);
+    setAlertState(result);
     setAsk(false);
+    // In the iPhone app, the first alert is when we ask about notifications.
+    if (result === 'on') await pushAsk.ask();
   }
 
   return (
@@ -81,7 +86,7 @@ export default function VersionsView({ query, game, onUnavailable, onNewSearch, 
         <EditableSearchHeading side="fables" value={title} onSubmit={(next) => { const t = (next || '').trim(); if (t && norm(t) !== norm(title)) onSearch(t); }} />
       </div>
       <p className="text-[18px]" style={{ color: 'var(--ink-200)' }}>
-        <b className="font-semibold" style={{ color: 'var(--ink-100)' }}>{plural(versionCount, 'version', 'versions')}</b>, {listings.total.toLocaleString('en-US')}{listings.capped ? '+' : ''} for sale
+        <b className="font-semibold" style={{ color: 'var(--ink-100)' }}>{plural(versionCount, 'version', 'versions')}</b> · {listings.total.toLocaleString('en-US')}{listings.capped ? '+' : ''} {listings.total === 1 ? 'listing' : 'listings'} for sale now
       </p>
       {listings.hidden > 0 && (
         <p className="flex items-center gap-2 text-[14px] mt-2.5" style={{ color: 'var(--ink-400)' }}>
@@ -109,7 +114,9 @@ export default function VersionsView({ query, game, onUnavailable, onNewSearch, 
                     <span>No. {cardNumber(game, r)} · {label}</span>
                     {v.rarityGroup && <GroupDot group={v.rarityGroup} small />}
                   </span>
-                  <span className="block text-[15px] font-medium mt-0.5" style={{ color: 'var(--gold-bright)' }}>{n} for sale</span>
+                  {/* No count here: the row's number came from one sample of
+                      listings and didn't match what "Find it" shows (QA 2026-11-07 #4). */}
+                  <span className="block text-[15px] font-medium mt-0.5" style={{ color: 'var(--gold-bright)' }}>For sale now</span>
                 </span>
               </Link>
             );
@@ -157,6 +164,7 @@ export default function VersionsView({ query, game, onUnavailable, onNewSearch, 
           <button type="button" onClick={() => setAsk(false)} className="w-full min-h-[56px] text-[17px] mt-1.5" style={{ color: 'var(--ink-400)' }}>Not now</button>
         </Sheet>
       )}
+      {pushAsk.node}
     </section>
   );
 }
