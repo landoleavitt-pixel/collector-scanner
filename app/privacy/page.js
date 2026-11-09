@@ -11,7 +11,7 @@ export default function PrivacyPage() {
     <PageShell
       eyebrow="Legal"
       title="Privacy Policy."
-      lede="What we collect, why we collect it, and who we share it with. Covers Fields & Floors, Foils & Fables and the Floors & Fables app. Last updated October 2026."
+      lede="What we collect, why we collect it, and who we share it with. Covers Fields & Floors, Foils & Fables and the Floors & Fables app. Last updated November 2026."
     >
       <Prose>
         <p>
@@ -44,8 +44,8 @@ export default function PrivacyPage() {
           <li><strong>Sign in with Apple token (iOS app)</strong>: if you sign in with Apple in the app, Apple gives our server a token that proves the sign-in. We keep it, in a private place that only our server can read, for one reason: when you delete your account, we use it to tell Apple to cut the link between your Apple ID and our app, as Apple requires. It is never used to sign in as you or to read anything from your Apple account, and it is deleted when you delete your account.</li>
           <li><strong>Technical &amp; log data</strong>: information automatically recorded by our hosting and infrastructure providers, such as your IP address, browser and device type, access times, and error and security logs. This is used to operate, secure, and debug the service.</li>
           <li><strong>Usage analytics</strong>: aggregate, non-personal information about how pages are used (such as page views), collected through privacy-friendly analytics. It is usage-based only and does not identify you personally.</li>
-          <li><strong>Anonymous usage events</strong>: which steps of the service are used (such as visiting, running a search, or opening a card), stored in our own database under a random ID kept on your device, with no name, email, or search words. No ads and no tracking across other websites. You can turn these off at any time with the &ldquo;Share anonymous usage stats&rdquo; switch under <a href="#usage-stats">Your choices</a>; when it&rsquo;s off, your device sends none of them and forgets its random ID. We also skip them if your browser sends a Do Not Track or Global Privacy Control signal.</li>
-          <li><strong>Product analytics (PostHog)</strong>: a tool called PostHog counts which pages are opened (Fields &amp; Floors or Foils &amp; Fables) and which links and buttons are tapped, so we can see what is used and what isn&rsquo;t. It does not record what you type, your search words, names, or the text on the page, and web addresses are cut down to the page name before they leave your device. It does not record your screen. If you&rsquo;re signed in, this activity is tied to your internal account ID only, never your email or your name. The data is stored on PostHog&rsquo;s servers in the European Union. You can turn it off at any time with the &ldquo;Share anonymous usage stats&rdquo; switch under <a href="#usage-stats">Your choices</a>; when it&rsquo;s off, nothing is sent and PostHog&rsquo;s random ID on your device is forgotten. It also stays off if your browser sends a Do Not Track or Global Privacy Control signal.</li>
+          <li><strong>Anonymous usage events</strong>: which steps of the service are used (such as visiting, running a search, or opening a card), stored in our own database under a random ID kept on your device, with no name, email, or search words. No ads and no tracking across other websites. You can turn these off at any time with the &ldquo;Share usage stats&rdquo; switch under <a href="#usage-stats">Your choices</a>; when it&rsquo;s off, your device sends none of them and forgets its random ID. We also skip them if your browser sends a Do Not Track or Global Privacy Control signal.</li>
+          <li><strong>Product analytics (PostHog)</strong>: a tool called PostHog counts which pages are opened (Fields &amp; Floors or Foils &amp; Fables) and which links and buttons are tapped, so we can see what is used and what isn&rsquo;t. It does not record what you type, your search words, names, or the text on the page, and web addresses are cut down to the page name before they leave your device. It does not record your screen. If you&rsquo;re signed in, this activity is tied to your internal account ID only, never your email or your name. The data is stored on PostHog&rsquo;s servers in the European Union. You can turn it off at any time with the &ldquo;Share usage stats&rdquo; switch under <a href="#usage-stats">Your choices</a>; when it&rsquo;s off, nothing is sent and PostHog&rsquo;s random ID on your device is forgotten. It also stays off if your browser sends a Do Not Track or Global Privacy Control signal.</li>
           <li><strong>Account events</strong>: when you create an account, and when you start a trial, our server records that event against your account so we can count sign-ups and trials correctly. These are part of running your account, not usage stats, so the switch above doesn&rsquo;t turn them off. If you delete your account, they stay only as anonymous counts, no longer linked to you.</li>
         </ul>
         <p>
@@ -161,7 +161,7 @@ export default function PrivacyPage() {
           from the account menu; contact us if you can't.
         </p>
         <p>
-          Anonymous usage stats and product analytics (PostHog) are on by default. One switch controls both. You can turn them off here, on
+          Usage stats and product analytics (PostHog) are on by default. One switch controls both. You can turn them off here, on
           each device or browser you use, signed in or not:
         </p>
         <UsageStatsToggle />

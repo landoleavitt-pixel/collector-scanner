@@ -2,7 +2,7 @@
 
 // app/components/UsageStatsToggle.js
 //
-// "Share anonymous usage stats" switch (Apple 5.1.1(ii): an easy way to
+// "Share usage stats" switch (Apple 5.1.1(ii): an easy way to
 // withdraw consent). On by default. The choice lives on this device only
 // (lib/track.js); turning it off stops all browser funnel events here.
 
@@ -33,7 +33,7 @@ export default function UsageStatsToggle({ id = 'usage-stats' }) {
     >
       <div>
         <p className="text-[var(--ink-100)] font-medium" id={`${id}-label`}>
-          Share anonymous usage stats
+          Share usage stats
         </p>
         <p className="mt-1 text-[14px] text-[var(--ink-400)] leading-relaxed">
           Counts steps like searching or opening a card, with no name, email or
