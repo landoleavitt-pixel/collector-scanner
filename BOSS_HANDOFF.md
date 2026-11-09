@@ -50,3 +50,5 @@ Start a new Boss session with: "Read BOSS_HANDOFF.md, DECISIONS.md, SHIP_LIST.md
 - Open for Landon: sports home mockup headline (mockups/fields-floors-home-story.html); throwaway Supabase test project for one login (engine stopped until then); buy foilsandfables.com and floorsandfables.com; first Topps checklist file.
 - Saved for later: Japanese Pokémon plan; launch plan (research/launch-plan.md) once domains and the push are live.
 - Agents were run at 4 during the 2026-11-06/07 sprint because Landon asked to spend the week's usage; go back to max 3.
+
+- **Our testing never counts as visitors:** before any browser visit to the live site, open https://fieldsandfloors.com/?internal=1 once in that browser (repeat per new domain). Curl/smoke checks and localhost are fine. (Landon, 2026-11-09)
