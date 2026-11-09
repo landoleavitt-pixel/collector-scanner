@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-// /admin/visitors: PostHog numbers for the last 7 or 30 days, Fields & Floors
+// /admin/visitors: PostHog numbers for the last 7, 30, 90 or 365 days, Fields & Floors
 // (sports) and Foils & Fables side by side. The route (/api/admin/visitors)
 // does the admin check and talks to PostHog; the key never reaches the browser.
 
@@ -211,8 +211,8 @@ export default function AdminVisitorsPage() {
           Numbers from PostHog, both sites side by side. People, not page loads. No emails, names or search words are in here.
         </p>
 
-        <div className="flex gap-2 mt-8 mb-6" role="tablist" aria-label="Time range">
-          {[7, 30].map((d) => (
+        <div className="flex flex-wrap gap-2 mt-8 mb-6" role="tablist" aria-label="Time range">
+          {[7, 30, 90, 365].map((d) => (
             <button
               key={d}
               role="tab"
@@ -225,7 +225,7 @@ export default function AdminVisitorsPage() {
                 border: '1px solid var(--line)',
               }}
             >
-              Last {d} days
+              {d === 365 ? 'Last year' : `Last ${d} days`}
             </button>
           ))}
         </div>

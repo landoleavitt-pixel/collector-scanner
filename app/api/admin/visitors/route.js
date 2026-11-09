@@ -4,14 +4,14 @@ import { isAdminUser } from '../../../../lib/admin';
 import { posthogQueryConfig, runHogQL, queries } from '../../../../lib/posthogQuery';
 
 // GET /api/admin/visitors
-// PostHog numbers for /admin/visitors, last 7 and 30 days, sports and
+// PostHog numbers for /admin/visitors, last 7, 30, 90 and 365 days, sports and
 // Foils & Fables separately. Admin only (same gate as /api/admin/funnel).
 // The PostHog key stays on the server. Results are kept for about 10 minutes
 // on this server so reloading the page doesn't re-query PostHog.
 
 export const dynamic = 'force-dynamic';
 
-const WINDOWS = [7, 30];
+const WINDOWS = [7, 30, 90, 365];
 const SIDES = ['sports', 'fables'];
 const TTL_MS = 10 * 60 * 1000;
 const TOP = 8;
