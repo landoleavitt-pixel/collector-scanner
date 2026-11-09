@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Card Frames</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&family=Geist:wght@400;500;600&display=swap');
+
+:root{ --bg:#080a12; --elev:#10131f; --elev2:#161a29; --line:#242a3d; --soft:#1a1f2f;
+  --ink:#eef0f7; --ink2:#d5d9e8; --ink4:#9198b0; --ink6:#5d6480; --acc:#b9e6f2; --on:#071018;
+  --cta:linear-gradient(180deg,#c9eef8,#7fbfd4);
+  --foil:linear-gradient(100deg,#9fe3f5 0%,#b6a8f0 28%,#f0b3d0 52%,#f3d9a0 76%,#9fe3f5 100%); }
+*{box-sizing:border-box}
+html,body{margin:0;background:#030303;color:#e8e6e1;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.page{max-width:1240px;margin:0 auto;padding:40px 16px 100px}
+h1.t{font:italic 400 44px/1.05 'Fraunces',serif;margin:0 0 10px}
+.lede{color:#a3a7b6;font-size:16px;max-width:680px;line-height:1.55;margin:0}
+.sec{border-top:1px solid #23262f;padding-top:18px;margin:48px 0 22px}
+.sec h2{font:italic 400 26px/1.1 'Fraunces',serif;margin:0}
+.sec p{color:#a3a7b6;font-size:15px;max-width:680px;line-height:1.5;margin:8px 0 0}
+.cap{font-size:14px;color:#8c90a0;margin:12px 4px 0;max-width:360px;line-height:1.45}
+
+/* A / B switch for the page */
+.pick{position:sticky;top:0;z-index:20;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 0;background:linear-gradient(#030303 75%,transparent)}
+.pick span{font-size:14px;color:#8c90a0}
+.seg{display:flex;gap:4px;padding:4px;border-radius:12px;background:#10131f;border:1px solid #242a3d}
+.seg button{min-height:40px;padding:0 16px;border-radius:9px;border:0;background:transparent;color:#9198b0;font:500 15px Geist,sans-serif;cursor:pointer}
+.seg button[aria-pressed=true]{background:#161a29;color:#eef0f7;box-shadow:inset 0 0 0 1px #2e3550}
+
+/* ───────── The card frame: one size rule for every image ───────── */
+/* Real card shape (63 × 88 mm), corners 5% of the width, so a photo,
+   a designed front and our card back all line up. */
+.cf{position:relative;width:var(--w,48px);aspect-ratio:63/88;border-radius:calc(var(--w,48px)*.055);overflow:hidden;flex:none;container-type:inline-size;
+  box-shadow:0 2px 10px rgba(0,0,0,.45)}
+.cf .face{position:absolute;inset:0}
+body.showBack .cf .front{display:none}
+body:not(.showBack) .cf .back{display:none}
+
+/* Game colours: subtle, only in the glow and the edge. */
+.g-pokemon{--t:#f2cf6b}
+.g-mtg{--t:#d79a5e}
+.g-yugioh{--t:#a98cf0}
+.g-lorcana{--t:#6fd1bd}
+
+/* Treatment A: a designed front (name, number, rarity colour). */
+.front{background:
+  radial-gradient(120% 70% at 50% 0%,color-mix(in srgb,var(--t) 26%,transparent),transparent 70%),
+  linear-gradient(170deg,#141828,#0b0e18);
+  border:1px solid color-mix(in srgb,var(--t) 40%,#242a3d);border-radius:inherit;
+  display:flex;flex-direction:column;padding:7cqw 8cqw}
+.front .nm{font:italic 400 11cqw/1.05 'Fraunces',serif;color:var(--ink);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.front .win{flex:1;margin:6cqw 0;border-radius:4cqw;display:grid;place-items:center;
+  background:radial-gradient(60% 55% at 50% 45%,color-mix(in srgb,var(--t) 16%,transparent),transparent 70%),rgba(255,255,255,.025);
+  border:1px solid rgba(255,255,255,.06)}
+.front .em{width:38cqw;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;font:italic 400 20cqw 'Fraunces',serif;color:color-mix(in srgb,var(--t) 70%,#eef0f7);
+  border:max(1px,1.2cqw) solid transparent;background:linear-gradient(#10131f,#10131f) padding-box,var(--foil) border-box;opacity:.85}
+.front .ft{display:flex;justify-content:space-between;align-items:center;font:500 8.5cqw Geist,sans-serif;color:var(--ink4)}
+.front .rar{height:max(2px,2.6cqw);border-radius:9px;margin-top:4cqw;background:var(--r,#2a3045)}
+/* Small sizes (checklist thumbs): drop the words, keep shape, emblem and rarity colour. */
+@container (max-width:70px){
+  .front{padding:9cqw}
+  .front .nm,.front .ft{display:none}
+  .front .win{margin:0;border-radius:6cqw}
+  .front .em{width:52cqw;font-size:28cqw}
+  .front .rar{height:max(3px,6cqw);margin-top:8cqw}
+}
+
+/* Treatment B: our own Foils & Fables card back. */
+.back{border-radius:inherit;border:1px solid color-mix(in srgb,var(--t) 50%,#242a3d);
+  background:
+   radial-gradient(75% 50% at 50% 50%,color-mix(in srgb,var(--t) 34%,transparent),transparent 74%),
+   linear-gradient(180deg,color-mix(in srgb,var(--t) 10%,transparent),transparent 40%,color-mix(in srgb,var(--t) 10%,transparent)),
+   repeating-linear-gradient(45deg,rgba(255,255,255,.035) 0 1px,transparent 1px 7px),
+   repeating-linear-gradient(-45deg,rgba(255,255,255,.035) 0 1px,transparent 1px 7px),
+   linear-gradient(170deg,#121626,#090b14)}
+.back::before{content:'';position:absolute;inset:6cqw;border-radius:4cqw;border:max(1px,1cqw) solid transparent;
+  background:var(--foil) border-box;-webkit-mask:linear-gradient(#000 0 0) padding-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.55}
+.back .oval{position:absolute;left:50%;top:50%;width:62cqw;height:44cqw;transform:translate(-50%,-50%) rotate(-12deg);border-radius:50%;
+  border:max(1px,1.2cqw) solid transparent;background:linear-gradient(#0d1020,#0d1020) padding-box,var(--foil) border-box;display:grid;place-items:center}
+.back .oval b{transform:rotate(12deg);font:italic 400 17cqw/1 'Fraunces',serif;color:var(--ink)}
+.back .oval b i{font-style:italic;background:var(--foil);-webkit-background-clip:text;background-clip:text;color:transparent}
+@container (max-width:70px){ .back .oval b{font-size:20cqw} }
+
+/* A seller's photo, cropped to the same frame. (Stand-ins here: the real
+   page uses the photo from the listing.) */
+.photo{background:var(--desk,#2b2a2e)}
+.photo::after{content:'';position:absolute;inset:0;background:linear-gradient(115deg,rgba(255,255,255,.12),transparent 35%,transparent 70%,rgba(255,255,255,.06))}
+.photo i{position:absolute;inset:7% 9%;border-radius:4%;transform:rotate(var(--rot,-1.5deg));
+  background:linear-gradient(170deg,var(--c1),var(--c2));box-shadow:0 0 0 2px rgba(255,255,255,.55),0 6px 14px rgba(0,0,0,.5)}
+.photo i::before{content:'';position:absolute;inset:12% 9% 42%;border-radius:3%;background:rgba(0,0,0,.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
+.photo i::after{content:'';position:absolute;left:9%;right:9%;bottom:12%;height:22%;border-radius:2%;background:rgba(255,255,255,.28)}
+
+/* ───────── Phone shell ───────── */
+.phones{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start}
+.phone{width:375px;max-width:100%;height:812px;border-radius:42px;border:10px solid #16171b;box-shadow:0 0 0 1px #2a2b30,0 30px 80px rgba(0,0,0,.6);overflow:hidden;position:relative;color:var(--ink);
+  background:radial-gradient(500px 300px at 70% -5%,rgba(143,211,232,.08),transparent 60%),var(--bg)}
+.scroll{height:100%;overflow-y:auto;overflow-x:hidden;padding:44px 0 40px}
+.scroll::-webkit-scrollbar{display:none}
+.pad{padding:0 18px}
+.ic{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 18px 14px;border-bottom:1px solid var(--soft)}
+.brand{font:400 21px 'Fraunces',serif;display:flex;align-items:center;gap:9px}
+.mark{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font:italic 400 14px 'Fraunces',serif;color:#8fd3e8;border:1.5px solid transparent;background:linear-gradient(var(--bg),var(--bg)) padding-box,var(--foil) border-box}
+.amp{background:var(--foil);-webkit-background-clip:text;background-clip:text;color:transparent}
+.nav{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink4)}
+.back-l{display:flex;align-items:center;gap:6px;color:var(--ink4);font-size:16px;margin:16px 0 4px}
+.title{font:italic 400 38px/1 'Fraunces',serif;margin:6px 0 8px}
+.muted{font-size:16px;color:var(--ink4);margin:0 0 14px}
+.setname{font:italic 400 21px 'Fraunces',serif;color:var(--ink2);margin:22px 0 10px}
+
+/* checklist row */
+.crow{border-radius:16px;background:var(--elev);border:1px solid var(--line);margin-bottom:10px;overflow:hidden}
+.crow .top{display:flex;align-items:center;gap:14px;padding:12px 14px;min-height:72px}
+.crow .tx{flex:1;min-width:0}
+.crow b{display:block;font-size:17px;font-weight:500}
+.crow .no{display:block;font-size:15px;color:var(--ink4)}
+.dot{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink2);margin-top:4px}
+.dot i{width:9px;height:9px;border-radius:50%;background:var(--r);box-shadow:0 0 0 1px rgba(255,255,255,.12)}
+.dot.plain i{background:transparent;border:1.5px solid var(--ink6)}
+.ring{width:32px;height:32px;border-radius:50%;border:2.5px solid var(--ink6);flex:none}
+.sale{display:flex;align-items:center;justify-content:space-between;min-height:44px;padding:0 14px;border-top:1px solid var(--soft);font-size:15px;color:var(--acc)}
+
+/* tiles */
+.row-h{display:flex;justify-content:space-between;align-items:baseline;margin:26px 18px 12px}
+.row-h h3{font:400 22px 'Fraunces',serif;margin:0}
+.row-h a{font-size:15px;color:var(--acc);text-decoration:none}
+.strip{display:flex;gap:12px;overflow-x:auto;padding:0 18px 6px}
+.strip::-webkit-scrollbar{display:none}
+.tile{flex:none;width:132px;color:inherit}
+.tile .cf{--w:132px;margin-bottom:8px}
+.tile b{display:block;font-size:16px;font-weight:500;line-height:1.25}
+.tile span{font-size:14px;color:var(--ink4)}
+.tile em{display:block;font-style:normal;font-size:13px;color:var(--acc);margin-top:2px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 14px;padding:0 18px}
+.grid .tile{width:auto}
+.grid .tile .cf{--w:100%;width:100%}
+.head{font:400 38px/1.04 'Fraunces',serif;margin:24px 0 8px}
+.head em{background:var(--foil);-webkit-background-clip:text;background-clip:text;color:transparent;font-style:italic}
+.box{display:flex;align-items:center;gap:10px;min-height:60px;padding:6px 6px 6px 18px;border-radius:16px;border:1.5px solid transparent;
+  background:linear-gradient(var(--elev),var(--elev)) padding-box,var(--foil) border-box}
+.box .ph{flex:1;font-size:17px;color:var(--ink4)}
+.box .go{width:48px;height:48px;border-radius:12px;background:var(--cta);color:var(--on);display:grid;place-items:center}
+.gms{display:flex;gap:8px;padding:14px 18px 2px;overflow:hidden}
+.gm{flex:none;min-height:40px;padding:0 15px;border-radius:999px;border:1px solid var(--line);display:grid;place-items:center;font-size:15px;color:var(--ink2);background:var(--elev)}
+.gm.on{background:var(--ink);color:var(--bg);font-weight:600}
+
+/* versions view + find it rows */
+.vrow{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--soft)}
+.vrow .tx{flex:1;min-width:0}
+.vrow b{display:block;font-size:17px;font-weight:500}
+.vrow span{display:block;font-size:14px;color:var(--ink4)}
+.vrow em{display:block;font-style:normal;font-size:15px;color:var(--acc);margin-top:3px}
+.frow{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--soft)}
+.frow .cf{--w:86px}
+.frow .tx{flex:1;min-width:0}
+.frow b{display:block;font:400 18px/1.25 'Fraunces',serif}
+.frow .pr{font:italic 400 24px 'Fraunces',serif;color:var(--acc);margin-top:6px}
+.chip{display:inline-block;font-size:12px;padding:3px 8px;border-radius:7px;border:1px solid var(--line);color:var(--ink2);margin:6px 6px 0 0}
+
+/* computer */
+.desk{width:100%;max-width:1180px;border-radius:14px;border:1px solid #2a2b30;overflow:hidden;background:radial-gradient(900px 400px at 70% -10%,rgba(143,211,232,.07),transparent 60%),var(--bg);color:var(--ink);box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.desk .bar{height:34px;background:#121318;display:flex;align-items:center;gap:7px;padding:0 14px}
+.desk .bar i{width:11px;height:11px;border-radius:50%;background:#2c2d33}
+.desk .hdr{padding:16px 40px}
+.desk .in{padding:10px 40px 44px;display:grid;grid-template-columns:1fr 1.25fr;gap:44px}
+.d6{display:grid;grid-template-columns:repeat(3,1fr);gap:18px 16px}
+.d6 .tile{width:auto}
+.d6 .tile .cf{--w:100%;width:100%}
+
+/* the big comparison */
+.compare{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
+.panel{background:#0b0d16;border:1px solid #1d2131;border-radius:18px;padding:22px}
+.panel h3{font:italic 400 24px 'Fraunces',serif;margin:0 0 4px;color:#eef0f7}
+.panel p{margin:0 0 16px;font-size:14px;color:#9198b0;line-height:1.45}
+.four{display:flex;gap:14px;flex-wrap:wrap}
+.four figure{margin:0;text-align:center}
+.four figcaption{font-size:13px;color:#9198b0;margin-top:8px}
+.sizes{display:flex;gap:16px;align-items:flex-end;margin-top:18px;padding-top:16px;border-top:1px solid #1d2131}
+.sizes small{display:block;font-size:12px;color:#5d6480;margin-top:6px;text-align:center}
+.force-front .back{display:none!important}.force-front .front{display:flex!important}
+.force-back .front{display:none!important}.force-back .back{display:block!important}
+.note{margin-top:14px;font-size:14px;color:#9198b0;line-height:1.5;max-width:760px}
+.note b{color:#d5d9e8;font-weight:500}
+</style>
+</head>
+<body>
+<div class="page">
+  <h1 class="t">Every card looks finished</h1>
+  <p class="lede">Option A: when no one is selling a card, we show a card we designed instead of an empty dashed box. When someone is selling it, we show the seller's photo in exactly the same card shape, so the rows line up. Two looks to choose from below: a <b>card front</b> with the name, number and rarity colour, or our own <b>Foils &amp; Fables card back</b>. Each game gets a faint colour of its own. No game logos, symbols or official art.</p>
+
+  <div class="pick" role="group" aria-label="Which look">
+    <span>Showing:</span>
+    <div class="seg">
+      <button type="button" data-v="front" aria-pressed="true">A · Card front</button>
+      <button type="button" data-v="back" aria-pressed="false">B · Our card back</button>
+    </div>
+    <span>(switches every screen on this page)</span>
+  </div>
+
+  <div class="sec"><h2>The two looks, side by side</h2><p>One per game: Pokémon, Magic, Yu-Gi-Oh! and Lorcana. Along the bottom: the same card at the three sizes we use, from the big tile down to the small picture on a card list row.</p></div>
+  <div class="compare">
+    <div class="panel force-front">
+      <h3>A · Card front</h3>
+      <p>The card's name and number, our emblem where the art would be, and a stripe in the rarity colour (the same colours as the rarity dots). Says what the card is, even with no photo.</p>
+      <div class="four" id="cmpFront"></div>
+      <div class="sizes" id="szFront"></div>
+    </div>
+    <div class="panel force-back">
+      <h3>B · Our card back</h3>
+      <p>A Foils &amp; Fables card back: our F&amp;F mark on a fine foil pattern. Calm and uniform. The name and number sit beside it, as they do now.</p>
+      <div class="four" id="cmpBack"></div>
+      <div class="sizes" id="szBack"></div>
+    </div>
+    <div class="panel">
+      <h3>For sale: the seller's photo</h3>
+      <p>Cropped to the same card shape and corners, so it lines up with the designed cards. Photos come from the eBay listing that's for sale.</p>
+      <div class="four" id="cmpPhoto"></div>
+      <div class="sizes" id="szPhoto"></div>
+    </div>
+  </div>
+
+  <div class="sec"><h2>On every screen, at phone width</h2><p>Card list rows, the home page's popular cards, the card lists page, the versions page and Find it. Switch A and B at the top to compare.</p></div>
+  <div class="phones">
+    <div>
+      <div class="phone"><div class="scroll" id="pCheck"></div></div>
+      <p class="cap"><b>Card list.</b> Rows with a copy for sale show the seller's photo and the "for sale" line. The rest show the designed card, so nothing looks broken or empty.</p>
+    </div>
+    <div>
+      <div class="phone"><div class="scroll" id="pHome"></div></div>
+      <p class="cap"><b>Home page.</b> Each popular card uses a version that's for sale right now, so the front page shows real photos. The designed card only appears if none is for sale.</p>
+    </div>
+    <div>
+      <div class="phone"><div class="scroll" id="pLists"></div></div>
+      <p class="cap"><b>Card lists page.</b> The same tiles: photos where a copy is for sale, the designed card where not.</p>
+    </div>
+    <div>
+      <div class="phone"><div class="scroll" id="pVers"></div></div>
+      <p class="cap"><b>Versions page.</b> Each version's picture is the same small card shape as the card list.</p>
+    </div>
+    <div>
+      <div class="phone"><div class="scroll" id="pFind"></div></div>
+      <p class="cap"><b>Find it.</b> Listings almost always have a photo; it's now card-shaped with the same corners. A listing with no photo gets the designed card.</p>
+    </div>
+  </div>
+
+  <div class="sec"><h2>On a computer</h2><p>The home page: popular cards in a wider grid beside the search.</p></div>
+  <div class="desk" id="desk"></div>
+  <p class="note"><b>What changes in the app if approved:</b> one shared card frame used on all five screens; the dashed empty boxes go away; the home page's popular cards pick a version that's for sale. The "for sale" lines and the No. 60 fix stay as they are. Photos on this page are stand-ins; the real pages use sellers' listing photos.</p>
+</div>
+
+<script>
+const R = { // rarity stripe colours (same as the rarity dots)
+  extremely: 'linear-gradient(100deg,#9fe3f5,#b6a8f0,#f0b3d0,#f3d9a0)',
+  very: 'linear-gradient(180deg,#c9d3f5,#8b97c7)',
+  rare: 'linear-gradient(180deg,#9fe3f5,#4b98ad)',
+  vintage: '#c9a86a', promo: '#c9a86a', common: '#3a4158', uncommon: '#3a4158',
+};
+const RL = { extremely: 'Extremely rare', very: 'Very rare', rare: 'Rare', vintage: 'Vintage', promo: 'Promo', common: 'Common', uncommon: 'Uncommon' };
+const DESKS = ['#2b2a2e', '#3a3128', '#1d2230', '#2f3530', '#26262b'];
+const CARDS = [['#f6d36b', '#d38a2c'], ['#9ec6f0', '#4a6fb5'], ['#e9a3c3', '#9a4f86'], ['#b8e09a', '#4f8a43'], ['#e8e2d5', '#a99f8a'], ['#c3b0f2', '#6a54b8']];
+
+// One frame: a seller's photo, or the designed card (front and back; the page switch picks).
+function frame(c, w) {
+  const style = `--w:${w}${typeof w === 'number' ? 'px' : ''};--r:${R[c.r] || R.common}`;
+  if (c.photo !== undefined) {
+    const [c1, c2] = CARDS[c.photo % CARDS.length];
+    return `<div class="cf photo" style="${style};--desk:${DESKS[c.photo % DESKS.length]}"><i style="--c1:${c1};--c2:${c2};--rot:${(c.photo % 3 - 1) * 1.6}deg"></i></div>`;
+  }
+  return `<div class="cf g-${c.g}" style="${style}">
+    <div class="face front"><div class="nm">${c.n}</div><div class="win"><span class="em">F</span></div><div class="ft"><span>No. ${c.no}</span></div><div class="rar"></div></div>
+    <div class="face back"><div class="oval"><b>F<i>&amp;</i>F</b></div></div></div>`;
+}
+const dot = (r) => (r === 'common' || r === 'uncommon' ? `<span class="dot plain"><i></i>${RL[r]}</span>` : `<span class="dot"><i style="--r:${R[r]}"></i>${RL[r]}</span>`);
+const hdr = `<div class="hdr"><div class="brand"><span class="mark">F</span>Foils <span class="amp">&amp;</span> Fables</div><span class="nav">Sign in</span></div>`;
+const chev = `<svg class="ic" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>`;
+const back = `<div class="back-l"><svg class="ic" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>Back</div>`;
+
+// Comparison panels
+const games = [['pokemon', 'Pokémon', 'Pikachu', '58', 'vintage'], ['mtg', 'Magic', 'Lightning Bolt', '161', 'common'], ['yugioh', 'Yu-Gi-Oh!', 'Dark Magician', 'LOB-005', 'very'], ['lorcana', 'Lorcana', 'Elsa', '42', 'extremely']];
+for (const id of ['cmpFront', 'cmpBack']) document.getElementById(id).innerHTML = games.map(([g, gn, n, no, r]) => `<figure>${frame({ g, n, no, r }, 112)}<figcaption>${gn}</figcaption></figure>`).join('');
+document.getElementById('cmpPhoto').innerHTML = [0, 1, 2, 3].map((i) => `<figure>${frame({ photo: i }, 112)}<figcaption>${['Pokémon', 'Magic', 'Yu-Gi-Oh!', 'Lorcana'][i]}</figcaption></figure>`).join('');
+const sz = (c) => [[132, 'Tile'], [86, 'Find it'], [48, 'Card list row']].map(([w, l]) => `<div>${frame(c, w)}<small>${l}</small></div>`).join('');
+document.getElementById('szFront').innerHTML = sz({ g: 'pokemon', n: 'Pikachu', no: '58', r: 'vintage' });
+document.getElementById('szBack').innerHTML = sz({ g: 'pokemon', n: 'Pikachu', no: '58', r: 'vintage' });
+document.getElementById('szPhoto').innerHTML = sz({ photo: 0 });
+
+// Card list
+const crow = (c, sale) => `<div class="crow"><div class="top">${frame(c, 48)}<span class="tx"><b>${c.n}</b><span class="no">No. ${c.no}${c.v ? ` · ${c.v} versions` : ''}</span>${dot(c.r)}</span><span class="ring"></span></div>${sale ? `<div class="sale"><span>${sale}</span>${chev}</div>` : ''}</div>`;
+document.getElementById('pCheck').innerHTML = `${hdr}<div class="pad">${back}<div class="title">Pikachu</div><p class="muted">203 versions to collect</p>
+  <div class="setname">30th Celebration · 2026</div>
+  ${crow({ g: 'pokemon', n: 'Pikachu', no: '025', r: 'rare', photo: 0 }, '2 for sale on eBay')}
+  ${crow({ g: 'pokemon', n: 'Pikachu', no: '026', r: 'common' })}
+  ${crow({ g: 'pokemon', n: 'Pikachu ex', no: '042', r: 'very', photo: 2 }, '3 for sale on eBay')}
+  ${crow({ g: 'pokemon', n: 'Pikachu', no: '027', r: 'common' })}
+  <div class="setname">Jungle · 1999</div>
+  ${crow({ g: 'pokemon', n: 'Pikachu', no: '60', v: 2, r: 'vintage', photo: 4 }, '1 for sale on eBay · version not named')}
+  <div class="setname">Stormfront · 2008</div>
+  ${crow({ g: 'pokemon', n: 'Pikachu', no: '70', v: 2, r: 'common' })}
+</div>`;
+
+// Home
+const tile = (c, sub, sale, w = 132) => `<div class="tile">${frame(c, w)}<b>${c.n}</b><span>${sub}</span>${sale ? `<em>${sale}</em>` : ''}</div>`;
+const pop = [
+  [{ g: 'pokemon', n: 'Charizard', photo: 0 }, 'Pokémon · 124 versions'],
+  [{ g: 'mtg', n: 'Sol Ring', photo: 4 }, 'Magic · 86 versions'],
+  [{ g: 'yugioh', n: 'Blue-Eyes White Dragon', photo: 1 }, 'Yu-Gi-Oh! · 61 versions'],
+  [{ g: 'pokemon', n: 'Pikachu', photo: 3 }, 'Pokémon · 203 versions'],
+  [{ g: 'lorcana', n: 'Stitch', photo: 5 }, 'Lorcana · 14 versions'],
+  [{ g: 'mtg', n: 'Lightning Bolt', photo: 2 }, 'Magic · 58 versions'],
+];
+document.getElementById('pHome').innerHTML = `${hdr}<div class="pad"><div class="head">Find any card. <em>See every version.</em></div><div class="box"><span class="ph">Which card? Try Charizard</span><span class="go"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></span></div></div>
+  <div class="row-h"><h3>Popular card lists</h3><a>See all</a></div>
+  <div class="strip">${pop.map(([c, s]) => tile(c, s)).join('')}</div>
+  <div class="row-h"><h3>If none is for sale</h3></div>
+  <div class="strip">${tile({ g: 'lorcana', n: 'Maleficent', no: '113', r: 'very' }, 'Lorcana · 9 versions')}${tile({ g: 'yugioh', n: 'Exodia the Forbidden One', no: 'LOB-124', r: 'extremely' }, 'Yu-Gi-Oh! · 22 versions')}</div>`;
+
+// Lists page
+document.getElementById('pLists').innerHTML = `${hdr}<div class="pad"><div class="title" style="margin-top:22px">Card lists</div><p class="muted">Every version of a card, on one list.</p></div>
+  <div class="gms"><span class="gm on">All games</span><span class="gm">Pokémon</span><span class="gm">Magic</span><span class="gm">Yu-Gi-Oh!</span></div>
+  <div class="row-h"><h3>Popular</h3></div>
+  <div class="grid">
+    ${tile({ g: 'pokemon', n: 'Charizard', photo: 0 }, 'Pokémon · 124 versions', '', '100%')}
+    ${tile({ g: 'mtg', n: 'Sol Ring', photo: 4 }, 'Magic · 86 versions', '', '100%')}
+    ${tile({ g: 'yugioh', n: 'Dark Magician', no: 'LOB-005', r: 'very' }, 'Yu-Gi-Oh! · 48 versions', '', '100%')}
+    ${tile({ g: 'lorcana', n: 'Elsa', photo: 5 }, 'Lorcana · 12 versions', '', '100%')}
+    ${tile({ g: 'mtg', n: 'Counterspell', no: '54', r: 'uncommon' }, 'Magic · 71 versions', '', '100%')}
+    ${tile({ g: 'pokemon', n: 'Mewtwo', photo: 1 }, 'Pokémon · 103 versions', '', '100%')}
+  </div>`;
+
+// Versions view
+const vrow = (c, l, sale) => `<div class="vrow">${frame(c, 48)}<span class="tx"><b>${l}</b><span>${c.set}</span>${sale ? `<em>${sale}</em>` : '<span>None for sale right now</span>'}</span>${chev}</div>`;
+document.getElementById('pVers').innerHTML = `${hdr}<div class="pad">${back}<div class="title">Charizard</div><p class="muted">124 versions · 120+ listings for sale now</p>
+  ${vrow({ g: 'pokemon', n: 'Charizard', no: '4', r: 'vintage', set: 'Base Set · No. 4', photo: 0 }, 'Shiny', 'For sale now')}
+  ${vrow({ g: 'pokemon', n: 'Charizard', no: '4', r: 'vintage', set: 'Base Set · No. 4' }, 'First print, shiny')}
+  ${vrow({ g: 'pokemon', n: 'Charizard ex', no: '199', r: 'extremely', set: '151 · No. 199', photo: 2 }, 'Shiny', 'For sale now')}
+  ${vrow({ g: 'pokemon', n: 'Charizard', no: '11', r: 'rare', set: 'Obsidian Flames · No. 11' }, 'Regular')}
+  ${vrow({ g: 'pokemon', n: 'Charizard', no: '11', r: 'rare', set: 'Obsidian Flames · No. 11', photo: 3 }, 'Shiny frame', 'For sale now')}
+  ${vrow({ g: 'pokemon', n: 'Charizard V', no: '17', r: 'very', set: 'Brilliant Stars · No. 17' }, 'Regular')}
+</div>`;
+
+// Find it
+const frow = (c, t, p, chips) => `<div class="frow">${frame(c, 86)}<span class="tx"><b>${t}</b><div class="pr">${p}</div>${chips.map((x) => `<span class="chip">${x}</span>`).join('')}</span></div>`;
+document.getElementById('pFind').innerHTML = `${hdr}<div class="pad"><div class="back-l"><svg class="ic" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>Back to the list</div><div class="title" style="font-size:34px">Mewtwo ex</div><p class="muted">No. 064 · 30th Celebration</p>
+  <p style="font-size:13px;color:var(--ink4);margin:0 0 4px"><span style="color:#8fd3e8">9</span> for sale on eBay now</p>
+  ${frow({ photo: 2 }, 'Mewtwo ex 064/128 30th Celebration Pokemon NM', '$4.99', ['Very rare'])}
+  ${frow({ photo: 5 }, 'Pokemon Mewtwo ex 064 30th Celebration PSA 10', '$62.00', ['Very rare', 'PSA 10'])}
+  ${frow({ photo: 1 }, 'Mewtwo ex 064/128 Holo — mint, sleeved', '$5.50', ['Very rare'])}
+  ${frow({ g: 'pokemon', n: 'Mewtwo ex', no: '064', r: 'very' }, 'Mewtwo ex 30th Celebration 064 (no photo)', '$4.25', ['Very rare'])}
+</div>`;
+
+// Computer
+document.getElementById('desk').innerHTML = `<div class="bar"><i></i><i></i><i></i></div>${hdr}
+  <div class="in"><div><div class="head" style="font-size:52px;margin-top:30px">Find any card.<br><em>See every version.</em></div><p class="muted" style="font-size:18px">Then keep track of the ones you have.</p><div class="box" style="max-width:520px"><span class="ph">Which card? Try Charizard</span><span class="go"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></span></div></div>
+  <div><div class="row-h" style="margin:30px 0 14px"><h3>Popular card lists</h3><a>Browse every card list</a></div><div class="d6">${pop.map(([c, s]) => tile(c, s, '', '100%')).join('')}</div></div></div>`;
+
+// A / B switch
+document.querySelectorAll('.seg button').forEach((b) => b.addEventListener('click', () => {
+  document.body.classList.toggle('showBack', b.dataset.v === 'back');
+  document.querySelectorAll('.seg button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+}));
+</script>
+</body>
+</html>
