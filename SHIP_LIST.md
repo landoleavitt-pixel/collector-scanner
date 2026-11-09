@@ -66,6 +66,7 @@ Landon wants the week's remaining usage spent, so all 4 agents run (above the us
 
 | When | What | Commit |
 |---|---|---|
+| 2026-11-09 | New Foils & Fables home ("Find any card. See every version."), versions-first search and card lists (popular lists, /fables/lists, Lists tab) for Pokémon, Magic, Yu-Gi-Oh! and Lorcana; set filter; Vintage; grade and reprint fixes; per-side colours on saved searches and starred cards; push ask at first alert; Save this search sheet | de0fe53 (poller deploy pending: set/rarity keys + cron secret) |
 | 2026-11-06 | Shared card star and sign-in fix (sign-in returns you to where you were); Foils & Fables rarity groups on results, popup, filters and checklist; big photo in the picker; Magic on the checklist; domain routing code (off until domains are connected) | ea6a097 |
 | 2026-11-01 | Card checklist (English Pokémon) with Find it and need-only alerts; rarity from card catalogs; 5 new Fables filters + shipping/offers on sports; Fables search fixes; Foils & Fables Collectors title; app renamed Floors & Fables; Usage stats menu link | dcd7881 + poller deployed |
 | 2026-11-01 | Fables works like F&F; Fables emails; sports label fixes; Select option A + rookie/box-only flags; checklist importer + /api/checklist; Terms/Privacy both brands + usage-stats switch and menu link; payments-off header; Sign in with Apple revoke on delete; Fables result-quality fixes + card-family fixes | 65d60a7 + poller deployed |
