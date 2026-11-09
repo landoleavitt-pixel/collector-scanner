@@ -35,6 +35,7 @@ export default function Find() {
   const unsure = sp.get('unsure') === '1';
   const cards = sp.get('cards') || '';
   const q = sp.get('q') || '';
+  const byNumber = version.includes(','); // every version of one number, from a card list row
   const [res, setRes] = useState(null); // { items, total, nextOffset }
   const [more, setMore] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -99,19 +100,39 @@ export default function Find() {
           <p className="text-[13px] mb-2" style={{ color: 'var(--ink-400)' }}>
             <span style={{ color: 'var(--gold)' }}>{res.total}</span> for sale on eBay now
           </p>
-          <div className="divide-y divide-[var(--line-soft)]">
-            {res.items.flatMap((item, i) => {
-              const row = (
-                <ResultCard
-                  key={item.id} item={item} formatPrice={money} index={i}
-                  onCardClick={setSelected}
-                  payload={fablesPayload(item)} rowStyle={rowStyleFor(item)}
-                  badges={<CardBadges item={item} />} hasBadges={hasCardBadges(item)}
-                />
-              );
-              return i === 3 ? [row, <SignupPromptCard key="signup-prompt" />] : [row];
-            })}
-          </div>
+          {(() => {
+            // One number from a card list (several versions): listings that say
+            // which version first, then the ones that don't, under their own heading.
+            const named = byNumber ? res.items.filter((it) => it.match?.versions?.length === 1) : res.items;
+            const unnamed = byNumber ? res.items.filter((it) => !(it.match?.versions?.length === 1)) : [];
+            const list = (items, start, prompt) => (
+              <div className="divide-y divide-[var(--line-soft)]">
+                {items.flatMap((item, i) => {
+                  const row = (
+                    <ResultCard
+                      key={item.id} item={item} formatPrice={money} index={start + i}
+                      onCardClick={setSelected}
+                      payload={fablesPayload(item)} rowStyle={rowStyleFor(item)}
+                      badges={<CardBadges item={item} />} hasBadges={hasCardBadges(item)}
+                    />
+                  );
+                  return prompt && i === 3 ? [row, <SignupPromptCard key="signup-prompt" />] : [row];
+                })}
+              </div>
+            );
+            return (
+              <>
+                {list(named, 0, true)}
+                {unnamed.length > 0 && (
+                  <>
+                    <h2 className="font-display italic text-[22px] mt-8 mb-1" style={{ color: 'var(--ink-200)' }}>The seller didn’t say which version</h2>
+                    <p className="text-[15px] mb-2" style={{ color: 'var(--ink-400)' }}>It’s this card and number, but the listing doesn’t say which version it is. Check the photos.</p>
+                    {list(unnamed, named.length, named.length === 0)}
+                  </>
+                )}
+              </>
+            );
+          })()}
           {res.nextOffset != null && (
             <div className="pt-8 flex justify-center">
               <button onClick={loadMore} disabled={more}

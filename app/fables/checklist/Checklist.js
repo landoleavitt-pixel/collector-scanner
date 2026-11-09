@@ -26,7 +26,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useNameSuggest } from '../../components/search/SuggestBox';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ChevronLeft, Check, Lock, Bell, Search } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Check, Lock, Bell, Search } from 'lucide-react';
 import { useUser } from '../../../lib/useUser';
 import { usePushAsk } from '../../components/PushAsk';
 import { SIDE } from '../data';
@@ -58,10 +58,12 @@ export default function Checklist() {
   const [source, setSource] = useState('');
   const [photos, setPhotos] = useState({}); // row id → image url
   const [forSale, setForSale] = useState(null); // `${cardKey}|${versionKey}` → listings for sale now (null while checking)
+  const [printing, setPrinting] = useState({}); // 'set:number' → every listing at that number, named version or not
   const [owned, setOwned] = useState(new Set()); // `${cardKey}|${versionKey}`
   const [ownedError, setOwnedError] = useState('');
   const [showAll, setShowAll] = useState(false);
   const [rarestFirst, setRarestFirst] = useState(false);
+  const [saleOnly, setSaleOnly] = useState(false); // "Only show cards for sale"
   const [pick, setPick] = useState(null); // row id
   const [ask, setAsk] = useState(false);
   const [alertState, setAlertState] = useState(''); // '' | 'saving' | 'on' | message
@@ -85,6 +87,7 @@ export default function Checklist() {
       if (!alive) return;
       setPhotos(d?.photos || {});
       setForSale(d?.counts || {});
+      setPrinting(d?.printing || {});
     });
     return () => { alive = false; };
   }, [rows, GAME, name]);
@@ -98,15 +101,37 @@ export default function Checklist() {
       .catch(() => setOwnedError('Your cards couldn’t be loaded right now.'));
   }, [user, GAME]);
 
+  // Listings for sale now across a card's versions (same numbers as Find it).
+  // named: listings that say exactly which version; all: every listing at
+  // that set and number (some titles don't say regular or 1st edition, say).
+  const saleOf = (r) => {
+    if (!forSale) return { named: 0, all: 0 };
+    const named = r.versions.reduce((n, v) => n + (forSale[`${r.cardKey}|${v.key}`] || 0), 0);
+    const at = r.versions[0]?.key.split(':').slice(0, 2).join(':');
+    return { named, all: Math.max(named, printing[at] || 0) };
+  };
+  const filtering = saleOnly && forSale !== null;
+  const listRows = useMemo(
+    () => (filtering ? (rows || []).filter((r) => saleOf(r).all > 0) : rows || []),
+    [rows, forSale, printing, filtering], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+  // Find it for one number: every version of it, with the ones that don't say
+  // which version under their own heading.
+  const numberHref = (r) => `/fables/find?${new URLSearchParams({ ...gameParams(GAME), card: r.cardKey, version: r.versions.map((v) => v.key).join(','), name: r.cardName, no: cardNumber(GAME, r), label: r.setName, back: here })}`;
+  const saleLine = ({ named, all }) => {
+    const unnamed = all - named;
+    if (!named) return `${all} for sale on eBay · version not named`;
+    return unnamed ? `${all} for sale on eBay · ${unnamed} ${unnamed === 1 ? 'doesn’t' : 'don’t'} say which version` : `${all} for sale on eBay`;
+  };
   const sets = useMemo(() => {
     const groups = [];
-    for (const r of rows || []) {
+    for (const r of listRows) {
       const last = groups[groups.length - 1];
       if (last && last.set === r.set) last.rows.push(r);
       else groups.push({ set: r.set, name: r.setName, year: r.released.slice(0, 4), rows: [r] });
     }
     return groups;
-  }, [rows]);
+  }, [listRows]);
   const total = (rows || []).reduce((n, r) => n + r.versions.length, 0);
   const have = (rows || []).reduce((n, r) => n + r.versions.filter((v) => owned.has(`${r.cardKey}|${v.key}`)).length, 0);
   const needed = total - have;
@@ -116,8 +141,8 @@ export default function Checklist() {
   const hasGroups = (rows || []).some(rarestOf);
   const byRarity = useMemo(() => {
     const rank = (r) => groupRank(r.versions.map((v) => v.rarityGroup).filter(Boolean).sort((a, b) => groupRank(a) - groupRank(b))[0]);
-    return [...(rows || [])].sort((a, b) => rank(a) - rank(b) || b.released.localeCompare(a.released));
-  }, [rows]);
+    return [...listRows].sort((a, b) => rank(a) - rank(b) || b.released.localeCompare(a.released));
+  }, [listRows]);
   const here = typeof window !== 'undefined' ? `${window.location.pathname}${window.location.search}` : '/fables';
 
   async function toggle(row, v) {
@@ -150,11 +175,13 @@ export default function Checklist() {
     const n = r.versions.length;
     const got = r.versions.filter((v) => owned.has(`${r.cardKey}|${v.key}`)).length;
     const rarest = rarestOf(r);
+    const sale = saleOf(r);
     return (
-      <button key={r.id} type="button" onClick={() => setPick(r.id)}
-              className="w-full flex items-center gap-3.5 min-h-[72px] px-3.5 py-3 rounded-2xl mb-2.5 text-left"
-              style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
-        <Thumb src={sized(photos[r.id], 300)} />
+      <div key={r.id} className="rounded-2xl mb-2.5 overflow-hidden" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
+      <button type="button" onClick={() => setPick(r.id)}
+              className="w-full flex items-center gap-3.5 min-h-[72px] px-3.5 py-3 text-left">
+        {/* A seller's photo only on a row that says what's for sale. */}
+        <Thumb src={sale.all > 0 ? sized(photos[r.id], 300) : null} />
         <span className="flex-1 min-w-0">
           <span className="block text-[17px] font-medium leading-snug" style={{ color: 'var(--ink-100)' }}>{r.cardName}</span>
           <span className="block text-[15px]" style={{ color: 'var(--ink-400)' }}>No. {cardNumber(GAME, r)}{n > 1 ? ` · ${n} versions` : ''}</span>
@@ -162,6 +189,14 @@ export default function Checklist() {
         </span>
         <Ring got={got} n={n} />
       </button>
+      {sale.all > 0 && (
+        <a href={numberHref(r)} className="flex items-center justify-between gap-2 min-h-[44px] px-3.5 py-2 text-[15px]"
+           style={{ borderTop: '1px solid var(--line-soft)', color: 'var(--gold-bright)' }}>
+          <span>{saleLine(sale)}</span>
+          <ChevronRight className="w-[18px] h-[18px] flex-none" strokeWidth={2} aria-hidden="true" />
+        </a>
+      )}
+      </div>
     );
   };
 
@@ -193,6 +228,21 @@ export default function Checklist() {
             <Lock className="w-[15px] h-[15px]" strokeWidth={2} aria-hidden="true" />Only you can see this
           </p>
           {ownedError && <p className="text-[14px] mb-3" style={{ color: 'var(--crit)' }}>{ownedError}</p>}
+
+          <button type="button" role="switch" aria-checked={saleOnly} onClick={() => { setSaleOnly(!saleOnly); setShowAll(false); }}
+                  className="w-full flex items-center justify-between gap-3 min-h-[56px] px-3.5 rounded-xl mb-2.5 text-[16px] text-left"
+                  style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)', color: 'var(--ink-100)' }}>
+            Only show cards for sale
+            <span className="relative w-[46px] h-[28px] rounded-full flex-none transition-colors" aria-hidden="true"
+                  style={{ background: saleOnly ? 'var(--gold-bright)' : 'var(--bg-elev-2)', border: saleOnly ? 'none' : '1px solid var(--line)' }}>
+              <span className="absolute top-[3px] w-[22px] h-[22px] rounded-full transition-all"
+                    style={{ left: saleOnly ? 21 : 3, background: saleOnly ? 'var(--ink-on-gold)' : 'var(--ink-400)' }} />
+            </span>
+          </button>
+          {saleOnly && forSale === null && <p className="text-[15px] mb-2.5" style={{ color: 'var(--ink-400)' }}>Checking eBay…</p>}
+          {filtering && listRows.length === 0 && (
+            <p className="text-[16px] my-4" style={{ color: 'var(--ink-200)' }}>None of these cards are for sale right now. Turn on an alert below and we’ll tell you when one is listed.</p>
+          )}
 
           {hasGroups && (
             <div className="flex gap-1.5 p-1 rounded-xl mt-1 mb-1.5" role="group" aria-label="Order" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
@@ -251,7 +301,7 @@ export default function Checklist() {
 
       {picked && (
         <Sheet onClose={() => setPick(null)}>
-          {photos[picked.id] && (
+          {photos[picked.id] && saleOf(picked).all > 0 && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={sized(photos[picked.id], 640)} alt="Seller’s photo" className="block mx-auto mb-4 rounded-lg object-contain" style={{ maxHeight: '38vh', maxWidth: '100%', boxShadow: '0 8px 24px rgba(0,0,0,.45)' }} />
           )}
@@ -267,6 +317,7 @@ export default function Checklist() {
                 <span className="w-7 h-7 rounded-lg flex-none" style={{ background: swatch(plain), border: '1px solid rgba(255,255,255,.12)' }} aria-hidden="true" />
                 <span className="flex-1 min-w-0">
                   {plain}
+                  {count > 0 && <span className="text-[15px] ml-2 whitespace-nowrap" style={{ color: 'var(--gold-bright)' }}>{count} for sale</span>}
                   {v.rarityGroup && <span className="block mt-0.5"><GroupDot group={v.rarityGroup} /></span>}
                 </span>
                 {user && (
@@ -316,6 +367,18 @@ export default function Checklist() {
               </div>
             );
           })}
+          {(() => {
+            const sale = saleOf(picked);
+            const unnamed = sale.all - sale.named;
+            if (unnamed <= 0) return null;
+            return (
+              <a href={numberHref(picked)} className="flex items-center justify-between gap-2 min-h-[52px] px-3.5 py-2.5 rounded-[14px] mb-2.5 text-[16px]"
+                 style={{ border: '1.5px dashed var(--line)', color: 'var(--ink-200)' }}>
+                <span>{unnamed} more for sale {unnamed === 1 ? 'doesn’t' : 'don’t'} say which version</span>
+                <span className="inline-flex items-center gap-1 flex-none font-semibold" style={{ color: 'var(--gold-bright)' }}>See {unnamed === 1 ? 'it' : 'them'}<ChevronRight className="w-[18px] h-[18px]" strokeWidth={2} aria-hidden="true" /></span>
+              </a>
+            );
+          })()}
           {user ? (
             <BigButton onClick={() => setPick(null)}>Done</BigButton>
           ) : (

@@ -95,7 +95,8 @@ export const familyKeys = (rows) => [...new Set((rows || []).map((r) => r.cardKe
 /**
  * One live search for the whole family (cached 15 minutes on the server). Each
  * listing is pinned to its catalog printing where the title allows.
- * → { photos: { rowId: url }, counts: { `${cardKey}|${versionKey}`: n }, total,
+ * → { photos: { rowId: url }, counts: { `${cardKey}|${versionKey}`: n },
+ *     printing: { 'set:number': n } (every listing at that number, named or not), total,
  *     hidden, capped, pinned } or null if the search failed. `hidden`: listings
  * thrown out as not this card. `pinned`: listings pinned to exactly one version.
  */
@@ -117,7 +118,7 @@ export async function loadFamilyListings(game, name, rows) {
     const id = `${c.card}|${c.set}|${c.number}`;
     if (!photos[id]) photos[id] = it.image;
   }
-  return { photos, counts, total: d.total || 0, hidden: d.kinds?.reject || 0, capped: !!d.capped, pinned };
+  return { photos, counts, printing: d.printingCounts || {}, total: d.total || 0, hidden: d.kinds?.reject || 0, capped: !!d.capped, pinned };
 }
 
 /** One saved search for the whole family: one alert, skipping versions the member has. */
