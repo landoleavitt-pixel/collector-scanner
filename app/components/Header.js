@@ -143,7 +143,9 @@ export default function Header() {
           }}>
             <span className="w-8 h-8 rounded-full grid place-items-center font-display italic text-[15px] ff-foil-edge" style={{ color: 'var(--gold)' }} aria-hidden="true">F</span>
             <span className="font-display text-2xl md:text-3xl tracking-tight leading-none">
-              Foils <em className="ff-foil-text not-italic">&amp;</em> Fables
+              Foils <em className="ff-foil-text not-italic">&amp;</em> Fables{' '}
+              {/* Matches "Fields & Floors Collectors"; inner pages on phones show just the name. */}
+              <em className={`text-[var(--gold)] not-italic ${pathname === '/fables' ? '' : 'hidden sm:inline'}`}>Collectors</em>
             </span>
           </Link>
         ) : (
