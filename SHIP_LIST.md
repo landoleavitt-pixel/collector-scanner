@@ -14,6 +14,7 @@ The single list of work that's finished or in progress but **not live yet**. The
 | L05 | Proof strip | Landing | ⏹ Skipped: no honest live number yet (no fake figures) | — | — |
 | P11 | floorsandfables.com chooser + foilsandfables.com routing; app renamed Floors & Fables | Design | 🟢 Live ea6a097, waiting on domains | middleware, chooser page | Landon buys domains + Vercel |
 | J-later | Japanese Pokémon versions (research/japanese-pokemon-plan.md): about 3–4 days of engine work; 4 questions for Landon when started | Engine | ⏸ Saved for later (Landon, 2026-11-07) | lib/tcg, checklist | — |
+| SEC-next | Upgrade Next.js 14.2.5: Vercel build warns it has a known security vulnerability (nextjs.org/blog/security-update-2025-12-11). Patched 14.2.x, full test pass | Helper | ⚪ Proposed 2026-11-09 | package.json, lockfile | — |
 | E-later | Fables versions: "Secret Lair Prize #8001" / "Buy-A-Box" titles to catalog set names; Magic titles with a number but no set ("022/259") | Engine | ⚪ Follow-up | lib/tcg | — |
 | S-poll | Lock down the alert checker: it can be triggered by anyone holding the public key; require a private secret header from the cron jobs instead | Debugger | ⚪ Follow-up (low risk today: it only re-runs checks and never re-sends) | poller, both cron jobs | poller deploy + Landon edits 2 cron jobs |
 
@@ -66,6 +67,7 @@ Landon wants the week's remaining usage spent, so all 4 agents run (above the us
 
 | When | What | Commit |
 |---|---|---|
+| 2026-11-09 | PostHog analytics (EU, account ID only, no replay, off with Share usage stats); Privacy update; Foils & Fables Collectors header | 4c76c2a + key set in Vercel |
 | 2026-11-09 | New Foils & Fables home ("Find any card. See every version."), versions-first search and card lists (popular lists, /fables/lists, Lists tab) for Pokémon, Magic, Yu-Gi-Oh! and Lorcana; set filter; Vintage; grade and reprint fixes; per-side colours on saved searches and starred cards; push ask at first alert; Save this search sheet | de0fe53 (poller deploy pending: set/rarity keys + cron secret) |
 | 2026-11-06 | Shared card star and sign-in fix (sign-in returns you to where you were); Foils & Fables rarity groups on results, popup, filters and checklist; big photo in the picker; Magic on the checklist; domain routing code (off until domains are connected) | ea6a097 |
 | 2026-11-01 | Card checklist (English Pokémon) with Find it and need-only alerts; rarity from card catalogs; 5 new Fables filters + shipping/offers on sports; Fables search fixes; Foils & Fables Collectors title; app renamed Floors & Fables; Usage stats menu link | dcd7881 + poller deployed |
