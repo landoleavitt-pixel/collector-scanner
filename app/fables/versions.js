@@ -5,6 +5,8 @@
 // Games with a card catalog: every version, checklist and Find it. To hold a
 // game back, remove it from this one line; everything else follows, including
 // the home line. Its searches go back to the normal list.
+import { trackPostHogOnly } from '../../lib/track';
+
 export const VERSION_GAMES = ['pokemon', 'mtg', 'yugioh', 'lorcana'];
 export const GAME_NAMES = { pokemon: 'Pokémon', mtg: 'Magic', yugioh: 'Yu-Gi-Oh!', lorcana: 'Lorcana' };
 const names = VERSION_GAMES.map((g) => GAME_NAMES[g]);
@@ -128,6 +130,7 @@ export async function saveFamilyAlert(game, title, rows) {
     }),
   }).catch(() => null);
   const d = r ? await r.json().catch(() => ({})) : {};
+  if (r && r.ok) trackPostHogOnly('alert_saved');
   if (r && r.ok) return d.watchLimited ? 'Saved, but your 5 alerts are in use. Pause one in Saved searches to turn this on.' : 'on';
   return d.error || 'That didn’t work. Try again.';
 }
