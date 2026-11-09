@@ -44,7 +44,8 @@ export default function PrivacyPage() {
           <li><strong>Sign in with Apple token (iOS app)</strong>: if you sign in with Apple in the app, Apple gives our server a token that proves the sign-in. We keep it, in a private place that only our server can read, for one reason: when you delete your account, we use it to tell Apple to cut the link between your Apple ID and our app, as Apple requires. It is never used to sign in as you or to read anything from your Apple account, and it is deleted when you delete your account.</li>
           <li><strong>Technical &amp; log data</strong>: information automatically recorded by our hosting and infrastructure providers, such as your IP address, browser and device type, access times, and error and security logs. This is used to operate, secure, and debug the service.</li>
           <li><strong>Usage analytics</strong>: aggregate, non-personal information about how pages are used (such as page views), collected through privacy-friendly analytics. It is usage-based only and does not identify you personally.</li>
-          <li><strong>Anonymous usage events</strong>: which steps of the service are used (such as visiting, running a search, or opening a card), stored in our own database under a random ID kept on your device, with no name, email, or search words. No ads and no third-party tracking. You can turn these off at any time with the &ldquo;Share anonymous usage stats&rdquo; switch under <a href="#usage-stats">Your choices</a>; when it&rsquo;s off, your device sends none of them and forgets its random ID. We also skip them if your browser sends a Do Not Track or Global Privacy Control signal.</li>
+          <li><strong>Anonymous usage events</strong>: which steps of the service are used (such as visiting, running a search, or opening a card), stored in our own database under a random ID kept on your device, with no name, email, or search words. No ads and no tracking across other websites. You can turn these off at any time with the &ldquo;Share anonymous usage stats&rdquo; switch under <a href="#usage-stats">Your choices</a>; when it&rsquo;s off, your device sends none of them and forgets its random ID. We also skip them if your browser sends a Do Not Track or Global Privacy Control signal.</li>
+          <li><strong>Product analytics (PostHog)</strong>: a tool called PostHog counts which pages are opened (Fields &amp; Floors or Foils &amp; Fables) and which links and buttons are tapped, so we can see what is used and what isn&rsquo;t. It does not record what you type, your search words, names, or the text on the page, and web addresses are cut down to the page name before they leave your device. It does not record your screen. If you&rsquo;re signed in, this activity is tied to your internal account ID only, never your email or your name. The data is stored on PostHog&rsquo;s servers in the European Union. You can turn it off at any time with the &ldquo;Share anonymous usage stats&rdquo; switch under <a href="#usage-stats">Your choices</a>; when it&rsquo;s off, nothing is sent and PostHog&rsquo;s random ID on your device is forgotten. It also stays off if your browser sends a Do Not Track or Global Privacy Control signal.</li>
           <li><strong>Account events</strong>: when you create an account, and when you start a trial, our server records that event against your account so we can count sign-ups and trials correctly. These are part of running your account, not usage stats, so the switch above doesn&rsquo;t turn them off. If you delete your account, they stay only as anonymous counts, no longer linked to you.</li>
         </ul>
         <p>
@@ -95,11 +96,14 @@ export default function PrivacyPage() {
           We and our providers use cookies and similar technologies (such as session
           tokens stored in your browser) to keep you signed in, secure your account,
           and support privacy-friendly analytics. We also keep a random ID in your
-          browser's local storage for the anonymous usage events described above. These are essential to how the
+          browser's local storage for the anonymous usage events and product analytics described above. These are essential to how the
           service works. Without them, login and authentication wouldn't function.
           We don't use cookies to build advertising profiles or track you across other
           websites. You can control or clear cookies in your browser settings, but
           disabling essential ones may prevent you from signing in.
+          {/* NOT YET IN USE (DECISIONS.md "One login details"): show this line when
+              the one-login check between our two sites ships. Draft, for Landon to review:
+              "Fields & Floors and Foils & Fables share one account. When you sign in on one, we link your sign-in between our two sites so you're signed in on both, and signing out on one signs you out of both in that browser." */}
         </p>
       </Prose>
 
@@ -115,6 +119,7 @@ export default function PrivacyPage() {
         <ul>
           <li><strong>Supabase</strong>: database and sign-in. Stores your account, saved searches, watchlist, plan status, notification history, push token, and anonymous usage events.</li>
           <li><strong>Vercel</strong>: website hosting, technical and security logs, and aggregate page-view analytics.</li>
+          <li><strong>PostHog</strong>: product analytics. It receives the page names you open, which kinds of links and buttons are tapped, a random ID on your device, and your internal account ID if you&rsquo;re signed in. It does not receive your email, your name, your search words or anything you type.</li>
           <li><strong>Resend</strong>: delivers our account and alert emails. It receives your email address and the content of the email.</li>
           <li><strong>Stripe</strong>: processes card payments for subscriptions bought on our website. Stripe receives your email address and an internal account ID, and handles your card details, billing, and invoices. We never see or store your card number.</li>
           <li><strong>Apple</strong>: if you subscribe in the iOS app, Apple processes the payment through the App Store, and Apple's push notification service delivers alerts to your device. If you use Sign in with Apple, Apple handles that sign-in. We don't see your payment details.</li>
@@ -156,7 +161,7 @@ export default function PrivacyPage() {
           from the account menu; contact us if you can't.
         </p>
         <p>
-          Anonymous usage stats are on by default. You can turn them off here, on
+          Anonymous usage stats and product analytics (PostHog) are on by default. One switch controls both. You can turn them off here, on
           each device or browser you use, signed in or not:
         </p>
         <UsageStatsToggle />

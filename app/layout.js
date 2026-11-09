@@ -4,6 +4,7 @@ import Footer from './components/Footer';
 import { Analytics } from '@vercel/analytics/react';
 import ImageBlockNotice from './components/ImageBlockNotice';
 import NativeBridge from './components/NativeBridge';
+import PostHogAnalytics from './components/PostHogAnalytics';
 import TabBar from './components/TabBar';
 import SideChooser from './components/SideChooser';
 import FunnelTracker from './components/FunnelTracker';
@@ -148,6 +149,8 @@ export default function RootLayout({ children }) {
         <SideChooser />
         {/* Anonymous funnel events (landed). See lib/track.js. */}
         <FunnelTracker />
+        {/* Product analytics (PostHog): only when NEXT_PUBLIC_POSTHOG_KEY is set and the Usage stats switch is on. See lib/posthog.js. */}
+        <PostHogAnalytics />
         {/* First-visit walkthrough (web + iOS app variants); replay at /?tour=1. */}
         <SiteTour />
         <Analytics />

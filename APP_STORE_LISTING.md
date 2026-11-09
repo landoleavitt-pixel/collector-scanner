@@ -177,8 +177,8 @@ Then tick these data types. For every one: **Used for tracking: No.** We share n
 |---|---|---|---|
 | **Contact Info → Email Address** | Sign-in, account emails, alert emails | **Yes** | App Functionality |
 | **Identifiers → User ID** | The account ID that holds saved searches, watchlist and alerts | **Yes** | App Functionality, Analytics |
-| **Identifiers → Device ID** | The push notification token Apple gives the device, so we can send alerts | **Yes** | App Functionality |
-| **Usage Data → Product Interaction** | Funnel steps (visited, searched, opened a card, starred, signed up), plus page-view counts | **Yes** (see note) | Analytics |
+| **Identifiers → Device ID** | The push notification token Apple gives the device, so we can send alerts; and, once PostHog is switched on, the random ID PostHog keeps on the device | **Yes** | App Functionality, Analytics |
+| **Usage Data → Product Interaction** | Funnel steps (visited, searched, opened a card, starred, signed up), page-view counts, and (once PostHog is switched on) which pages and buttons are used, on both sides | **Yes** (see note) | Analytics |
 | **Search History** | The words and filters in searches a member **saves**, so we can alert them | **Yes** | App Functionality |
 | **User Content → Other User Content** | The watchlist (starred listings), bid reminder settings (add "I own this" marks here when the card checklist ships) | **Yes** | App Functionality |
 
@@ -195,6 +195,7 @@ Then tick these data types. For every one: **Used for tracking: No.** We share n
 5. **RevenueCat is built into the app but switched off** (its key isn't set during early access), so it collects nothing. Update the label when it's switched on.
 6. **Name.** The app doesn't ask for or store a name. Google sign-in (which shares a name and photo) is hidden in the app.
 7. **If Foils & Fables adds any new data** (for example a separate analytics tool on its own domain), this section must be updated before submission.
+8. **PostHog (product analytics), before it is switched on:** the key `NEXT_PUBLIC_POSTHOG_KEY` is what turns it on, and the answers above must be updated first (done in this table, Landon to confirm in App Store Connect). What it adds: the random ID PostHog keeps on the device (Device ID, Analytics) and page views and taps (Product Interaction, Analytics), linked to the account ID when signed in (User ID was already ticked for Analytics). It sends no email, name, search words or typed text, and no screen recordings. It is **not** used for tracking (no advertising, no data shared with other companies), so no "Allow tracking?" prompt is needed. The Usage stats switch in Account turns it off (Apple 5.1.1(ii)). The Privacy page names PostHog (draft, Landon to review).
 
 ---
 
