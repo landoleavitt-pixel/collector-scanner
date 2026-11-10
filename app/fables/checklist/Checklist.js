@@ -59,6 +59,7 @@ export default function Checklist() {
   const [photos, setPhotos] = useState({}); // row id → image url
   const [forSale, setForSale] = useState(null); // `${cardKey}|${versionKey}` → listings for sale now (null while checking)
   const [printing, setPrinting] = useState({}); // 'set:number' → every listing at that number, named version or not
+  const [bigList, setBigList] = useState(false); // eBay has more listings than we read (capped): zero here may not mean none
   const [owned, setOwned] = useState(new Set()); // `${cardKey}|${versionKey}`
   const [ownedError, setOwnedError] = useState('');
   const [showAll, setShowAll] = useState(false);
@@ -88,6 +89,7 @@ export default function Checklist() {
       setPhotos(d?.photos || {});
       setForSale(d?.counts || {});
       setPrinting(d?.printing || {});
+      setBigList(!!d?.capped);
     });
     return () => { alive = false; };
   }, [rows, GAME, name]);
@@ -110,7 +112,9 @@ export default function Checklist() {
     const at = r.versions[0]?.key.split(':').slice(0, 2).join(':');
     return { named, all: Math.max(named, printing[at] || 0) };
   };
-  const filtering = saleOnly && forSale !== null;
+  // On a big list a row with no count may still have listings, so the switch
+  // doesn't hide anything there; it explains instead.
+  const filtering = saleOnly && forSale !== null && !bigList;
   const listRows = useMemo(
     () => (filtering ? (rows || []).filter((r) => saleOf(r).all > 0) : rows || []),
     [rows, forSale, printing, filtering], // eslint-disable-line react-hooks/exhaustive-deps
@@ -189,6 +193,13 @@ export default function Checklist() {
         </span>
         <Ring got={got} n={n} />
       </button>
+      {sale.all === 0 && bigList && (
+        <a href={numberHref(r)} className="flex items-center justify-between gap-2 min-h-[44px] px-3.5 py-2 text-[15px]"
+           style={{ borderTop: '1px solid var(--line-soft)', color: 'var(--ink-400)' }}>
+          <span>Check eBay</span>
+          <ChevronRight className="w-[18px] h-[18px] flex-none" strokeWidth={2} aria-hidden="true" />
+        </a>
+      )}
       {sale.all > 0 && (
         <a href={numberHref(r)} className="flex items-center justify-between gap-2 min-h-[44px] px-3.5 py-2 text-[15px]"
            style={{ borderTop: '1px solid var(--line-soft)', color: 'var(--gold-bright)' }}>
@@ -239,6 +250,9 @@ export default function Checklist() {
                     style={{ left: saleOnly ? 21 : 3, background: saleOnly ? 'var(--ink-on-gold)' : 'var(--ink-400)' }} />
             </span>
           </button>
+          {saleOnly && bigList && forSale !== null && (
+            <p className="text-[15px] mb-2.5" style={{ color: 'var(--ink-400)' }}>Big list: we checked the newest 1,000 listings. Tap a card to check eBay for it.</p>
+          )}
           {saleOnly && forSale === null && <p className="text-[15px] mb-2.5" style={{ color: 'var(--ink-400)' }}>Checking eBay…</p>}
           {filtering && listRows.length === 0 && (
             <p className="text-[16px] my-4" style={{ color: 'var(--ink-200)' }}>None of these cards are for sale right now. Turn on an alert below and we’ll tell you when one is listed.</p>
