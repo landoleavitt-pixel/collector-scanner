@@ -38,10 +38,10 @@ import { detectPrintRun, hasAutoText } from '../lib/listingFilter';
 // One ladder, used the same way everywhere (design review fix 4). Scarce is
 // 250 or more (Landon, 2026-10-19); its preset runs stop at /999.
 const PRINT_RUN_TIERS = [
-  { key: 'grail',  label: 'Grail',  range: '1–25',    made: '1 to 25 made',     runs: ['/1', '/5', '/10', '/15', '/25'] },
-  { key: 'ultra',  label: 'Ultra',  range: '26–99',   made: '26 to 99 made',    runs: ['/49', '/50', '/75', '/99'] },
-  { key: 'rare',   label: 'Rare',   range: '100–249', made: '100 to 249 made',  runs: ['/149', '/150', '/199', '/249'] },
-  { key: 'scarce', label: 'Scarce', range: '250+',    made: '250 or more made', runs: ['/299', '/499', '/999'] },
+  { key: 'grail',  label: 'Grail',  range: '1–25',    made: '1 to 25 made',     short: '1–25 made',     runs: ['/1', '/5', '/10', '/15', '/25'] },
+  { key: 'ultra',  label: 'Ultra',  range: '26–99',   made: '26 to 99 made',    short: '26–99 made',    runs: ['/49', '/50', '/75', '/99'] },
+  { key: 'rare',   label: 'Rare',   range: '100–249', made: '100 to 249 made',  short: '100–249 made',  runs: ['/149', '/150', '/199', '/249'] },
+  { key: 'scarce', label: 'Scarce', range: '250+',    made: '250 or more made', short: '250 or more made', runs: ['/299', '/499', '/999'] },
 ];
 
 // Flat list of all preset print runs — used for "select all" default state.
@@ -2099,7 +2099,7 @@ function FilterControls({ filters, setFilter, compact = false }) {
                 const allInTierSelected = tier.runs.every((r) => filters.selectedPrintRuns.includes(r));
                 const someInTierSelected = tier.runs.some((r) => filters.selectedPrintRuns.includes(r));
                 const tierKey = tier.key;
-                const tierColor = { grail: '#ffc14d', ultra: '#c8d4e0', rare: '#d6722d', scarce: '#7a8694' }[tierKey];
+                const tierColor = { grail: '#ffc14d', ultra: '#c8d4e0', rare: '#e09356', scarce: '#a4afbb' }[tierKey];
                 // Master switch flips the whole tier on/off; chips toggle individual runs.
                 const toggleTier = () => {
                   const next = allInTierSelected
@@ -2115,16 +2115,20 @@ function FilterControls({ filters, setFilter, compact = false }) {
                 };
                 return (
                   <div key={tier.label}>
-                    {/* Tier header: name, range, and a master switch for the whole group */}
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex items-baseline gap-2.5">
+                    {/* One line per tier: name in its colour, how many made, and "All". */}
+                    <div className="flex items-baseline justify-between gap-3">
+                      <span className="min-w-0 whitespace-nowrap">
                         <span className="font-display text-lede leading-tight" style={{ color: tierColor }}>{tier.label}</span>
-                        <span className="text-meta text-[var(--ink-400)]">{tier.made}</span>
-                      </div>
-                      <FilterChip on={allInTierSelected} onClick={toggleTier}>All {tier.label}</FilterChip>
+                        <span className="text-meta text-[var(--ink-400)]"> · {tier.short}</span>
+                      </span>
+                      <button type="button" onClick={toggleTier} aria-pressed={allInTierSelected}
+                              className="flex-none text-meta py-2 -my-2 transition-colors hover:text-[var(--ink-100)]"
+                              style={{ color: allInTierSelected ? tierColor : 'var(--ink-400)' }}>
+                        {allInTierSelected ? 'None' : 'All'}
+                      </button>
                     </div>
-                    {/* Individual run chips */}
-                    <div className="flex flex-wrap gap-2 mt-3">
+                    {/* The runs in an even grid: 4 a row on phones, more where there's room. */}
+                    <div className="grid gap-2 mt-2.5" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(64px, 1fr))' }}>
                       {tier.runs.map((r) => {
                         const sel = filters.selectedPrintRuns.includes(r);
                         return (
@@ -2133,12 +2137,10 @@ function FilterControls({ filters, setFilter, compact = false }) {
                             key={r}
                             onClick={() => toggleRun(r)}
                             aria-pressed={sel}
-                            className="ff-pill font-mono text-meta inline-flex items-center rounded-full transition-all"
+                            className="font-mono text-meta h-9 inline-flex items-center justify-center rounded-full transition-colors"
                             style={{
-                              minHeight: 36,
-                              padding: '0 14px',
-                              border: `1px solid ${sel ? tierColor : 'var(--line)'}`,
-                              background: sel ? tierColor : 'var(--bg-elev-2)',
+                              border: `1px solid ${sel ? tierColor : `${tierColor}66`}`,
+                              background: sel ? tierColor : `${tierColor}0f`,
                               color: sel ? 'var(--ink-on-accent)' : 'var(--ink-200)',
                               fontWeight: sel ? 600 : 500,
                             }}
