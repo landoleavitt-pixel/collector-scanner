@@ -15,6 +15,7 @@ import { EditableSearchHeading } from '../components/search/SuggestBox';
 import { LoadingState } from '../components/search/SearchUI';
 import { GroupDot } from './rarity';
 import { Sheet, BigButton } from './sheet';
+import CardFrame from './CardFrame';
 import { FAMILY_MAX, versionLabel, cardNumber, gameParams, gameQuery, sized, familyKeys, loadFamily, loadFamilyListings, saveFamilyAlert } from './versions';
 
 const SETS_SHOWN = 4;
@@ -104,10 +105,7 @@ export default function VersionsView({ query, game, onUnavailable, onNewSearch, 
             return (
               <Link key={v.key} href={findHref(r, v, label)} className="flex items-center gap-3.5 min-h-[84px] px-3 py-2.5 rounded-2xl mb-2.5"
                     style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
-                {photo
-                  // eslint-disable-next-line @next/next/no-img-element
-                  ? <img src={sized(photo, 300)} alt="Seller’s photo" loading="lazy" className="w-[50px] h-[68px] rounded-md object-cover flex-none" />
-                  : <span className="w-[50px] h-[68px] rounded-md flex-none" style={{ border: '1.5px dashed var(--line)' }} aria-hidden="true" />}
+                <CardFrame src={photo ? sized(photo, 300) : null} game={game} className="!w-[50px]" />
                 <span className="flex-1 min-w-0">
                   <span className="block text-[17px] font-medium leading-tight" style={{ color: 'var(--ink-100)' }}>{r.cardName}</span>
                   <span className="flex flex-wrap items-center gap-x-2 text-[14px] mt-0.5" style={{ color: 'var(--ink-400)' }}>

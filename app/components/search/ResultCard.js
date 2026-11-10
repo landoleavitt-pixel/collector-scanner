@@ -29,8 +29,11 @@ export function CornerMarks() {
 
 /* One search result row (phone list row, desktop three columns). Each side
    passes its own badges, row tint and watchlist payload. Tapping opens the
-   card popup; with unapplied filter changes it asks to search again first. */
-export function ResultCard({ item, formatPrice, index, hasPendingFilters, onPendingClick, onCardClick, payload, rowStyle = null, badges = null, hasBadges = false }) {
+   card popup; with unapplied filter changes it asks to search again first.
+   cardFrame (Foils & Fables only): the picture takes a trading card's shape
+   (63 × 88, rounded corners) and `noImage` stands in when there's no photo.
+   Sports leaves both off and looks as before. */
+export function ResultCard({ item, formatPrice, index, hasPendingFilters, onPendingClick, onCardClick, payload, rowStyle = null, badges = null, hasBadges = false, cardFrame = false, noImage = null }) {
   return (
     <a
       href={item.url}
@@ -65,14 +68,14 @@ export function ResultCard({ item, formatPrice, index, hasPendingFilters, onPend
       <div className="lg:hidden flex gap-4 py-5 pl-4 pr-3">
         <div
           data-listing-id={item.id}
-          className="ff-sheen-wrap relative w-[92px] flex-none aspect-[3/4] bg-[var(--bg-elev)] overflow-hidden"
+          className={`ff-sheen-wrap relative w-[92px] flex-none bg-[var(--bg-elev)] overflow-hidden ${cardFrame ? 'aspect-[63/88] rounded-[5px]' : 'aspect-[3/4]'}`}
           onTouchStart={(e) => { e.currentTarget.classList.remove('ff-play'); void e.currentTarget.offsetWidth; e.currentTarget.classList.add('ff-play'); }}
         >
           <WatchStar item={item} payload={payload} />
           {item.image ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={upscaleEbayImage(item.image)} alt={item.title} className="w-full h-full object-cover" />
-          ) : (
+          ) : noImage || (
             <div className="w-full h-full flex items-center justify-center text-[var(--ink-600)] font-display text-3xl italic"><ImageOff className="w-7 h-7" strokeWidth={1.5} aria-hidden="true" /></div>
           )}
           {item.isAuction && (
@@ -160,10 +163,10 @@ export function ResultCard({ item, formatPrice, index, hasPendingFilters, onPend
         <div className="order-1 md:order-2 mx-auto md:mx-0">
           <div
             data-listing-id={item.id}
-            className="ff-sheen-wrap relative aspect-[3/4] w-[160px] md:w-[200px] bg-[var(--bg-elev)] overflow-hidden"
+            className={`ff-sheen-wrap relative w-[160px] md:w-[200px] bg-[var(--bg-elev)] overflow-hidden ${cardFrame ? 'aspect-[63/88] rounded-[11px]' : 'aspect-[3/4]'}`}
             onTouchStart={(e) => { e.currentTarget.classList.remove('ff-play'); void e.currentTarget.offsetWidth; e.currentTarget.classList.add('ff-play'); }}
           >
-            <CornerMarks />
+            {!cardFrame && <CornerMarks />}
             <WatchStar item={item} payload={payload} />
             {item.image ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -172,7 +175,7 @@ export function ResultCard({ item, formatPrice, index, hasPendingFilters, onPend
                 alt={item.title}
                 className="w-full h-full object-cover transition-all duration-700 group-hover:scale-[1.04]"
               />
-            ) : (
+            ) : noImage || (
               <div className="w-full h-full flex items-center justify-center text-[var(--ink-600)] font-display text-4xl italic">
                 <ImageOff className="w-7 h-7" strokeWidth={1.5} aria-hidden="true" />
               </div>

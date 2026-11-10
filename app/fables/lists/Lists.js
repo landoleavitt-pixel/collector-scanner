@@ -106,7 +106,7 @@ export default function Lists() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
             {(popular || Array.from({ length: 4 }, () => null)).map((c, i) => (c
               ? <CardListTile key={c.key} card={c} wide />
-              : <span key={i} className="block aspect-[3/4] rounded-[10px] shimmer" style={{ background: 'var(--bg-elev)' }} />))}
+              : <span key={i} className="block aspect-[63/88] rounded-[9px] shimmer" style={{ background: 'var(--bg-elev)' }} />))}
           </div>
 
           <h2 className="font-display font-normal text-[22px] mt-9 mb-3">All {GAME_NAMES[game]}, A–Z</h2>

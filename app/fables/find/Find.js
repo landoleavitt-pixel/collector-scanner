@@ -18,6 +18,7 @@ import { LoadingState, BackToTop } from '../../components/search/SearchUI';
 import { SIDE, withListingFlags } from '../data';
 import { versionGame } from '../versions';
 import { fablesPayload, CardBadges, hasCardBadges, rowStyleFor } from '../FablesHome';
+import { CardBack } from '../CardFrame';
 
 const money = (v) => (v == null ? '' : `$${Number(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
 // Only paths on this site.
@@ -114,6 +115,7 @@ export default function Find() {
                       onCardClick={setSelected}
                       payload={fablesPayload(item)} rowStyle={rowStyleFor(item)}
                       badges={<CardBadges item={item} />} hasBadges={hasCardBadges(item)}
+                      cardFrame noImage={<CardBack game={item.game || game} />}
                     />
                   );
                   return prompt && i === 3 ? [row, <SignupPromptCard key="signup-prompt" />] : [row];

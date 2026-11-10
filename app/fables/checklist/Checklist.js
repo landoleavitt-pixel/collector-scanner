@@ -33,6 +33,7 @@ import { SIDE } from '../data';
 import { GroupDot, groupRank } from '../rarity';
 import { VERSION_GAMES, VERSION_GAMES_TEXT, GAME_NAMES, versionGame, versionLabel, cardNumber, gameParams, gameQuery, sized, loadFamily, loadFamilyListings, saveFamilyAlert } from '../versions';
 import { Sheet, BigButton } from '../sheet';
+import CardFrame from '../CardFrame';
 
 const SETS_SHOWN = 4;
 const RARE_ROWS_SHOWN = 30;
@@ -185,7 +186,7 @@ export default function Checklist() {
       <button type="button" onClick={() => setPick(r.id)}
               className="w-full flex items-center gap-3.5 min-h-[72px] px-3.5 py-3 text-left">
         {/* A seller's photo only on a row that says what's for sale. */}
-        <Thumb src={sale.all > 0 ? sized(photos[r.id], 300) : null} />
+        <CardFrame src={sale.all > 0 ? sized(photos[r.id], 300) : null} game={GAME} className="!w-12" />
         <span className="flex-1 min-w-0">
           <span className="block text-[17px] font-medium leading-snug" style={{ color: 'var(--ink-100)' }}>{r.cardName}</span>
           <span className="block text-[15px]" style={{ color: 'var(--ink-400)' }}>No. {cardNumber(GAME, r)}{n > 1 ? ` · ${n} versions` : ''}</span>
@@ -458,14 +459,6 @@ function NotFound({ name, game }) {
   );
 }
 
-function Thumb({ src }) {
-  const [bad, setBad] = useState(false);
-  if (src && !bad) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src={src} alt="Seller’s photo" onError={() => setBad(true)} className="w-12 h-[66px] rounded-md object-cover flex-none" style={{ boxShadow: '0 2px 8px rgba(0,0,0,.4)' }} />;
-  }
-  return <span className="w-12 h-[66px] rounded-md flex-none" style={{ border: '1.5px dashed var(--line)' }} aria-label="None for sale right now" role="img" />;
-}
 
 function Ring({ got, n }) {
   if (got > 0 && got === n) {

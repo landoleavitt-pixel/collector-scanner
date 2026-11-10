@@ -4,11 +4,12 @@
 // card's photo, name, "124 versions" and game; each opens that card's list
 // (the checklist). Data: /api/tcg-lists (popular families, no eBay calls).
 // The photo is a seller's photo from a live listing when the API gives one
-// (`image`), otherwise a plain card shape. Never catalog art.
+// (`image`), otherwise our own card back (CardFrame). Never catalog art.
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { VERSION_GAMES, GAME_NAMES, gameQuery, sized } from './versions';
+import CardFrame from './CardFrame';
 
 export const listHref = (game, name) => `/fables/checklist?${gameQuery(game)}name=${encodeURIComponent(name)}`;
 
@@ -49,10 +50,7 @@ export function usePopularLists(game = null) {
 export function CardListTile({ card, wide = false }) {
   return (
     <Link href={listHref(card.game, card.name)} className={`block min-w-0 ${wide ? '' : 'flex-none w-[132px] snap-start'}`}>
-      {card.image
-        // eslint-disable-next-line @next/next/no-img-element
-        ? <img src={sized(card.image, 400)} alt="" loading="lazy" className="block w-full aspect-[3/4] rounded-[10px] object-cover mb-2" />
-        : <span className="block w-full aspect-[3/4] rounded-[10px] mb-2" style={{ background: 'var(--bg-elev)', border: '1.5px dashed var(--line)' }} aria-hidden="true" />}
+      <CardFrame src={card.image ? sized(card.image, 400) : null} game={card.game} alt="" className="mb-2" />
       <span className="block text-[16px] font-medium leading-tight" style={{ color: 'var(--ink-100)' }}>{card.name}</span>
       <span className="block text-[14px]" style={{ color: 'var(--ink-400)' }}>{card.versions.toLocaleString('en-US')} versions</span>
       <span className="block text-[12px]" style={{ color: 'var(--ink-600)' }}>{GAME_NAMES[card.game]}</span>
@@ -74,7 +72,7 @@ export function PopularListsRow({ count = 12 }) {
       <div className="flex gap-3 overflow-x-auto -mx-5 px-5 scroll-px-5 md:mx-0 md:px-0 pb-1.5 snap-x md:grid md:grid-cols-6 md:overflow-visible">
         {shown.map((c, i) => (c
           ? <CardListTile key={`${c.game}|${c.key}`} card={c} />
-          : <span key={i} className="flex-none w-[132px] aspect-[3/4] rounded-[10px] shimmer" style={{ background: 'var(--bg-elev)' }} />))}
+          : <span key={i} className="flex-none w-[132px] aspect-[63/88] rounded-[7px] shimmer" style={{ background: 'var(--bg-elev)' }} />))}
       </div>
     </section>
   );

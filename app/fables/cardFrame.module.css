@@ -1,0 +1,85 @@
+/* Foils & Fables card frame (mockups/fables-card-frames.html, look B).
+   A real card's shape (63 × 88) with corners 5.5% of the width, so a seller's
+   photo and our own card back line up everywhere. */
+
+.frame {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 63 / 88;
+  border-radius: 5.5% / 3.94%;
+  overflow: hidden;
+  flex: none;
+  background: var(--bg-elev);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+}
+
+.photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Our card back: F&F on a fine foil pattern, with a faint per-game colour
+   (--glow / --edge are set from the game). */
+.back {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  container-type: size;
+  border: 1px solid var(--edge);
+  background:
+    radial-gradient(75% 50% at 50% 50%, var(--glow), transparent 74%),
+    linear-gradient(180deg, var(--wash), transparent 40%, var(--wash)),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 7px),
+    linear-gradient(170deg, #121626, #090b14);
+}
+
+.back::before {
+  content: '';
+  position: absolute;
+  inset: 6cqw;
+  border-radius: 4cqw;
+  border: max(1px, 1cqw) solid transparent;
+  background: var(--foil) border-box;
+  -webkit-mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.55;
+}
+
+.oval {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 62cqw;
+  height: 44cqw;
+  transform: translate(-50%, -50%) rotate(-12deg);
+  border-radius: 50%;
+  border: max(1px, 1.2cqw) solid transparent;
+  background: linear-gradient(#0d1020, #0d1020) padding-box, var(--foil) border-box;
+  display: grid;
+  place-items: center;
+}
+
+.mark {
+  transform: rotate(12deg);
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 17cqw;
+  line-height: 1;
+  color: var(--ink-100);
+}
+
+.amp {
+  background: var(--foil);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@container (max-width: 70px) {
+  .mark { font-size: 20cqw; }
+}
