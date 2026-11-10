@@ -392,14 +392,15 @@ export default function Header() {
                   {pathname !== '/login' && (
                     <Link
                       href="/login"
-                      className="py-3 -my-3 whitespace-nowrap text-[12px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
+                      className="hidden sm:inline py-3 -my-3 whitespace-nowrap text-[12px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
                     >
                       Sign in
                     </Link>
                   )}
+                  {/* Phones too: the sign-up page has "I have an account". */}
                   <Link
                     href="/signup"
-                    className="hidden sm:inline-block text-[11px] uppercase tracking-[0.2em] font-semibold px-4 py-2 rounded-full transition-opacity hover:opacity-90"
+                    className="inline-block whitespace-nowrap text-[11px] uppercase tracking-[0.2em] font-semibold px-4 py-2 rounded-full transition-opacity hover:opacity-90"
                     style={{
                       background: 'var(--gold-bright)',
                       color: 'var(--ink-on-gold)',

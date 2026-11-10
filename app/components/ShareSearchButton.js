@@ -58,17 +58,17 @@ export default function ShareSearchButton({ query, filters, allPresetRuns = [], 
     <button
       type="button"
       onClick={handleShare}
-      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] uppercase tracking-[0.18em] transition-colors ${className}`}
+      className={`inline-flex items-center gap-2 h-9 px-3.5 rounded-full text-[14px] font-medium whitespace-nowrap transition-colors ${className}`}
       style={{
-        border: '0.5px solid var(--line)',
+        border: '1px solid var(--line)',
         color: status === 'idle' ? 'var(--ink-200)' : 'var(--gold-bright)',
-        background: 'transparent',
+        background: 'var(--bg-elev)',
       }}
       onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--gold-deep)'; }}
       onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--line)'; }}
       aria-label="Share this search"
     >
-      {status === 'idle' ? <ArrowUpRight className="w-3.5 h-3.5" strokeWidth={1.75} aria-hidden="true" /> : <Check className="w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" />}
+      {status === 'idle' ? <ArrowUpRight className="w-4 h-4" strokeWidth={1.75} aria-hidden="true" /> : <Check className="w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" />}
       {label}
     </button>
   );

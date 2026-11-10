@@ -167,6 +167,26 @@ export default function BidCountdown({ endTime }) {
   );
 }
 
+// ── Plain "time left" text (result rows) ───────────────────────────────────
+// Fits beside the price instead of over a small photo: "1d 4h", "6h 12m",
+// "12m 30s", then "Ended". Ticks on the same shared loop.
+export function TimeLeft({ endTime, className = '', style }) {
+  const endMs = endTime ? new Date(endTime).getTime() : null;
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!endMs) return undefined;
+    return subscribe(() => setNow(Date.now()));
+  }, [endMs]);
+  if (!endMs) return null;
+  const sec = Math.max(0, Math.floor((endMs - now) / 1000));
+  const d = Math.floor(sec / 86400);
+  const h = Math.floor((sec % 86400) / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = sec % 60;
+  const label = sec <= 0 ? 'Ended' : d ? `${d}d ${h}h` : h ? `${h}h ${m}m` : `${m}m ${s}s`;
+  return <span className={`tabular-nums ${className}`} style={style}>{label}</span>;
+}
+
 // ── Digit reel ───────────────────────────────────────────────────────────
 
 const CELL_H = 22; // px — must match height in style block below

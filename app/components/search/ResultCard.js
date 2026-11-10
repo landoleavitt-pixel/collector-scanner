@@ -3,8 +3,8 @@
 // Search result row and its badge, shared by Fields & Floors and Foils &
 // Fables. Gold accents come from the side's tokens.
 
-import { ArrowUpRight, ImageOff } from 'lucide-react';
-import BidCountdown from '../BidCountdown';
+import { ImageOff } from 'lucide-react';
+import { TimeLeft } from '../BidCountdown';
 import { WatchStar } from './WatchStar';
 
 /* Upscale eBay thumbnail URLs from the small default (~225px) to a sharper 640px
@@ -27,178 +27,123 @@ export function CornerMarks() {
   );
 }
 
-/* One search result row (phone list row, desktop three columns). Each side
-   passes its own badges, row tint and watchlist payload. Tapping opens the
-   card popup; with unapplied filter changes it asks to search again first.
-   cardFrame (Foils & Fables only): the picture takes a trading card's shape
-   (63 × 88, rounded corners) and `noImage` stands in when there's no photo.
-   Sports leaves both off and looks as before. */
-export function ResultCard({ item, formatPrice, index, hasPendingFilters, onPendingClick, onCardClick, payload, rowStyle = null, badges = null, hasBadges = false, cardFrame = false, noImage = null }) {
+/* Listing titles as sellers write them shout ("MIKE TROUT 🔥🔥 INVEST").
+   Drop emoji and tone all-caps titles down to title case, keeping short
+   codes (PSA, BGS, RC, NBA), print runs (/50, 1/5) and card numbers. */
+const KEEP_CAPS = /^(?:[A-Z]{1,3}|PSA|BGS|SGC|CGC|BGS|RPA|SSP|NBA|NFL|MLB|NHL|WNBA|MVP|USA|UFC|WWE|PSA\d+|[A-Z]*\d[\w/#-]*)$/;
+export function tidyTitle(title = '') {
+  let t = String(title).replace(/[\p{Extended_Pictographic}️‍]/gu, '').replace(/\s{2,}/g, ' ').trim();
+  const letters = t.replace(/[^A-Za-z]/g, '');
+  const upper = letters.replace(/[^A-Z]/g, '').length;
+  if (letters.length > 8 && upper / letters.length > 0.7) {
+    t = t.split(' ').map((w) => (KEEP_CAPS.test(w) ? w : w.charAt(0) + w.slice(1).toLowerCase())).join(' ');
+  }
+  return t;
+}
+
+/* Who's selling: a brand-new seller is called out instead of "0.0%". */
+function SellerLine({ item, className = '' }) {
+  if (!item.seller && item.sellerFeedback == null) return null;
+  const isNew = item.sellerFeedback != null && Number(item.sellerFeedback) === 0;
+  if (isNew) return <span className={className} style={{ color: '#d9907c' }}>New seller · no feedback yet</span>;
   return (
-    <a
-      href={item.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      onClick={(e) => {
-        // Desktop equivalent of the mobile pending-search modal: if filters
-        // differ from the active search, intercept the click and prompt the
-        // user to rerun the search first.
-        if (hasPendingFilters && onPendingClick) {
-          e.preventDefault();
-          onPendingClick();
-          return;
-        }
-        // Default: open the in-app card modal instead of navigating to eBay.
-        // The modal has its own "View on eBay" CTA for users who want the
-        // listing directly. We honor cmd/ctrl-click + middle-click as
-        // "open in new tab" since power users expect that behavior.
-        if (e.metaKey || e.ctrlKey || e.button === 1) return;
-        if (onCardClick) {
-          e.preventDefault();
-          onCardClick(item);
-        }
-      }}
-      className="group block rise"
-      style={rowStyle ? {
-        animationDelay: `${Math.min(index * 40, 400)}ms`,
-        ...rowStyle,
-      } : { animationDelay: `${Math.min(index * 40, 400)}ms` }}
+    <span className={className}>
+      {item.seller}
+      {item.sellerFeedback != null && <> · {Number(item.sellerFeedback).toFixed(1).replace(/\.0$/, '')}%</>}
+    </span>
+  );
+}
+
+/* Buy It Now, or an auction's time left (it sits beside the price, so it
+   never gets cut off by a small photo). */
+function ListingLine({ item, short = false }) {
+  if (item.isAuction) {
+    return (
+      <span style={{ color: '#e6a86b' }}>
+        {!short && 'Auction'}{!short && item.endTime ? ' · ' : ''}
+        {item.endTime ? <TimeLeft endTime={item.endTime} /> : short ? 'Auction' : ''}
+      </span>
+    );
+  }
+  if (item.isBuyItNow) return <span>{short ? 'Buy now' : 'Buy It Now'}</span>;
+  return null;
+}
+
+/* One search result (a compact list row, or a grid card), shared by Fields &
+   Floors and Foils & Fables. Each side passes its own chips and watchlist
+   payload. Tapping opens the card popup; with unapplied filter changes it
+   asks to search again first.
+   cardFrame (Foils & Fables): the photo takes a trading card's 63 × 88 shape
+   and `noImage` stands in when there's no photo. */
+export function ResultCard({ item, formatPrice, index, hasPendingFilters, onPendingClick, onCardClick, payload, badges = null, cardFrame = false, noImage = null, view = 'list' }) {
+  const onClick = (e) => {
+    // With unapplied filter changes, ask to search again first.
+    if (hasPendingFilters && onPendingClick) {
+      e.preventDefault();
+      onPendingClick();
+      return;
+    }
+    // Open the in-app card popup (it has its own "View on eBay"); keep
+    // cmd/ctrl/middle-click as "open in a new tab".
+    if (e.metaKey || e.ctrlKey || e.button === 1) return;
+    if (onCardClick) {
+      e.preventDefault();
+      onCardClick(item);
+    }
+  };
+  const title = tidyTitle(item.title);
+  const photo = (big) => (
+    <div
+      data-listing-id={item.id}
+      className={`ff-sheen-wrap relative w-full overflow-hidden rounded-[4px] bg-[var(--bg-elev)] ${cardFrame ? 'aspect-[63/88]' : 'aspect-[3/4]'}`}
+      onTouchStart={(e) => { e.currentTarget.classList.remove('ff-play'); void e.currentTarget.offsetWidth; e.currentTarget.classList.add('ff-play'); }}
     >
-      {/* MOBILE (<lg) — compact list row: thumbnail left, badges pinned at bottom. */}
-      <div className="lg:hidden flex gap-4 py-5 pl-4 pr-3">
-        <div
-          data-listing-id={item.id}
-          className={`ff-sheen-wrap relative w-[92px] flex-none bg-[var(--bg-elev)] overflow-hidden ${cardFrame ? 'aspect-[63/88] rounded-[5px]' : 'aspect-[3/4]'}`}
-          onTouchStart={(e) => { e.currentTarget.classList.remove('ff-play'); void e.currentTarget.offsetWidth; e.currentTarget.classList.add('ff-play'); }}
-        >
-          <WatchStar item={item} payload={payload} />
-          {item.image ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={upscaleEbayImage(item.image)} alt={item.title} className="w-full h-full object-cover" />
-          ) : noImage || (
-            <div className="w-full h-full flex items-center justify-center text-[var(--ink-600)] font-display text-3xl italic"><ImageOff className="w-7 h-7" strokeWidth={1.5} aria-hidden="true" /></div>
-          )}
-          {item.isAuction && (
-            <span className="absolute top-1.5 left-1.5 text-[10px] uppercase tracking-[0.16em] text-[var(--gold)] bg-[var(--bg-base)]/85 px-1 py-0.5 border border-[var(--gold-deep)]/30">
-              Live
-            </span>
-          )}
-          {item.isAuction && item.endTime && (
-            <BidCountdown endTime={item.endTime} />
-          )}
+      {/* The save star, smaller on a row's small photo. */}
+      <span className={big ? '' : '[&>button]:top-1 [&>button]:right-1 [&>button]:w-7 [&>button]:h-7'}>
+        <WatchStar item={item} payload={payload} />
+      </span>
+      {item.image ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={big ? upscaleEbayImage(item.image) : item.image} alt="" loading="lazy" className="w-full h-full object-cover" />
+      ) : noImage || (
+        <div className="w-full h-full flex items-center justify-center text-[var(--ink-600)]"><ImageOff className="w-6 h-6" strokeWidth={1.5} aria-hidden="true" /></div>
+      )}
+    </div>
+  );
+
+  if (view === 'grid') {
+    return (
+      <a href={item.url} target="_blank" rel="noopener noreferrer" onClick={onClick} aria-label={title}
+         className="group block rise min-w-0" style={{ animationDelay: `${Math.min(index * 40, 400)}ms` }}>
+        {photo(true)}
+        {badges && <div className="flex flex-wrap gap-1.5 mt-3">{badges}</div>}
+        <h3 className="text-[13px] font-medium leading-[1.35] mt-2 line-clamp-2 text-[var(--ink-200)] group-hover:text-[var(--ink-100)]">{title}</h3>
+        <div className="flex items-baseline justify-between gap-2 mt-2">
+          <span className="font-display text-[24px] leading-none text-[var(--ink-100)]">{formatPrice(item.price)}</span>
+          <span className="text-[12px] whitespace-nowrap text-[var(--ink-400)]"><ListingLine item={item} short /></span>
         </div>
-        <div className="min-w-0 flex-1 flex flex-col">
-          <h3
-            className="font-display text-lg leading-[1.15] text-[var(--ink-100)] group-hover:text-[var(--gold-bright)] transition-colors"
-            style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
-          >
-            {item.title}
-          </h3>
-          <div className="text-[11px] leading-relaxed text-[var(--ink-400)] mt-1.5">
-            {item.seller && <span className="normal-case">{item.seller}</span>}
-            {item.sellerFeedback != null && (
-              <>
-                <span className="text-[var(--ink-600)] mx-1.5">·</span>
-                <span>{Number(item.sellerFeedback).toFixed(1)}%</span>
-              </>
-            )}
-          </div>
-          <div className="font-display text-[26px] leading-none text-[var(--ink-100)] group-hover:text-[var(--gold-bright)] transition-colors mt-2">
-            {formatPrice(item.price)}
-          </div>
-          {/* Badge row pinned to the bottom of the card */}
-          <div className="flex flex-wrap gap-1.5 mt-2.5">
-            {item.isAuction && (
-              <Badge auction>{item.bidCount != null ? `${item.bidCount} BIDS` : 'AUCTION'}</Badge>
-            )}
+      </a>
+    );
+  }
+
+  return (
+    <a href={item.url} target="_blank" rel="noopener noreferrer" onClick={onClick}
+       className="group block rise" style={{ animationDelay: `${Math.min(index * 40, 400)}ms` }}>
+      <div className="grid grid-cols-[52px_minmax(0,1fr)_auto] sm:grid-cols-[62px_minmax(0,1fr)_auto] gap-3 sm:gap-4 items-center px-1 sm:px-4 py-3 sm:py-3.5 rounded-[8px] transition-colors group-hover:bg-[var(--bg-elev)]">
+        {photo(false)}
+        <div className="min-w-0">
+          <h3 className="text-[14px] sm:text-[15px] font-medium leading-[1.35] line-clamp-2 text-[var(--ink-100)]">{title}</h3>
+          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 mt-1.5 sm:mt-2 text-[12px] sm:text-[13px] text-[var(--ink-400)]">
             {badges}
+            <SellerLine item={item} className="hidden sm:inline" />
+            {Number(item.sellerFeedback) === 0 && item.sellerFeedback != null && <span className="sm:hidden" style={{ color: '#d9907c' }}>New seller</span>}
           </div>
         </div>
-      </div>
-
-      {/* 3-column layout — title+badges+meta on left, image center as visual
-          focal point, price + CTA on right. items-center vertically aligns
-          all three columns so the row stays visually balanced even when the
-          title block grows tall. */}
-      <div className="hidden lg:grid grid-cols-1 md:grid-cols-[1.3fr_200px_1fr] gap-6 md:gap-7 items-center py-10 pl-4 md:pl-5">
-        {/* Left column: title, badges, meta */}
-        <div className="min-w-0 order-2 md:order-1">
-          <h3 className="font-display text-xl md:text-2xl leading-[1.15] text-[var(--ink-100)] group-hover:text-[var(--gold-bright)] transition-colors mb-4">
-            {item.title}
-          </h3>
-          <div className="flex flex-wrap gap-1.5 mb-4">
-            {item.isAuction && (
-              <Badge auction>
-                {item.bidCount != null ? `${item.bidCount} BIDS` : 'AUCTION'}
-              </Badge>
-            )}
-            {badges}
-            {!hasBadges && item.condition && (
-              <Badge subtle>{item.condition}</Badge>
-            )}
-          </div>
-          {/* Single prose meta line — seller, feedback, listing type. */}
-          <div className="text-[11px] leading-relaxed text-[var(--ink-400)]">
-            {item.seller && (
-              <span className="normal-case">{item.seller}</span>
-            )}
-            {item.sellerFeedback != null && (
-              <>
-                <span className="text-[var(--ink-600)] mx-2">·</span>
-                <span>{Number(item.sellerFeedback).toFixed(1)}% feedback</span>
-              </>
-            )}
-            {(item.isBuyItNow || item.isAuction) && (
-              <>
-                <span className="text-[var(--ink-600)] mx-2">·</span>
-                {item.isAuction && !item.isBuyItNow && <span>Auction</span>}
-                {item.isBuyItNow && !item.isAuction && <span>Buy It Now</span>}
-                {item.isAuction && item.isBuyItNow && <span>Auction · or BIN</span>}
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Center column: image, the visual focal point */}
-        <div className="order-1 md:order-2 mx-auto md:mx-0">
-          <div
-            data-listing-id={item.id}
-            className={`ff-sheen-wrap relative w-[160px] md:w-[200px] bg-[var(--bg-elev)] overflow-hidden ${cardFrame ? 'aspect-[63/88] rounded-[11px]' : 'aspect-[3/4]'}`}
-            onTouchStart={(e) => { e.currentTarget.classList.remove('ff-play'); void e.currentTarget.offsetWidth; e.currentTarget.classList.add('ff-play'); }}
-          >
-            {!cardFrame && <CornerMarks />}
-            <WatchStar item={item} payload={payload} />
-            {item.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={upscaleEbayImage(item.image)}
-                alt={item.title}
-                className="w-full h-full object-cover transition-all duration-700 group-hover:scale-[1.04]"
-              />
-            ) : noImage || (
-              <div className="w-full h-full flex items-center justify-center text-[var(--ink-600)] font-display text-4xl italic">
-                <ImageOff className="w-7 h-7" strokeWidth={1.5} aria-hidden="true" />
-              </div>
-            )}
-            {item.isAuction && (
-              <span className="absolute top-2 left-2 text-[10px] uppercase tracking-[0.18em] text-[var(--gold)] bg-[var(--bg-base)]/85 backdrop-blur-sm px-1.5 py-0.5 border border-[var(--gold-deep)]/30">
-                Live
-              </span>
-            )}
-            {item.isAuction && item.endTime && (
-              <BidCountdown endTime={item.endTime} />
-            )}
-          </div>
-        </div>
-
-        {/* Right column: price + CTA, vertically centered to image */}
-        <div className="text-left md:text-right order-3">
-          <div className="font-display text-4xl md:text-5xl leading-none text-[var(--ink-100)] group-hover:text-[var(--gold-bright)] transition-colors">
-            {formatPrice(item.price)}
-          </div>
-          <div className="mt-4 inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.22em] text-[var(--ink-400)] group-hover:text-[var(--gold)] transition-colors">
-            View on eBay
-            <ArrowUpRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" strokeWidth={1.6} />
+        <div className="text-right min-w-0 sm:min-w-[104px]">
+          <div className="font-display text-[22px] sm:text-[28px] leading-none text-[var(--ink-100)] whitespace-nowrap">{formatPrice(item.price)}</div>
+          <div className="mt-1.5 text-[12px] sm:text-[13px] whitespace-nowrap text-[var(--ink-400)]">
+            <span className="sm:hidden"><ListingLine item={item} short /></span>
+            <span className="hidden sm:inline"><ListingLine item={item} /></span>
           </div>
         </div>
       </div>
@@ -206,51 +151,40 @@ export function ResultCard({ item, formatPrice, index, hasPendingFilters, onPend
   );
 }
 
-export function Badge({ children, mono, subtle, auction, tier }) {
+/* A chip on a result: the tier chips say their name and how many were made
+   ("Grail · 5 made"); the rest (Autograph, Rookie, PSA 10) are outlined.
+   Rounded 4, sentence case, 12px. */
+export const TIER_CHIP = {
+  grail: { borderColor: '#ffc14d', backgroundImage: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)' },
+  ultra: { borderColor: '#c8d4e0', backgroundImage: 'linear-gradient(180deg, #e0e8f0 0%, #98a5b3 100%)' },
+  // Rare and Scarce: lighter than before so the dark label reads (Landon, 2026-11-09).
+  rare: { borderColor: '#d6722d', backgroundImage: 'linear-gradient(180deg, #e09356 0%, #c47b40 100%)' },
+  scarce: { borderColor: '#7d8997', backgroundImage: 'linear-gradient(180deg, #a4afbb 0%, #7d8997 100%)' },
+};
+export const TIER_NAMES = { grail: 'Grail', ultra: 'Ultra', rare: 'Rare', scarce: 'Scarce' };
+/** "Grail · 5 made" (1 → "Grail · 1 of 1"). */
+export function tierChipLabel(tier, run) {
+  const n = Number(String(run).replace(/[^\d]/g, ''));
+  const made = n === 1 ? '1 of 1' : `${n.toLocaleString('en-US')} made`;
+  return TIER_NAMES[tier] ? `${TIER_NAMES[tier]} · ${made}` : made;
+}
+
+export function Badge({ children, subtle, auction, tier }) {
   let className;
   let inlineStyle;
   if (auction) {
-    // Auction: warm red-amber to feel like a "live" indicator, distinct from gold
     className = 'border-[#c97a3a] text-[#e6a86b] bg-[#c97a3a]/[0.10]';
-  } else if (tier === 'grail') {
-    // Grail tier (/1–/25) — rich warm gold
-    className = 'text-[var(--ink-on-gold)] font-bold';
-    inlineStyle = {
-      borderColor: '#ffc14d',
-      backgroundImage: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)',
-    };
-  } else if (tier === 'ultra') {
-    // Ultra Rare tier (/26–/99) — cool platinum-blue
-    className = 'text-[var(--ink-on-gold)] font-bold';
-    inlineStyle = {
-      borderColor: '#c8d4e0',
-      backgroundImage: 'linear-gradient(180deg, #e0e8f0 0%, #98a5b3 100%)',
-    };
-  } else if (tier === 'rare') {
-    // Rare tier (/100–/249) — deep bronze-orange
-    className = 'text-[var(--ink-on-gold)] font-bold';
-    inlineStyle = {
-      borderColor: '#d6722d',
-      backgroundImage: 'linear-gradient(180deg, #d6884a 0%, #8e4f1f 100%)',
-    };
-  } else if (tier === 'scarce') {
-    // Scarce tier (/250–/999) — steel-gray
+  } else if (TIER_CHIP[tier]) {
     className = 'text-[var(--ink-on-gold)] font-semibold';
-    inlineStyle = {
-      borderColor: '#5a6470',
-      backgroundImage: 'linear-gradient(180deg, #8a96a4 0%, #4a5360 100%)',
-    };
+    inlineStyle = TIER_CHIP[tier];
   } else if (subtle) {
     className = 'border-[var(--line)] text-[var(--ink-400)]';
   } else {
-    // Default — for AUTO, RC, PSA, BGS, SGC, CGC
+    // Autograph, Rookie, PSA / BGS / SGC / CGC grades
     className = 'border-[var(--gold-deep)] text-[var(--gold-bright)] bg-[var(--gold)]/[0.06]';
   }
   return (
-    <span
-      className={`inline-flex items-center px-2.5 py-1 text-[11px] tracking-[0.1em] border ${className} ${mono ? 'font-mono uppercase' : 'uppercase'}`}
-      style={inlineStyle}
-    >
+    <span className={`inline-flex items-center h-6 px-2 rounded-[4px] text-[12px] font-medium leading-none whitespace-nowrap border ${className}`} style={inlineStyle}>
       {children}
     </span>
   );

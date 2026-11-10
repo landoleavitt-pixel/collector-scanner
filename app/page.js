@@ -4,13 +4,13 @@ import { useState, useEffect, useLayoutEffect, useMemo, useRef, Suspense, create
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 
-import { ArrowRight, ArrowUpRight, Star, X, Crosshair, ArrowLeft, ImageOff, Search, Clock, Bell, TrendingDown, Hourglass, ListFilter } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Star, X, Crosshair, ArrowLeft, ImageOff, Search, Clock, Bell, TrendingDown, Hourglass, ListFilter, SlidersHorizontal, ChevronDown, List, LayoutGrid } from 'lucide-react';
 import SaveSearchModal from './components/SaveSearchModal';
 import SaveSearchPrompt from './components/search/SaveSearchPrompt';
 import SignupPromptCard from './components/SignupPromptCard';
 import BidCountdown from './components/BidCountdown';
 import CardModal from './components/CardModal';
-import { tierForRun, tierChipStyle, tierRowStyle, OUTLINE_CHIP_STYLE } from './components/rarityUtils';
+import { tierForRun, tierChipStyle, OUTLINE_CHIP_STYLE } from './components/rarityUtils';
 import ShareSearchButton from './components/ShareSearchButton';
 import { isReturningVisitor, markVisited, getRecentSearches, addRecentSearch } from '../lib/visitState';
 import { hasShareParams, parseShareParams, buildShareParams } from '../lib/shareLink';
@@ -26,11 +26,11 @@ import { isNativeApp } from '../lib/native';
 import { usePlayerSuggest, useSuggestBox, DidYouMeanLine, EditableSearchHeading } from './components/search/SuggestBox';
 import {
   PRICE_NO_MAX, SectionLabel, SectionDivider, priceRangeLabel, PriceRangeSlider, SegmentedGroup, ResultsSidebar,
-  MobileFilterBar, MobileFilterDrawer, MobileSortSheet, SortDropdown, PendingSearchModal, BackToTop, LoadingState, NoResultsState,
+  MobileFilterDrawer, SortDropdown, SPORTS_SORT_OPTIONS, PendingSearchModal, BackToTop, LoadingState, NoResultsState,
   MoreFilters, ShippingFilters, shippingActive, shippingLabels,
 } from './components/search/SearchUI';
 import { WatchStar, usePendingStarSave, AlertBand } from './components/search/WatchStar';
-import { ResultCard, Badge, CornerMarks, upscaleEbayImage } from './components/search/ResultCard';
+import { ResultCard, Badge, CornerMarks, upscaleEbayImage, tierChipLabel } from './components/search/ResultCard';
 import { detectPrintRun, hasAutoText } from '../lib/listingFilter';
 
 // Print run tiers — grouped visually by rarity.
@@ -205,7 +205,10 @@ function Home() {
 
   // Mobile filter drawer + sort sheet (lg:hidden). Desktop keeps the sidebar.
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [mobileSortOpen, setMobileSortOpen] = useState(false);
+  // List or grid results; remembered on this device.
+  const [resultsView, setResultsViewState] = useState('list');
+  useEffect(() => { try { if (localStorage.getItem('ffResultsView') === 'grid') setResultsViewState('grid'); } catch {} }, []);
+  const setResultsView = (v) => { setResultsViewState(v); try { localStorage.setItem('ffResultsView', v); } catch {} };
   const [isDesktopViewport, setIsDesktopViewport] = useState(false);
 
   // "Search with new filters?" modal — fires when user leaves the filter
@@ -849,12 +852,9 @@ function Home() {
               The searched player name is the big editable headline; click it
               to type a new name and run another search without scrolling
               back to the hero. Listing count moves to a subtitle. */}
-          <div className="flex flex-wrap items-end justify-between gap-6 pb-6 mb-8 border-b border-[var(--line)]">
-            <div className="min-w-0 flex-1">
-              <h1 className="sr-only">{query} cards</h1>
-              <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--ink-400)] mb-2">
-                Searching for
-              </p>
+          <div className="min-w-0">
+            <h1 className="sr-only">{query} cards</h1>
+            <div className="flex flex-wrap items-baseline gap-x-3.5 gap-y-1">
               <EditableSearchHeading
                 value={query}
                 onSubmit={(next) => {
@@ -864,84 +864,42 @@ function Home() {
                   handleSearch(trimmed);
                 }}
               />
-              {/* Quiet typo hint. With zero results, NoResultsState shows it
-                  as a button instead, so it's hidden here. */}
-              {nameFix && !loading && sortedResults.length > 0 && dismissedFix !== query && (
-                <DidYouMeanLine
-                  fix={nameFix.query}
-                  onPick={() => searchFix(nameFix.query)}
-                  onDismiss={() => setDismissedFix(query)}
-                />
-              )}
-              {/* What this result set was filtered by, one tap from changing it. */}
-              <ActiveFilterChips
-                query={query}
-                filters={appliedFilters || filters}
-                onEdit={() => {
-                  if (isDesktopViewport) {
-                    sidebarRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    sidebarRef.current?.querySelector('button')?.focus({ preventScroll: true });
-                  } else {
-                    setMobileFiltersOpen(true);
-                  }
-                }}
-              />
-              {/* No count while searching: "0 listings" read as no results. */}
+              {/* No count while searching: "0 for sale" read as no results. */}
               {!loading && (
-                <p className="text-[13px] mt-3" style={{ color: 'var(--ink-400)' }}>
-                  <span style={{ color: 'var(--gold)' }}>{sortedResults.length}</span>{' '}
-                  {sortedResults.length === 1 ? 'listing' : 'listings'}
-                </p>
+                <span className="text-[15px]" style={{ color: 'var(--ink-400)' }}>
+                  {resultsSummary(sortedResults.length, query, filters.sortBy)}
+                </span>
               )}
             </div>
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
-              {/* Share the current criteria as a link that reproduces this
-                  exact search for whoever receives it. */}
-              <ShareSearchButton
-                query={query}
-                filters={filters}
-                allPresetRuns={ALL_PRESET_PRINT_RUNS}
+            {/* Quiet typo hint. With zero results, NoResultsState shows it
+                as a button instead, so it's hidden here. */}
+            {nameFix && !loading && sortedResults.length > 0 && dismissedFix !== query && (
+              <DidYouMeanLine
+                fix={nameFix.query}
+                onPick={() => searchFix(nameFix.query)}
+                onDismiss={() => setDismissedFix(query)}
               />
-              <div className="hidden lg:block">
-                <SortDropdown
-                  value={filters.sortBy}
-                  onChange={(v) => setFilter('sortBy', v)}
-                />
-              </div>
-              <button
-                onClick={handleOpenSave}
-                className="flex items-center gap-2 px-4 py-2 rounded-full text-[11px] uppercase tracking-[0.18em] transition-colors"
-                style={{
-                  border: '0.5px solid var(--gold)',
-                  color: 'var(--gold)',
-                  background: 'transparent',
-                }}
-              >
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-                </svg>
-                Save this search
-              </button>
-              <button
-                onClick={() => {
-                  setAppStage('idle');
-                  setQuery('');
-                  setResults([]);
-                  setError(null);
-                  setAppliedFilters(null);
-                }}
-                className="py-3 -my-3 text-[11px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
-              >
-                New search
-              </button>
-            </div>
+            )}
           </div>
 
-          {/* Mobile-only filter + sort bar (sticky). Desktop uses the sidebar. */}
-          <MobileFilterBar
+          {/* One row of controls: Filters, Sort, Get alerts, Share, List / Grid.
+              Sticky on phones so it stays in reach while scrolling. */}
+          <ResultsToolbar
             activeCount={countActiveFilters(filters)}
-            onOpenFilters={() => setMobileFiltersOpen(true)}
-            onOpenSort={() => setMobileSortOpen(true)}
+            onFilters={() => {
+              if (isDesktopViewport) {
+                sidebarRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                sidebarRef.current?.querySelector('button')?.focus({ preventScroll: true });
+              } else {
+                setMobileFiltersOpen(true);
+              }
+            }}
+            sortBy={filters.sortBy}
+            onSort={(v) => setFilter('sortBy', v)}
+            onAlerts={handleOpenSave}
+            share={<ShareSearchButton query={query} filters={filters} allPresetRuns={ALL_PRESET_PRINT_RUNS} />}
+            view={resultsView}
+            onView={setResultsView}
           />
 
           {/* Two-column layout: 280px sidebar + flexible results */}
@@ -971,6 +929,7 @@ function Home() {
               onNameFix={searchFix}
               query={query}
               onAlert={handleOpenSave}
+              view={resultsView}
             />
           </div>
 
@@ -988,12 +947,6 @@ function Home() {
           >
             <FilterControls filters={filters} setFilter={setFilter} compact />
           </MobileFilterDrawer>
-          <MobileSortSheet
-            open={mobileSortOpen}
-            onClose={() => setMobileSortOpen(false)}
-            value={filters.sortBy}
-            onChange={(v) => { setFilter('sortBy', v); setMobileSortOpen(false); }}
-          />
 
           {/* "Search with new filters?" modal — centered, dimmed overlay
               on BOTH mobile and desktop (PendingSearchModal portals to body). */}
@@ -2764,7 +2717,7 @@ function ToggleRow({ label, checked, onChange }) {
    ───────────────────────────────────────────── */
 const PAGE_DISPLAY_SIZE = 200; // how many cards to render at once
 
-function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase, onSuggested, appliedFilters, resultMeta, hasPendingFilters, onPendingClick, onCardClick, nameFix = null, onNameFix, query = '', onAlert }) {
+function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase, onSuggested, appliedFilters, resultMeta, hasPendingFilters, onPendingClick, onCardClick, nameFix = null, onNameFix, query = '', onAlert, view = 'list' }) {
   // How many cards are currently shown. Resets to the first page whenever a new
   // result set arrives (keyed on result count + first id below).
   const [shown, setShown] = useState(PAGE_DISPLAY_SIZE);
@@ -2797,13 +2750,19 @@ function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase
           Add more filters to narrow it down to the rarest cards.
         </p>
       )}
-      <div className="divide-y divide-[var(--line-soft)]">
-        {visible.flatMap((item, i) => {
-          const card = <SportsResultCard key={item.id} item={item} formatPrice={formatPrice} index={i} hasPendingFilters={hasPendingFilters} onPendingClick={onPendingClick} onCardClick={onCardClick} />;
-          // Sign-up prompt for visitors who aren't signed in, after the 4th card.
-          return i === 3 ? [card, <SignupPromptCard key="signup-prompt" />] : [card];
-        })}
-      </div>
+      {view === 'grid' ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-7">
+          {visible.map((item, i) => <SportsResultCard key={item.id} item={item} formatPrice={formatPrice} index={i} view="grid" hasPendingFilters={hasPendingFilters} onPendingClick={onPendingClick} onCardClick={onCardClick} />)}
+        </div>
+      ) : (
+        <div className="divide-y divide-[var(--line-soft)]">
+          {visible.flatMap((item, i) => {
+            const card = <SportsResultCard key={item.id} item={item} formatPrice={formatPrice} index={i} hasPendingFilters={hasPendingFilters} onPendingClick={onPendingClick} onCardClick={onCardClick} />;
+            // Sign-up prompt for visitors who aren't signed in, after the 4th card.
+            return i === 3 ? [card, <SignupPromptCard key="signup-prompt" />] : [card];
+          })}
+        </div>
+      )}
 
       {remaining > 0 && (
         <div className="pt-8 flex flex-col items-center gap-3">
@@ -2861,7 +2820,7 @@ function sportsReturnPath(query, filters) {
   return qs ? `/?${qs}` : null;
 }
 
-function SportsResultCard({ item, formatPrice, index, hasPendingFilters, onPendingClick, onCardClick }) {
+function SportsResultCard({ item, formatPrice, index, hasPendingFilters, onPendingClick, onCardClick, view = 'list' }) {
   // Heuristic badge detection from title
   const title = (item.title || '').toLowerCase();
   const hasAuto = hasAutoText(item.title || '');
@@ -2875,25 +2834,16 @@ function SportsResultCard({ item, formatPrice, index, hasPendingFilters, onPendi
   const sgcMatch = item.title?.match(/SGC\s*(\d{1,2}(?:\.\d)?)/i);
   const cgcMatch = item.title?.match(/CGC\s*(\d{1,2}(?:\.\d)?)/i);
 
-  // Tier-based row treatment — distinct hues per tier so each is unmistakable
-  // at a glance (not just lighter/darker variants of the same color).
-  //   Grail   — warm rich gold
-  //   Ultra   — cool platinum-blue
-  //   Rare    — deep bronze-orange
-  //   Scarce  — steel-gray
-  // Applied as background gradient + left border on the link element.
-  const tierStyle = tier ? tierRowStyle(tier) : null;
-  const hasBadges = !!(hasAuto || hasRookie || printRun || psaMatch || bgsMatch || sgcMatch || cgcMatch);
-
   return (
     <ResultCard
-      item={item} formatPrice={formatPrice} index={index}
+      item={item} formatPrice={formatPrice} index={index} view={view}
       hasPendingFilters={hasPendingFilters} onPendingClick={onPendingClick} onCardClick={onCardClick}
-      payload={watchlistPayload(item)} rowStyle={tierStyle} hasBadges={hasBadges}
+      payload={watchlistPayload(item)}
       badges={<>
-        {hasAuto && <Badge>AUTO</Badge>}
-        {hasRookie && <Badge>RC</Badge>}
-        {printRun && <Badge mono tier={printRunTier(printRun)}>/{printRun}</Badge>}
+        {/* Tier first, by name and how many were made: "Grail · 5 made". */}
+        {printRun && <Badge tier={tier}>{tierChipLabel(tier, printRun)}</Badge>}
+        {hasAuto && <Badge>Autograph</Badge>}
+        {hasRookie && <Badge>Rookie</Badge>}
         {psaMatch && <Badge>PSA {psaMatch[1]}</Badge>}
         {bgsMatch && <Badge>BGS {bgsMatch[1]}</Badge>}
         {sgcMatch && <Badge>SGC {sgcMatch[1]}</Badge>}
@@ -3083,6 +3033,57 @@ function activeFilterChips(f) {
   const max = f.priceMax ?? PRICE_NO_MAX;
   if (min > 0 || !isPriceNoMax(max)) chips.push({ label: priceRangeLabel(min, max === 5000 ? PRICE_NO_MAX : max) });
   return chips;
+}
+
+/* "949 for sale · rarest first" under the searched name (a whole-team
+   search says which league's team it is). */
+function resultsSummary(n, query, sortBy) {
+  const team = teamFromQuery(query);
+  const sort = (SPORTS_SORT_OPTIONS.find(([v]) => v === sortBy)?.[1] || '').toLowerCase();
+  return [`${n.toLocaleString('en-US')} for sale`, team && `${team.league} team`, sort].filter(Boolean).join(' · ');
+}
+
+/* The results controls in one row: Filters (with how many are on), Sort,
+   Get alerts, Share, and List / Grid. */
+function ResultsToolbar({ activeCount, onFilters, sortBy, onSort, onAlerts, share, view, onView }) {
+  const pill = 'inline-flex items-center gap-2 h-9 px-3.5 rounded-full text-[14px] font-medium whitespace-nowrap transition-colors hover:border-[var(--gold-deep)]';
+  const pillStyle = { border: '1px solid var(--line)', background: 'var(--bg-elev)', color: 'var(--ink-200)' };
+  const icon = 'w-4 h-4 flex-none';
+  return (
+    <div className="sticky top-0 lg:static z-30 -mx-6 px-6 lg:mx-0 lg:px-0 py-3 mt-3 mb-4 lg:mb-6 flex items-center gap-2 overflow-x-auto [scrollbar-width:none]"
+         style={{ background: 'var(--bg-base)', borderBottom: '1px solid var(--line-soft)' }}>
+      <button type="button" onClick={onFilters} className={pill} style={pillStyle}>
+        <SlidersHorizontal className={icon} strokeWidth={1.8} aria-hidden="true" />Filters
+        {activeCount > 0 && (
+          <span className="inline-grid place-items-center min-w-[20px] h-5 px-1.5 rounded-full text-[12px] font-semibold" style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>{activeCount}</span>
+        )}
+      </button>
+      <label className={`${pill} relative cursor-pointer`} style={pillStyle}>
+        <span className="sr-only">Sort</span>
+        <span aria-hidden="true" className="hidden sm:inline">Sort:</span>
+        <span aria-hidden="true">{SPORTS_SORT_OPTIONS.find(([v]) => v === sortBy)?.[1] || 'Rarest first'}</span>
+        <ChevronDown className={icon} strokeWidth={1.8} aria-hidden="true" />
+        <select value={sortBy} onChange={(e) => onSort(e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer" aria-label="Sort">
+          {SPORTS_SORT_OPTIONS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+        </select>
+      </label>
+      {/* Phones: Filters, Sort and a bell for alerts on this search (signed-in
+          members save it here; the header's Get alerts is for visitors). */}
+      <button type="button" onClick={onAlerts} aria-label="Get alerts for this search" className={`${pill} max-sm:px-2.5`} style={pillStyle}>
+        <Bell className={icon} strokeWidth={1.8} aria-hidden="true" /><span className="hidden sm:inline">Get alerts</span>
+      </button>
+      <span className="hidden sm:contents">{share}</span>
+      <div className="ml-auto hidden sm:inline-flex flex-none p-[3px] rounded-full" role="group" aria-label="Show as" style={{ border: '1px solid var(--line)', background: 'var(--bg-elev)' }}>
+        {[['list', 'List', List], ['grid', 'Grid', LayoutGrid]].map(([v, l, Icon]) => (
+          <button key={v} type="button" onClick={() => onView(v)} aria-pressed={view === v}
+                  className="inline-flex items-center gap-1.5 h-[30px] px-3 rounded-full text-[13px] font-medium"
+                  style={view === v ? { background: 'var(--bg-elev-2)', color: 'var(--ink-100)', boxShadow: 'inset 0 0 0 1px var(--line)' } : { color: 'var(--ink-400)' }}>
+            <Icon className="w-3.5 h-3.5" strokeWidth={1.8} aria-hidden="true" /><span className="hidden sm:inline">{l}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 function ActiveFilterChips({ filters, onEdit, query = '' }) {
