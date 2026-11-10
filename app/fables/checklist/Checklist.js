@@ -182,7 +182,7 @@ export default function Checklist() {
     const rarest = rarestOf(r);
     const sale = saleOf(r);
     return (
-      <div key={r.id} className="rounded-2xl mb-2.5 overflow-hidden" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
+      <div key={r.id} className="rounded-xl mb-2.5 overflow-hidden" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
       <button type="button" onClick={() => setPick(r.id)}
               className="w-full flex items-center gap-3.5 min-h-[72px] px-3.5 py-3 text-left">
         {/* A seller's photo only on a row that says what's for sale. */}
@@ -263,7 +263,7 @@ export default function Checklist() {
             <div className="flex gap-1.5 p-1 rounded-xl mt-1 mb-1.5" role="group" aria-label="Order" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
               {[[false, 'Newest sets'], [true, 'Rarest first']].map(([v, l]) => (
                 <button key={l} type="button" onClick={() => { setRarestFirst(v); setShowAll(false); }} aria-pressed={rarestFirst === v}
-                        className="flex-1 min-h-[40px] rounded-[9px] text-body text-center"
+                        className="flex-1 min-h-[40px] rounded-lg text-body text-center"
                         style={rarestFirst === v ? { background: 'var(--bg-elev-2)', color: 'var(--ink-100)', boxShadow: 'inset 0 0 0 1px var(--line)' } : { color: 'var(--ink-400)' }}>
                   {l}
                 </button>
@@ -275,7 +275,7 @@ export default function Checklist() {
             <div className="mt-4">
               {(showAll ? byRarity : byRarity.slice(0, RARE_ROWS_SHOWN)).map(cardRow)}
               {!showAll && byRarity.length > RARE_ROWS_SHOWN && (
-                <button type="button" onClick={() => setShowAll(true)} className="w-full min-h-[56px] rounded-2xl text-lede mt-2"
+                <button type="button" onClick={() => setShowAll(true)} className="w-full min-h-[56px] rounded-xl text-lede mt-2"
                         style={{ border: '1px dashed var(--line)', color: 'var(--ink-400)' }}>
                   Show {byRarity.length - RARE_ROWS_SHOWN} more cards
                 </button>
@@ -290,7 +290,7 @@ export default function Checklist() {
                 </section>
               ))}
               {!showAll && sets.length > SETS_SHOWN && (
-                <button type="button" onClick={() => setShowAll(true)} className="w-full min-h-[56px] rounded-2xl text-lede mt-2"
+                <button type="button" onClick={() => setShowAll(true)} className="w-full min-h-[56px] rounded-xl text-lede mt-2"
                         style={{ border: '1px dashed var(--line)', color: 'var(--ink-400)' }}>
                   Show {sets.length - SETS_SHOWN} older sets
                 </button>
@@ -299,12 +299,12 @@ export default function Checklist() {
           )}
 
           {alertState === 'on' ? (
-            <p className="w-full min-h-[60px] rounded-2xl flex items-center justify-center gap-2.5 text-lede mt-7" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)', color: 'var(--accent-bright)' }}>
+            <p className="w-full min-h-[60px] rounded-xl flex items-center justify-center gap-2.5 text-lede mt-7" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)', color: 'var(--accent-bright)' }}>
               <Bell className="w-5 h-5" strokeWidth={2} aria-hidden="true" />Alerts are on
             </p>
           ) : (
             <button type="button" onClick={() => (user ? setAsk(true) : window.location.assign(`/signup?src=alert&next=${encodeURIComponent(here)}`))}
-                    className="w-full min-h-[60px] rounded-2xl flex items-center justify-center gap-2.5 text-lede font-semibold mt-7"
+                    className="w-full min-h-[60px] rounded-xl flex items-center justify-center gap-2.5 text-lede font-semibold mt-7"
                     style={{ background: 'linear-gradient(180deg,var(--accent-fill-top),var(--accent-fill-bottom))', color: 'var(--ink-on-accent)' }}>
               <Bell className="w-5 h-5" strokeWidth={2} aria-hidden="true" />Alert me when one I need is listed
             </button>
@@ -344,7 +344,7 @@ export default function Checklist() {
               </>
             );
             return (
-              <div key={v.key} className="rounded-[14px] mb-2.5 overflow-hidden"
+              <div key={v.key} className="rounded-xl mb-2.5 overflow-hidden"
                    style={{ background: on ? 'var(--bg-elev-2)' : 'var(--bg-base)', border: `1.5px solid ${on ? 'var(--accent-bright)' : 'var(--line)'}` }}>
                 {user ? (
                   <button type="button" onClick={() => toggle(picked, v)} aria-pressed={on}
@@ -387,7 +387,7 @@ export default function Checklist() {
             const unnamed = sale.all - sale.named;
             if (unnamed <= 0) return null;
             return (
-              <a href={numberHref(picked)} className="flex items-center justify-between gap-2 min-h-[52px] px-3.5 py-2.5 rounded-[14px] mb-2.5 text-lede"
+              <a href={numberHref(picked)} className="flex items-center justify-between gap-2 min-h-[52px] px-3.5 py-2.5 rounded-xl mb-2.5 text-lede"
                  style={{ border: '1.5px dashed var(--line)', color: 'var(--ink-200)' }}>
                 <span>{unnamed} more for sale {unnamed === 1 ? 'doesn’t' : 'don’t'} say which version</span>
                 <span className="inline-flex items-center gap-1 flex-none font-semibold" style={{ color: 'var(--accent-bright)' }}>See {unnamed === 1 ? 'it' : 'them'}<ChevronRight className="w-[18px] h-[18px]" strokeWidth={2} aria-hidden="true" /></span>
@@ -438,7 +438,7 @@ function NotFound({ name, game }) {
   const fix = name && names ? names.didYouMean(name) : null;
   const fixGame = fix ? VERSION_GAMES.find((g) => GAME_NAMES[g] === fix.sport) || null : null;
   const searchFor = fix?.query || name;
-  const big = 'w-full min-h-[60px] rounded-2xl flex items-center justify-center text-center px-4 text-lede font-semibold';
+  const big = 'w-full min-h-[60px] rounded-xl flex items-center justify-center text-center px-4 text-lede font-semibold';
   const gold = { background: 'linear-gradient(180deg,var(--accent-fill-top),var(--accent-fill-bottom))', color: 'var(--ink-on-accent)' };
   const list = (g, n) => `/fables/checklist?${gameQuery(g)}name=${encodeURIComponent(n)}`;
   return (
@@ -474,7 +474,7 @@ function Skeleton() {
   return (
     <div aria-label="Loading" role="status">
       {Array.from({ length: 5 }).map((_, i) => (
-        <div key={i} className="h-[72px] rounded-2xl mb-2.5 shimmer" style={{ background: 'var(--bg-elev)' }} />
+        <div key={i} className="h-[72px] rounded-xl mb-2.5 shimmer" style={{ background: 'var(--bg-elev)' }} />
       ))}
     </div>
   );

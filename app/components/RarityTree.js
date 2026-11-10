@@ -333,8 +333,8 @@ function TreeStyles() {
       .rt-dots em { font: 500 12px 'Geist Mono', ui-monospace, monospace; font-style: normal; color: var(--ink-400); }
       .rt-me { display: inline-flex; align-items: center; gap: 10px; min-width: 0; }
       .rt-me-name { font-size: 14px; font-weight: 500; color: var(--ink-100); white-space: nowrap; }
-      .rt-tag { flex: none; font: 600 12px 'Geist Mono', ui-monospace, monospace; color: var(--bg-base); background: var(--accent-bright); padding: 2px 6px; border-radius: 3px; }
-      .rt-thumb { flex: none; max-width: none; width: 34px; height: 48px; object-fit: cover; border-radius: 3px; box-shadow: 0 0 0 2px var(--accent-bright); }
+      .rt-tag { flex: none; font: 600 12px 'Geist Mono', ui-monospace, monospace; color: var(--bg-base); background: var(--accent-bright); padding: 2px 6px; border-radius: 4px; }
+      .rt-thumb { flex: none; max-width: none; width: 34px; height: 48px; object-fit: cover; border-radius: 4px; box-shadow: 0 0 0 2px var(--accent-bright); }
 
       .rt-detail { list-style: none; margin: 2px 0 8px 10px; padding: 4px 0 4px 104px; }
       .rt-detail li { display: grid; grid-template-columns: 14px 1fr; gap: 2px 10px; align-items: center; padding: 5px 0; font-size: 14px; color: var(--ink-200); }

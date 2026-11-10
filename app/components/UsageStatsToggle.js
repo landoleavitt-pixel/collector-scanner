@@ -29,7 +29,7 @@ export default function UsageStatsToggle({ id = 'usage-stats' }) {
   return (
     <div
       id={id}
-      className="flex items-start justify-between gap-6 rounded-[12px] border border-[var(--ink-600)] bg-[var(--bg-elev)] p-5 scroll-mt-24"
+      className="flex items-start justify-between gap-6 rounded-xl border border-[var(--ink-600)] bg-[var(--bg-elev)] p-5 scroll-mt-24"
     >
       <div>
         <p className="text-[var(--ink-100)] font-medium" id={`${id}-label`}>

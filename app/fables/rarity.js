@@ -41,7 +41,7 @@ export function GroupChip({ group, className = '' }) {
   const g = groupOf(group);
   if (!g) return null;
   return (
-    <span className={`inline-flex items-center px-2.5 py-1 rounded-[7px] text-fine font-semibold tracking-[0.02em] whitespace-nowrap ${className}`} style={g.chip}>
+    <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-fine font-semibold tracking-[0.02em] whitespace-nowrap ${className}`} style={g.chip}>
       {g.label}
     </span>
   );

@@ -74,7 +74,7 @@ export default function Lists() {
     <main className="max-w-[880px] mx-auto px-5 md:px-6 pt-5 md:pt-10 pb-16">
       <h1 className="font-display italic text-h1 md:text-h1 leading-none">Card lists</h1>
       <p className="text-lede mt-2 mb-4" style={{ color: 'var(--ink-400)' }}>Every card, every version. Tick the ones you have.</p>
-      <label className="flex items-center gap-2.5 min-h-[54px] px-4 rounded-[14px]" style={{ border: '1px solid var(--line)', background: 'var(--bg-elev)' }}>
+      <label className="flex items-center gap-2.5 min-h-[54px] px-4 rounded-xl" style={{ border: '1px solid var(--line)', background: 'var(--bg-elev)' }}>
         <Search className="w-5 h-5 flex-none" strokeWidth={2} style={{ color: 'var(--ink-400)' }} aria-hidden="true" />
         <input type="search" value={typed} onChange={(e) => setTyped(e.target.value)} placeholder="Find a card list" aria-label="Find a card list"
                className="flex-1 min-w-0 bg-transparent outline-none text-lede" style={{ color: 'var(--ink-100)' }} />
@@ -125,7 +125,7 @@ export default function Lists() {
             ? <div className="h-[56px] rounded-xl shimmer" style={{ background: 'var(--bg-elev)' }} />
             : rows.cards.map(row)}
           {rows?.nextOffset != null && (
-            <button type="button" onClick={more} className="w-full min-h-[56px] rounded-2xl text-lede mt-4" style={{ border: '1px dashed var(--line)', color: 'var(--ink-400)' }}>
+            <button type="button" onClick={more} className="w-full min-h-[56px] rounded-xl text-lede mt-4" style={{ border: '1px dashed var(--line)', color: 'var(--ink-400)' }}>
               Show more {letter} cards
             </button>
           )}

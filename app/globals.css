@@ -204,7 +204,7 @@ button:focus-visible, input:focus-visible, a:focus-visible {
   background: var(--bg-elev);
   border: 1px solid var(--line-soft);
   padding: 0.1em 0.4em;
-  border-radius: 3px;
+  border-radius: 4px;
   color: var(--ink-100);
 }
 
@@ -332,12 +332,12 @@ select option {
 .ff-price-range::-webkit-slider-runnable-track {
   height: 4px;
   background: var(--line);
-  border-radius: 2px;
+  border-radius: 4px;
 }
 .ff-price-range::-moz-range-track {
   height: 4px;
   background: var(--line);
-  border-radius: 2px;
+  border-radius: 4px;
 }
 .ff-price-range::-webkit-slider-thumb {
   -webkit-appearance: none;
@@ -489,3 +489,13 @@ html:not([data-side="fables"]) [data-fables-only] { display: none !important; }
   50%      { box-shadow: 0 0 0 6px rgba(185, 230, 242, 0.25); }
 }
 [data-side="fables"] .pending-pulse { animation-name: pendingPulseFables; }
+
+/* One kind of filter control (design review fix 4): a round pill that
+   shows a tick when chosen. Any button with .ff-pill and aria-pressed. */
+.ff-pill[aria-pressed="true"]::before {
+  content: '';
+  width: 13px; height: 13px; margin-right: 6px; flex: none;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / contain no-repeat;
+}

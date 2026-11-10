@@ -51,8 +51,8 @@ export function tierChipStyle(tier) {
   const styles = {
     grail:  { color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#ffd97a,#d99c14)', border: '0.5px solid #ffc14d', fontWeight: 700 },
     ultra:  { color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#e0e8f0,#98a5b3)', border: '0.5px solid #c8d4e0', fontWeight: 700 },
-    rare:   { color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#d6884a,#8e4f1f)', border: '0.5px solid #d6722d', fontWeight: 700 },
-    scarce: { color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#8a96a4,#4a5360)', border: '0.5px solid #5a6470', fontWeight: 600 },
+    rare:   { color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#e09356,#c47b40)', border: '0.5px solid #d6722d', fontWeight: 700 },
+    scarce: { color: '#1a1612', backgroundImage: 'linear-gradient(180deg,#a4afbb,#7d8997)', border: '0.5px solid #7d8997', fontWeight: 600 },
   };
   return styles[tier] || styles.grail;
 }

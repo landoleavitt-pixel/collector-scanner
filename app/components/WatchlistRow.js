@@ -56,10 +56,10 @@ function buildChips(filters) {
   const hasScarce = ['/250', '/299', '/399', '/499', '/599', '/699', '/799', '/899', '/999'].some((r) => selected.has(r));
 
   if (filters.numberedCards) {
-    if (hasGrail)  chips.push({ label: 'Grail · /1–25',      tier: 'grail' });
-    if (hasUltra)  chips.push({ label: 'Ultra · /26–99',      tier: 'ultra' });
-    if (hasRare)   chips.push({ label: 'Rare · /100–249',     tier: 'rare' });
-    if (hasScarce) chips.push({ label: 'Scarce · /250–999',   tier: 'scarce' });
+    if (hasGrail)  chips.push({ label: 'Grail · 1 to 25 made',      tier: 'grail' });
+    if (hasUltra)  chips.push({ label: 'Ultra · 26 to 99 made',     tier: 'ultra' });
+    if (hasRare)   chips.push({ label: 'Rare · 100 to 249 made',    tier: 'rare' });
+    if (hasScarce) chips.push({ label: 'Scarce · 250 or more made', tier: 'scarce' });
     if (filters.customPrintRuns?.length) {
       chips.push({ label: `+${filters.customPrintRuns.length} custom`, tier: 'neutral' });
     }

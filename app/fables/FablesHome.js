@@ -501,7 +501,7 @@ export default function FablesHome() {
 
           {applied?.q && !loading && (canHaveVersions ? (
             <button type="button" onClick={() => setShowAllListings(false)}
-                    className="w-full lg:w-auto lg:px-6 min-h-[56px] rounded-2xl inline-flex items-center justify-center gap-2 text-lede font-semibold mb-6"
+                    className="w-full lg:w-auto lg:px-6 min-h-[56px] rounded-xl inline-flex items-center justify-center gap-2 text-lede font-semibold mb-6"
                     style={{ border: '1.5px solid var(--accent-bright)', color: 'var(--accent-bright)' }}>
               <Layers className="w-5 h-5" strokeWidth={2} aria-hidden="true" />See every version
             </button>
@@ -624,7 +624,7 @@ function EveryCardButton({ query, game }) {
   if (!family) return null;
   return (
     <Link href={`/fables/checklist?${gameQuery(game)}name=${encodeURIComponent(family)}`}
-          className="w-full lg:w-auto lg:px-6 min-h-[56px] rounded-2xl inline-flex items-center justify-center gap-2 text-lede font-semibold mb-6"
+          className="w-full lg:w-auto lg:px-6 min-h-[56px] rounded-xl inline-flex items-center justify-center gap-2 text-lede font-semibold mb-6"
           style={{ border: '1.5px solid var(--accent-bright)', color: 'var(--accent-bright)' }}>
       <Layers className="w-5 h-5" strokeWidth={2} aria-hidden="true" />See every {family} card
     </Link>
@@ -641,7 +641,7 @@ function SearchBar({ query, setQuery, onSubmit, onPick }) {
       <form
         ref={suggest.anchorRef}
         onSubmit={(e) => { e.preventDefault(); suggest.close(); onSubmit(); }}
-        className="flex items-center gap-2.5 min-h-[64px] rounded-2xl pl-[18px] pr-1.5 py-1.5" style={{ background: 'var(--bg-elev)', border: '1.5px solid var(--accent-deep)' }}
+        className="flex items-center gap-2.5 min-h-[64px] rounded-xl pl-[18px] pr-1.5 py-1.5" style={{ background: 'var(--bg-elev)', border: '1.5px solid var(--accent-deep)' }}
       >
         <input
           value={query}
@@ -759,14 +759,14 @@ function SignedOut({ query, setQuery, onSearch, error }) {
       </section>
       <div className="max-w-[1080px] mx-auto px-5 md:px-8 mt-8 md:mt-10">
         <PopularListsRow />
-        <Link href="/fables/lists" className="flex md:inline-flex items-center justify-center gap-2 min-h-[56px] md:px-8 mt-4 rounded-2xl text-lede font-medium"
+        <Link href="/fables/lists" className="flex md:inline-flex items-center justify-center gap-2 min-h-[56px] md:px-8 mt-4 rounded-xl text-lede font-medium"
               style={{ border: '1.5px solid var(--line)', color: 'var(--ink-100)' }}>
           <List className="w-5 h-5" strokeWidth={2} aria-hidden="true" />Browse every card list
         </Link>
         <ul className="list-none m-0 p-0 mt-7 grid gap-3.5 md:grid-cols-3 md:gap-6">
           {REASON_LINES.map(([Icon, line]) => (
             <li key={line} className="flex items-center gap-3 text-body" style={{ color: 'var(--ink-400)' }}>
-              <span className="w-[30px] h-[30px] rounded-[9px] grid place-items-center flex-none" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)', color: 'var(--accent-bright)' }}>
+              <span className="w-[30px] h-[30px] rounded-lg grid place-items-center flex-none" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)', color: 'var(--accent-bright)' }}>
                 <Icon className="w-4 h-4" strokeWidth={2} aria-hidden="true" />
               </span>
               {line}
@@ -951,12 +951,12 @@ function FilterControls({ meta, filters, setFilter, compact = false }) {
             <button key={g.key} type="button" onClick={() => toggleIn('rarity', g.key)} aria-pressed={on}
                     className="w-full flex items-center gap-3 min-h-[58px] px-3 py-2 rounded-xl mb-2 text-left"
                     style={{ background: on ? 'var(--bg-elev-2)' : 'var(--bg-base)', border: `1.5px solid ${on ? 'var(--accent-bright)' : 'var(--line)'}` }}>
-              <span className="w-[22px] h-[22px] rounded-md flex-none" style={g.dot ? { background: g.dot } : { border: '1px solid var(--line)' }} aria-hidden="true" />
+              <span className="w-[22px] h-[22px] rounded-lg flex-none" style={g.dot ? { background: g.dot } : { border: '1px solid var(--line)' }} aria-hidden="true" />
               <span className="flex-1 min-w-0">
                 <span className="block text-lede font-medium" style={{ color: 'var(--ink-100)' }}>{g.label}</span>
                 <span className="text-meta" style={{ color: 'var(--ink-400)' }}>{g.meaning}</span>
               </span>
-              <span className="w-6 h-6 rounded-md grid place-items-center flex-none"
+              <span className="w-6 h-6 rounded-lg grid place-items-center flex-none"
                     style={on ? { background: 'var(--accent-bright)', color: 'var(--ink-on-accent)' } : { border: '2px solid var(--ink-600)' }}>
                 {on && <Check className="w-[15px] h-[15px]" strokeWidth={3} aria-hidden="true" />}
               </span>

@@ -88,7 +88,7 @@ function SearchArt({ lg }) {
       </span>
       {!lg && (
         <span
-          className="text-fine font-semibold rounded-[5px] px-3 py-2"
+          className="text-fine font-semibold rounded px-3 py-2"
           style={{ background: 'var(--accent)', color: 'var(--ink-on-gold, #1a1612)' }}
         >
           Search
@@ -143,7 +143,7 @@ function TierArt({ lg }) {
             style={{ ...tierRowStyle(tier), borderTop: i ? '0.5px solid var(--line-soft)' : undefined }}
           >
             <div
-              className={`rounded-[2px] flex-none ${lg ? 'w-[30px] h-[42px]' : 'w-[18px] h-[25px]'}`}
+              className={`rounded flex-none ${lg ? 'w-[30px] h-[42px]' : 'w-[18px] h-[25px]'}`}
               style={{ background: 'linear-gradient(145deg, var(--line), var(--accent-deep) 50%, var(--line-soft))' }}
             />
             <div className="flex-1 min-w-0">
@@ -170,7 +170,7 @@ function WatchlistArt({ lg }) {
       style={{ background: 'var(--bg-base)', border: '0.5px solid var(--line)' }}
     >
       <div
-        className={`rounded-[3px] flex-none ${lg ? 'w-[46px] h-16' : 'w-10 h-14'}`}
+        className={`rounded flex-none ${lg ? 'w-[46px] h-16' : 'w-10 h-14'}`}
         style={{ background: 'linear-gradient(145deg, var(--line), var(--accent-deep) 50%, var(--line-soft))' }}
       />
       <div className={`flex-1 leading-snug text-[var(--ink-200)] ${lg ? 'text-body' : 'text-fine'}`}>
@@ -213,11 +213,11 @@ function AlertArt() {
 function PushArt() {
   return (
     <div
-      className="w-full flex gap-2.5 rounded-[18px] px-3.5 py-3"
+      className="w-full flex gap-2.5 rounded-xl px-3.5 py-3"
       style={{ background: 'var(--bg-elev-2)', border: '0.5px solid var(--line)', boxShadow: '0 10px 30px -10px rgba(0,0,0,0.8)' }}
     >
       <div
-        className="w-[38px] h-[38px] rounded-[9px] flex-none flex items-center justify-center"
+        className="w-[38px] h-[38px] rounded-lg flex-none flex items-center justify-center"
         style={{ background: 'var(--bg-base)', border: '0.5px solid var(--accent-deep)' }}
       >
         <Seal size={26} />
@@ -436,7 +436,7 @@ function TourDialog({ native, onClose }) {
             height: 'calc(100% - 20px)',
             background: 'var(--bg-elev-2)',
             borderTop: '0.5px solid var(--accent-deep)',
-            borderRadius: '22px 22px 0 0',
+            borderRadius: '12px 12px 0 0',
             touchAction: 'pan-y',
           }}
           onPointerDown={onPointerDown}
@@ -460,7 +460,7 @@ function TourDialog({ native, onClose }) {
           </div>
 
           <div
-            className="flex-1 min-h-[200px] mx-4 rounded-2xl flex items-center justify-center px-[22px] py-4"
+            className="flex-1 min-h-[200px] mx-4 rounded-xl flex items-center justify-center px-[22px] py-4"
             style={{ background: 'var(--bg-elev)', border: '0.5px solid var(--line)' }}
             aria-hidden="true"
           >
@@ -483,7 +483,7 @@ function TourDialog({ native, onClose }) {
               <button
                 type="button"
                 onClick={startTrial}
-                className="min-h-[48px] rounded-[14px] text-lede font-medium text-[var(--accent-bright)]"
+                className="min-h-[48px] rounded-xl text-lede font-medium text-[var(--accent-bright)]"
                 style={{ border: '0.5px solid var(--accent-deep)' }}
               >
                 Start free trial
@@ -493,7 +493,7 @@ function TourDialog({ native, onClose }) {
               ref={primaryRef}
               type="button"
               onClick={() => (last ? onClose() : next())}
-              className="min-h-[52px] rounded-[14px] text-lede font-semibold"
+              className="min-h-[52px] rounded-xl text-lede font-semibold"
               style={primaryStyle}
             >
               {primaryLabel}
@@ -509,7 +509,7 @@ function TourDialog({ native, onClose }) {
       <style>{MOTION_CSS}</style>
       <div
         {...dialogProps}
-        className="ff-tour-panel w-full sm:max-w-[440px] overflow-hidden rounded-t-[14px] sm:rounded-xl pb-[env(safe-area-inset-bottom)]"
+        className="ff-tour-panel w-full sm:max-w-[440px] overflow-hidden rounded-t-xl sm:rounded-xl pb-[env(safe-area-inset-bottom)]"
         style={{
           background: 'var(--bg-elev-2)',
           border: '0.5px solid var(--accent-deep)',
@@ -552,7 +552,7 @@ function TourDialog({ native, onClose }) {
               <button
                 type="button"
                 onClick={back}
-                className="rounded-md px-3.5 py-2 text-meta font-medium text-[var(--ink-200)] hover:text-[var(--accent)] transition-colors"
+                className="rounded-lg px-3.5 py-2 text-meta font-medium text-[var(--ink-200)] hover:text-[var(--accent)] transition-colors"
                 style={{ border: '0.5px solid var(--line)' }}
               >
                 Back
@@ -562,7 +562,7 @@ function TourDialog({ native, onClose }) {
               ref={primaryRef}
               type="button"
               onClick={() => (last ? onClose() : next())}
-              className="rounded-md px-4 py-2 text-meta font-semibold transition-colors hover:brightness-110"
+              className="rounded-lg px-4 py-2 text-meta font-semibold transition-colors hover:brightness-110"
               style={primaryStyle}
             >
               {primaryLabel}

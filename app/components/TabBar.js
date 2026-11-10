@@ -54,7 +54,7 @@ export default function TabBar() {
   return (
     <nav
       aria-label="App"
-      className={`fixed left-3.5 right-3.5 bottom-3 z-[35] grid ${tabs.length === 5 ? 'grid-cols-5' : 'grid-cols-4'} h-[62px] rounded-[22px]`}
+      className={`fixed left-3.5 right-3.5 bottom-3 z-[35] grid ${tabs.length === 5 ? 'grid-cols-5' : 'grid-cols-4'} h-[62px] rounded-xl`}
       style={{
         background: 'rgba(26,22,15,0.82)',
         backdropFilter: 'blur(18px)',

@@ -105,7 +105,7 @@ function SideSection({ side, win }) {
   return (
     <section
       data-side={side === 'fables' ? 'fables' : undefined}
-      className="rounded-[14px] p-5 md:p-6"
+      className="rounded-xl p-5 md:p-6"
       style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}
     >
       <h2 className="font-display italic text-price leading-tight" style={{ color: 'var(--ink-100)' }}>{SIDE_LABEL[side]}</h2>
@@ -234,7 +234,7 @@ export default function AdminVisitorsPage() {
         {state.error && <p role="alert" className="text-body" style={{ color: 'var(--ink-200)' }}>{state.error}</p>}
 
         {data && data.configured === false && (
-          <div className="rounded-[14px] p-5" style={{ border: '1px solid var(--line)', background: 'var(--bg-elev)' }}>
+          <div className="rounded-xl p-5" style={{ border: '1px solid var(--line)', background: 'var(--bg-elev)' }}>
             <p className="text-lede" style={{ color: 'var(--ink-100)' }}>Waiting for the PostHog key.</p>
             <p className="text-body mt-2 leading-[1.6]" style={{ color: 'var(--ink-400)' }}>
               This page fills in once the read-only PostHog key and project number are added in Vercel (see LANDON_TODO.md). Nothing is wrong.

@@ -26,7 +26,7 @@ export default function ChoosePage() {
 
         <div className="grid gap-3.5 md:gap-5 md:grid-cols-2 my-7 md:my-10">
           <a href={SPORTS_ORIGIN}
-             className="relative flex flex-col justify-end rounded-[22px] overflow-hidden px-[22px] md:px-7 py-6 md:py-8 min-h-[220px] md:min-h-[300px]"
+             className="relative flex flex-col justify-end rounded-xl overflow-hidden px-[22px] md:px-7 py-6 md:py-8 min-h-[220px] md:min-h-[300px]"
              style={{ background: 'linear-gradient(180deg,#1a150e,#0b0a08)', color: '#f7f1e1', border: '1px solid #26262b' }}>
             <span className="italic text-h1 md:text-h1 leading-none" style={{ fontFamily: "'Instrument Serif', serif" }}>
               Fields <span style={{ color: '#e6b96b', fontStyle: 'normal' }}>&amp;</span> Floors
@@ -36,7 +36,7 @@ export default function ChoosePage() {
             <Arrow bg="#e6b96b" fg="#1a1612" />
           </a>
           <a href={FABLES_ORIGIN}
-             className="relative flex flex-col justify-end rounded-[22px] overflow-hidden px-[22px] md:px-7 py-6 md:py-8 min-h-[220px] md:min-h-[300px]"
+             className="relative flex flex-col justify-end rounded-xl overflow-hidden px-[22px] md:px-7 py-6 md:py-8 min-h-[220px] md:min-h-[300px]"
              style={{ background: 'radial-gradient(420px 260px at 75% 15%,rgba(143,211,232,.14),transparent 60%),linear-gradient(180deg,#121626,#080a12)', color: '#eef0f7', border: '1px solid #26262b' }}>
             <span className="italic text-h1 md:text-h1 leading-none" style={{ fontFamily: "'Instrument Serif', serif" }}>
               Foils <span style={{ color: '#b9e6f2', fontStyle: 'normal' }}>&amp;</span> Fables

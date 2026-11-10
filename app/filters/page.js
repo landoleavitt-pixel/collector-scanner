@@ -53,7 +53,7 @@ export default function FiltersPage() {
         />
         <FilterRow
           name="Numbered"
-          summary="Listings with a real print run. Tier-based: pick The Grail (1–25), Ultra Rare (26–99), Rare (100–249), or Scarce (250–999). You can also enter custom denominators like /73 or /42 for oddball sets."
+          summary="Listings with a real print run. Pick how rare: Grail (1 to 25 made), Ultra (26 to 99), Rare (100 to 249) or Scarce (250 or more). You can also type an exact number, like 73, for unusual sets."
           catches="/10 · #5/10 · 1/1 · numbered to 25 · jersey #44/99 · 2/10"
           ignores="2024-25 · 5/25/2024 · +NEW 12/12 · season ranges · dates · inventory counts"
         />

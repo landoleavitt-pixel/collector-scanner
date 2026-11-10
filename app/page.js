@@ -27,7 +27,7 @@ import { usePlayerSuggest, useSuggestBox, DidYouMeanLine, EditableSearchHeading 
 import {
   PRICE_NO_MAX, SectionLabel, SectionDivider, priceRangeLabel, PriceRangeSlider, SegmentedGroup, ResultsSidebar,
   MobileFilterDrawer, SortDropdown, SPORTS_SORT_OPTIONS, PendingSearchModal, BackToTop, LoadingState, NoResultsState,
-  MoreFilters, ShippingFilters, shippingActive, shippingLabels,
+  MoreFilters, ShippingFilters, shippingActive, shippingLabels, FilterChip,
 } from './components/search/SearchUI';
 import { WatchStar, usePendingStarSave, AlertBand } from './components/search/WatchStar';
 import { ResultCard, Badge, CornerMarks, upscaleEbayImage, tierChipLabel } from './components/search/ResultCard';
@@ -35,11 +35,13 @@ import { detectPrintRun, hasAutoText } from '../lib/listingFilter';
 
 // Print run tiers — grouped visually by rarity.
 // Collectors mentally bucket these by tier, so we present them that way.
+// One ladder, used the same way everywhere (design review fix 4). Scarce is
+// 250 or more (Landon, 2026-10-19); its preset runs stop at /999.
 const PRINT_RUN_TIERS = [
-  { label: 'The Grail',   range: '1–25',    runs: ['/1', '/5', '/10', '/15', '/25'] },
-  { label: 'Ultra Rare',  range: '26–99',   runs: ['/49', '/50', '/75', '/99'] },
-  { label: 'Rare',        range: '100–249', runs: ['/149', '/150', '/199', '/249'] },
-  { label: 'Scarce',      range: '250–999', runs: ['/299', '/499', '/999'] },
+  { key: 'grail',  label: 'Grail',  range: '1–25',    made: '1 to 25 made',     runs: ['/1', '/5', '/10', '/15', '/25'] },
+  { key: 'ultra',  label: 'Ultra',  range: '26–99',   made: '26 to 99 made',    runs: ['/49', '/50', '/75', '/99'] },
+  { key: 'rare',   label: 'Rare',   range: '100–249', made: '100 to 249 made',  runs: ['/149', '/150', '/199', '/249'] },
+  { key: 'scarce', label: 'Scarce', range: '250+',    made: '250 or more made', runs: ['/299', '/499', '/999'] },
 ];
 
 // Flat list of all preset print runs — used for "select all" default state.
@@ -530,10 +532,10 @@ function Home() {
     const hasScarce = ['/250', '/299', '/399', '/499', '/599', '/699', '/799', '/899', '/999'].some((r) => selected.has(r));
 
     if (filters.numberedCards) {
-      if (hasGrail) chips.push({ label: 'Grail · /1–25', tier: 'grail' });
-      if (hasUltra) chips.push({ label: 'Ultra · /26–99', tier: 'ultra' });
-      if (hasRare) chips.push({ label: 'Rare · /100–249', tier: 'rare' });
-      if (hasScarce) chips.push({ label: 'Scarce · /250–999', tier: 'scarce' });
+      if (hasGrail) chips.push({ label: 'Grail · 1 to 25 made', tier: 'grail' });
+      if (hasUltra) chips.push({ label: 'Ultra · 26 to 99 made', tier: 'ultra' });
+      if (hasRare) chips.push({ label: 'Rare · 100 to 249 made', tier: 'rare' });
+      if (hasScarce) chips.push({ label: 'Scarce · 250 or more made', tier: 'scarce' });
       if (filters.customPrintRuns?.length) {
         chips.push({ label: `+${filters.customPrintRuns.length} custom`, tier: 'neutral' });
       }
@@ -1680,7 +1682,7 @@ function SignedInHome({ query, setQuery, onSearch, onSuggested, recentSearches =
       <form
         ref={suggest.anchorRef}
         onSubmit={(e) => { e.preventDefault(); suggest.close(); onSearch(); }}
-        className="flex items-center gap-3 rounded-2xl pl-5 pr-2 py-2"
+        className="flex items-center gap-3 rounded-xl pl-5 pr-2 py-2"
         style={{ background: 'var(--bg-elev)', border: '1.5px solid var(--accent-deep)', boxShadow: '0 20px 50px rgba(0,0,0,0.45)' }}
       >
         <Search className="w-6 h-6 flex-none" strokeWidth={1.75} style={{ color: 'var(--ink-400)' }} aria-hidden="true" />
@@ -1787,7 +1789,7 @@ function SinceLastVisit({ home, hasSaved }) {
   );
   const Row = ({ href, image, title, meta, right, rightSub, rightTone }) => (
     <a href={href} className="grid grid-cols-[48px_1fr_auto] gap-3 items-center py-2.5" style={{ borderTop: '1px solid var(--line-soft)' }}>
-      <span className="w-[48px] aspect-[3/4] rounded-[3px] overflow-hidden flex-none" style={{ background: 'var(--bg-elev-2)' }}>
+      <span className="w-[48px] aspect-[3/4] rounded overflow-hidden flex-none" style={{ background: 'var(--bg-elev-2)' }}>
         {image && <img src={image} alt="" className="w-full h-full object-cover" loading="lazy" />}
       </span>
       <span className="min-w-0">
@@ -2066,23 +2068,11 @@ function FilterControls({ filters, setFilter, compact = false }) {
     <div className={compact ? 'space-y-7' : 'space-y-10'}>
       {/* SECTION 1 — Card Type */}
       <div>
-        <SectionLabel>Card Type</SectionLabel>
-        <div className={compact ? 'grid grid-cols-1 gap-2' : 'grid grid-cols-1 sm:grid-cols-3 gap-3'}>
-          <TypeToggleCard
-            label="Autographed"
-            checked={filters.autoCards}
-            onChange={(v) => setFilter('autoCards', v)}
-          />
-          <TypeToggleCard
-            label="Rookie Card"
-            checked={filters.rookieCards}
-            onChange={(v) => setFilter('rookieCards', v)}
-          />
-          <TypeToggleCard
-            label="Numbered"
-            checked={filters.numberedCards}
-            onChange={(v) => setFilter('numberedCards', v)}
-          />
+        <SectionLabel>Card type</SectionLabel>
+        <div className="flex flex-wrap gap-2">
+          <FilterChip on={!!filters.autoCards} onClick={() => setFilter('autoCards', !filters.autoCards)}>Autographs</FilterChip>
+          <FilterChip on={!!filters.rookieCards} onClick={() => setFilter('rookieCards', !filters.rookieCards)}>Rookie cards</FilterChip>
+          <FilterChip on={!!filters.numberedCards} onClick={() => setFilter('numberedCards', !filters.numberedCards)}>Numbered</FilterChip>
         </div>
 
         {/* Print Run tier picker — appears only when Numbered is on */}
@@ -2111,10 +2101,7 @@ function FilterControls({ filters, setFilter, compact = false }) {
               {PRINT_RUN_TIERS.map((tier) => {
                 const allInTierSelected = tier.runs.every((r) => filters.selectedPrintRuns.includes(r));
                 const someInTierSelected = tier.runs.some((r) => filters.selectedPrintRuns.includes(r));
-                const tierKey = tier.label === 'The Grail' ? 'grail'
-                  : tier.label === 'Ultra Rare' ? 'ultra'
-                  : tier.label === 'Rare' ? 'rare'
-                  : 'scarce';
+                const tierKey = tier.key;
                 const tierColor = { grail: '#ffc14d', ultra: '#c8d4e0', rare: '#d6722d', scarce: '#7a8694' }[tierKey];
                 // Master switch flips the whole tier on/off; chips toggle individual runs.
                 const toggleTier = () => {
@@ -2135,34 +2122,9 @@ function FilterControls({ filters, setFilter, compact = false }) {
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-baseline gap-2.5">
                         <span className="font-display text-lede leading-tight" style={{ color: tierColor }}>{tier.label}</span>
-                        <span className="font-mono text-fine tracking-[0.1em] text-[var(--ink-600)]">{tier.range.replace('–', ' – ')}</span>
+                        <span className="text-meta text-[var(--ink-400)]">{tier.made}</span>
                       </div>
-                      <button
-                        type="button"
-                        onClick={toggleTier}
-                        aria-label={`Toggle all ${tier.label} runs`}
-                        className="relative flex-none rounded-full transition-colors"
-                        style={{
-                          width: 46,
-                          height: 28,
-                          background: allInTierSelected ? 'rgba(201,149,74,0.22)' : someInTierSelected ? 'rgba(201,149,74,0.12)' : 'var(--bg-elev-2)',
-                          border: `1px solid ${allInTierSelected ? 'var(--accent-deep)' : 'var(--line)'}`,
-                        }}
-                      >
-                        <span
-                          className="block rounded-full"
-                          style={{
-                            position: 'absolute',
-                            top: 2,
-                            left: 2,
-                            width: 22,
-                            height: 22,
-                            background: allInTierSelected ? tierColor : someInTierSelected ? 'var(--accent)' : 'var(--ink-400)',
-                            transform: allInTierSelected ? 'translateX(18px)' : someInTierSelected ? 'translateX(9px)' : 'translateX(0)',
-                            transition: 'transform 0.22s, background 0.22s',
-                          }}
-                        />
-                      </button>
+                      <FilterChip on={allInTierSelected} onClick={toggleTier}>All {tier.label}</FilterChip>
                     </div>
                     {/* Individual run chips */}
                     <div className="flex flex-wrap gap-2 mt-3">
@@ -2173,7 +2135,8 @@ function FilterControls({ filters, setFilter, compact = false }) {
                             type="button"
                             key={r}
                             onClick={() => toggleRun(r)}
-                            className="font-mono text-meta inline-flex items-center rounded-full transition-all"
+                            aria-pressed={sel}
+                            className="ff-pill font-mono text-meta inline-flex items-center rounded-full transition-all"
                             style={{
                               minHeight: 36,
                               padding: '0 14px',
@@ -2207,54 +2170,23 @@ function FilterControls({ filters, setFilter, compact = false }) {
 
       <SectionDivider />
 
-      {/* Card company — optional, off by default (title match on the server) */}
-      <CardCompanyFilter filters={filters} setFilter={setFilter} />
-
-      <SectionDivider />
-
-      {/* Team — league first, then team (College: conference, then school) */}
-      <TeamFilter filters={filters} setFilter={setFilter} />
-
-      <SectionDivider />
-
-      {/* SECTION 2 — Listing + Condition. Side-by-side in panel, stacked in sidebar. */}
-      <div className={compact ? 'space-y-7' : 'grid grid-cols-1 md:grid-cols-2 gap-8'}>
-        <div>
-          <SectionLabel>Listing Type</SectionLabel>
-          <SegmentedGroup
-            value={filters.listingType}
-            onChange={(v) => setFilter('listingType', v)}
-            vertical={compact}
-            options={[
-              ['any', 'Any'],
-              ['buyItNow', 'Buy It Now'],
-              ['auction', 'Auction'],
-            ]}
-          />
-        </div>
-        <div>
-          <SectionLabel>Condition</SectionLabel>
-          <SegmentedGroup
-            value={filters.condition}
-            onChange={(v) => setFilter('condition', v)}
-            vertical={compact}
-            options={[
-              ['any', 'Any'],
-              ['raw', 'Raw'],
-              ['graded', 'Graded'],
-            ]}
-          />
-        </div>
+      <div>
+        <SectionLabel>Listing type</SectionLabel>
+        <SegmentedGroup
+          value={filters.listingType}
+          onChange={(v) => setFilter('listingType', v)}
+          options={[
+            ['any', 'All'],
+            ['auction', 'Auction'],
+            ['buyItNow', 'Buy It Now'],
+          ]}
+        />
       </div>
 
       <SectionDivider />
 
-      {/* SECTION 3 — Price */}
       <div>
-        <div className="flex items-baseline justify-between mb-3">
-          <SectionLabel className="!mb-0">Price Range</SectionLabel>
-          <span className="text-fine text-[var(--ink-600)]">USD</span>
-        </div>
+        <SectionLabel>Price</SectionLabel>
         <PriceRangeSlider
           min={filters.priceMin}
           max={filters.priceMax === 5000 ? PRICE_NO_MAX : filters.priceMax}
@@ -2267,11 +2199,32 @@ function FilterControls({ filters, setFilter, compact = false }) {
 
       <SectionDivider />
 
-      <MoreFilters active={shippingActive(filters)}>
+      {/* Company, League and Condition fold away (the 3 most-used filters stay open). */}
+      <MoreFilters active={moreFiltersActive(filters)} label="Company · League · Condition">
+        <CardCompanyFilter filters={filters} setFilter={setFilter} />
+        <TeamFilter filters={filters} setFilter={setFilter} />
+        <div>
+          <SectionLabel>Condition</SectionLabel>
+          <SegmentedGroup
+            value={filters.condition}
+            onChange={(v) => setFilter('condition', v)}
+            options={[
+              ['any', 'Any'],
+              ['raw', 'Raw'],
+              ['graded', 'Graded'],
+            ]}
+          />
+        </div>
         <ShippingFilters filters={filters} setFilter={setFilter} />
       </MoreFilters>
     </div>
   );
+}
+
+// Filters inside "More filters" that are on, so it opens by itself.
+function moreFiltersActive(f) {
+  return (f.brands?.length ? 1 : 0) + (f.brandLines?.length ? 1 : 0) + (f.teams?.length ? 1 : 0)
+    + (f.condition && f.condition !== 'any' ? 1 : 0) + shippingActive(f);
 }
 
 /* Big toggle card — used for Card Type filters */
@@ -2934,8 +2887,8 @@ function CardCompanyFilter({ filters, setFilter }) {
 
   const chip = (on) => ({
     minHeight: 40,
-    padding: '0 16px',
-    fontSize: 14,
+    padding: '0 14px',
+    fontSize: 15,
     border: `1px solid ${on ? 'transparent' : 'var(--line)'}`,
     background: on ? 'var(--accent-bright)' : 'var(--bg-elev-2)',
     color: on ? 'var(--ink-on-accent)' : 'var(--ink-200)',
@@ -2944,15 +2897,15 @@ function CardCompanyFilter({ filters, setFilter }) {
 
   return (
     <div>
-      <SectionLabel>Card Company</SectionLabel>
+      <SectionLabel>Company</SectionLabel>
       <div className="flex flex-wrap gap-2">
-        <button type="button" onClick={clearAll} aria-pressed={brands.length === 0} className="inline-flex items-center rounded-full transition-colors" style={chip(brands.length === 0)}>
+        <button type="button" onClick={clearAll} aria-pressed={brands.length === 0} className="ff-pill inline-flex items-center rounded-full transition-colors" style={chip(brands.length === 0)}>
           Any
         </button>
         {CARD_COMPANIES.map((c) => {
           const on = brands.includes(c.key);
           return (
-            <button key={c.key} type="button" onClick={() => toggleCompany(c.key)} aria-pressed={on} className="inline-flex items-center rounded-full transition-colors" style={chip(on)}>
+            <button key={c.key} type="button" onClick={() => toggleCompany(c.key)} aria-pressed={on} className="ff-pill inline-flex items-center rounded-full transition-colors" style={chip(on)}>
               {c.label}
             </button>
           );
@@ -3015,7 +2968,7 @@ function activeFilterChips(f) {
       chips.push({ label: 'Numbered' });
     } else {
       PRINT_RUN_TIERS.forEach((t) => {
-        if (t.runs.some((r) => runs.has(r))) chips.push({ label: `/${t.range}`, tier: tierForRun(t.runs[t.runs.length - 1]) });
+        if (t.runs.some((r) => runs.has(r))) chips.push({ label: `${t.label} · ${t.made}`, tier: t.key });
       });
       if ((f.customPrintRuns || []).length) chips.push({ label: f.customPrintRuns.join(' ') });
     }
@@ -3172,8 +3125,8 @@ function TeamFilter({ filters, setFilter }) {
 
   const chip = (on) => ({
     minHeight: 40,
-    padding: '0 16px',
-    fontSize: 14,
+    padding: '0 14px',
+    fontSize: 15,
     border: `1px solid ${on ? 'transparent' : 'var(--line)'}`,
     background: on ? 'var(--accent-bright)' : 'var(--bg-elev-2)',
     color: on ? 'var(--ink-on-accent)' : 'var(--ink-200)',
@@ -3196,13 +3149,13 @@ function TeamFilter({ filters, setFilter }) {
 
   return (
     <div>
-      <SectionLabel>Team</SectionLabel>
+      <SectionLabel>League</SectionLabel>
       <div className="flex flex-wrap gap-2">
-        <button type="button" onClick={() => pickLeague(null)} aria-pressed={!league && !selected.length} className="inline-flex items-center rounded-full transition-colors" style={chip(!league && !selected.length)}>
+        <button type="button" onClick={() => pickLeague(null)} aria-pressed={!league && !selected.length} className="ff-pill inline-flex items-center rounded-full transition-colors" style={chip(!league && !selected.length)}>
           Any
         </button>
         {TEAM_LEAGUES.map((l) => (
-          <button key={l} type="button" onClick={() => pickLeague(l)} aria-pressed={league === l} className="inline-flex items-center rounded-full transition-colors" style={chip(league === l)}>
+          <button key={l} type="button" onClick={() => pickLeague(l)} aria-pressed={league === l} className="ff-pill inline-flex items-center rounded-full transition-colors" style={chip(league === l)}>
             {l}
           </button>
         ))}

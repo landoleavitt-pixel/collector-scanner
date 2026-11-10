@@ -39,7 +39,8 @@ export function SectionDivider() {
    A quick pick only fills in the max; the min stays whatever the user typed.
    PRICE_NO_MAX means no maximum. Typed amounts can be anything (no $5,000
    cap), and min/max swap if entered backwards. */
-const PRICE_QUICK_PICKS = [50, 100, 250, 500, 1000];
+// Four quick picks: [label, min, max].
+const PRICE_QUICK_PICKS = [['Any', 0, null], ['Under $100', 0, 100], ['$100–1,000', 100, 1000], ['$1,000+', 1000, null]];
 
 function PriceBox({ label, value, placeholder, onCommit }) {
   const shown = value == null ? '' : String(value);
@@ -96,25 +97,13 @@ export function PriceRangeSlider({ min, max, onChange }) {
     else onChange(x, y);
   };
 
-  const pick = (cap) => set(lo, cap);
-  const chip = (label, cap) => {
-    const on = cap === hi;
-    return (
-      <button key={label} type="button" onClick={() => pick(cap)} aria-pressed={on}
-              className="h-10 px-3.5 rounded-full text-body whitespace-nowrap transition-colors"
-              style={on
-                ? { border: '1px solid var(--accent-bright)', color: 'var(--accent-bright)', background: 'var(--ff-chip-on-bg, rgba(230,185,107,0.08))' }
-                : { border: '1px solid var(--line)', color: 'var(--ink-200)', background: 'var(--bg-elev)' }}>
-        {label}
-      </button>
-    );
-  };
-
   return (
     <div>
       <div className="flex flex-wrap gap-2 mb-4">
-        {PRICE_QUICK_PICKS.map((cap) => chip(`Under $${cap.toLocaleString('en-US')}`, cap))}
-        {chip('No max', PRICE_NO_MAX)}
+        {PRICE_QUICK_PICKS.map(([label, a, b]) => {
+          const top = b ?? PRICE_NO_MAX;
+          return <FilterChip key={label} on={lo === a && hi === top} onClick={() => set(a, top)}>{label}</FilterChip>;
+        })}
       </div>
       <div className="flex items-center gap-2.5">
         <PriceBox label="Minimum price" value={lo > 0 ? lo : null} placeholder="No min" onCommit={(v) => set(v, hi)} />
@@ -131,15 +120,15 @@ export function PriceRangeSlider({ min, max, onChange }) {
 /* "More filters" — the extra filters fold away behind one button, so the
    first screen keeps Game / Rarity / Graded / Price (the grandparent test).
    Opens on its own when one of the filters inside is in use. */
-export function MoreFilters({ active = 0, children }) {
+export function MoreFilters({ active = 0, label = '', children }) {
   const [open, setOpen] = useState(active > 0);
   useEffect(() => { if (active > 0) setOpen(true); }, [active]);
   return (
     <div>
       <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open}
-              className="w-full flex items-center justify-between text-meta font-medium py-2"
+              className="w-full flex items-center justify-between gap-3 text-body font-medium min-h-[44px] text-left"
               style={{ color: 'var(--ink-200)' }}>
-        <span>More filters{active ? ` (${active})` : ''}</span>
+        <span>More filters{active ? ` (${active})` : ''}{label && <span className="block text-meta font-normal" style={{ color: 'var(--ink-400)' }}>{label}</span>}</span>
         <span aria-hidden="true" style={{ color: 'var(--ink-400)', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .15s' }}>⌄</span>
       </button>
       {open && <div className="pt-4 space-y-7">{children}</div>}
@@ -151,8 +140,8 @@ export function MoreFilters({ active = 0, children }) {
 export function FilterChip({ on, onClick, children }) {
   return (
     <button type="button" onClick={onClick} aria-pressed={on}
-            className="text-meta inline-flex items-center rounded-full transition-all whitespace-nowrap"
-            style={{ minHeight: 36, padding: '0 14px', ...(on
+            className="ff-pill text-body inline-flex items-center rounded-full transition-colors whitespace-nowrap"
+            style={{ minHeight: 40, padding: '0 14px', ...(on
               ? { background: 'var(--accent-bright)', color: 'var(--ink-on-accent)', border: '1px solid var(--accent-bright)', fontWeight: 600 }
               : { border: '1px solid var(--line)', background: 'var(--bg-elev-2)', color: 'var(--ink-200)', fontWeight: 500 }) }}>
       {children}
@@ -189,70 +178,14 @@ export function ShippingFilters({ filters, setFilter }) {
   );
 }
 
-/* Segmented group — used for Listing Type and Condition rows */
-export function SegmentedGroup({ value, onChange, options, vertical = false }) {
-  if (vertical) {
-    // Vertical mode — used in the sidebar where horizontal segmented controls
-    // would cramp the column. Each option is its own bordered card stacked
-    // top-to-bottom.
-    return (
-      <div className="flex flex-col gap-1.5">
-        {options.map(([v, l]) => {
-          const active = value === v;
-          return (
-            <button
-              key={v}
-              onClick={() => onChange(v)}
-              className="px-3.5 py-2.5 text-meta tracking-[0.04em] text-left transition-all border"
-              style={
-                active
-                  ? {
-                      borderColor: 'var(--ff-seg-on-line, #c9a447)',
-                      background: 'var(--ff-seg-on-bg, linear-gradient(135deg, rgba(201,164,71,0.10), rgba(201,164,71,0.02)))',
-                      color: 'var(--ff-seg-on-ink, #f5efe0)',
-                      fontWeight: 500,
-                    }
-                  : {
-                      borderColor: 'rgba(255,255,255,0.06)',
-                      background: 'var(--ff-seg-off-bg, rgba(20,17,13,0.6))',
-                      color: 'var(--ink-400)',
-                    }
-              }
-            >
-              {l}
-            </button>
-          );
-        })}
-      </div>
-    );
-  }
-  // Horizontal mode — original segmented control for Stage 2 panel.
+/* One choice from a few (Listing type, Condition): the same round pills
+   as every other filter, with a tick on the chosen one. */
+export function SegmentedGroup({ value, onChange, options }) {
   return (
-    <div className="flex border border-[var(--line-soft)] bg-[var(--bg-elev)]/50">
-      {options.map(([v, l], idx) => {
-        const active = value === v;
-        return (
-          <button
-            key={v}
-            onClick={() => onChange(v)}
-            className={`flex-1 px-3 py-3 text-meta tracking-[0.06em] transition-colors text-center ${
-              idx !== options.length - 1 ? 'border-r border-[var(--line-soft)]' : ''
-            }`}
-            style={
-              active
-                ? {
-                    background: 'var(--accent-bright)',
-                    color: 'var(--ink-on-accent)',
-                    fontWeight: 600,
-                    borderRightColor: 'transparent',
-                  }
-                : { color: 'var(--ink-400)' }
-            }
-          >
-            {l}
-          </button>
-        );
-      })}
+    <div className="flex flex-wrap gap-2" role="group">
+      {options.map(([v, l]) => (
+        <FilterChip key={v} on={value === v} onClick={() => onChange(v)}>{l}</FilterChip>
+      ))}
     </div>
   );
 }
@@ -380,7 +313,7 @@ export function MobileSheet({ open, onClose, title, children, footer, full = fal
           maxHeight: full ? '94dvh' : '80vh',
           background: 'var(--bg-elev)',
           borderTop: '1px solid var(--line)',
-          borderRadius: '20px 20px 0 0',
+          borderRadius: '12px 12px 0 0',
           boxShadow: '0 -24px 60px rgba(0,0,0,0.5)',
           transform: open ? 'translateY(0)' : 'translateY(100%)',
           transition: 'transform 0.42s cubic-bezier(0.16,1,0.3,1)',

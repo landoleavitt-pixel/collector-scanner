@@ -90,7 +90,7 @@ export default function Find() {
 
       {res === null && <LoadingState phrase="Searching eBay" />}
       {res && res.items.length === 0 && (
-        <div className="rounded-2xl p-5" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
+        <div className="rounded-xl p-5" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
           <p className="text-lede" style={{ color: 'var(--ink-100)' }}>{res.notFound ? 'We can’t find this card.' : res.error ? 'eBay didn’t answer. Try again in a minute.' : 'None for sale right now'}</p>
           <a href={back} className="inline-flex items-center justify-center min-h-[52px] px-5 rounded-xl text-lede font-semibold mt-4"
              style={{ border: '1.5px solid var(--accent-bright)', color: 'var(--accent-bright)' }}>Back to the list</a>

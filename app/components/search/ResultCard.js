@@ -95,7 +95,7 @@ export function ResultCard({ item, formatPrice, index, hasPendingFilters, onPend
   const photo = (big) => (
     <div
       data-listing-id={item.id}
-      className={`ff-sheen-wrap relative w-full overflow-hidden rounded-[4px] bg-[var(--bg-elev)] ${cardFrame ? 'aspect-[63/88]' : 'aspect-[3/4]'}`}
+      className={`ff-sheen-wrap relative w-full overflow-hidden rounded bg-[var(--bg-elev)] ${cardFrame ? 'aspect-[63/88]' : 'aspect-[3/4]'}`}
       onTouchStart={(e) => { e.currentTarget.classList.remove('ff-play'); void e.currentTarget.offsetWidth; e.currentTarget.classList.add('ff-play'); }}
     >
       {/* The save star, smaller on a row's small photo. */}
@@ -129,7 +129,7 @@ export function ResultCard({ item, formatPrice, index, hasPendingFilters, onPend
   return (
     <a href={item.url} target="_blank" rel="noopener noreferrer" onClick={onClick}
        className="group block rise" style={{ animationDelay: `${Math.min(index * 40, 400)}ms` }}>
-      <div className="grid grid-cols-[52px_minmax(0,1fr)_auto] sm:grid-cols-[62px_minmax(0,1fr)_auto] gap-3 sm:gap-4 items-center px-1 sm:px-4 py-3 sm:py-3.5 rounded-[8px] transition-colors group-hover:bg-[var(--bg-elev)]">
+      <div className="grid grid-cols-[52px_minmax(0,1fr)_auto] sm:grid-cols-[62px_minmax(0,1fr)_auto] gap-3 sm:gap-4 items-center px-1 sm:px-4 py-3 sm:py-3.5 rounded-lg transition-colors group-hover:bg-[var(--bg-elev)]">
         {photo(false)}
         <div className="min-w-0">
           <h3 className="text-body sm:text-body font-medium leading-[1.35] line-clamp-2 text-[var(--ink-100)]">{title}</h3>
@@ -184,7 +184,7 @@ export function Badge({ children, subtle, auction, tier }) {
     className = 'border-[var(--accent-deep)] text-[var(--accent-bright)] bg-[var(--accent)]/[0.06]';
   }
   return (
-    <span className={`inline-flex items-center h-6 px-2 rounded-[4px] text-fine font-medium leading-none whitespace-nowrap border ${className}`} style={inlineStyle}>
+    <span className={`inline-flex items-center h-6 px-2 rounded text-fine font-medium leading-none whitespace-nowrap border ${className}`} style={inlineStyle}>
       {children}
     </span>
   );

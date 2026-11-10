@@ -50,10 +50,10 @@ export default function HowItWorksPage() {
           Once a real print run is found, we sort it into a tier. Collectors think in tiers, so the filter speaks the same language:
         </p>
         <ul>
-          <li><strong>The Grail</strong>: numbered 1 to 25. The 1/1s and the lowest-pop chase cards.</li>
-          <li><strong>Ultra Rare</strong>: numbered 26 to 99. Still scarce, still desirable, more attainable.</li>
-          <li><strong>Rare</strong>: numbered 100 to 249. The standard "numbered" tier.</li>
-          <li><strong>Scarce</strong>: numbered 250 to 999. The widest band of numbered cards.</li>
+          <li><strong>Grail</strong>: 1 to 25 made. One-of-a-kind cards and the ones with only a handful in the world.</li>
+          <li><strong>Ultra</strong>: 26 to 99 made. Still very scarce, a little easier to find.</li>
+          <li><strong>Rare</strong>: 100 to 249 made. The most common numbered cards people chase.</li>
+          <li><strong>Scarce</strong>: 250 or more made. The widest group of numbered cards.</li>
         </ul>
         <p>
           You can also enter a custom print run: <code>/73</code>, <code>/88</code>, <code>/42</code>, any oddball denominator a specific set uses. Chain them together and we'll surface listings that match any of them.

@@ -103,7 +103,7 @@ export default function VersionsView({ query, game, onUnavailable, onNewSearch, 
             const label = versionLabel(game, v);
             const photo = listings.photos[r.id];
             return (
-              <Link key={v.key} href={findHref(r, v, label)} className="flex items-center gap-3.5 min-h-[84px] px-3 py-2.5 rounded-2xl mb-2.5"
+              <Link key={v.key} href={findHref(r, v, label)} className="flex items-center gap-3.5 min-h-[84px] px-3 py-2.5 rounded-xl mb-2.5"
                     style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
                 <CardFrame src={photo ? sized(photo, 300) : null} game={game} className="!w-[50px]" />
                 <span className="flex-1 min-w-0">
@@ -122,26 +122,26 @@ export default function VersionsView({ query, game, onUnavailable, onNewSearch, 
         </div>
       ))}
       {!showAll && sets.length > SETS_SHOWN && (
-        <button type="button" onClick={() => setShowAll(true)} className="w-full min-h-[56px] rounded-2xl text-lede mt-2"
+        <button type="button" onClick={() => setShowAll(true)} className="w-full min-h-[56px] rounded-xl text-lede mt-2"
                 style={{ border: '1px dashed var(--line)', color: 'var(--ink-400)' }}>
           Show {sets.length - SETS_SHOWN} older sets
         </button>
       )}
 
       {unsure > 0 && (
-        <Link href={unsureHref} className="block rounded-[14px] p-3.5 mt-3.5 text-body" style={{ border: '1px dashed var(--line)', color: 'var(--ink-200)' }}>
+        <Link href={unsureHref} className="block rounded-xl p-3.5 mt-3.5 text-body" style={{ border: '1px dashed var(--line)', color: 'var(--ink-200)' }}>
           {plural(unsure, 'more is', 'more are')} {title}, but the seller didn’t say which version.
           <span className="block text-meta mt-0.5" style={{ color: 'var(--ink-400)' }}>Listed separately, so you can check them yourself.</span>
         </Link>
       )}
 
       {alertState === 'on' ? (
-        <p className="w-full min-h-[60px] rounded-2xl flex items-center justify-center gap-2.5 text-lede mt-5" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)', color: 'var(--accent-bright)' }}>
+        <p className="w-full min-h-[60px] rounded-xl flex items-center justify-center gap-2.5 text-lede mt-5" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)', color: 'var(--accent-bright)' }}>
           <Bell className="w-5 h-5" strokeWidth={2} aria-hidden="true" />Alerts are on
         </p>
       ) : (
         <button type="button" onClick={() => (user ? setAsk(true) : window.location.assign(`/signup?src=alert&next=${encodeURIComponent(here)}`))}
-                className="w-full min-h-[60px] rounded-2xl flex items-center justify-center gap-2.5 text-lede font-semibold mt-5"
+                className="w-full min-h-[60px] rounded-xl flex items-center justify-center gap-2.5 text-lede font-semibold mt-5"
                 style={{ background: 'linear-gradient(180deg,var(--accent-fill-top),var(--accent-fill-bottom))', color: 'var(--ink-on-accent)' }}>
           <Bell className="w-5 h-5 flex-none" strokeWidth={2} aria-hidden="true" />Alert me when one I need is listed
         </button>
