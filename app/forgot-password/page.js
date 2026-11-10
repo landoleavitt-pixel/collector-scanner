@@ -44,7 +44,7 @@ export default function ForgotPasswordPage() {
         <div
           className="w-full max-w-[400px] rounded-xl p-9"
           style={{
-            background: 'var(--ink-on-gold)',
+            background: 'var(--ink-on-accent)',
             border: '0.5px solid rgba(232,226,213,0.08)',
             color: 'var(--ink-200)',
           }}
@@ -65,7 +65,7 @@ export default function ForgotPasswordPage() {
               style={{
                 background: 'var(--bg-elev-2)',
                 border: '0.5px solid rgba(212,175,92,0.3)',
-                color: 'var(--gold-bright)',
+                color: 'var(--accent-bright)',
               }}
             >
               Check your email. We sent a reset link to {email}.
@@ -105,7 +105,7 @@ export default function ForgotPasswordPage() {
                 type="submit"
                 disabled={loading}
                 className="w-full py-3 rounded-lg text-body font-medium transition-opacity hover:opacity-90 disabled:opacity-50 mb-4"
-                style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', border: 'none' }}
+                style={{ background: 'var(--accent-bright)', color: 'var(--ink-on-accent)', border: 'none' }}
               >
                 {loading ? 'Sending…' : 'Send reset link'}
               </button>
@@ -116,7 +116,7 @@ export default function ForgotPasswordPage() {
             className="text-center text-meta pt-4"
             style={{ color: 'var(--ink-400)', borderTop: '0.5px solid rgba(232,226,213,0.08)' }}
           >
-            <Link href="/login" className="font-serif italic" style={{ color: 'var(--gold-bright)' }}>
+            <Link href="/login" className="font-serif italic" style={{ color: 'var(--accent-bright)' }}>
               Return to sign in
             </Link>
           </div>

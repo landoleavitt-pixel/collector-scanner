@@ -42,7 +42,7 @@ function PlanToggle({ plan, setPlan, prices, native }) {
         >
           <span className="block text-fine font-bold">{o.label}</span>
           <span className="block text-meta" style={{ color: 'var(--ink-400)' }}>{o.sub}</span>
-          {o.note && <span className="block text-fine" style={{ color: 'var(--gold-bright)' }}>{o.note}</span>}
+          {o.note && <span className="block text-fine" style={{ color: 'var(--accent-bright)' }}>{o.note}</span>}
         </button>
       ))}
     </div>
@@ -175,11 +175,11 @@ export default function SubscribePage() {
 
       <div
         className="w-full max-w-[400px] rounded-xl p-8 text-center"
-        style={{ background: 'var(--ink-on-gold)', border: '0.5px solid rgba(232,226,213,0.08)' }}
+        style={{ background: 'var(--ink-on-accent)', border: '0.5px solid rgba(232,226,213,0.08)' }}
       >
         {(stage === 'app' || stage === 'buying') ? (
           <>
-            <p className="text-fine mb-3" style={{ color: 'var(--gold-bright)' }}>
+            <p className="text-fine mb-3" style={{ color: 'var(--accent-bright)' }}>
               Base Plan
             </p>
             <h1
@@ -201,8 +201,8 @@ export default function SubscribePage() {
               disabled={stage === 'buying'}
               className="w-full min-h-[44px] rounded-lg text-fine font-bold disabled:opacity-60"
               style={{
-                background: 'var(--gold-bright)',
-                color: 'var(--ink-on-gold)',
+                background: 'var(--accent-bright)',
+                color: 'var(--ink-on-accent)',
                 border: 'none',
               }}
             >
@@ -228,7 +228,7 @@ export default function SubscribePage() {
           </>
         ) : stage === 'choose' ? (
           <>
-            <p className="text-fine mb-3" style={{ color: 'var(--gold-bright)' }}>
+            <p className="text-fine mb-3" style={{ color: 'var(--accent-bright)' }}>
               Base Plan
             </p>
             <h1 className="font-serif italic text-price leading-tight mb-3" style={{ color: 'var(--ink-200)' }}>
@@ -245,14 +245,14 @@ export default function SubscribePage() {
             <button
               onClick={handleWebCheckout}
               className="w-full min-h-[44px] rounded-lg text-fine font-bold"
-              style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', border: 'none' }}
+              style={{ background: 'var(--accent-bright)', color: 'var(--ink-on-accent)', border: 'none' }}
             >
               Start 14-day free trial
             </button>
           </>
         ) : stage === 'done' ? (
           <>
-            <p className="text-fine mb-3" style={{ color: 'var(--gold-bright)' }}>
+            <p className="text-fine mb-3" style={{ color: 'var(--accent-bright)' }}>
               Base Plan
             </p>
             <h1
@@ -267,7 +267,7 @@ export default function SubscribePage() {
             <Link
               href="/watchlist"
               className="block w-full min-h-[44px] py-3 rounded-lg text-fine font-bold"
-              style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}
+              style={{ background: 'var(--accent-bright)', color: 'var(--ink-on-accent)' }}
             >
               Go to saved searches
             </Link>
@@ -291,8 +291,8 @@ export default function SubscribePage() {
                 onClick={() => window.location.reload()}
                 className="w-full min-h-[44px] rounded-lg text-fine font-bold"
                 style={{
-                  background: 'var(--gold-bright)',
-                  color: 'var(--ink-on-gold)',
+                  background: 'var(--accent-bright)',
+                  color: 'var(--ink-on-accent)',
                   border: 'none',
                 }}
               >
@@ -309,7 +309,7 @@ export default function SubscribePage() {
           </>
         ) : (
           <>
-            <p className="text-fine mb-3" style={{ color: 'var(--gold-bright)' }}>
+            <p className="text-fine mb-3" style={{ color: 'var(--accent-bright)' }}>
               Base Plan
             </p>
             <h1

@@ -34,6 +34,7 @@ import { RARITY_GROUPS, RARITY_SOURCE, GROUP_ROW, groupOf, GroupChip } from './r
 import VersionsView from './VersionsView';
 import useSetName from './useSetName';
 import { PopularListsRow } from './CardListTiles';
+import CardFrame from './CardFrame';
 import { VERSION_GAMES, VERSION_GAMES_TEXT, gameQuery } from './versions';
 
 const DEFAULT_FILTERS = {
@@ -466,7 +467,7 @@ export default function FablesHome() {
               />
               {!loading && (
                 <p className="text-meta mt-3" style={{ color: 'var(--ink-400)' }}>
-                  <span style={{ color: 'var(--gold)' }}>{res.total}</span>{' '}
+                  <span style={{ color: 'var(--accent)' }}>{res.total}</span>{' '}
                   {res.total === 1 ? 'listing' : 'listings'}, rarest first{res.stub ? ' (sample data)' : ''}
                 </p>
               )}
@@ -484,14 +485,14 @@ export default function FablesHome() {
               <button
                 onClick={handleOpenSave}
                 className="flex items-center gap-2 px-4 py-2 rounded-full text-fine transition-colors"
-                style={{ border: '0.5px solid var(--gold)', color: 'var(--gold)', background: 'transparent' }}
+                style={{ border: '0.5px solid var(--accent)', color: 'var(--accent)', background: 'transparent' }}
               >
                 <Bookmark className="w-[13px] h-[13px]" strokeWidth={1.6} aria-hidden="true" />
                 Save this search
               </button>
               <button
                 onClick={newSearch}
-                className="py-3 -my-3 text-fine text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
+                className="py-3 -my-3 text-fine text-[var(--ink-400)] hover:text-[var(--accent)] transition-colors"
               >
                 New search
               </button>
@@ -501,7 +502,7 @@ export default function FablesHome() {
           {applied?.q && !loading && (canHaveVersions ? (
             <button type="button" onClick={() => setShowAllListings(false)}
                     className="w-full lg:w-auto lg:px-6 min-h-[56px] rounded-2xl inline-flex items-center justify-center gap-2 text-lede font-semibold mb-6"
-                    style={{ border: '1.5px solid var(--gold-bright)', color: 'var(--gold-bright)' }}>
+                    style={{ border: '1.5px solid var(--accent-bright)', color: 'var(--accent-bright)' }}>
               <Layers className="w-5 h-5" strokeWidth={2} aria-hidden="true" />See every version
             </button>
           ) : <EveryCardButton query={applied.q} game={appliedFilters?.game || mainGame(res.items)} />)}
@@ -624,7 +625,7 @@ function EveryCardButton({ query, game }) {
   return (
     <Link href={`/fables/checklist?${gameQuery(game)}name=${encodeURIComponent(family)}`}
           className="w-full lg:w-auto lg:px-6 min-h-[56px] rounded-2xl inline-flex items-center justify-center gap-2 text-lede font-semibold mb-6"
-          style={{ border: '1.5px solid var(--gold-bright)', color: 'var(--gold-bright)' }}>
+          style={{ border: '1.5px solid var(--accent-bright)', color: 'var(--accent-bright)' }}>
       <Layers className="w-5 h-5" strokeWidth={2} aria-hidden="true" />See every {family} card
     </Link>
   );
@@ -640,7 +641,7 @@ function SearchBar({ query, setQuery, onSubmit, onPick }) {
       <form
         ref={suggest.anchorRef}
         onSubmit={(e) => { e.preventDefault(); suggest.close(); onSubmit(); }}
-        className="flex items-center gap-2.5 min-h-[64px] rounded-2xl pl-[18px] pr-1.5 py-1.5 ff-foil-edge"
+        className="flex items-center gap-2.5 min-h-[64px] rounded-2xl pl-[18px] pr-1.5 py-1.5" style={{ background: 'var(--bg-elev)', border: '1.5px solid var(--accent-deep)' }}
       >
         <input
           value={query}
@@ -653,12 +654,12 @@ function SearchBar({ query, setQuery, onSubmit, onPick }) {
           className="flex-1 min-w-0 bg-transparent outline-none text-lede py-2" style={{ color: 'var(--ink-100)' }}
         />
         <button type="submit" aria-label="Show cards" className="w-[52px] h-[52px] rounded-xl grid place-items-center flex-none"
-                style={{ background: 'linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom))', color: 'var(--ink-on-gold)' }}>
+                style={{ background: 'linear-gradient(180deg,var(--accent-fill-top),var(--accent-fill-bottom))', color: 'var(--ink-on-accent)' }}>
           <Search className="w-[22px] h-[22px]" strokeWidth={2} aria-hidden="true" />
         </button>
       </form>
       {suggest.dropdown}
-      <p className="text-meta mt-2.5 px-0.5 md:text-center" style={{ color: 'var(--ink-600)' }}>Every version for {VERSION_GAMES_TEXT}.</p>
+      <p className="text-meta mt-2.5 px-0.5" style={{ color: 'var(--ink-600)' }}>Every version for {VERSION_GAMES_TEXT}.</p>
     </>
   );
 }
@@ -717,6 +718,22 @@ function CardImage({ src, alt, className = '' }) {
 
 /* ── signed-out home ─────────────────────────────────────────────────── */
 
+/* The hero picture: three of our card backs, fanned (Pokémon, Magic and
+   Yu-Gi-Oh! tints). No game art. Computers and tablets only. */
+function CardBackFan() {
+  const cards = [['mtg', -14, -62, 16], ['yugioh', 0, 0, 0], ['pokemon', 14, 62, 16]];
+  return (
+    <div className="hidden md:block relative h-[300px]" aria-hidden="true">
+      {cards.map(([game, rot, x, y]) => (
+        <span key={game} className="absolute left-1/2 top-1/2 w-[150px]"
+              style={{ transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) rotate(${rot}deg)`, filter: 'drop-shadow(0 18px 30px rgba(0,0,0,.55))', zIndex: rot === 0 ? 2 : 1 }}>
+          <CardFrame game={game} />
+        </span>
+      ))}
+    </div>
+  );
+}
+
 const REASON_LINES = [
   [Layers, 'Every version for sale, from one search. A version is the same card in a different set, finish or language.'],
   [Check, 'Mark the cards you own on its card list. Only you can see them.'],
@@ -727,13 +744,18 @@ function SignedOut({ query, setQuery, onSearch, error }) {
   usePendingStarSave();
   return (
     <>
-      <section className="max-w-[760px] mx-auto px-5 md:px-6 pt-7 md:pt-14">
-        <h1 className="font-display text-h1 md:text-hero leading-[1.04] tracking-[-0.01em] mb-2 md:text-center">
-          Find any card. <em className="ff-foil-text">See every version.</em>
-        </h1>
-        <p className="text-lede mb-5 md:mb-7 md:text-center" style={{ color: 'var(--ink-200)' }}>Then keep track of the ones you have.</p>
-        <SearchBar query={query} setQuery={setQuery} onSubmit={() => onSearch()} onPick={(v) => onSearch(v)} />
-        {error && <p className="text-meta mt-2" style={{ color: 'var(--crit)' }}>{error}</p>}
+      {/* Same shape as the sports home: words and search on the left, a
+          picture on the right (a fan of our own card backs). */}
+      <section className="max-w-[1080px] mx-auto px-5 md:px-8 pt-7 md:pt-14 md:grid md:grid-cols-[minmax(0,1fr)_300px] md:items-center md:gap-12">
+        <div className="min-w-0">
+          <h1 className="font-display text-h1 md:text-hero leading-[1.04] tracking-[-0.01em] mb-2">
+            Find any card. <em className="text-[var(--accent)]">See every version.</em>
+          </h1>
+          <p className="text-lede mb-5 md:mb-7" style={{ color: 'var(--ink-200)' }}>Then keep track of the ones you have.</p>
+          <SearchBar query={query} setQuery={setQuery} onSubmit={() => onSearch()} onPick={(v) => onSearch(v)} />
+          {error && <p className="text-meta mt-2" style={{ color: 'var(--crit)' }}>{error}</p>}
+        </div>
+        <CardBackFan />
       </section>
       <div className="max-w-[1080px] mx-auto px-5 md:px-8 mt-8 md:mt-10">
         <PopularListsRow />
@@ -744,7 +766,7 @@ function SignedOut({ query, setQuery, onSearch, error }) {
         <ul className="list-none m-0 p-0 mt-7 grid gap-3.5 md:grid-cols-3 md:gap-6">
           {REASON_LINES.map(([Icon, line]) => (
             <li key={line} className="flex items-center gap-3 text-body" style={{ color: 'var(--ink-400)' }}>
-              <span className="w-[30px] h-[30px] rounded-[9px] grid place-items-center flex-none" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)', color: 'var(--gold-bright)' }}>
+              <span className="w-[30px] h-[30px] rounded-[9px] grid place-items-center flex-none" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)', color: 'var(--accent-bright)' }}>
                 <Icon className="w-4 h-4" strokeWidth={2} aria-hidden="true" />
               </span>
               {line}
@@ -778,8 +800,8 @@ function SignedIn({ query, setQuery, onSearch, recents, error, onCardClick }) {
         <div className="flex gap-2 mt-3 overflow-x-auto md:flex-wrap pb-1">
           {saved.map((s) => (
             <button key={s.id} type="button" onClick={() => onSearch(s.query || '', { ...DEFAULT_FILTERS, ...(s.filters || {}) })}
-                    className="flex-none inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-meta whitespace-nowrap" style={{ color: 'var(--ink-200)', border: '1px solid var(--gold-deep)' }}>
-              <Crosshair className="w-3.5 h-3.5" strokeWidth={1.75} style={{ color: 'var(--gold)' }} aria-hidden="true" />{s.name}
+                    className="flex-none inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-meta whitespace-nowrap" style={{ color: 'var(--ink-200)', border: '1px solid var(--accent-deep)' }}>
+              <Crosshair className="w-3.5 h-3.5" strokeWidth={1.75} style={{ color: 'var(--accent)' }} aria-hidden="true" />{s.name}
             </button>
           ))}
           {shownRecents.map((r) => (
@@ -833,13 +855,13 @@ function FilterChips({ meta, filters, onEdit }) {
     <div className="mt-3 flex flex-wrap items-center gap-2">
       {chips.map((c) => (
         <span key={c.label} className="inline-flex items-center rounded-full text-fine"
-              style={{ minHeight: 26, padding: '0 10px', ...(c.group ? groupOf(c.group).chip : { color: 'var(--gold-bright)', background: 'rgba(143,211,232,0.06)', border: '0.5px solid var(--gold-deep)' }) }}>
+              style={{ minHeight: 26, padding: '0 10px', ...(c.group ? groupOf(c.group).chip : { color: 'var(--accent-bright)', background: 'rgba(143,211,232,0.06)', border: '0.5px solid var(--accent-deep)' }) }}>
           {c.label}
         </span>
       ))}
       {chips.length === 0 && <span className="text-meta" style={{ color: 'var(--ink-400)' }}>All cards</span>}
-      <button type="button" onClick={onEdit} className="text-meta px-1 transition-colors hover:text-[var(--gold-bright)]"
-              style={{ minHeight: 32, color: 'var(--ink-200)', borderBottom: '0.5px solid var(--gold-deep)' }}>
+      <button type="button" onClick={onEdit} className="text-meta px-1 transition-colors hover:text-[var(--accent-bright)]"
+              style={{ minHeight: 32, color: 'var(--ink-200)', borderBottom: '0.5px solid var(--accent-deep)' }}>
         Edit filters
       </button>
     </div>
@@ -882,7 +904,7 @@ function ResultsList({ loading, loadingMore, res, error, query, appliedFilters, 
             onClick={onMore}
             disabled={loadingMore}
             className="text-fine px-6 py-3 rounded-full transition-opacity hover:opacity-90 disabled:opacity-60"
-            style={{ border: '0.5px solid var(--gold-deep)', color: 'var(--gold)' }}
+            style={{ border: '0.5px solid var(--accent-deep)', color: 'var(--accent)' }}
           >
             {loadingMore ? 'Loading…' : `Load ${Math.min(48, remaining || 48)} more`}
           </button>
@@ -899,7 +921,7 @@ function ResultsList({ loading, loadingMore, res, error, query, appliedFilters, 
 function Chip({ on, onClick, children, tier }) {
   const onStyle = tier && TIER_STYLE[tier]
     ? { ...TIER_STYLE[tier], border: '1px solid transparent', fontWeight: 600 }
-    : { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', border: '1px solid var(--gold-bright)', fontWeight: 600 };
+    : { background: 'var(--accent-bright)', color: 'var(--ink-on-accent)', border: '1px solid var(--accent-bright)', fontWeight: 600 };
   return (
     <button type="button" onClick={onClick} aria-pressed={on}
             className="text-meta inline-flex items-center rounded-full transition-all whitespace-nowrap"
@@ -928,14 +950,14 @@ function FilterControls({ meta, filters, setFilter, compact = false }) {
           return (
             <button key={g.key} type="button" onClick={() => toggleIn('rarity', g.key)} aria-pressed={on}
                     className="w-full flex items-center gap-3 min-h-[58px] px-3 py-2 rounded-xl mb-2 text-left"
-                    style={{ background: on ? 'var(--bg-elev-2)' : 'var(--bg-base)', border: `1.5px solid ${on ? 'var(--gold-bright)' : 'var(--line)'}` }}>
+                    style={{ background: on ? 'var(--bg-elev-2)' : 'var(--bg-base)', border: `1.5px solid ${on ? 'var(--accent-bright)' : 'var(--line)'}` }}>
               <span className="w-[22px] h-[22px] rounded-md flex-none" style={g.dot ? { background: g.dot } : { border: '1px solid var(--line)' }} aria-hidden="true" />
               <span className="flex-1 min-w-0">
                 <span className="block text-lede font-medium" style={{ color: 'var(--ink-100)' }}>{g.label}</span>
                 <span className="text-meta" style={{ color: 'var(--ink-400)' }}>{g.meaning}</span>
               </span>
               <span className="w-6 h-6 rounded-md grid place-items-center flex-none"
-                    style={on ? { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' } : { border: '2px solid var(--ink-600)' }}>
+                    style={on ? { background: 'var(--accent-bright)', color: 'var(--ink-on-accent)' } : { border: '2px solid var(--ink-600)' }}>
                 {on && <Check className="w-[15px] h-[15px]" strokeWidth={3} aria-hidden="true" />}
               </span>
             </button>
@@ -1064,11 +1086,11 @@ function EditPanel({ meta, query, setQuery, filters, setFilter, editingSearch, o
   return (
     <section className="relative max-w-[1100px] mx-auto px-6 lg:px-10 pt-12 lg:pt-16 pb-16">
       <div className="flex items-center justify-between mb-9">
-        <p className="text-fine text-[var(--gold)]">
-          <span className="inline-block w-6 h-px bg-[var(--gold)] align-middle mr-3 -translate-y-[2px]" />
+        <p className="text-fine text-[var(--accent)]">
+          <span className="inline-block w-6 h-px bg-[var(--accent)] align-middle mr-3 -translate-y-[2px]" />
           Editing · <span className="normal-case tracking-normal italic font-display text-[var(--ink-100)] ml-1">{editingSearch?.name}</span>
         </p>
-        <button onClick={onCancel} className="text-fine text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors">
+        <button onClick={onCancel} className="text-fine text-[var(--ink-400)] hover:text-[var(--accent)] transition-colors">
           Cancel
         </button>
       </div>
@@ -1080,7 +1102,7 @@ function EditPanel({ meta, query, setQuery, filters, setFilter, editingSearch, o
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') onSubmit(); }}
           placeholder="Any card"
-          className="w-full font-display text-h1 md:text-h1 bg-transparent border-b border-[var(--line)] focus:border-[var(--gold)] outline-none text-[var(--ink-100)] italic pb-2 transition-colors"
+          className="w-full font-display text-h1 md:text-h1 bg-transparent border-b border-[var(--line)] focus:border-[var(--accent)] outline-none text-[var(--ink-100)] italic pb-2 transition-colors"
         />
       </div>
       <div className="mb-12 rise" style={{ animationDelay: '120ms' }}>
@@ -1089,7 +1111,7 @@ function EditPanel({ meta, query, setQuery, filters, setFilter, editingSearch, o
       <div className="flex justify-between items-center rise" style={{ animationDelay: '220ms' }}>
         <span className="text-fine text-[var(--ink-600)]">All filters apply together</span>
         <button onClick={onSubmit} className="group inline-flex items-center gap-3 px-9 py-4 transition-all text-body font-semibold"
-                style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
+                style={{ background: 'var(--accent-bright)', color: 'var(--ink-on-accent)' }}>
           Update search criteria
           <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" strokeWidth={1.8} />
         </button>

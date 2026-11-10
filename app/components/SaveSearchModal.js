@@ -172,7 +172,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
         onClick={(e) => e.stopPropagation()}
         className="w-full max-w-[420px] rounded-xl p-8"
         style={{
-          background: 'var(--ink-on-gold)',
+          background: 'var(--ink-on-accent)',
           border: '0.5px solid rgba(232,226,213,0.12)',
           boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
           color: 'var(--ink-200)',
@@ -247,7 +247,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
               </div>
               <span
                 className="text-fine px-2 py-1 rounded flex-none"
-                style={{ color: 'var(--ink-on-gold)', background: 'var(--gold-bright)', fontWeight: 700 }}
+                style={{ color: 'var(--ink-on-accent)', background: 'var(--accent-bright)', fontWeight: 700 }}
               >
                 Base
               </span>
@@ -256,7 +256,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
               type="button"
               onClick={() => router.push('/subscribe')}
               className="w-full mt-3 py-2 rounded-lg text-fine"
-              style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', fontWeight: 600 }}
+              style={{ background: 'var(--accent-bright)', color: 'var(--ink-on-accent)', fontWeight: 600 }}
             >
               Start 14-day free trial
             </button>
@@ -279,12 +279,12 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
               disabled={atWatchLimit}
               aria-label="Toggle notifications"
               className="relative w-9 h-5 rounded-full transition-colors disabled:opacity-50"
-              style={{ background: notifyEnabled ? 'var(--gold-bright)' : '#3a3530' }}
+              style={{ background: notifyEnabled ? 'var(--accent-bright)' : '#3a3530' }}
             >
               <div
                 className="absolute top-0.5 w-4 h-4 rounded-full transition-all"
                 style={{
-                  background: 'var(--ink-on-gold)',
+                  background: 'var(--ink-on-accent)',
                   left: notifyEnabled ? 'calc(100% - 18px)' : '2px',
                 }}
               />
@@ -317,7 +317,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
             onClick={handleSave}
             disabled={loading}
             className="py-3 rounded-lg text-body font-medium transition-opacity hover:opacity-90 disabled:opacity-50"
-            style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', border: 'none' }}
+            style={{ background: 'var(--accent-bright)', color: 'var(--ink-on-accent)', border: 'none' }}
           >
             {loading ? (isEditing ? 'Updating…' : 'Saving…') : (isEditing ? 'Update' : 'Save')}
           </button>

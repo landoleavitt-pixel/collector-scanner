@@ -318,7 +318,7 @@ function CardModalInner({ item, printRun, onClose, expired = false, side = 'spor
   const parallel = detection ? getParallel(detection.setKey, detection.parallelKey) : null;
   // Border color for the card frame. Prefer the matched parallel's color;
   // fall back to a warm gold so unknown-set cards still get the treatment.
-  const borderColor = parallel?.color || 'var(--gold)';
+  const borderColor = parallel?.color || 'var(--accent)';
   const borderGradient = parallel ? gradientCss(parallel.gradient) : null;
 
   // ─ Tilt handling — desktop mouse + mobile tap-anywhere ────────────
@@ -489,7 +489,7 @@ function CardModalInner({ item, printRun, onClose, expired = false, side = 'spor
                   style={{ background: 'rgba(20,17,12,0.7)', border: '0.5px solid rgba(232,226,213,0.18)', color: 'var(--ink-200)' }}>
             <X size={14} />
           </button>
-          <p className="text-fine mb-3" style={{ color: 'var(--gold)' }}>
+          <p className="text-fine mb-3" style={{ color: 'var(--accent)' }}>
             Listing unavailable
           </p>
           <p className="font-serif italic text-h3 mb-2" style={{ color: 'var(--ink-100)' }}>
@@ -501,7 +501,7 @@ function CardModalInner({ item, printRun, onClose, expired = false, side = 'spor
           </p>
           <button onClick={handleClose} data-no-tilt
                   className="text-fine font-semibold px-5 py-2.5 rounded"
-                  style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
+                  style={{ background: 'var(--accent-bright)', color: 'var(--ink-on-accent)' }}>
             <ArrowLeft className="inline-block w-3.5 h-3.5 mr-1 -mt-0.5" strokeWidth={2} aria-hidden="true" />Back to search
           </button>
         </div>
@@ -583,7 +583,7 @@ function CardModalInner({ item, printRun, onClose, expired = false, side = 'spor
                       fontSize: 28, lineHeight: 1,
                       cursor: 'pointer',
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--gold-bright)'; }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--accent-bright)'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ink-200)'; }}
                   >‹</button>
                   <button
@@ -603,7 +603,7 @@ function CardModalInner({ item, printRun, onClose, expired = false, side = 'spor
                       fontSize: 28, lineHeight: 1,
                       cursor: 'pointer',
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--gold-bright)'; }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--accent-bright)'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ink-200)'; }}
                   >›</button>
                 </>
@@ -685,9 +685,9 @@ function CardModalInner({ item, printRun, onClose, expired = false, side = 'spor
                   width: 290,
                   height: 290,
                   borderRadius: 9999,
-                  border: '3px solid var(--gold)',
+                  border: '3px solid var(--accent)',
                   opacity: 0.05,
-                  color: 'var(--gold)',
+                  color: 'var(--accent)',
                   fontFamily: 'Georgia, serif',
                   fontStyle: 'italic',
                   fontSize: 82,
@@ -699,13 +699,13 @@ function CardModalInner({ item, printRun, onClose, expired = false, side = 'spor
               <div className="relative" style={{ zIndex: 1 }}>
               {detection && parallel && (
                 <p className="text-fine mb-1.5"
-                   style={{ color: 'var(--gold)' }}>
+                   style={{ color: 'var(--accent)' }}>
                   {setData.label} · {parallel.name}
                 </p>
               )}
               {!detection && (
                 <p className="text-fine mb-1.5"
-                   style={{ color: 'var(--gold)' }}>
+                   style={{ color: 'var(--accent)' }}>
                   eBay listing
                 </p>
               )}
@@ -740,7 +740,7 @@ function CardModalInner({ item, printRun, onClose, expired = false, side = 'spor
 
               {/* Price block */}
               <p className="font-serif italic text-price lg:text-h1 leading-none mb-1"
-                 style={{ color: 'var(--gold-bright)' }}>
+                 style={{ color: 'var(--accent-bright)' }}>
                 {formattedPrice}
               </p>
               {item.isAuction ? (
@@ -775,7 +775,7 @@ function CardModalInner({ item, printRun, onClose, expired = false, side = 'spor
               <div className="flex flex-wrap sm:flex-nowrap gap-2 mb-4">
                 <a href={item.url} target="_blank" rel="noopener noreferrer" data-no-tilt
                    className="flex-1 basis-full sm:basis-0 whitespace-nowrap inline-flex items-center justify-center gap-1.5 text-fine font-semibold rounded px-4 py-2.5"
-                   style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
+                   style={{ background: 'var(--accent-bright)', color: 'var(--ink-on-accent)' }}>
                   View on eBay
                   <ArrowUpRight size={12} strokeWidth={2} />
                 </a>
@@ -789,7 +789,7 @@ function CardModalInner({ item, printRun, onClose, expired = false, side = 'spor
                         className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 text-fine font-medium rounded px-4 py-2.5 transition-colors"
                         style={{
                           background: isWatched ? 'rgba(212,175,92,0.10)' : 'transparent',
-                          color: isWatched ? 'var(--gold-bright)' : 'var(--ink-100)',
+                          color: isWatched ? 'var(--accent-bright)' : 'var(--ink-100)',
                           border: `0.5px solid ${isWatched ? 'rgba(212,175,92,0.5)' : 'rgba(232,226,213,0.18)'}`,
                           opacity: watchBusy ? 0.6 : 1,
                           cursor: watchBusy ? 'wait' : 'pointer',
@@ -803,7 +803,7 @@ function CardModalInner({ item, printRun, onClose, expired = false, side = 'spor
                         className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 text-fine font-medium rounded px-4 py-2.5 transition-colors"
                         style={{
                           background: 'transparent',
-                          color: shareMsg ? 'var(--gold-bright)' : 'var(--ink-100)',
+                          color: shareMsg ? 'var(--accent-bright)' : 'var(--ink-100)',
                           border: `0.5px solid ${shareMsg ? 'rgba(212,175,92,0.5)' : 'rgba(232,226,213,0.18)'}`,
                         }}>
                   {shareMsg ? <Check className="w-3 h-3" strokeWidth={2} aria-hidden="true" /> : <ArrowUpRight className="w-3 h-3" strokeWidth={2} aria-hidden="true" />}

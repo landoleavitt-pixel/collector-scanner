@@ -71,7 +71,7 @@ export default function AlertsPage() {
         <Link
           href="/pricing"
           className="inline-flex items-center justify-center px-6 py-3 rounded-full text-fine transition-opacity hover:opacity-90"
-          style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}
+          style={{ background: 'var(--accent-bright)', color: 'var(--ink-on-accent)' }}
         >
           See pricing
         </Link>

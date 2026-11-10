@@ -56,16 +56,16 @@ export default function SignupPromptCard() {
   return (
     <div
       className="my-4 rounded-xl px-4 md:px-5 py-4"
-      style={{ border: '1px solid var(--gold-deep)', background: 'linear-gradient(180deg, rgba(201,149,74,0.06), transparent)' }}
+      style={{ border: '1px solid var(--accent-deep)', background: 'linear-gradient(180deg, rgba(201,149,74,0.06), transparent)' }}
     >
       <div className="flex items-center gap-2.5 text-body font-medium" style={{ color: 'var(--ink-100)' }}>
-        <Bell className="w-[18px] h-[18px] flex-none" strokeWidth={1.75} style={{ color: 'var(--gold-bright)' }} aria-hidden="true" />
+        <Bell className="w-[18px] h-[18px] flex-none" strokeWidth={1.75} style={{ color: 'var(--accent-bright)' }} aria-hidden="true" />
         Want to know when the next one lists?
       </div>
       <p className="text-meta mt-1.5 leading-relaxed" style={{ color: 'var(--ink-400)' }}>
         A free account gets you {SIGNUP_BENEFITS[0][1].charAt(0).toLowerCase() + SIGNUP_BENEFITS[0][1].slice(1)}, a watchlist and bid reminders.
         {!PAYMENTS_LIVE && (
-          <span className="inline-flex items-center gap-1 ml-1" style={{ color: 'var(--gold-bright)' }}>
+          <span className="inline-flex items-center gap-1 ml-1" style={{ color: 'var(--accent-bright)' }}>
             <Gift className="w-3.5 h-3.5" strokeWidth={1.75} aria-hidden="true" />Free during early access.
           </span>
         )}
@@ -82,7 +82,7 @@ export default function SignupPromptCard() {
             </Link>
           </>
         ) : (
-          <Link href="/signup?src=prompt" className={btn} style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
+          <Link href="/signup?src=prompt" className={btn} style={{ background: 'var(--accent-bright)', color: 'var(--ink-on-accent)' }}>
             Create free account
           </Link>
         )}

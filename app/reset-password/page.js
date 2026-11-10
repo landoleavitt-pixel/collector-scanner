@@ -65,7 +65,7 @@ export default function ResetPasswordPage() {
         <div
           className="w-full max-w-[400px] rounded-xl p-9"
           style={{
-            background: 'var(--ink-on-gold)',
+            background: 'var(--ink-on-accent)',
             border: '0.5px solid rgba(232,226,213,0.08)',
             color: 'var(--ink-200)',
           }}
@@ -88,7 +88,7 @@ export default function ResetPasswordPage() {
               <a
                 href="/forgot-password"
                 className="block w-full py-3 rounded-lg text-body font-medium text-center transition-opacity hover:opacity-90"
-                style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', textDecoration: 'none' }}
+                style={{ background: 'var(--accent-bright)', color: 'var(--ink-on-accent)', textDecoration: 'none' }}
               >
                 Request new link
               </a>
@@ -150,7 +150,7 @@ export default function ResetPasswordPage() {
                   type="submit"
                   disabled={loading}
                   className="w-full py-3 rounded-lg text-body font-medium transition-opacity hover:opacity-90 disabled:opacity-50 mb-3"
-                  style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', border: 'none' }}
+                  style={{ background: 'var(--accent-bright)', color: 'var(--ink-on-accent)', border: 'none' }}
                 >
                   {loading ? 'Updating…' : 'Update password'}
                 </button>

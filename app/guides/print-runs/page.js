@@ -133,7 +133,7 @@ export default function PrintRunsGuide() {
             consistently behaves at different rarity levels.
           </p>
 
-          <h3 className="font-display text-h3 mt-8 mb-2 text-[var(--gold-bright)]">
+          <h3 className="font-display text-h3 mt-8 mb-2 text-[var(--accent-bright)]">
             /1: One of one
           </h3>
           <p>
@@ -143,7 +143,7 @@ export default function PrintRunsGuide() {
             tier. Auction-only territory for most players.
           </p>
 
-          <h3 className="font-display text-h3 mt-8 mb-2 text-[var(--gold-bright)]">
+          <h3 className="font-display text-h3 mt-8 mb-2 text-[var(--accent-bright)]">
             /5 to /25: Grail tier
           </h3>
           <p>
@@ -155,7 +155,7 @@ export default function PrintRunsGuide() {
             findable.
           </p>
 
-          <h3 className="font-display text-h3 mt-8 mb-2 text-[var(--gold-bright)]">
+          <h3 className="font-display text-h3 mt-8 mb-2 text-[var(--accent-bright)]">
             /50 to /99: Ultra rare
           </h3>
           <p>
@@ -167,7 +167,7 @@ export default function PrintRunsGuide() {
             tier is the answer.
           </p>
 
-          <h3 className="font-display text-h3 mt-8 mb-2 text-[var(--gold-bright)]">
+          <h3 className="font-display text-h3 mt-8 mb-2 text-[var(--accent-bright)]">
             /100 to /499: Rare
           </h3>
           <p>
@@ -177,7 +177,7 @@ export default function PrintRunsGuide() {
             many players the /199 tier is the entry point into numbered collecting.
           </p>
 
-          <h3 className="font-display text-h3 mt-8 mb-2 text-[var(--gold-bright)]">
+          <h3 className="font-display text-h3 mt-8 mb-2 text-[var(--accent-bright)]">
             /500 and above: Scarce
           </h3>
           <p>
@@ -242,7 +242,7 @@ export default function PrintRunsGuide() {
             treats them all differently.
           </p>
           <p>
-            This is the problem <Link href="/" className="text-[var(--gold-bright)] underline decoration-1 underline-offset-[3px]">Fields &amp; Floors</Link>{' '}
+            This is the problem <Link href="/" className="text-[var(--accent-bright)] underline decoration-1 underline-offset-[3px]">Fields &amp; Floors</Link>{' '}
             was built to solve. Our search parses each listing title against a
             pattern that knows what a print run looks like and, crucially, knows
             what print runs <em>don't</em> look like (years, dates, inventory
@@ -302,7 +302,7 @@ export default function PrintRunsGuide() {
             found out about the listing 11 minutes after it went up." You can
             save searches with filters by exact print run, autograph status, and
             price ceiling, and we'll email you when something matches.{' '}
-            <Link href="/pricing" className="text-[var(--gold-bright)] underline decoration-1 underline-offset-[3px]">
+            <Link href="/pricing" className="text-[var(--accent-bright)] underline decoration-1 underline-offset-[3px]">
               See pricing <ArrowRight className="inline-block w-3.5 h-3.5 ml-1 -mt-0.5" strokeWidth={2} aria-hidden="true" />
             </Link>
           </p>
@@ -334,7 +334,7 @@ export default function PrintRunsGuide() {
         </Prose>
 
         <div className="mt-16 pt-10" style={{ borderTop: '0.5px solid rgba(232,226,213,0.08)' }}>
-          <p className="text-fine text-[var(--gold)] mb-4">Next</p>
+          <p className="text-fine text-[var(--accent)] mb-4">Next</p>
           <p className="text-lede text-[var(--ink-200)] leading-relaxed mb-6 max-w-[60ch]">
             Want to put this into practice? Search eBay with filters that actually
             understand print runs, autographs, rookies, and grades.
@@ -342,7 +342,7 @@ export default function PrintRunsGuide() {
           <Link
             href="/"
             className="inline-flex items-center justify-center px-6 py-3 rounded-full text-fine transition-opacity hover:opacity-90"
-            style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}
+            style={{ background: 'var(--accent-bright)', color: 'var(--ink-on-accent)' }}
           >
             Try a search <ArrowRight className="inline-block w-3.5 h-3.5 ml-1 -mt-0.5" strokeWidth={2} aria-hidden="true" />
           </Link>

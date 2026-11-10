@@ -7,8 +7,8 @@ export default function PageShell({ eyebrow, title, lede, children }) {
       <article className="max-w-[820px] mx-auto px-6 lg:px-10 pt-16 lg:pt-24 pb-12">
         <header className="mb-12 lg:mb-16">
           {eyebrow && (
-            <p className="text-fine text-[var(--gold)] mb-6 rise" style={{ animationDelay: '0ms' }}>
-              <span className="inline-block w-6 h-px bg-[var(--gold)] align-middle mr-3 -translate-y-[2px]" />
+            <p className="text-fine text-[var(--accent)] mb-6 rise" style={{ animationDelay: '0ms' }}>
+              <span className="inline-block w-6 h-px bg-[var(--accent)] align-middle mr-3 -translate-y-[2px]" />
               {eyebrow}
             </p>
           )}

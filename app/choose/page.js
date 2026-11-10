@@ -11,7 +11,6 @@ export const metadata = {
   description: 'Search eBay for rare cards. Pick a side: Fields & Floors for sports cards, Foils & Fables for trading card games.',
 };
 
-const FOIL = 'linear-gradient(100deg,#9fe3f5,#b6a8f0,#f0b3d0,#f3d9a0)';
 
 export default function ChoosePage() {
   return (
@@ -20,7 +19,7 @@ export default function ChoosePage() {
       <div className="min-h-full max-w-[960px] mx-auto px-[18px] md:px-8 pt-16 md:pt-20 pb-8 flex flex-col">
         <header className="text-center">
           <h1 className="italic text-price md:text-h1 leading-none tracking-[-0.01em]" style={{ fontFamily: "'Instrument Serif', serif" }}>
-            Floors <span style={{ background: 'linear-gradient(90deg,#e6b96b 0 50%,#9fe3f5 50% 100%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>&amp;</span> Fables
+            Floors <span style={{ color: '#d5d9e8', fontStyle: 'normal' }}>&amp;</span> Fables
           </h1>
           <p className="text-h3 mt-3" style={{ color: '#9c9a95' }}>What do you collect?</p>
         </header>
@@ -39,8 +38,8 @@ export default function ChoosePage() {
           <a href={FABLES_ORIGIN}
              className="relative flex flex-col justify-end rounded-[22px] overflow-hidden px-[22px] md:px-7 py-6 md:py-8 min-h-[220px] md:min-h-[300px]"
              style={{ background: 'radial-gradient(420px 260px at 75% 15%,rgba(143,211,232,.14),transparent 60%),linear-gradient(180deg,#121626,#080a12)', color: '#eef0f7', border: '1px solid #26262b' }}>
-            <span className="italic text-h1 md:text-h1 leading-none" style={{ fontFamily: "'Fraunces', serif" }}>
-              Foils <span style={{ background: FOIL, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent', fontStyle: 'normal' }}>&amp;</span> Fables
+            <span className="italic text-h1 md:text-h1 leading-none" style={{ fontFamily: "'Instrument Serif', serif" }}>
+              Foils <span style={{ color: '#b9e6f2', fontStyle: 'normal' }}>&amp;</span> Fables
             </span>
             <span className="text-lede md:text-lede mt-2" style={{ color: '#a3aac2' }}>Trading card games</span>
             <span className="text-body mt-1.5" style={{ color: '#7d849c' }}>Pokémon · Magic: The Gathering · Yu-Gi-Oh! · One Piece · Lorcana</span>

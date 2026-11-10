@@ -66,11 +66,11 @@ export default function NotifyFrequency({ initialFrequency = 'hourly', canUsePro
   return (
     <div
       className="rounded-xl p-5 md:p-6 mb-8"
-      style={{ background: 'var(--ink-on-gold)', border: '0.5px solid rgba(232,226,213,0.08)' }}
+      style={{ background: 'var(--ink-on-accent)', border: '0.5px solid rgba(232,226,213,0.08)' }}
     >
       <div
         className="font-mono mb-1"
-        style={{ fontSize: 12, color: 'var(--gold)' }}
+        style={{ fontSize: 12, color: 'var(--accent)' }}
       >
         Alert frequency
       </div>
@@ -94,13 +94,13 @@ export default function NotifyFrequency({ initialFrequency = 'hourly', canUsePro
               style={{
                 background: selected ? 'rgba(201,149,74,0.07)' : 'transparent',
                 border: selected
-                  ? '0.5px solid var(--gold)'
+                  ? '0.5px solid var(--accent)'
                   : '0.5px solid rgba(232,226,213,0.14)',
               }}
             >
               <div
                 className="text-meta mb-0.5"
-                style={{ color: selected ? 'var(--gold-bright)' : 'var(--ink-200)' }}
+                style={{ color: selected ? 'var(--accent-bright)' : 'var(--ink-200)' }}
               >
                 {opt.label}
               </div>
@@ -112,9 +112,9 @@ export default function NotifyFrequency({ initialFrequency = 'hourly', canUsePro
                   className="mt-1.5 font-mono inline-block px-1.5 py-0.5 rounded"
                   style={{
                     fontSize: 12,
-                    color: 'var(--gold-bright)',
+                    color: 'var(--accent-bright)',
                     background: 'rgba(201,149,74,0.06)',
-                    border: '0.5px solid var(--gold-deep)',
+                    border: '0.5px solid var(--accent-deep)',
                   }}
                 >
                   Higher tier

@@ -74,7 +74,7 @@ export default async function WatchlistPage() {
           <div
             className="rounded-lg p-6 text-center"
             style={{
-              background: 'var(--ink-on-gold)',
+              background: 'var(--ink-on-accent)',
               border: '0.5px solid rgba(217,119,87,0.3)',
               color: 'var(--crit)',
             }}
@@ -104,7 +104,7 @@ function EmptyState() {
     <div
       className="rounded-xl p-10 md:p-14 text-center"
       style={{
-        background: 'var(--ink-on-gold)',
+        background: 'var(--ink-on-accent)',
         border: '0.5px solid rgba(232,226,213,0.08)',
       }}
     >
@@ -119,7 +119,7 @@ function EmptyState() {
         style={{ color: 'var(--ink-400)' }}
       >
         Run a search, dial in your filters, and tap{' '}
-        <span className="font-serif italic" style={{ color: 'var(--gold-bright)' }}>
+        <span className="font-serif italic" style={{ color: 'var(--accent-bright)' }}>
           Save this search
         </span>{' '}
         to start receiving alerts.
@@ -127,7 +127,7 @@ function EmptyState() {
       <Link
         href="/"
         className="inline-block px-5 py-2.5 rounded-full text-fine transition-opacity hover:opacity-90"
-        style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}
+        style={{ background: 'var(--accent-bright)', color: 'var(--ink-on-accent)' }}
       >
         Start a search
       </Link>

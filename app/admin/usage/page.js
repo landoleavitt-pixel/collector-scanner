@@ -46,7 +46,7 @@ export default function AdminUsagePage() {
           <div>
             <div
               className="text-fine mb-3"
-              style={{ color: 'var(--gold)' }}
+              style={{ color: 'var(--accent)' }}
             >
               Admin · eBay API
             </div>
@@ -69,8 +69,8 @@ export default function AdminUsagePage() {
             className="px-4 py-2 rounded-full text-fine transition-colors"
             style={{
               background: 'transparent',
-              border: '0.5px solid var(--gold)',
-              color: 'var(--gold)',
+              border: '0.5px solid var(--accent)',
+              color: 'var(--accent)',
             }}
           >
             {state.loading ? 'Refreshing…' : 'Refresh'}
@@ -91,7 +91,7 @@ function LoadingState() {
   return (
     <div
       className="rounded-xl p-10 text-center"
-      style={{ background: 'var(--ink-on-gold)', border: '0.5px solid rgba(232,226,213,0.08)' }}
+      style={{ background: 'var(--ink-on-accent)', border: '0.5px solid rgba(232,226,213,0.08)' }}
     >
       <div className="font-serif italic text-lede" style={{ color: 'var(--ink-200)' }}>
         Asking eBay…
@@ -107,7 +107,7 @@ function ErrorState({ error }) {
     <div
       className="rounded-xl p-8 text-center"
       style={{
-        background: 'var(--ink-on-gold)',
+        background: 'var(--ink-on-accent)',
         border: '0.5px solid rgba(217,119,87,0.3)',
         color: 'var(--crit)',
       }}
@@ -129,7 +129,7 @@ function UsageTable({ data }) {
     return (
       <div
         className="rounded-xl p-8 text-center"
-        style={{ background: 'var(--ink-on-gold)', border: '0.5px solid rgba(232,226,213,0.08)' }}
+        style={{ background: 'var(--ink-on-accent)', border: '0.5px solid rgba(232,226,213,0.08)' }}
       >
         <div className="font-serif italic text-lede mb-2" style={{ color: 'var(--ink-200)' }}>
           No daily quotas to show.
@@ -168,7 +168,7 @@ function UsageTable({ data }) {
           lineHeight: 1.5,
         }}
       >
-        <strong style={{ color: 'var(--gold)' }}>Sanity check:</strong> if every
+        <strong style={{ color: 'var(--accent)' }}>Sanity check:</strong> if every
         row above shows {`"remaining = limit"`} after you've clearly made
         searches today, eBay's analytics endpoint is returning stale data
         (a known issue). Use eBay's own developer dashboard as a fallback,
@@ -186,7 +186,7 @@ function UsageRow({ row }) {
   // Color the bar by burn rate — green under 50%, gold under 80%, red above.
   let barColor = '#6e9a5b';
   if (pct >= 80) barColor = 'var(--crit)';
-  else if (pct >= 50) barColor = 'var(--gold-bright)';
+  else if (pct >= 50) barColor = 'var(--accent-bright)';
 
   const resetDate = row.reset ? new Date(row.reset) : null;
   const resetLabel = resetDate
@@ -201,7 +201,7 @@ function UsageRow({ row }) {
   return (
     <div
       className="rounded-lg p-4"
-      style={{ background: 'var(--ink-on-gold)', border: '0.5px solid rgba(232,226,213,0.08)' }}
+      style={{ background: 'var(--ink-on-accent)', border: '0.5px solid rgba(232,226,213,0.08)' }}
     >
       <div className="flex items-baseline justify-between mb-2 gap-4 flex-wrap">
         <div>
@@ -213,7 +213,7 @@ function UsageRow({ row }) {
           </div>
         </div>
         <div className="text-right">
-          <div className="font-display italic text-h3" style={{ color: 'var(--gold)' }}>
+          <div className="font-display italic text-h3" style={{ color: 'var(--accent)' }}>
             {used.toLocaleString()} <span style={{ color: 'var(--ink-400)' }} className="text-meta">/ {limit.toLocaleString()}</span>
           </div>
           <div className="text-fine" style={{ color: 'var(--ink-400)' }}>

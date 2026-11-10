@@ -54,7 +54,7 @@ function DailyChart({ data, label }) {
         {data.map((d, i) => {
           const h = d.visitors ? Math.max(3, (d.visitors / max) * (H - 6)) : 0;
           return (
-            <rect key={d.day} x={i * (bw + gap)} y={H - h} width={bw} height={h} rx="2" fill="var(--gold-bright)" opacity="0.9">
+            <rect key={d.day} x={i * (bw + gap)} y={H - h} width={bw} height={h} rx="2" fill="var(--accent-bright)" opacity="0.9">
               <title>{`${short(d.day)}: ${n(d.visitors)} visitors`}</title>
             </rect>
           );
@@ -90,7 +90,7 @@ function Rows({ rows, empty = 'Nothing yet.' }) {
             <span style={{ color: 'var(--ink-100)' }}>{n(r.value)}</span>
           </div>
           <div className="h-[3px] rounded-full mt-1" style={{ background: 'var(--line)' }} aria-hidden="true">
-            <div className="h-full rounded-full" style={{ width: `${Math.max(2, (r.value / max) * 100)}%`, background: 'var(--gold-bright)' }} />
+            <div className="h-full rounded-full" style={{ width: `${Math.max(2, (r.value / max) * 100)}%`, background: 'var(--accent-bright)' }} />
           </div>
         </li>
       ))}
@@ -110,7 +110,7 @@ function SideSection({ side, win }) {
     >
       <h2 className="font-display italic text-price leading-tight" style={{ color: 'var(--ink-100)' }}>{SIDE_LABEL[side]}</h2>
       <p className="text-body mt-1" style={{ color: 'var(--ink-200)' }}>
-        <strong style={{ color: 'var(--gold-bright)' }}>{n(visited)}</strong> different people visited
+        <strong style={{ color: 'var(--accent-bright)' }}>{n(visited)}</strong> different people visited
       </p>
 
       <DailyChart data={daily} label={`${SIDE_LABEL[side]} visitors per day`} />
@@ -126,7 +126,7 @@ function SideSection({ side, win }) {
                 </span>
               </div>
               <div className="h-[3px] rounded-full mt-1" style={{ background: 'var(--line)' }} aria-hidden="true">
-                <div className="h-full rounded-full" style={{ width: `${visited ? Math.max(s.people ? 2 : 0, (s.people / visited) * 100) : 0}%`, background: 'var(--gold-bright)' }} />
+                <div className="h-full rounded-full" style={{ width: `${visited ? Math.max(s.people ? 2 : 0, (s.people / visited) * 100) : 0}%`, background: 'var(--accent-bright)' }} />
               </div>
             </li>
           ))}
@@ -201,7 +201,7 @@ export default function AdminVisitorsPage() {
   return (
     <main className="min-h-[calc(100vh-200px)] py-12 md:py-16">
       <div className="max-w-[900px] mx-auto px-4 sm:px-6 lg:px-10">
-        <div className="text-fine mb-3" style={{ color: 'var(--gold)' }}>
+        <div className="text-fine mb-3" style={{ color: 'var(--accent)' }}>
           Admin · Visitors
         </div>
         <h1 className="font-display italic text-h1 md:text-h1 leading-[1.05]" style={{ color: 'var(--ink-100)' }}>
@@ -221,7 +221,7 @@ export default function AdminVisitorsPage() {
               className="text-fine px-4 py-2.5 rounded-full"
               style={{
                 color: days === d ? 'var(--bg-base)' : 'var(--ink-200)',
-                background: days === d ? 'var(--gold-bright)' : 'transparent',
+                background: days === d ? 'var(--accent-bright)' : 'transparent',
                 border: '1px solid var(--line)',
               }}
             >

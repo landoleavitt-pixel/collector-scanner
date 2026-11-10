@@ -50,13 +50,13 @@ export default function UsageStatsToggle({ id = 'usage-stats' }) {
         disabled={!ready}
         className={`relative mt-1 inline-flex h-7 w-12 shrink-0 items-center rounded-full border transition-colors ${
           on
-            ? 'bg-[var(--gold-bright)] border-[var(--gold-bright)]'
+            ? 'bg-[var(--accent-bright)] border-[var(--accent-bright)]'
             : 'bg-transparent border-[var(--ink-600)]'
         }`}
       >
         <span
           className={`inline-block h-5 w-5 rounded-full transition-transform ${
-            on ? 'translate-x-[22px] bg-[var(--ink-on-gold)]' : 'translate-x-[3px] bg-[var(--ink-400)]'
+            on ? 'translate-x-[22px] bg-[var(--ink-on-accent)]' : 'translate-x-[3px] bg-[var(--ink-400)]'
           }`}
         />
         <span className="sr-only">{on ? 'On' : 'Off'}</span>

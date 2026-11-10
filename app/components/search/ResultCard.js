@@ -16,7 +16,7 @@ export function upscaleEbayImage(url) {
 }
 
 export function CornerMarks() {
-  const stroke = 'var(--gold-deep)';
+  const stroke = 'var(--accent-deep)';
   return (
     <>
       <span className="absolute top-2 left-2 w-2 h-2 border-l border-t" style={{ borderColor: stroke }} />
@@ -155,7 +155,7 @@ export function ResultCard({ item, formatPrice, index, hasPendingFilters, onPend
    ("Grail · 5 made"); the rest (Autograph, Rookie, PSA 10) are outlined.
    Rounded 4, sentence case, 12px. */
 export const TIER_CHIP = {
-  grail: { borderColor: '#ffc14d', backgroundImage: 'linear-gradient(180deg, var(--gold-fill-top) 0%, var(--gold-fill-bottom) 100%)' },
+  grail: { borderColor: '#ffc14d', backgroundImage: 'linear-gradient(180deg, var(--accent-fill-top) 0%, var(--accent-fill-bottom) 100%)' },
   ultra: { borderColor: '#c8d4e0', backgroundImage: 'linear-gradient(180deg, #e0e8f0 0%, #98a5b3 100%)' },
   // Rare and Scarce: lighter than before so the dark label reads (Landon, 2026-11-09).
   rare: { borderColor: '#d6722d', backgroundImage: 'linear-gradient(180deg, #e09356 0%, #c47b40 100%)' },
@@ -175,13 +175,13 @@ export function Badge({ children, subtle, auction, tier }) {
   if (auction) {
     className = 'border-[#c97a3a] text-[#e6a86b] bg-[#c97a3a]/[0.10]';
   } else if (TIER_CHIP[tier]) {
-    className = 'text-[var(--ink-on-gold)] font-semibold';
+    className = 'text-[var(--ink-on-accent)] font-semibold';
     inlineStyle = TIER_CHIP[tier];
   } else if (subtle) {
     className = 'border-[var(--line)] text-[var(--ink-400)]';
   } else {
     // Autograph, Rookie, PSA / BGS / SGC / CGC grades
-    className = 'border-[var(--gold-deep)] text-[var(--gold-bright)] bg-[var(--gold)]/[0.06]';
+    className = 'border-[var(--accent-deep)] text-[var(--accent-bright)] bg-[var(--accent)]/[0.06]';
   }
   return (
     <span className={`inline-flex items-center h-6 px-2 rounded-[4px] text-fine font-medium leading-none whitespace-nowrap border ${className}`} style={inlineStyle}>

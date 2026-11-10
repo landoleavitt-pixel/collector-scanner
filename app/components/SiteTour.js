@@ -81,15 +81,15 @@ function SearchArt({ lg }) {
   return (
     <div
       className={`w-full flex items-center gap-2 pl-3.5 pr-1.5 ${lg ? 'h-[52px] rounded-xl' : 'max-w-[320px] h-[46px] rounded-lg'}`}
-      style={{ background: 'var(--bg-base)', border: '0.5px solid var(--gold-deep)' }}
+      style={{ background: 'var(--bg-base)', border: '0.5px solid var(--accent-deep)' }}
     >
       <span className={`flex-1 text-[var(--ink-100)] ${lg ? 'text-lede' : 'text-body'}`}>
-        Cooper Flagg<span className="ff-tour-caret text-[var(--gold)]">|</span>
+        Cooper Flagg<span className="ff-tour-caret text-[var(--accent)]">|</span>
       </span>
       {!lg && (
         <span
           className="text-fine font-semibold rounded-[5px] px-3 py-2"
-          style={{ background: 'var(--gold)', color: 'var(--ink-on-gold, #1a1612)' }}
+          style={{ background: 'var(--accent)', color: 'var(--ink-on-gold, #1a1612)' }}
         >
           Search
         </span>
@@ -144,11 +144,11 @@ function TierArt({ lg }) {
           >
             <div
               className={`rounded-[2px] flex-none ${lg ? 'w-[30px] h-[42px]' : 'w-[18px] h-[25px]'}`}
-              style={{ background: 'linear-gradient(145deg, var(--line), var(--gold-deep) 50%, var(--line-soft))' }}
+              style={{ background: 'linear-gradient(145deg, var(--line), var(--accent-deep) 50%, var(--line-soft))' }}
             />
             <div className="flex-1 min-w-0">
               <div className={`truncate text-[var(--ink-200)] ${lg ? 'text-meta' : 'text-fine'}`}>{title}</div>
-              <div className={`font-mono text-[var(--gold)] ${lg ? 'text-fine mt-0.5' : 'text-fine'}`}>{price}</div>
+              <div className={`font-mono text-[var(--accent)] ${lg ? 'text-fine mt-0.5' : 'text-fine'}`}>{price}</div>
             </div>
             <span
               className={`font-mono rounded-full flex-none ${lg ? 'text-fine px-2.5 py-1' : 'text-fine px-2 py-0.5'}`}
@@ -171,13 +171,13 @@ function WatchlistArt({ lg }) {
     >
       <div
         className={`rounded-[3px] flex-none ${lg ? 'w-[46px] h-16' : 'w-10 h-14'}`}
-        style={{ background: 'linear-gradient(145deg, var(--line), var(--gold-deep) 50%, var(--line-soft))' }}
+        style={{ background: 'linear-gradient(145deg, var(--line), var(--accent-deep) 50%, var(--line-soft))' }}
       />
       <div className={`flex-1 leading-snug text-[var(--ink-200)] ${lg ? 'text-body' : 'text-fine'}`}>
         2025 Bowman Chrome Cooper Flagg Auto /10
-        <span className={`block font-mono text-[var(--gold)] mt-1 ${lg ? 'text-fine' : 'text-fine'}`}>$1,240 · 2h 14m left</span>
+        <span className={`block font-mono text-[var(--accent)] mt-1 ${lg ? 'text-fine' : 'text-fine'}`}>$1,240 · 2h 14m left</span>
       </div>
-      <span className={`ff-tour-star flex-none flex justify-center text-[var(--gold)] ${lg ? 'w-11' : ''}`} aria-hidden="true">
+      <span className={`ff-tour-star flex-none flex justify-center text-[var(--accent)] ${lg ? 'w-11' : ''}`} aria-hidden="true">
         <Star size={lg ? 24 : 20} strokeWidth={1.75} fill="currentColor" />
       </span>
     </div>
@@ -190,7 +190,7 @@ function AlertArt() {
       className="w-full max-w-[320px] p-3.5 rounded-lg"
       style={{ background: 'var(--bg-base)', border: '0.5px solid var(--line)' }}
     >
-      <div className="font-mono text-fine text-[var(--gold)] mb-2">Saved search</div>
+      <div className="font-mono text-fine text-[var(--accent)] mb-2">Saved search</div>
       <div className="text-meta text-[var(--ink-100)] mb-2.5">Cooper Flagg · Auto · ≤/25 · under $300</div>
       <div className="flex gap-1.5">
         {['Hourly', 'Daily', 'Weekly'].map((f, i) => (
@@ -198,7 +198,7 @@ function AlertArt() {
             key={f}
             className="font-mono text-fine rounded px-2 py-1"
             style={i === 0
-              ? { color: 'var(--gold-bright)', border: '0.5px solid var(--gold)' }
+              ? { color: 'var(--accent-bright)', border: '0.5px solid var(--accent)' }
               : { color: 'var(--ink-400)', border: '0.5px solid var(--line)' }}
           >
             {f}
@@ -218,7 +218,7 @@ function PushArt() {
     >
       <div
         className="w-[38px] h-[38px] rounded-[9px] flex-none flex items-center justify-center"
-        style={{ background: 'var(--bg-base)', border: '0.5px solid var(--gold-deep)' }}
+        style={{ background: 'var(--bg-base)', border: '0.5px solid var(--accent-deep)' }}
       >
         <Seal size={26} />
       </div>
@@ -399,7 +399,7 @@ function TourDialog({ native, onClose }) {
           style={{
             height: native ? 7 : 6,
             width: i === step ? (native ? 22 : 18) : (native ? 7 : 6),
-            background: i === step ? 'var(--gold)' : 'var(--line)',
+            background: i === step ? 'var(--accent)' : 'var(--line)',
           }}
         />
       ))}
@@ -408,7 +408,7 @@ function TourDialog({ native, onClose }) {
 
   const primaryLabel = last ? 'Start searching' : 'Next';
   // Solid CTA per the design system: the gold gradient is reserved for the Grail chip.
-  const primaryStyle = { background: 'var(--gold-bright)', color: 'var(--ink-on-gold, #1a1612)' };
+  const primaryStyle = { background: 'var(--accent-bright)', color: 'var(--ink-on-gold, #1a1612)' };
 
   const dialogProps = {
     ref: panelRef,
@@ -435,7 +435,7 @@ function TourDialog({ native, onClose }) {
           style={{
             height: 'calc(100% - 20px)',
             background: 'var(--bg-elev-2)',
-            borderTop: '0.5px solid var(--gold-deep)',
+            borderTop: '0.5px solid var(--accent-deep)',
             borderRadius: '22px 22px 0 0',
             touchAction: 'pan-y',
           }}
@@ -445,7 +445,7 @@ function TourDialog({ native, onClose }) {
         >
           <div className="w-[38px] h-[5px] rounded-full mx-auto mt-2 flex-none" style={{ background: 'var(--line)' }} aria-hidden="true" />
           <div className="flex items-center justify-between pl-[22px] pr-3 h-[52px] flex-none">
-            <span className="font-mono text-fine text-[var(--gold)]">
+            <span className="font-mono text-fine text-[var(--accent)]">
               {step + 1} of {STEPS.length} · {label}
             </span>
             <button
@@ -483,8 +483,8 @@ function TourDialog({ native, onClose }) {
               <button
                 type="button"
                 onClick={startTrial}
-                className="min-h-[48px] rounded-[14px] text-lede font-medium text-[var(--gold-bright)]"
-                style={{ border: '0.5px solid var(--gold-deep)' }}
+                className="min-h-[48px] rounded-[14px] text-lede font-medium text-[var(--accent-bright)]"
+                style={{ border: '0.5px solid var(--accent-deep)' }}
               >
                 Start free trial
               </button>
@@ -512,7 +512,7 @@ function TourDialog({ native, onClose }) {
         className="ff-tour-panel w-full sm:max-w-[440px] overflow-hidden rounded-t-[14px] sm:rounded-xl pb-[env(safe-area-inset-bottom)]"
         style={{
           background: 'var(--bg-elev-2)',
-          border: '0.5px solid var(--gold-deep)',
+          border: '0.5px solid var(--accent-deep)',
           boxShadow: '0 24px 60px -20px rgba(0,0,0,0.8)',
         }}
       >
@@ -525,7 +525,7 @@ function TourDialog({ native, onClose }) {
         </div>
 
         <div className="px-6 pt-5 pb-5">
-          <div className="font-mono text-fine text-[var(--gold)] mb-2.5">
+          <div className="font-mono text-fine text-[var(--accent)] mb-2.5">
             Step {step + 1} of {STEPS.length} · {label}
           </div>
           <h2 id="ff-tour-title" className="font-display italic text-price leading-[1.05] tracking-[-0.01em] mb-2.5">
@@ -543,7 +543,7 @@ function TourDialog({ native, onClose }) {
               <button
                 type="button"
                 onClick={onClose}
-                className="font-mono text-fine text-[var(--ink-400)] hover:text-[var(--gold)] px-2 py-2 transition-colors"
+                className="font-mono text-fine text-[var(--ink-400)] hover:text-[var(--accent)] px-2 py-2 transition-colors"
               >
                 Skip
               </button>
@@ -552,7 +552,7 @@ function TourDialog({ native, onClose }) {
               <button
                 type="button"
                 onClick={back}
-                className="rounded-md px-3.5 py-2 text-meta font-medium text-[var(--ink-200)] hover:text-[var(--gold)] transition-colors"
+                className="rounded-md px-3.5 py-2 text-meta font-medium text-[var(--ink-200)] hover:text-[var(--accent)] transition-colors"
                 style={{ border: '0.5px solid var(--line)' }}
               >
                 Back

@@ -12,6 +12,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, ChevronRight } from 'lucide-react';
 import { VERSION_GAMES, GAME_NAMES, versionGame } from '../versions';
 import { usePopularLists, CardListTile, listHref } from '../CardListTiles';
+import CardFrame from '../CardFrame';
 
 const PAGE = 200;
 
@@ -94,7 +95,7 @@ export default function Lists() {
           <h2 className="font-display font-normal text-h3 mb-2">{found.length ? `Cards named “${typed.trim()}”` : `No ${GAME_NAMES[game]} card named “${typed.trim()}”`}</h2>
           {found.map(row)}
           {!found.length && (
-            <Link href={`/fables?q=${encodeURIComponent(typed.trim())}`} className="inline-flex items-center min-h-[48px] mt-2 text-lede underline underline-offset-[3px]" style={{ color: 'var(--gold-bright)' }}>
+            <Link href={`/fables?q=${encodeURIComponent(typed.trim())}`} className="inline-flex items-center min-h-[48px] mt-2 text-lede underline underline-offset-[3px]" style={{ color: 'var(--accent-bright)' }}>
               Search every game for “{typed.trim()}”
             </Link>
           )}
@@ -106,7 +107,7 @@ export default function Lists() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
             {(popular || Array.from({ length: 4 }, () => null)).map((c, i) => (c
               ? <CardListTile key={c.key} card={c} wide />
-              : <span key={i} className="block aspect-[63/88] rounded-[9px] shimmer" style={{ background: 'var(--bg-elev)' }} />))}
+              : <span key={i} className="block opacity-70" aria-hidden="true"><CardFrame game={game} /></span>))}
           </div>
 
           <h2 className="font-display font-normal text-h3 mt-9 mb-3">All {GAME_NAMES[game]}, A–Z</h2>
@@ -114,7 +115,7 @@ export default function Lists() {
             {letters.filter((l) => l.cards > 0).map((l) => (
               <button key={l.letter} type="button" role="tab" aria-selected={l.letter === letter} onClick={() => go({ letter: l.letter })}
                       className="min-w-[44px] min-h-[44px] rounded-xl text-lede"
-                      style={l.letter === letter ? { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', fontWeight: 600 } : { border: '1px solid var(--line)', color: 'var(--ink-200)' }}>
+                      style={l.letter === letter ? { background: 'var(--accent-bright)', color: 'var(--ink-on-accent)', fontWeight: 600 } : { border: '1px solid var(--line)', color: 'var(--ink-200)' }}>
                 {l.letter}
               </button>
             ))}

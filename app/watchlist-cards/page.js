@@ -173,7 +173,7 @@ export default function WatchlistCardsPage() {
             >
               {t === 'active' ? 'Active' : 'Sold'}
               {tab === t && (
-                <span className="absolute left-0 right-0 -bottom-px h-[1.5px]" style={{ background: 'var(--gold)' }} />
+                <span className="absolute left-0 right-0 -bottom-px h-[1.5px]" style={{ background: 'var(--accent)' }} />
               )}
             </button>
           ))}
@@ -193,7 +193,7 @@ export default function WatchlistCardsPage() {
               return (
                 <button key={k} type="button" onClick={() => setSideFilter(k)} aria-pressed={on}
                         className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-meta"
-                        style={on ? { background: 'var(--bg-elev-2)', color: 'var(--ink-100)', boxShadow: 'inset 0 0 0 1px var(--gold)' } : { color: 'var(--ink-200)', border: '1px solid var(--line)' }}>
+                        style={on ? { background: 'var(--bg-elev-2)', color: 'var(--ink-100)', boxShadow: 'inset 0 0 0 1px var(--accent)' } : { color: 'var(--ink-200)', border: '1px solid var(--line)' }}>
                   {k !== 'all' && <SideDot side={k} />}{label} · {n}
                 </button>
               );
@@ -241,11 +241,11 @@ function Toast({ message, onClose }) {
       className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] max-w-[440px] w-[calc(100%-32px)] rounded-xl px-4 py-3.5 flex items-start gap-3"
       style={{
         background: 'var(--bg-elev)',
-        border: '0.5px solid var(--gold-deep)',
+        border: '0.5px solid var(--accent-deep)',
         boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
       }}
     >
-      <span className="mt-0.5" style={{ color: 'var(--gold-bright)' }}><Check className="inline-block w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" /></span>
+      <span className="mt-0.5" style={{ color: 'var(--accent-bright)' }}><Check className="inline-block w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" /></span>
       <p className="flex-1 text-meta leading-relaxed" style={{ color: 'var(--ink-200)' }}>{message}</p>
       <button
         onClick={onClose}
@@ -274,7 +274,7 @@ function EmptyState({ tab, onBrowse }) {
         <button
           onClick={onBrowse}
           className="text-fine px-5 py-2.5 rounded-full transition-opacity hover:opacity-90"
-          style={{ background: 'var(--gold)', color: 'var(--ink-on-gold)' }}
+          style={{ background: 'var(--accent)', color: 'var(--ink-on-accent)' }}
         >
           Start searching
         </button>
@@ -297,15 +297,15 @@ function WatchlistTile({ listing, onRemove, onToast, onCardClick }) {
     : '';
 
   const TIER_CHIP = {
-    grail:  { color: 'var(--ink-on-gold)', backgroundImage: 'linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom))', border: '0.5px solid #ffc14d', fontWeight: 700 },
-    ultra:  { color: 'var(--ink-on-gold)', backgroundImage: 'linear-gradient(180deg,#e0e8f0,#98a5b3)', border: '0.5px solid #c8d4e0', fontWeight: 700 },
-    rare:   { color: 'var(--ink-on-gold)', backgroundImage: 'linear-gradient(180deg,#d6884a,#8e4f1f)', border: '0.5px solid #d6722d', fontWeight: 700 },
-    scarce: { color: 'var(--ink-on-gold)', backgroundImage: 'linear-gradient(180deg,#8a96a4,#4a5360)', border: '0.5px solid #5a6470', fontWeight: 600 },
+    grail:  { color: 'var(--ink-on-accent)', backgroundImage: 'linear-gradient(180deg,var(--accent-fill-top),var(--accent-fill-bottom))', border: '0.5px solid #ffc14d', fontWeight: 700 },
+    ultra:  { color: 'var(--ink-on-accent)', backgroundImage: 'linear-gradient(180deg,#e0e8f0,#98a5b3)', border: '0.5px solid #c8d4e0', fontWeight: 700 },
+    rare:   { color: 'var(--ink-on-accent)', backgroundImage: 'linear-gradient(180deg,#d6884a,#8e4f1f)', border: '0.5px solid #d6722d', fontWeight: 700 },
+    scarce: { color: 'var(--ink-on-accent)', backgroundImage: 'linear-gradient(180deg,#8a96a4,#4a5360)', border: '0.5px solid #5a6470', fontWeight: 600 },
   };
   // Each tile wears its own side's colours (data-side swaps the tokens, globals.css).
   const fables = listing.side === 'fables';
   const accentRgb = fables ? '143,211,232' : '201,149,74';
-  const outChip = { color: 'var(--gold-bright)', background: `rgba(${accentRgb},0.06)`, border: '0.5px solid var(--gold-deep)' };
+  const outChip = { color: 'var(--accent-bright)', background: `rgba(${accentRgb},0.06)`, border: '0.5px solid var(--accent-deep)' };
 
   return (
     <div data-side={fables ? 'fables' : undefined} className="rounded-xl overflow-hidden flex flex-col" style={{ background: 'var(--bg-elev)', border: '0.5px solid var(--line)' }}>
@@ -343,7 +343,7 @@ function WatchlistTile({ listing, onRemove, onToast, onCardClick }) {
           onClick={(e) => { e.stopPropagation(); onRemove(); }}
           aria-label="Remove from watchlist"
           className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full flex items-center justify-center"
-          style={{ background: 'rgba(10,9,7,0.55)', backdropFilter: 'blur(4px)', border: '0.5px solid var(--gold)', color: 'var(--gold-bright)' }}
+          style={{ background: 'rgba(10,9,7,0.55)', backdropFilter: 'blur(4px)', border: '0.5px solid var(--accent)', color: 'var(--accent-bright)' }}
         >
           <Star className="w-4 h-4" strokeWidth={1.6} fill="currentColor" aria-hidden="true" />
         </button>
@@ -382,14 +382,14 @@ function WatchlistTile({ listing, onRemove, onToast, onCardClick }) {
           {!b.isAuction && b.isBuyItNow && <span className="text-fine px-1.5 py-0.5 rounded" style={outChip}>Buy It Now</span>}
         </div>
         <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1.5">
-          <span className="font-display italic text-h3 sm:text-h3 min-w-0" style={{ color: 'var(--gold)' }}>{price}</span>
+          <span className="font-display italic text-h3 sm:text-h3 min-w-0" style={{ color: 'var(--accent)' }}>{price}</span>
           {listing.listing_url && (
             <a
               href={listing.listing_url}
               target="_blank"
               rel="noopener noreferrer"
               className="text-fine px-3 py-1.5 rounded-full transition-colors"
-              style={{ border: `0.5px solid rgba(${accentRgb},0.5)`, color: 'var(--gold)' }}
+              style={{ border: `0.5px solid rgba(${accentRgb},0.5)`, color: 'var(--accent)' }}
             >
               View
             </a>
@@ -489,7 +489,7 @@ function BidReminderControl({ listing, onToast }) {
       <button
         onClick={() => setModalOpen(true)}
         className="flex items-center gap-2 text-fine transition-colors"
-        style={{ color: on ? 'var(--gold-bright)' : 'var(--ink-400)' }}
+        style={{ color: on ? 'var(--accent-bright)' : 'var(--ink-400)' }}
       >
         {on ? <Bell className="w-3.5 h-3.5" strokeWidth={1.75} aria-hidden="true" /> : <Plus className="w-3.5 h-3.5" strokeWidth={1.75} aria-hidden="true" />}
         {buttonLabel}
@@ -529,7 +529,7 @@ function BidReminderModal({ listing, initialPrice, initialOffsets, isSet, onSubm
         onClick={(e) => e.stopPropagation()}
       >
         <div className="px-6 pt-6 pb-5">
-          <div className="text-fine mb-3" style={{ color: 'var(--gold)' }}>
+          <div className="text-fine mb-3" style={{ color: 'var(--accent)' }}>
             Bid reminder
           </div>
           <h3 className="font-display italic text-price leading-[1.15] mb-2" style={{ color: 'var(--ink-100)' }}>
@@ -550,7 +550,7 @@ function BidReminderModal({ listing, initialPrice, initialOffsets, isSet, onSubm
                 <button key={min} type="button" onClick={() => toggle(min)} aria-pressed={on}
                         className="h-10 px-3.5 rounded-full text-body whitespace-nowrap transition-colors"
                         style={on
-                          ? { border: '1px solid var(--gold-bright)', color: 'var(--gold-bright)', background: 'rgba(230,185,107,0.08)' }
+                          ? { border: '1px solid var(--accent-bright)', color: 'var(--accent-bright)', background: 'rgba(230,185,107,0.08)' }
                           : { border: '1px solid var(--line)', color: 'var(--ink-200)', background: 'var(--bg-elev-2)' }}>
                   {label}
                 </button>
@@ -585,7 +585,7 @@ function BidReminderModal({ listing, initialPrice, initialOffsets, isSet, onSubm
             onClick={submit}
             disabled={!times.length}
             className="flex-1 text-fine py-3 rounded-full transition-opacity hover:opacity-90 disabled:opacity-40"
-            style={{ background: 'var(--gold)', color: 'var(--ink-on-gold)' }}
+            style={{ background: 'var(--accent)', color: 'var(--ink-on-accent)' }}
           >
             {isSet ? 'Update reminder' : 'Set reminder'}
           </button>

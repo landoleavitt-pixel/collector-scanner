@@ -93,13 +93,13 @@ export default function Find() {
         <div className="rounded-2xl p-5" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
           <p className="text-lede" style={{ color: 'var(--ink-100)' }}>{res.notFound ? 'We can’t find this card.' : res.error ? 'eBay didn’t answer. Try again in a minute.' : 'None for sale right now'}</p>
           <a href={back} className="inline-flex items-center justify-center min-h-[52px] px-5 rounded-xl text-lede font-semibold mt-4"
-             style={{ border: '1.5px solid var(--gold-bright)', color: 'var(--gold-bright)' }}>Back to the list</a>
+             style={{ border: '1.5px solid var(--accent-bright)', color: 'var(--accent-bright)' }}>Back to the list</a>
         </div>
       )}
       {res && res.items.length > 0 && (
         <>
           <p className="text-meta mb-2" style={{ color: 'var(--ink-400)' }}>
-            <span style={{ color: 'var(--gold)' }}>{res.total}</span> for sale on eBay now
+            <span style={{ color: 'var(--accent)' }}>{res.total}</span> for sale on eBay now
           </p>
           {(() => {
             // One number from a card list (several versions): listings that say
@@ -139,7 +139,7 @@ export default function Find() {
             <div className="pt-8 flex justify-center">
               <button onClick={loadMore} disabled={more}
                       className="text-fine px-6 py-3 rounded-full disabled:opacity-60"
-                      style={{ border: '0.5px solid var(--gold-deep)', color: 'var(--gold)' }}>
+                      style={{ border: '0.5px solid var(--accent-deep)', color: 'var(--accent)' }}>
                 {more ? 'Loading…' : 'Load more'}
               </button>
             </div>

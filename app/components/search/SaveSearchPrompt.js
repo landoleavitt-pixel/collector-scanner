@@ -57,13 +57,13 @@ export default function SaveSearchPrompt({ query, returnPath, onClose }) {
   return createPortal(
     <div className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.7)' }} onClick={onClose}>
       <div role="dialog" aria-modal="true" aria-labelledby="save-search-title" className="relative w-full max-w-[400px] rounded-xl p-6"
-           style={{ background: 'var(--bg-elev-2)', border: '0.5px solid var(--gold-deep)', boxShadow: '0 30px 60px rgba(0,0,0,0.6)' }}
+           style={{ background: 'var(--bg-elev-2)', border: '0.5px solid var(--accent-deep)', boxShadow: '0 30px 60px rgba(0,0,0,0.6)' }}
            onClick={(e) => e.stopPropagation()}>
         <button ref={closeRef} type="button" onClick={onClose} aria-label="Close"
                 className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center text-[var(--ink-400)] hover:text-[var(--ink-100)]">
           <X className="w-4 h-4" strokeWidth={1.75} aria-hidden="true" />
         </button>
-        <div className="font-mono text-fine" style={{ color: 'var(--gold)' }}>Free account</div>
+        <div className="font-mono text-fine" style={{ color: 'var(--accent)' }}>Free account</div>
         <h2 id="save-search-title" className="font-display italic text-price leading-tight mt-2">Save this search</h2>
         {query && <p className="mt-2 text-meta leading-snug line-clamp-2" style={{ color: 'var(--ink-200)' }}>{query}</p>}
         <p className="mt-2 text-meta leading-relaxed" style={{ color: 'var(--ink-400)' }}>
@@ -71,12 +71,12 @@ export default function SaveSearchPrompt({ query, returnPath, onClose }) {
         </p>
         <div className="mt-5 grid gap-2">
           {showApple && (
-            <button type="button" disabled={busy} onClick={() => continueWith('apple')} className={btn} style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
+            <button type="button" disabled={busy} onClick={() => continueWith('apple')} className={btn} style={{ background: 'var(--accent-bright)', color: 'var(--ink-on-accent)' }}>
               Continue with Apple
             </button>
           )}
           {!native && (
-            <button type="button" disabled={busy} onClick={() => continueWith('google')} className={btn} style={showApple ? { background: 'transparent', color: 'var(--ink-100)', border: '0.5px solid var(--ink-600)' } : { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
+            <button type="button" disabled={busy} onClick={() => continueWith('google')} className={btn} style={showApple ? { background: 'transparent', color: 'var(--ink-100)', border: '0.5px solid var(--ink-600)' } : { background: 'var(--accent-bright)', color: 'var(--ink-on-accent)' }}>
               Continue with Google
             </button>
           )}
@@ -87,7 +87,7 @@ export default function SaveSearchPrompt({ query, returnPath, onClose }) {
         {error && <p className="mt-3 text-meta text-[var(--crit)]">{error}</p>}
         <p className="mt-4 text-fine text-center" style={{ color: 'var(--ink-600)' }}>
           Already have an account?{' '}
-          <Link href={`/login?next=${encodeURIComponent(returnPath)}`} className="underline underline-offset-2 hover:text-[var(--gold-bright)]">Sign in</Link>
+          <Link href={`/login?next=${encodeURIComponent(returnPath)}`} className="underline underline-offset-2 hover:text-[var(--accent-bright)]">Sign in</Link>
         </p>
       </div>
     </div>,

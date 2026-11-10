@@ -48,7 +48,7 @@ export default function SetFilter({ game, value, onChange }) {
           onClick={() => { onChange(''); setTyped(''); }}
           aria-label={`Remove set ${picked?.name || value}`}
           className="text-meta inline-flex items-center rounded-full"
-          style={{ minHeight: 36, padding: '0 14px', background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', fontWeight: 600 }}
+          style={{ minHeight: 36, padding: '0 14px', background: 'var(--accent-bright)', color: 'var(--ink-on-accent)', fontWeight: 600 }}
         >
           {picked?.name || value} ×
         </button>

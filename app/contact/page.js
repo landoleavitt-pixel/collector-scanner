@@ -37,12 +37,12 @@ function ContactRow({ contact }) {
       </p>
       <a
         href={contact.href}
-        className="group inline-flex items-baseline gap-2 font-display text-price text-[var(--ink-100)] tracking-tight hover:text-[var(--gold)] transition-colors"
+        className="group inline-flex items-baseline gap-2 font-display text-price text-[var(--ink-100)] tracking-tight hover:text-[var(--accent)] transition-colors"
       >
         {contact.handle}
         <ArrowUpRight
           size={16}
-          className="text-[var(--ink-600)] group-hover:text-[var(--gold)] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all"
+          className="text-[var(--ink-600)] group-hover:text-[var(--accent)] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all"
         />
       </a>
       <p className="mt-2 text-[var(--ink-200)] leading-relaxed text-pretty">

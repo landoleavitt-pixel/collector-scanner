@@ -69,7 +69,7 @@ export default function ImageBlockNotice() {
       className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:max-w-[380px] z-50 rounded-lg p-4"
       style={{
         background: 'var(--bg-elev-2)',
-        border: '0.5px solid var(--gold-deep)',
+        border: '0.5px solid var(--accent-deep)',
         boxShadow: '0 12px 32px -12px rgba(0,0,0,0.7)',
       }}
       role="status"
@@ -78,7 +78,7 @@ export default function ImageBlockNotice() {
         <div>
           <div
             className="font-mono mb-1.5"
-            style={{ fontSize: 12, color: 'var(--gold)' }}
+            style={{ fontSize: 12, color: 'var(--accent)' }}
           >
             Card images blocked
           </div>

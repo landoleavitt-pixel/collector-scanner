@@ -61,10 +61,10 @@ export default function ShareSearchButton({ query, filters, allPresetRuns = [], 
       className={`inline-flex items-center gap-2 h-9 px-3.5 rounded-full text-body font-medium whitespace-nowrap transition-colors ${className}`}
       style={{
         border: '1px solid var(--line)',
-        color: status === 'idle' ? 'var(--ink-200)' : 'var(--gold-bright)',
+        color: status === 'idle' ? 'var(--ink-200)' : 'var(--accent-bright)',
         background: 'var(--bg-elev)',
       }}
-      onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--gold-deep)'; }}
+      onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--accent-deep)'; }}
       onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--line)'; }}
       aria-label="Share this search"
     >

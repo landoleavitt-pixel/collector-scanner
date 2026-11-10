@@ -309,7 +309,7 @@ function TreeStyles() {
       .rt-quiet { color: var(--ink-400); }
 
       .rt-head { padding: 16px 18px 12px; }
-      .rt-big { font: italic 400 30px/1.1 'Instrument Serif', serif; color: var(--gold-bright); margin-bottom: 4px; }
+      .rt-big { font: italic 400 30px/1.1 'Instrument Serif', serif; color: var(--accent-bright); margin-bottom: 4px; }
       .rt-big-sm { font-size: 24px; color: var(--ink-200); }
       .rt-line { font-size: 14px; line-height: 1.45; color: var(--ink-200); }
 
@@ -333,20 +333,20 @@ function TreeStyles() {
       .rt-dots em { font: 500 12px 'Geist Mono', ui-monospace, monospace; font-style: normal; color: var(--ink-400); }
       .rt-me { display: inline-flex; align-items: center; gap: 10px; min-width: 0; }
       .rt-me-name { font-size: 14px; font-weight: 500; color: var(--ink-100); white-space: nowrap; }
-      .rt-tag { flex: none; font: 600 12px 'Geist Mono', ui-monospace, monospace; color: var(--bg-base); background: var(--gold-bright); padding: 2px 6px; border-radius: 3px; }
-      .rt-thumb { flex: none; max-width: none; width: 34px; height: 48px; object-fit: cover; border-radius: 3px; box-shadow: 0 0 0 2px var(--gold-bright); }
+      .rt-tag { flex: none; font: 600 12px 'Geist Mono', ui-monospace, monospace; color: var(--bg-base); background: var(--accent-bright); padding: 2px 6px; border-radius: 3px; }
+      .rt-thumb { flex: none; max-width: none; width: 34px; height: 48px; object-fit: cover; border-radius: 3px; box-shadow: 0 0 0 2px var(--accent-bright); }
 
       .rt-detail { list-style: none; margin: 2px 0 8px 10px; padding: 4px 0 4px 104px; }
       .rt-detail li { display: grid; grid-template-columns: 14px 1fr; gap: 2px 10px; align-items: center; padding: 5px 0; font-size: 14px; color: var(--ink-200); }
       .rt-detail li .rt-quiet { grid-column: 2; font-size: 12px; }
-      .rt-detail li.me .rt-detail-name { color: var(--gold-bright); font-weight: 500; }
+      .rt-detail li.me .rt-detail-name { color: var(--accent-bright); font-weight: 500; }
 
-      .rt-fold { display: block; width: calc(100% - 12px); margin: 4px 6px; padding: 8px 10px; border: 1px dashed var(--line); border-radius: 8px; background: transparent; color: var(--gold-bright); font: 500 12px 'Geist', system-ui, sans-serif; text-align: center; cursor: pointer; }
+      .rt-fold { display: block; width: calc(100% - 12px); margin: 4px 6px; padding: 8px 10px; border: 1px dashed var(--line); border-radius: 8px; background: transparent; color: var(--accent-bright); font: 500 12px 'Geist', system-ui, sans-serif; text-align: center; cursor: pointer; }
       .rt-unnum { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
       .rt-row-unnum .rt-line { font-size: 13px; }
 
       .rt-source { padding: 10px 18px 14px; border-top: 1px solid var(--line); font-size: 12px; line-height: 1.5; color: var(--ink-600); }
-      .rt-source a { color: var(--gold-bright); text-decoration: none; border-bottom: 1px solid var(--gold-deep); }
+      .rt-source a { color: var(--accent-bright); text-decoration: none; border-bottom: 1px solid var(--accent-deep); }
 
       @media (max-width: 480px) {
         .rt-head { padding: 14px 14px 10px; }

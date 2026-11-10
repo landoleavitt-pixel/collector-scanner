@@ -76,12 +76,12 @@ function ReadingItem({ item }) {
         className="group block"
       >
         <div className="flex items-baseline justify-between gap-4 mb-2">
-          <h3 className="font-display text-price text-[var(--ink-100)] tracking-tight group-hover:text-[var(--gold)] transition-colors">
+          <h3 className="font-display text-price text-[var(--ink-100)] tracking-tight group-hover:text-[var(--accent)] transition-colors">
             {item.title}
           </h3>
           <ArrowUpRight
             size={18}
-            className="text-[var(--ink-600)] group-hover:text-[var(--gold)] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all shrink-0"
+            className="text-[var(--ink-600)] group-hover:text-[var(--accent)] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all shrink-0"
           />
         </div>
         <p className="text-[var(--ink-200)] leading-relaxed text-pretty">

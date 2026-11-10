@@ -56,7 +56,7 @@ export default function EarlyAccessBanner() {
     >
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
         <div className="flex-1 min-w-0">
-          <p className="text-fine text-[var(--gold-bright)] mb-1.5 font-medium">
+          <p className="text-fine text-[var(--accent-bright)] mb-1.5 font-medium">
             Premium
           </p>
           <p className="text-meta leading-relaxed text-[var(--ink-200)]">
@@ -69,7 +69,7 @@ export default function EarlyAccessBanner() {
             className="flex-none px-4 py-2.5 rounded text-meta tracking-[0.06em]"
             style={{
               background: 'rgba(212,175,92,0.10)',
-              color: 'var(--gold-bright)',
+              color: 'var(--accent-bright)',
               border: '0.5px solid rgba(212,175,92,0.3)',
               minWidth: '180px',
               textAlign: 'center',
@@ -99,8 +99,8 @@ export default function EarlyAccessBanner() {
               disabled={status === 'submitting' || !email}
               className="px-4 py-2.5 rounded text-fine font-medium transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
               style={{
-                background: 'var(--gold-bright)',
-                color: 'var(--ink-on-gold)',
+                background: 'var(--accent-bright)',
+                color: 'var(--ink-on-accent)',
               }}
             >
               {status === 'submitting' ? 'Adding…' : 'Notify me'}

@@ -148,11 +148,11 @@ export default function Header() {
             // Same as the sports logo: always back to a fresh search.
             if (pathname === '/fables') { e.preventDefault(); window.location.assign('/fables'); }
           }}>
-            <span className="w-8 h-8 rounded-full grid place-items-center font-display italic text-body ff-foil-edge" style={{ color: 'var(--gold)' }} aria-hidden="true">F</span>
+            <span className="w-8 h-8 rounded-full grid place-items-center font-display italic text-body" style={{ color: 'var(--accent)', border: '1px solid var(--accent-deep)' }} aria-hidden="true">F</span>
             <span className="font-display text-price md:text-price tracking-tight leading-none">
-              Foils <em className="ff-foil-text not-italic">&amp;</em> Fables{' '}
-              {/* Matches "Fields & Floors Collectors"; inner pages on phones show just the name. */}
-              <em className={`text-[var(--gold)] not-italic ${pathname === '/fables' ? '' : 'hidden sm:inline'}`}>Collectors</em>
+              Foils <em className="text-[var(--accent)] not-italic">&amp;</em> Fables{' '}
+              {/* One line on phones: "Collectors" only where there's room. */}
+              <em className="text-[var(--accent)] not-italic hidden md:inline">Collectors</em>
             </span>
           </Link>
         ) : (
@@ -176,10 +176,10 @@ export default function Header() {
           </span>
           <span className="font-display text-price md:text-price tracking-tight leading-none">
             <span data-ff-brand className="inline-block">
-              Fields <em className="text-[var(--gold)] not-italic">&amp;</em> Floors
+              Fields <em className="text-[var(--accent)] not-italic">&amp;</em> Floors
             </span>{' '}
-            {/* Inner pages on phones: just the name, so the bar stays one line. */}
-            <em data-ff-collectors className={`text-[var(--gold)] not-italic ${isHome ? '' : 'hidden sm:inline'}`}>Collectors</em>
+            {/* One line on phones: "Collectors" only where there's room. */}
+            <em data-ff-collectors className="text-[var(--accent)] not-italic hidden md:inline">Collectors</em>
           </span>
         </Link>
         )}
@@ -204,13 +204,13 @@ export default function Header() {
                     key={item.href}
                     href={item.href}
                     className="relative py-1 text-fine transition-colors"
-                    style={{ color: active ? 'var(--gold-bright)' : 'var(--ink-400)' }}
+                    style={{ color: active ? 'var(--accent-bright)' : 'var(--ink-400)' }}
                   >
                     {item.label}
                     {active && (
                       <span
                         className="absolute left-0 right-0 -bottom-0.5"
-                        style={{ height: 1, background: 'var(--gold)' }}
+                        style={{ height: 1, background: 'var(--accent)' }}
                       />
                     )}
                   </Link>
@@ -238,7 +238,7 @@ export default function Header() {
                       e.preventDefault();
                       el.scrollIntoView({ block: 'start' });
                     }}
-                    className="py-1 text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
+                    className="py-1 text-[var(--ink-400)] hover:text-[var(--accent-bright)] transition-colors"
                   >
                     {item.label}
                   </Link>
@@ -248,7 +248,7 @@ export default function Header() {
           ) : isFables ? null : (
             <Link
               href="/"
-              className="whitespace-nowrap text-fine text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
+              className="whitespace-nowrap text-fine text-[var(--ink-400)] hover:text-[var(--accent)] transition-colors"
             >
               <ArrowLeft className="inline-block w-3.5 h-3.5 mr-1 -mt-0.5" strokeWidth={2} aria-hidden="true" /><span className="hidden sm:inline">Back to search</span><span className="sm:hidden">Search</span>
             </Link>
@@ -265,13 +265,13 @@ export default function Header() {
                 <div className="relative" ref={menuRef}>
                   <button
                     onClick={() => setMenuOpen(!menuOpen)}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-full text-fine text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full text-fine text-[var(--ink-400)] hover:text-[var(--accent)] transition-colors"
                     style={{ border: '0.5px solid var(--line-soft)' }}
                     aria-label="Account menu"
                   >
                     <span
                       className="w-6 h-6 rounded-full flex items-center justify-center text-fine font-display"
-                      style={{ background: 'var(--gold)', color: 'var(--ink-on-gold)' }}
+                      style={{ background: 'var(--accent)', color: 'var(--ink-on-accent)' }}
                     >
                       {(user.email?.[0] || '?').toUpperCase()}
                     </span>
@@ -282,7 +282,7 @@ export default function Header() {
                     <div
                       className="absolute right-0 mt-2 w-64 rounded-xl py-2 z-30"
                       style={{
-                        background: 'var(--ink-on-gold)',
+                        background: 'var(--ink-on-accent)',
                         border: '0.5px solid rgba(232,226,213,0.12)',
                         boxShadow: '0 10px 40px rgba(0,0,0,0.4)',
                       }}
@@ -308,8 +308,8 @@ export default function Header() {
                           <span
                             className="text-fine px-2 py-0.5 rounded"
                             style={{
-                              color: 'var(--gold-bright)',
-                              border: '0.5px solid var(--gold-deep)',
+                              color: 'var(--accent-bright)',
+                              border: '0.5px solid var(--accent-deep)',
                             }}
                           >
                             {TIER_LABEL[tier] || tier}
@@ -321,7 +321,7 @@ export default function Header() {
                       <button
                         onClick={openPortal}
                         disabled={portalBusy}
-                        className="w-full text-left px-4 py-2 text-meta text-[var(--ink-400)] hover:text-[var(--gold)] hover:bg-[rgba(212,175,92,0.05)] transition-colors disabled:opacity-60"
+                        className="w-full text-left px-4 py-2 text-meta text-[var(--ink-400)] hover:text-[var(--accent)] hover:bg-[rgba(212,175,92,0.05)] transition-colors disabled:opacity-60"
                       >
                         Manage membership
                       </button>
@@ -330,7 +330,7 @@ export default function Header() {
                       <button
                         onClick={openPortal}
                         disabled={portalBusy}
-                        className="w-full text-left px-4 py-2 text-meta text-[var(--ink-400)] hover:text-[var(--gold)] hover:bg-[rgba(212,175,92,0.05)] transition-colors disabled:opacity-60"
+                        className="w-full text-left px-4 py-2 text-meta text-[var(--ink-400)] hover:text-[var(--accent)] hover:bg-[rgba(212,175,92,0.05)] transition-colors disabled:opacity-60"
                       >
                         Billing history
                       </button>
@@ -339,14 +339,14 @@ export default function Header() {
                       <Link
                         href="/?tour=1"
                         onClick={() => setMenuOpen(false)}
-                        className="block px-4 py-2 text-meta text-[var(--ink-400)] hover:text-[var(--gold)] hover:bg-[rgba(212,175,92,0.05)] transition-colors"
+                        className="block px-4 py-2 text-meta text-[var(--ink-400)] hover:text-[var(--accent)] hover:bg-[rgba(212,175,92,0.05)] transition-colors"
                       >
                         Take the tour
                       </Link>
                       <Link
                         href="/privacy#usage-stats"
                         onClick={() => setMenuOpen(false)}
-                        className="block px-4 py-2 text-meta text-[var(--ink-400)] hover:text-[var(--gold)] hover:bg-[rgba(212,175,92,0.05)] transition-colors"
+                        className="block px-4 py-2 text-meta text-[var(--ink-400)] hover:text-[var(--accent)] hover:bg-[rgba(212,175,92,0.05)] transition-colors"
                       >
                         Usage stats
                       </Link>
@@ -357,7 +357,7 @@ export default function Header() {
                               key={href}
                               href={href}
                               onClick={() => setMenuOpen(false)}
-                              className="block px-4 py-2 text-meta text-[var(--ink-400)] hover:text-[var(--gold)] hover:bg-[rgba(212,175,92,0.05)] transition-colors"
+                              className="block px-4 py-2 text-meta text-[var(--ink-400)] hover:text-[var(--accent)] hover:bg-[rgba(212,175,92,0.05)] transition-colors"
                             >
                               {label}
                             </Link>
@@ -370,7 +370,7 @@ export default function Header() {
                       >
                         <button
                           onClick={handleSignOut}
-                          className="w-full text-left px-4 py-2 text-meta text-[var(--ink-400)] hover:text-[var(--gold)] hover:bg-[rgba(212,175,92,0.05)] transition-colors"
+                          className="w-full text-left px-4 py-2 text-meta text-[var(--ink-400)] hover:text-[var(--accent)] hover:bg-[rgba(212,175,92,0.05)] transition-colors"
                         >
                           Sign out
                         </button>
@@ -392,7 +392,7 @@ export default function Header() {
                   {pathname !== '/login' && (
                     <Link
                       href="/login"
-                      className="hidden sm:inline py-3 -my-3 whitespace-nowrap text-fine text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
+                      className="hidden sm:inline py-3 -my-3 whitespace-nowrap text-fine text-[var(--ink-400)] hover:text-[var(--accent)] transition-colors"
                     >
                       Sign in
                     </Link>
@@ -402,8 +402,8 @@ export default function Header() {
                     href="/signup"
                     className="inline-block whitespace-nowrap text-fine font-semibold px-4 py-2 rounded-full transition-opacity hover:opacity-90"
                     style={{
-                      background: 'var(--gold-bright)',
-                      color: 'var(--ink-on-gold)',
+                      background: 'var(--accent-bright)',
+                      color: 'var(--ink-on-accent)',
                     }}
                   >
                     Get alerts
@@ -438,8 +438,8 @@ export default function Header() {
                 href={item.href}
                 className="flex-none rounded-full px-3.5 py-2 text-fine whitespace-nowrap transition-colors"
                 style={{
-                  color: active ? 'var(--gold-bright)' : 'var(--ink-400)',
-                  border: `0.5px solid ${active ? 'var(--gold-deep)' : 'var(--line)'}`,
+                  color: active ? 'var(--accent-bright)' : 'var(--ink-400)',
+                  border: `0.5px solid ${active ? 'var(--accent-deep)' : 'var(--line)'}`,
                 }}
               >
                 {item.label}
@@ -518,7 +518,7 @@ function CloseAccountDialog({ onClose, appleBilled }) {
           watchlist, saved searches, and profile. It can&rsquo;t be undone.
         </p>
         {appleBilled && (
-          <p className="text-meta leading-relaxed mb-4" style={{ color: 'var(--gold-bright)' }}>
+          <p className="text-meta leading-relaxed mb-4" style={{ color: 'var(--accent-bright)' }}>
             Your subscription is billed by Apple, so we can&rsquo;t cancel it for you.
             Cancel it in Settings &gt; your name &gt; Subscriptions, or you&rsquo;ll keep being charged.
           </p>
@@ -559,7 +559,7 @@ function CloseAccountDialog({ onClose, appleBilled }) {
             onClick={handleDelete}
             disabled={typed !== CONFIRM || busy}
             className="px-4 py-2 rounded-full text-fine disabled:opacity-40"
-            style={{ background: 'var(--crit)', color: 'var(--ink-on-gold)', border: 'none' }}
+            style={{ background: 'var(--crit)', color: 'var(--ink-on-accent)', border: 'none' }}
           >
             {busy ? 'Closing…' : 'Close account'}
           </button>
@@ -578,7 +578,7 @@ function CardListsLink({ pathname, className = '', label }) {
       href="/fables/lists"
       aria-current={on ? 'page' : undefined}
       className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 min-h-[40px] text-body transition-colors ${className}`}
-      style={on ? { border: '1px solid var(--gold)', color: 'var(--gold-bright)' } : { border: '1px solid var(--line)', color: 'var(--ink-100)' }}
+      style={on ? { border: '1px solid var(--accent)', color: 'var(--accent-bright)' } : { border: '1px solid var(--line)', color: 'var(--ink-100)' }}
     >
       <List className="w-4 h-4 flex-none" strokeWidth={2} aria-hidden="true" />{label}
     </Link>

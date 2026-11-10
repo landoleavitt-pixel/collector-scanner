@@ -12,7 +12,7 @@ export const metadata = {
    `soon` = greyed future tier: one "Coming soon" (the ribbon), no price, no button. */
 function Tier({ name, tagline, price, per, cta, fineprint, features, hero = false, soon = false, ribbon }) {
   const cardStyle = hero
-    ? { border: '2px solid var(--gold-bright)', background: '#1d1710', boxShadow: '0 0 48px -10px rgba(230,185,107,0.45)' }
+    ? { border: '2px solid var(--accent-bright)', background: '#1d1710', boxShadow: '0 0 48px -10px rgba(230,185,107,0.45)' }
     : { border: '1px solid var(--line)', background: soon ? '#100e0a' : 'var(--bg-elev)' };
 
   return (
@@ -22,7 +22,7 @@ function Tier({ name, tagline, price, per, cta, fineprint, features, hero = fals
           className="absolute top-0 left-6 -translate-y-1/2 text-fine px-[11px] py-[5px] rounded"
           style={
             hero
-              ? { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', fontWeight: 700 }
+              ? { background: 'var(--accent-bright)', color: 'var(--ink-on-accent)', fontWeight: 700 }
               : { background: 'var(--bg-elev-2)', color: 'var(--ink-400)', border: '1px solid var(--line)', fontWeight: 600 }
           }
         >
@@ -56,7 +56,7 @@ function Tier({ name, tagline, price, per, cta, fineprint, features, hero = fals
           className="mt-4 w-full text-center rounded-lg flex items-center justify-center transition-[filter] hover:brightness-105"
           style={
             hero
-              ? { minHeight: 54, background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', fontWeight: 700, fontSize: 13, boxShadow: '0 8px 24px -10px rgba(217,156,20,0.6)' }
+              ? { minHeight: 54, background: 'var(--accent-bright)', color: 'var(--ink-on-accent)', fontWeight: 700, fontSize: 13, boxShadow: '0 8px 24px -10px rgba(217,156,20,0.6)' }
               : { minHeight: 48, background: 'transparent', border: '1px solid var(--line)', color: 'var(--ink-200)', fontWeight: 600, fontSize: 13 }
           }
         >
@@ -73,7 +73,7 @@ function Tier({ name, tagline, price, per, cta, fineprint, features, hero = fals
       <ul className="list-none p-0 m-0 pt-4 space-y-[11px]" style={{ borderTop: '1px solid var(--line-soft)' }}>
         {features.map((f, i) => (
           <li key={i} className="flex gap-2.5 items-start text-meta leading-snug" style={{ color: f.muted ? '#8a8071' : 'var(--ink-200)' }}>
-            <span className="flex-none mt-px font-bold" style={{ color: f.muted ? 'var(--gold-deep)' : 'var(--gold-bright)' }}>
+            <span className="flex-none mt-px font-bold" style={{ color: f.muted ? 'var(--accent-deep)' : 'var(--accent-bright)' }}>
               {f.muted ? <Plus className="w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" /> : <Check className="w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" />}
             </span>
             <span>{f.node}</span>
@@ -90,11 +90,11 @@ export default function PricingPage() {
       <div className="max-w-[1120px] mx-auto px-6 lg:px-10 pt-16 lg:pt-24 pb-16">
         {/* Header — mirrors PageShell's eyebrow/title/lede styling */}
         <header className="text-center mb-12 lg:mb-16">
-          <p className="text-fine text-[var(--gold)] mb-6 rise" style={{ animationDelay: '0ms' }}>
+          <p className="text-fine text-[var(--accent)] mb-6 rise" style={{ animationDelay: '0ms' }}>
             Pricing
           </p>
           <h1 className="font-display text-h1 lg:text-hero leading-[1.05] tracking-tight text-balance rise" style={{ animationDelay: '80ms' }}>
-            Searching is always <em className="italic text-[var(--gold-bright)]">free.</em>
+            Searching is always <em className="italic text-[var(--accent-bright)]">free.</em>
           </h1>
           <p className="mt-6 text-lede text-[var(--ink-200)] leading-relaxed max-w-[56ch] mx-auto text-pretty rise" style={{ animationDelay: '160ms' }}>
             Search every numbered, autographed and rookie card on eBay for free. Alerts start at $6.99 a month.
@@ -140,7 +140,7 @@ export default function PricingPage() {
             name="Premium"
             tagline="Coming soon. Tell us what you'd want in it."
             features={[
-              { node: <>Ideas welcome at <Link href="/contact" className="underline decoration-[var(--gold-deep)] underline-offset-2 hover:text-[var(--gold-bright)]">Support</Link></>, muted: true },
+              { node: <>Ideas welcome at <Link href="/contact" className="underline decoration-[var(--accent-deep)] underline-offset-2 hover:text-[var(--accent-bright)]">Support</Link></>, muted: true },
             ]}
           />
         </div>

@@ -9,7 +9,7 @@ export function BigButton({ children, onClick, disabled }) {
   return (
     <button type="button" onClick={onClick} disabled={disabled}
             className="w-full min-h-[60px] rounded-2xl text-lede font-semibold mt-2 disabled:opacity-60"
-            style={{ background: 'linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom))', color: 'var(--ink-on-gold)' }}>
+            style={{ background: 'linear-gradient(180deg,var(--accent-fill-top),var(--accent-fill-bottom))', color: 'var(--ink-on-accent)' }}>
       {children}
     </button>
   );

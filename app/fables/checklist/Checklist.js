@@ -203,7 +203,7 @@ export default function Checklist() {
       )}
       {sale.all > 0 && (
         <a href={numberHref(r)} className="flex items-center justify-between gap-2 min-h-[44px] px-3.5 py-2 text-body"
-           style={{ borderTop: '1px solid var(--line-soft)', color: 'var(--gold-bright)' }}>
+           style={{ borderTop: '1px solid var(--line-soft)', color: 'var(--accent-bright)' }}>
           <span>{saleLine(sale)}</span>
           <ChevronRight className="w-[18px] h-[18px] flex-none" strokeWidth={2} aria-hidden="true" />
         </a>
@@ -246,9 +246,9 @@ export default function Checklist() {
                   style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)', color: 'var(--ink-100)' }}>
             Only show cards for sale
             <span className="relative w-[46px] h-[28px] rounded-full flex-none transition-colors" aria-hidden="true"
-                  style={{ background: saleOnly ? 'var(--gold-bright)' : 'var(--bg-elev-2)', border: saleOnly ? 'none' : '1px solid var(--line)' }}>
+                  style={{ background: saleOnly ? 'var(--accent-bright)' : 'var(--bg-elev-2)', border: saleOnly ? 'none' : '1px solid var(--line)' }}>
               <span className="absolute top-[3px] w-[22px] h-[22px] rounded-full transition-all"
-                    style={{ left: saleOnly ? 21 : 3, background: saleOnly ? 'var(--ink-on-gold)' : 'var(--ink-400)' }} />
+                    style={{ left: saleOnly ? 21 : 3, background: saleOnly ? 'var(--ink-on-accent)' : 'var(--ink-400)' }} />
             </span>
           </button>
           {saleOnly && bigList && forSale !== null && (
@@ -299,13 +299,13 @@ export default function Checklist() {
           )}
 
           {alertState === 'on' ? (
-            <p className="w-full min-h-[60px] rounded-2xl flex items-center justify-center gap-2.5 text-lede mt-7" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)', color: 'var(--gold-bright)' }}>
+            <p className="w-full min-h-[60px] rounded-2xl flex items-center justify-center gap-2.5 text-lede mt-7" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)', color: 'var(--accent-bright)' }}>
               <Bell className="w-5 h-5" strokeWidth={2} aria-hidden="true" />Alerts are on
             </p>
           ) : (
             <button type="button" onClick={() => (user ? setAsk(true) : window.location.assign(`/signup?src=alert&next=${encodeURIComponent(here)}`))}
                     className="w-full min-h-[60px] rounded-2xl flex items-center justify-center gap-2.5 text-lede font-semibold mt-7"
-                    style={{ background: 'linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom))', color: 'var(--ink-on-gold)' }}>
+                    style={{ background: 'linear-gradient(180deg,var(--accent-fill-top),var(--accent-fill-bottom))', color: 'var(--ink-on-accent)' }}>
               <Bell className="w-5 h-5" strokeWidth={2} aria-hidden="true" />Alert me when one I need is listed
             </button>
           )}
@@ -332,12 +332,12 @@ export default function Checklist() {
                 <span className="w-7 h-7 rounded-lg flex-none" style={{ background: swatch(plain), border: '1px solid rgba(255,255,255,.12)' }} aria-hidden="true" />
                 <span className="flex-1 min-w-0">
                   {plain}
-                  {count > 0 && <span className="text-body ml-2 whitespace-nowrap" style={{ color: 'var(--gold-bright)' }}>{count} for sale</span>}
+                  {count > 0 && <span className="text-body ml-2 whitespace-nowrap" style={{ color: 'var(--accent-bright)' }}>{count} for sale</span>}
                   {v.rarityGroup && <span className="block mt-0.5"><GroupDot group={v.rarityGroup} /></span>}
                 </span>
                 {user && (
                   <span className="w-[30px] h-[30px] rounded-full grid place-items-center flex-none"
-                        style={on ? { background: FOIL, color: 'var(--ink-on-gold)' } : { border: '2.5px solid var(--ink-600)' }}>
+                        style={on ? { background: FOIL, color: 'var(--ink-on-accent)' } : { border: '2.5px solid var(--ink-600)' }}>
                     {on && <Check className="w-[17px] h-[17px]" strokeWidth={3} aria-hidden="true" />}
                   </span>
                 )}
@@ -345,7 +345,7 @@ export default function Checklist() {
             );
             return (
               <div key={v.key} className="rounded-[14px] mb-2.5 overflow-hidden"
-                   style={{ background: on ? 'var(--bg-elev-2)' : 'var(--bg-base)', border: `1.5px solid ${on ? 'var(--gold-bright)' : 'var(--line)'}` }}>
+                   style={{ background: on ? 'var(--bg-elev-2)' : 'var(--bg-base)', border: `1.5px solid ${on ? 'var(--accent-bright)' : 'var(--line)'}` }}>
                 {user ? (
                   <button type="button" onClick={() => toggle(picked, v)} aria-pressed={on}
                           className="w-full flex items-center gap-3.5 min-h-[64px] px-3.5 py-2.5 text-lede text-left">{head}</button>
@@ -359,14 +359,14 @@ export default function Checklist() {
                     ) : count > 0 ? (
                       <a href={`/fables/find?${new URLSearchParams({ ...gameParams(GAME), card: picked.cardKey, version: v.key, name: picked.cardName, no: cardNumber(GAME, picked), label: plain, back: here })}`}
                          className="w-full min-h-[52px] rounded-xl flex items-center justify-center gap-2 text-lede font-semibold"
-                         style={{ border: '1.5px solid var(--gold-bright)', color: 'var(--gold-bright)' }}>
+                         style={{ border: '1.5px solid var(--accent-bright)', color: 'var(--accent-bright)' }}>
                         <Search className="w-5 h-5" strokeWidth={2} aria-hidden="true" />Find it
                       </a>
                     ) : (
                       <div className="flex items-center justify-between gap-3">
                         <span className="text-body" style={{ color: 'var(--ink-400)' }}>None for sale right now</span>
                         {alertState === 'on' ? (
-                          <span className="text-body" style={{ color: 'var(--gold-bright)' }}>Alerts are on</span>
+                          <span className="text-body" style={{ color: 'var(--accent-bright)' }}>Alerts are on</span>
                         ) : (
                           <button type="button"
                                   onClick={() => { setPick(null); if (user) setAsk(true); else window.location.assign(`/signup?src=alert&next=${encodeURIComponent(here)}`); }}
@@ -390,7 +390,7 @@ export default function Checklist() {
               <a href={numberHref(picked)} className="flex items-center justify-between gap-2 min-h-[52px] px-3.5 py-2.5 rounded-[14px] mb-2.5 text-lede"
                  style={{ border: '1.5px dashed var(--line)', color: 'var(--ink-200)' }}>
                 <span>{unnamed} more for sale {unnamed === 1 ? 'doesn’t' : 'don’t'} say which version</span>
-                <span className="inline-flex items-center gap-1 flex-none font-semibold" style={{ color: 'var(--gold-bright)' }}>See {unnamed === 1 ? 'it' : 'them'}<ChevronRight className="w-[18px] h-[18px]" strokeWidth={2} aria-hidden="true" /></span>
+                <span className="inline-flex items-center gap-1 flex-none font-semibold" style={{ color: 'var(--accent-bright)' }}>See {unnamed === 1 ? 'it' : 'them'}<ChevronRight className="w-[18px] h-[18px]" strokeWidth={2} aria-hidden="true" /></span>
               </a>
             );
           })()}
@@ -439,7 +439,7 @@ function NotFound({ name, game }) {
   const fixGame = fix ? VERSION_GAMES.find((g) => GAME_NAMES[g] === fix.sport) || null : null;
   const searchFor = fix?.query || name;
   const big = 'w-full min-h-[60px] rounded-2xl flex items-center justify-center text-center px-4 text-lede font-semibold';
-  const gold = { background: 'linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom))', color: 'var(--ink-on-gold)' };
+  const gold = { background: 'linear-gradient(180deg,var(--accent-fill-top),var(--accent-fill-bottom))', color: 'var(--ink-on-accent)' };
   const list = (g, n) => `/fables/checklist?${gameQuery(g)}name=${encodeURIComponent(n)}`;
   return (
     <div>
@@ -462,10 +462,10 @@ function NotFound({ name, game }) {
 
 function Ring({ got, n }) {
   if (got > 0 && got === n) {
-    return <span className="w-[34px] h-[34px] rounded-full grid place-items-center flex-none" style={{ background: FOIL, color: 'var(--ink-on-gold)' }} aria-label="You have every version"><Check className="w-[18px] h-[18px]" strokeWidth={3} aria-hidden="true" /></span>;
+    return <span className="w-[34px] h-[34px] rounded-full grid place-items-center flex-none" style={{ background: FOIL, color: 'var(--ink-on-accent)' }} aria-label="You have every version"><Check className="w-[18px] h-[18px]" strokeWidth={3} aria-hidden="true" /></span>;
   }
   if (got > 0) {
-    return <span className="w-[34px] h-[34px] rounded-full flex-none" style={{ border: '2.5px solid var(--gold-bright)', background: 'conic-gradient(var(--gold-bright) 0 50%, transparent 50% 100%)' }} aria-label="You have some versions" role="img" />;
+    return <span className="w-[34px] h-[34px] rounded-full flex-none" style={{ border: '2.5px solid var(--accent-bright)', background: 'conic-gradient(var(--accent-bright) 0 50%, transparent 50% 100%)' }} aria-label="You have some versions" role="img" />;
   }
   return <span className="w-[34px] h-[34px] rounded-full flex-none" style={{ border: '2.5px solid var(--ink-600)' }} aria-hidden="true" />;
 }

@@ -42,7 +42,7 @@ export default function AdminFunnelPage() {
   return (
     <main className="min-h-[calc(100vh-200px)] py-12 md:py-16">
       <div className="max-w-[900px] mx-auto px-6 lg:px-10">
-        <div className="text-fine mb-3" style={{ color: 'var(--gold)' }}>
+        <div className="text-fine mb-3" style={{ color: 'var(--accent)' }}>
           Admin · Funnel
         </div>
         <h1 className="font-display italic text-h1 md:text-h1 leading-[1.05]" style={{ color: 'var(--ink-100)' }}>
@@ -62,7 +62,7 @@ export default function AdminFunnelPage() {
               className="text-fine px-4 py-2 rounded-full"
               style={{
                 color: days === d ? 'var(--bg-base)' : 'var(--ink-200)',
-                background: days === d ? 'var(--gold-bright)' : 'transparent',
+                background: days === d ? 'var(--accent-bright)' : 'transparent',
                 border: '1px solid var(--line)',
               }}
             >

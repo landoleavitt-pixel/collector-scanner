@@ -78,7 +78,7 @@ export default function TabBar() {
           </>
         );
         const cls = 'flex flex-col items-center justify-center gap-1 min-h-[44px]';
-        const style = { color: t.active ? 'var(--gold-bright)' : 'var(--ink-400)' };
+        const style = { color: t.active ? 'var(--accent-bright)' : 'var(--ink-400)' };
 
         // Search on the home route forces a real reload, matching the logo:
         // the results stage lives in React state, so a plain link is a no-op.

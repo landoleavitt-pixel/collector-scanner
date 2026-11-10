@@ -1153,11 +1153,11 @@ function SplashIntro() {
             className="font-display text-[clamp(2.2rem,8.5vw,3.4rem)] tracking-tight leading-none rise"
             style={{ animationDelay: '60ms', animationDuration: '380ms' }}
           >
-            Fields <em className="text-[var(--gold)] not-italic">&amp;</em> Floors
+            Fields <em className="text-[var(--accent)] not-italic">&amp;</em> Floors
           </div>
           <div
             ref={subRef}
-            className="mt-4 text-fine text-[var(--gold)] rise"
+            className="mt-4 text-fine text-[var(--accent)] rise"
             style={{ animationDelay: '160ms', animationDuration: '320ms', transition: 'opacity 0.2s ease', fontFamily: 'ui-monospace, monospace' }}
           >
             A Holy Grail search engine
@@ -1226,12 +1226,12 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
             className="font-display text-[clamp(2.75rem,9vw,4.25rem)] leading-[1] tracking-[-0.015em] rise"
             style={{ animationDelay: '220ms', textWrap: 'balance' }}
           >
-            The <em className="text-[var(--gold-bright)]">Grail</em> Hunter.
+            The <em className="text-[var(--accent-bright)]">Grail</em> Hunter.
             <span className="sr-only"> Search eBay for rare numbered sports cards, rarest first.</span>
           </h1>
           <p
             className="mt-5 md:mt-7 font-display italic text-h3 md:text-h3 leading-none rise"
-            style={{ color: 'var(--gold-bright)', animationDelay: '300ms' }}
+            style={{ color: 'var(--accent-bright)', animationDelay: '300ms' }}
           >
             Just try it.
           </p>
@@ -1240,9 +1240,9 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
           <div className="mt-3 rise" style={{ animationDelay: '380ms' }}>
             <div
               ref={suggest.anchorRef}
-              className="relative flex items-center rounded-xl transition-colors focus-within:border-[var(--gold)]"
+              className="relative flex items-center rounded-xl transition-colors focus-within:border-[var(--accent)]"
               style={{
-                border: '0.5px solid var(--gold-deep)',
+                border: '0.5px solid var(--accent-deep)',
                 background: 'rgba(20,17,12,0.85)',
                 boxShadow: '0 0 0 4px rgba(201,149,74,0.05), 0 18px 40px rgba(0,0,0,0.45)',
               }}
@@ -1267,7 +1267,7 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
                 onClick={onSearch}
                 disabled={loading}
                 className="absolute right-2 h-11 px-4 rounded-lg flex items-center gap-1.5 text-meta font-semibold whitespace-nowrap transition-opacity hover:opacity-90 disabled:opacity-40 z-10"
-                style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}
+                style={{ background: 'var(--accent-bright)', color: 'var(--ink-on-accent)' }}
               >
                 Show cards
                 <ArrowRight className="w-4 h-4" strokeWidth={2} aria-hidden="true" />
@@ -1299,7 +1299,7 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
                     type="button"
                     onClick={() => onSuggested(name)}
                     disabled={loading}
-                    className="text-meta px-4 py-2 rounded-full transition-colors disabled:opacity-40 hover:border-[var(--gold-deep)] hover:text-[var(--gold-bright)]"
+                    className="text-meta px-4 py-2 rounded-full transition-colors disabled:opacity-40 hover:border-[var(--accent-deep)] hover:text-[var(--accent-bright)]"
                     style={{ border: '0.5px solid var(--line)', color: 'var(--ink-200)', background: 'var(--bg-elev)' }}
                   >
                     {name}
@@ -1315,10 +1315,10 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
                     onClick={() => onChipSearch(h.query, h.filters)}
                     disabled={loading}
                     aria-label={h.label}
-                    className="group inline-flex items-center gap-2 text-meta pl-4 pr-2 py-1.5 rounded-full transition-colors disabled:opacity-40 hover:border-[var(--gold-deep)]"
+                    className="group inline-flex items-center gap-2 text-meta pl-4 pr-2 py-1.5 rounded-full transition-colors disabled:opacity-40 hover:border-[var(--accent-deep)]"
                     style={{ border: '0.5px solid var(--line)', background: 'var(--bg-elev)', color: 'var(--ink-200)', minHeight: 36 }}
                   >
-                    <span className="group-hover:text-[var(--gold-bright)] transition-colors">{h.text}</span>
+                    <span className="group-hover:text-[var(--accent-bright)] transition-colors">{h.text}</span>
                     {h.chip && (
                       h.tier
                         ? <Badge mono tier={h.tier}>{h.chip}</Badge>
@@ -1341,15 +1341,15 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
             <div className="mt-8 flex gap-8 rise" style={{ animationDelay: '560ms' }}>
               <Link
                 href="/watchlist"
-                className="flex items-center gap-2 text-fine text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
+                className="flex items-center gap-2 text-fine text-[var(--ink-400)] hover:text-[var(--accent-bright)] transition-colors"
               >
-                <Crosshair className="w-3.5 h-3.5 text-[var(--gold)]" strokeWidth={1.6} aria-hidden="true" /> My hunts
+                <Crosshair className="w-3.5 h-3.5 text-[var(--accent)]" strokeWidth={1.6} aria-hidden="true" /> My hunts
               </Link>
               <Link
                 href="/watchlist-cards"
-                className="flex items-center gap-2 text-fine text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
+                className="flex items-center gap-2 text-fine text-[var(--ink-400)] hover:text-[var(--accent-bright)] transition-colors"
               >
-                <Star className="w-3.5 h-3.5 text-[var(--gold)]" strokeWidth={1.6} aria-hidden="true" /> Watchlist
+                <Star className="w-3.5 h-3.5 text-[var(--accent)]" strokeWidth={1.6} aria-hidden="true" /> Watchlist
               </Link>
             </div>
           )}
@@ -1394,7 +1394,7 @@ function RarityStrip({ onCardClick, onChipSearch }) {
         <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
           <div>
             <h2 className="font-display text-[clamp(1.75rem,4vw,2.25rem)] leading-tight">
-              One search. <em className="text-[var(--gold-bright)]">Rarest first.</em>
+              One search. <em className="text-[var(--accent-bright)]">Rarest first.</em>
             </h2>
             <div className="mt-3 flex flex-wrap items-center gap-1.5 min-h-[24px]">
               {data?.player && (
@@ -1411,7 +1411,7 @@ function RarityStrip({ onCardClick, onChipSearch }) {
             <button
               type="button"
               onClick={() => onChipSearch(data.player, { autoCards: true, numberedCards: true, selectedPrintRuns: RARITY_STRIP_RUNS })}
-              className="py-3 -my-3 inline-flex items-center gap-1.5 text-fine text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
+              className="py-3 -my-3 inline-flex items-center gap-1.5 text-fine text-[var(--ink-400)] hover:text-[var(--accent-bright)] transition-colors"
             >
               See all <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.75} aria-hidden="true" />
             </button>
@@ -1450,7 +1450,7 @@ function RarityStrip({ onCardClick, onChipSearch }) {
                 <span className="text-fine leading-snug line-clamp-2" style={{ color: 'var(--ink-400)' }}>{it.title}</span>
               )}
               {it.price != null && (
-                <span className="font-display text-lede leading-none text-[var(--gold-bright)]">{fmt(it.price)}</span>
+                <span className="font-display text-lede leading-none text-[var(--accent-bright)]">{fmt(it.price)}</span>
               )}
             </button>
           ))}
@@ -1516,7 +1516,7 @@ function WhyFields({ user }) {
               className={`flex items-center gap-3 py-4 md:py-5 md:px-5 text-lede font-medium ${i ? 'border-t md:border-t-0 md:border-l' : ''}`}
               style={{ borderColor: 'var(--line-soft)', color: 'var(--ink-100)' }}
             >
-              <Icon className="w-[22px] h-[22px] flex-none" strokeWidth={1.75} style={{ color: 'var(--gold-bright)' }} aria-hidden="true" />
+              <Icon className="w-[22px] h-[22px] flex-none" strokeWidth={1.75} style={{ color: 'var(--accent-bright)' }} aria-hidden="true" />
               {label}
             </li>
           ))}
@@ -1549,11 +1549,11 @@ function PlanCard({ name, price, unit, line, ctaLabel, ctaHref, featured = false
     <div
       className={`rounded-xl p-4 md:p-5 flex ${featured ? 'flex-col gap-1.5 order-first md:order-none' : 'flex-row md:flex-col items-center md:items-stretch justify-between gap-3 md:gap-1.5'}`}
       style={featured
-        ? { background: 'var(--bg-elev)', border: '1px solid var(--gold-bright)' }
+        ? { background: 'var(--bg-elev)', border: '1px solid var(--accent-bright)' }
         : { border: '1px solid var(--line)', opacity: muted ? 0.8 : 1 }}
     >
       <div className="min-w-0">
-        <div className="text-meta font-medium" style={{ color: featured ? 'var(--gold)' : 'var(--ink-400)' }}>{name}</div>
+        <div className="text-meta font-medium" style={{ color: featured ? 'var(--accent)' : 'var(--ink-400)' }}>{name}</div>
         <div className="font-display italic leading-none text-price md:text-h1 mt-1" style={{ color: muted ? 'var(--ink-400)' : 'var(--ink-100)' }}>
           {price}{unit && <small className="not-italic font-sans text-meta ml-1" style={{ color: 'var(--ink-400)' }}>{unit}</small>}
         </div>
@@ -1563,7 +1563,7 @@ function PlanCard({ name, price, unit, line, ctaLabel, ctaHref, featured = false
         href={ctaHref}
         className={`flex-none text-center rounded-lg text-fine font-semibold no-underline whitespace-nowrap ${featured ? 'mt-3 py-3' : 'px-3.5 py-2.5 md:mt-3 md:py-3'}`}
         style={featured
-          ? { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }
+          ? { background: 'var(--accent-bright)', color: 'var(--ink-on-accent)' }
           : { color: 'var(--ink-100)', border: '1px solid var(--ink-600)' }}
       >
         {ctaLabel}
@@ -1672,7 +1672,7 @@ function SignedInHome({ query, setQuery, onSearch, onSuggested, recentSearches =
           Heading reuses the approved hero name and strip line (no new copy). */}
       <div className="max-w-[760px] mx-auto">
       <h1 className="text-center font-display text-[clamp(2.4rem,7vw,3.5rem)] leading-[1] tracking-[-0.015em]" style={{ textWrap: 'balance' }}>
-        The <em className="text-[var(--gold-bright)]">Grail</em> Hunter.
+        The <em className="text-[var(--accent-bright)]">Grail</em> Hunter.
       </h1>
       <p className="text-center mt-3 mb-7 md:mb-9 font-display italic text-h3 md:text-h3 leading-none" style={{ color: 'var(--ink-400)' }}>
         One search. Rarest first.
@@ -1681,7 +1681,7 @@ function SignedInHome({ query, setQuery, onSearch, onSuggested, recentSearches =
         ref={suggest.anchorRef}
         onSubmit={(e) => { e.preventDefault(); suggest.close(); onSearch(); }}
         className="flex items-center gap-3 rounded-2xl pl-5 pr-2 py-2"
-        style={{ background: 'var(--bg-elev)', border: '1.5px solid var(--gold-deep)', boxShadow: '0 20px 50px rgba(0,0,0,0.45)' }}
+        style={{ background: 'var(--bg-elev)', border: '1.5px solid var(--accent-deep)', boxShadow: '0 20px 50px rgba(0,0,0,0.45)' }}
       >
         <Search className="w-6 h-6 flex-none" strokeWidth={1.75} style={{ color: 'var(--ink-400)' }} aria-hidden="true" />
         <input
@@ -1696,7 +1696,7 @@ function SignedInHome({ query, setQuery, onSearch, onSuggested, recentSearches =
           className="flex-1 min-w-0 bg-transparent outline-none text-h3 md:text-h3 py-3"
           style={{ color: 'var(--ink-100)' }}
         />
-        <button type="submit" aria-label="Show cards" className="h-12 md:h-14 px-4 md:px-6 rounded-xl inline-flex items-center gap-2 flex-none text-lede font-semibold" style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
+        <button type="submit" aria-label="Show cards" className="h-12 md:h-14 px-4 md:px-6 rounded-xl inline-flex items-center gap-2 flex-none text-lede font-semibold" style={{ background: 'var(--accent-bright)', color: 'var(--ink-on-accent)' }}>
           <span className="hidden md:inline">Show cards</span>
           <ArrowRight className="w-5 h-5" strokeWidth={2} />
         </button>
@@ -1708,8 +1708,8 @@ function SignedInHome({ query, setQuery, onSearch, onSuggested, recentSearches =
         <div className="flex gap-2.5 mt-5 overflow-x-auto md:flex-wrap md:justify-center pb-1 -mx-1 px-1">
           {saved.map((s) => (
             <a key={s.id} href={`/?savedSearch=${s.id}`} className="flex-none inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-body whitespace-nowrap"
-               style={{ color: 'var(--ink-200)', border: '1px solid var(--gold-deep)' }}>
-              <Crosshair className="w-4 h-4" strokeWidth={1.75} style={{ color: 'var(--gold)' }} aria-hidden="true" />{s.name}
+               style={{ color: 'var(--ink-200)', border: '1px solid var(--accent-deep)' }}>
+              <Crosshair className="w-4 h-4" strokeWidth={1.75} style={{ color: 'var(--accent)' }} aria-hidden="true" />{s.name}
             </a>
           ))}
           {recents.map((r) => (
@@ -1729,7 +1729,7 @@ function SignedInHome({ query, setQuery, onSearch, onSuggested, recentSearches =
       {PAYMENTS_LIVE && !native && home && home.tier === 'free' && (
         <div className="flex items-center justify-between gap-3 mt-8 rounded-xl px-4 py-3 text-body" style={{ border: '1px solid var(--line)', color: 'var(--ink-200)' }}>
           <span>You have 1 alert on the free plan.</span>
-          <Link href="/subscribe" className="inline-flex items-center gap-1.5 whitespace-nowrap" style={{ color: 'var(--gold-bright)' }}>
+          <Link href="/subscribe" className="inline-flex items-center gap-1.5 whitespace-nowrap" style={{ color: 'var(--accent-bright)' }}>
             Get alerts on 5 searches <ArrowRight className="w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" />
           </Link>
         </div>
@@ -1768,7 +1768,7 @@ function SinceLastVisit({ home, hasSaved }) {
       <>{Head}
         <div className="rounded-xl px-4 py-4" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
           <div className="flex items-center gap-2 text-body" style={{ color: 'var(--ink-200)' }}>
-            <Bell className="w-4 h-4" strokeWidth={1.75} style={{ color: 'var(--gold)' }} aria-hidden="true" />Nothing new yet
+            <Bell className="w-4 h-4" strokeWidth={1.75} style={{ color: 'var(--accent)' }} aria-hidden="true" />Nothing new yet
           </div>
           <p className="text-meta mt-1.5" style={{ color: 'var(--ink-600)' }}>
             {hasSaved ? 'New matches, price drops and ending auctions will show up here.' : 'Save a search or star a card and changes will show up here.'}
@@ -1780,7 +1780,7 @@ function SinceLastVisit({ home, hasSaved }) {
   const Panel = ({ icon: Icon, title, children }) => (
     <div className="rounded-xl px-5 py-4" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
       <div className="flex items-center gap-2 text-lede font-medium mb-1.5" style={{ color: 'var(--ink-100)' }}>
-        <Icon className="w-5 h-5" strokeWidth={1.75} style={{ color: 'var(--gold)' }} aria-hidden="true" />{title}
+        <Icon className="w-5 h-5" strokeWidth={1.75} style={{ color: 'var(--accent)' }} aria-hidden="true" />{title}
       </div>
       {children}
     </div>
@@ -1809,7 +1809,7 @@ function SinceLastVisit({ home, hasSaved }) {
             {matches.map((m) => (
               <a key={m.id} href={`/?savedSearch=${m.id}`} className="flex items-center justify-between gap-3 py-2.5 text-body" style={{ borderTop: '1px solid var(--line-soft)', color: 'var(--ink-200)' }}>
                 <span className="truncate">{m.name}</span>
-                <span className="whitespace-nowrap" style={{ color: 'var(--gold-bright)' }}>{m.count} new</span>
+                <span className="whitespace-nowrap" style={{ color: 'var(--accent-bright)' }}>{m.count} new</span>
               </a>
             ))}
           </Panel>
@@ -1875,7 +1875,7 @@ function LiveRightNow({ onCardClick, recentSearches = [] }) {
             <span className="block text-body leading-snug h-[38px] overflow-hidden" style={{ color: 'var(--ink-200)' }}>
               {it?.printRun && <TierChip run={`/${it.printRun}`} />} {it?.title || ''}
             </span>
-            <span className="block font-display text-h3 leading-none mt-2.5" style={{ color: 'var(--gold-bright)' }}>{it ? featuredPrice(it) : ''}</span>
+            <span className="block font-display text-h3 leading-none mt-2.5" style={{ color: 'var(--accent-bright)' }}>{it ? featuredPrice(it) : ''}</span>
             {it?.from && (
               <span className="block text-meta mt-1.5 truncate" style={{ color: 'var(--ink-400)' }}>From {it.from}</span>
             )}
@@ -1992,7 +1992,7 @@ function HeroCard({ featured, onCardClick }) {
             {item.printRun && <Badge mono tier={tierForRun(item.printRun) || 'grail'}>/{item.printRun}</Badge>}
             {grade && <Badge>{grade}</Badge>}
             {price && (
-              <span className="ml-2 font-display text-h3 leading-none text-[var(--gold-bright)]">{price}</span>
+              <span className="ml-2 font-display text-h3 leading-none text-[var(--accent-bright)]">{price}</span>
             )}
           </>
         )}
@@ -2041,7 +2041,7 @@ function HeroLiveRow({ featured, onCardClick }) {
           </div>
         </div>
         {price && (
-          <span className="flex-none font-display text-h3 leading-none text-[var(--gold-bright)]">{price}</span>
+          <span className="flex-none font-display text-h3 leading-none text-[var(--accent-bright)]">{price}</span>
         )}
       </button>
     </>
@@ -2096,13 +2096,13 @@ function FilterControls({ filters, setFilter, compact = false }) {
             }}
           >
             <div className="flex items-baseline justify-between mb-4">
-              <span className="text-fine text-[var(--gold)]">Print Run</span>
+              <span className="text-fine text-[var(--accent)]">Print Run</span>
               <button
                 onClick={() => {
                   const allSelected = filters.selectedPrintRuns.length === ALL_PRESET_PRINT_RUNS.length;
                   setFilter('selectedPrintRuns', allSelected ? [] : ALL_PRESET_PRINT_RUNS);
                 }}
-                className="py-2 -my-2 text-fine text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
+                className="py-2 -my-2 text-fine text-[var(--ink-400)] hover:text-[var(--accent)] transition-colors"
               >
                 {filters.selectedPrintRuns.length === ALL_PRESET_PRINT_RUNS.length ? 'Clear all' : 'Select all'}
               </button>
@@ -2146,7 +2146,7 @@ function FilterControls({ filters, setFilter, compact = false }) {
                           width: 46,
                           height: 28,
                           background: allInTierSelected ? 'rgba(201,149,74,0.22)' : someInTierSelected ? 'rgba(201,149,74,0.12)' : 'var(--bg-elev-2)',
-                          border: `1px solid ${allInTierSelected ? 'var(--gold-deep)' : 'var(--line)'}`,
+                          border: `1px solid ${allInTierSelected ? 'var(--accent-deep)' : 'var(--line)'}`,
                         }}
                       >
                         <span
@@ -2157,7 +2157,7 @@ function FilterControls({ filters, setFilter, compact = false }) {
                             left: 2,
                             width: 22,
                             height: 22,
-                            background: allInTierSelected ? tierColor : someInTierSelected ? 'var(--gold)' : 'var(--ink-400)',
+                            background: allInTierSelected ? tierColor : someInTierSelected ? 'var(--accent)' : 'var(--ink-400)',
                             transform: allInTierSelected ? 'translateX(18px)' : someInTierSelected ? 'translateX(9px)' : 'translateX(0)',
                             transition: 'transform 0.22s, background 0.22s',
                           }}
@@ -2179,7 +2179,7 @@ function FilterControls({ filters, setFilter, compact = false }) {
                               padding: '0 14px',
                               border: `1px solid ${sel ? tierColor : 'var(--line)'}`,
                               background: sel ? tierColor : 'var(--bg-elev-2)',
-                              color: sel ? 'var(--ink-on-gold)' : 'var(--ink-200)',
+                              color: sel ? 'var(--ink-on-accent)' : 'var(--ink-200)',
                               fontWeight: sel ? 600 : 500,
                             }}
                           >
@@ -2291,13 +2291,13 @@ function TypeToggleCard({ label, checked, onChange }) {
       <span
         className="relative w-8 h-4 rounded-full transition-colors"
         style={{
-          background: checked ? 'var(--gold-bright)' : 'rgba(255,255,255,0.10)',
+          background: checked ? 'var(--accent-bright)' : 'rgba(255,255,255,0.10)',
         }}
       >
         <span
           className="absolute top-0.5 left-0.5 w-3 h-3 rounded-full transition-transform"
           style={{
-            background: checked ? 'var(--ink-on-gold)' : '#6a6356',
+            background: checked ? 'var(--ink-on-accent)' : '#6a6356',
             transform: checked ? 'translateX(16px)' : 'translateX(0)',
           }}
         />
@@ -2315,8 +2315,8 @@ function FilterPanel({ query, setQuery, filters, setFilter, onSubmit, onCancel, 
     <section className="relative max-w-[1100px] mx-auto px-6 lg:px-10 pt-12 lg:pt-16 pb-16">
       {/* Eyebrow + back link */}
       <div className="flex items-center justify-between mb-9">
-        <p className="text-fine text-[var(--gold)]">
-          <span className="inline-block w-6 h-px bg-[var(--gold)] align-middle mr-3 -translate-y-[2px]" />
+        <p className="text-fine text-[var(--accent)]">
+          <span className="inline-block w-6 h-px bg-[var(--accent)] align-middle mr-3 -translate-y-[2px]" />
           {isEditing ? (
             <>Editing · <span className="normal-case tracking-normal italic font-serif text-[var(--ink-100)] ml-1">{editingSearch.name}</span></>
           ) : (
@@ -2325,7 +2325,7 @@ function FilterPanel({ query, setQuery, filters, setFilter, onSubmit, onCancel, 
         </p>
         <button
           onClick={onCancel}
-          className="text-fine text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
+          className="text-fine text-[var(--ink-400)] hover:text-[var(--accent)] transition-colors"
         >
           {isEditing ? 'Cancel' : <><ArrowLeft className="inline-block w-3.5 h-3.5 mr-1 -mt-0.5" strokeWidth={2} aria-hidden="true" />Back</>}
         </button>
@@ -2343,7 +2343,7 @@ function FilterPanel({ query, setQuery, filters, setFilter, onSubmit, onCancel, 
           onKeyDown={(e) => {
             if (e.key === 'Enter') onSubmit();
           }}
-          className="w-full font-display text-h1 md:text-h1 bg-transparent border-b border-[var(--line)] focus:border-[var(--gold)] outline-none text-[var(--ink-100)] italic pb-2 transition-colors"
+          className="w-full font-display text-h1 md:text-h1 bg-transparent border-b border-[var(--line)] focus:border-[var(--accent)] outline-none text-[var(--ink-100)] italic pb-2 transition-colors"
         />
       </div>
 
@@ -2359,8 +2359,8 @@ function FilterPanel({ query, setQuery, filters, setFilter, onSubmit, onCancel, 
           onClick={onSubmit}
           className="group inline-flex items-center gap-3 px-9 py-4 transition-all text-body font-semibold"
           style={{
-            background: 'var(--gold-bright)',
-            color: 'var(--ink-on-gold)',
+            background: 'var(--accent-bright)',
+            color: 'var(--ink-on-accent)',
           }}
         >
           {isEditing ? 'Update search criteria' : 'Search'}
@@ -2426,7 +2426,7 @@ function Filters({ filters, setFilter }) {
                   const allSelected = filters.selectedPrintRuns.length === ALL_PRESET_PRINT_RUNS.length;
                   setFilter('selectedPrintRuns', allSelected ? [] : ALL_PRESET_PRINT_RUNS);
                 }}
-                className="py-2 -my-2 text-fine text-[var(--ink-600)] hover:text-[var(--gold)] transition-colors"
+                className="py-2 -my-2 text-fine text-[var(--ink-600)] hover:text-[var(--accent)] transition-colors"
               >
                 {filters.selectedPrintRuns.length === ALL_PRESET_PRINT_RUNS.length ? 'Clear all' : 'Select all'}
               </button>
@@ -2453,9 +2453,9 @@ function Filters({ filters, setFilter }) {
                     }}
                     className={`flex items-center justify-between w-full px-3 py-2.5 text-left transition-all border ${
                       allInTierSelected
-                        ? 'border-[var(--gold)] bg-[var(--gold)]/[0.06] text-[var(--gold)]'
+                        ? 'border-[var(--accent)] bg-[var(--accent)]/[0.06] text-[var(--accent)]'
                         : partial
-                          ? 'border-[var(--gold-deep)] bg-[var(--gold)]/[0.02] text-[var(--gold)]/85'
+                          ? 'border-[var(--accent-deep)] bg-[var(--accent)]/[0.02] text-[var(--accent)]/85'
                           : 'border-[var(--line)] text-[var(--ink-400)] hover:text-[var(--ink-100)] hover:border-[var(--ink-400)]'
                     }`}
                   >
@@ -2504,12 +2504,12 @@ function Filters({ filters, setFilter }) {
                 key={value}
                 onClick={() => setFilter('listingType', value)}
                 className={`flex items-center gap-3 w-full text-left text-body py-1 transition-colors ${
-                  active ? 'text-[var(--gold)]' : 'text-[var(--ink-400)] hover:text-[var(--ink-100)]'
+                  active ? 'text-[var(--accent)]' : 'text-[var(--ink-400)] hover:text-[var(--ink-100)]'
                 }`}
               >
                 <span
                   className={`w-1 h-1 rounded-full transition-colors ${
-                    active ? 'bg-[var(--gold)]' : 'bg-[var(--line)]'
+                    active ? 'bg-[var(--accent)]' : 'bg-[var(--line)]'
                   }`}
                 />
                 {label}
@@ -2536,12 +2536,12 @@ function Filters({ filters, setFilter }) {
                 key={value}
                 onClick={() => setFilter('condition', value)}
                 className={`flex items-center gap-3 w-full text-left text-body py-1 transition-colors ${
-                  active ? 'text-[var(--gold)]' : 'text-[var(--ink-400)] hover:text-[var(--ink-100)]'
+                  active ? 'text-[var(--accent)]' : 'text-[var(--ink-400)] hover:text-[var(--ink-100)]'
                 }`}
               >
                 <span
                   className={`w-1 h-1 rounded-full transition-colors ${
-                    active ? 'bg-[var(--gold)]' : 'bg-[var(--line)]'
+                    active ? 'bg-[var(--accent)]' : 'bg-[var(--line)]'
                   }`}
                 />
                 {label}
@@ -2581,12 +2581,12 @@ function Filters({ filters, setFilter }) {
                 key={value}
                 onClick={() => setFilter('sortBy', value)}
                 className={`flex items-center gap-3 w-full text-left text-body py-1 transition-colors ${
-                  active ? 'text-[var(--gold)]' : 'text-[var(--ink-400)] hover:text-[var(--ink-100)]'
+                  active ? 'text-[var(--accent)]' : 'text-[var(--ink-400)] hover:text-[var(--ink-100)]'
                 }`}
               >
                 <span
                   className={`w-1 h-1 rounded-full transition-colors ${
-                    active ? 'bg-[var(--gold)]' : 'bg-[var(--line)]'
+                    active ? 'bg-[var(--accent)]' : 'bg-[var(--line)]'
                   }`}
                 />
                 {label}
@@ -2651,12 +2651,12 @@ function CustomPrintRunInput({ customRuns, onAdd, onRemove }) {
           onChange={(e) => setVal(e.target.value.replace(/[^0-9]/g, ''))}
           onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
           placeholder="e.g. 73"
-          className="flex-1 min-w-0 bg-transparent border-b border-[var(--line)] focus:border-[var(--gold)] outline-none font-mono text-fine py-1 text-[var(--ink-100)] placeholder:text-[var(--ink-600)] transition-colors"
+          className="flex-1 min-w-0 bg-transparent border-b border-[var(--line)] focus:border-[var(--accent)] outline-none font-mono text-fine py-1 text-[var(--ink-100)] placeholder:text-[var(--ink-600)] transition-colors"
         />
         <button
           onClick={handleAdd}
           disabled={!val.trim()}
-          className="py-2 -my-2 text-fine text-[var(--gold)] disabled:text-[var(--ink-600)] disabled:cursor-not-allowed hover:text-[var(--gold-bright)] transition-colors"
+          className="py-2 -my-2 text-fine text-[var(--accent)] disabled:text-[var(--ink-600)] disabled:cursor-not-allowed hover:text-[var(--accent-bright)] transition-colors"
         >
           Add
         </button>
@@ -2669,7 +2669,7 @@ function CustomPrintRunInput({ customRuns, onAdd, onRemove }) {
             <button
               key={run}
               onClick={() => onRemove(run)}
-              className="inline-flex items-center gap-1 px-2 py-1 font-mono text-fine text-[var(--gold)] bg-[var(--gold)]/[0.08] border border-[var(--gold-deep)] hover:bg-[var(--gold)]/[0.14] transition-colors"
+              className="inline-flex items-center gap-1 px-2 py-1 font-mono text-fine text-[var(--accent)] bg-[var(--accent)]/[0.08] border border-[var(--accent-deep)] hover:bg-[var(--accent)]/[0.14] transition-colors"
               title="Click to remove"
             >
               {run}
@@ -2699,7 +2699,7 @@ function ToggleRow({ label, checked, onChange }) {
       </span>
       <span
         className={`relative w-7 h-3.5 rounded-full transition-colors ${
-          checked ? 'bg-[var(--gold)]' : 'bg-[var(--line)]'
+          checked ? 'bg-[var(--accent)]' : 'bg-[var(--line)]'
         }`}
       >
         <span
@@ -2772,7 +2772,7 @@ function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase
           <button
             onClick={() => setShown((n) => n + PAGE_DISPLAY_SIZE)}
             className="text-fine px-6 py-3 rounded-full transition-opacity hover:opacity-90"
-            style={{ border: '0.5px solid rgba(201,149,74,0.5)', color: 'var(--gold)' }}
+            style={{ border: '0.5px solid rgba(201,149,74,0.5)', color: 'var(--accent)' }}
           >
             Load {Math.min(PAGE_DISPLAY_SIZE, remaining)} more
           </button>
@@ -2887,12 +2887,12 @@ function ResolveState({ onSuggested }) {
           <button
             key={s}
             onClick={() => onSuggested(s)}
-            className="group flex items-center gap-2 text-left py-1 text-body text-[var(--ink-200)] hover:text-[var(--gold)] transition-colors"
+            className="group flex items-center gap-2 text-left py-1 text-body text-[var(--ink-200)] hover:text-[var(--accent)] transition-colors"
           >
-            <span className="font-mono text-fine text-[var(--ink-600)] group-hover:text-[var(--gold)] transition-colors">
+            <span className="font-mono text-fine text-[var(--ink-600)] group-hover:text-[var(--accent)] transition-colors">
               {String(i + 1).padStart(2, '0')}
             </span>
-            <span className="border-b border-transparent group-hover:border-[var(--gold)] pb-0.5">{s}</span>
+            <span className="border-b border-transparent group-hover:border-[var(--accent)] pb-0.5">{s}</span>
           </button>
         ))}
       </div>
@@ -2937,8 +2937,8 @@ function CardCompanyFilter({ filters, setFilter }) {
     padding: '0 16px',
     fontSize: 14,
     border: `1px solid ${on ? 'transparent' : 'var(--line)'}`,
-    background: on ? 'var(--gold-bright)' : 'var(--bg-elev-2)',
-    color: on ? 'var(--ink-on-gold)' : 'var(--ink-200)',
+    background: on ? 'var(--accent-bright)' : 'var(--bg-elev-2)',
+    color: on ? 'var(--ink-on-accent)' : 'var(--ink-200)',
     fontWeight: on ? 600 : 400,
   });
 
@@ -2963,10 +2963,10 @@ function CardCompanyFilter({ filters, setFilter }) {
         <div
           key={c.key}
           className="mt-4 rise"
-          style={{ animationDuration: '0.4s', padding: '16px 18px', background: 'rgba(20,17,13,0.3)', borderLeft: '2px solid var(--gold-deep)' }}
+          style={{ animationDuration: '0.4s', padding: '16px 18px', background: 'rgba(20,17,13,0.3)', borderLeft: '2px solid var(--accent-deep)' }}
         >
           <div className="flex items-baseline justify-between mb-3">
-            <span className="text-fine font-medium" style={{ color: 'var(--gold)' }}>{c.label} lines</span>
+            <span className="text-fine font-medium" style={{ color: 'var(--accent)' }}>{c.label} lines</span>
             <span className="text-meta" style={{ color: 'var(--ink-600)' }}>Optional</span>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -2983,9 +2983,9 @@ function CardCompanyFilter({ filters, setFilter }) {
                     minHeight: 36,
                     padding: '0 13px',
                     fontSize: 13,
-                    border: `1px solid ${on ? 'var(--gold)' : 'var(--line)'}`,
+                    border: `1px solid ${on ? 'var(--accent)' : 'var(--line)'}`,
                     background: on ? 'rgba(201,149,74,0.10)' : 'var(--bg-elev-2)',
-                    color: on ? 'var(--gold-bright)' : 'var(--ink-200)',
+                    color: on ? 'var(--accent-bright)' : 'var(--ink-200)',
                   }}
                 >
                   {l.label}
@@ -3046,7 +3046,7 @@ function resultsSummary(n, query, sortBy) {
 /* The results controls in one row: Filters (with how many are on), Sort,
    Get alerts, Share, and List / Grid. */
 function ResultsToolbar({ activeCount, onFilters, sortBy, onSort, onAlerts, share, view, onView }) {
-  const pill = 'inline-flex items-center gap-2 h-9 px-3.5 rounded-full text-body font-medium whitespace-nowrap transition-colors hover:border-[var(--gold-deep)]';
+  const pill = 'inline-flex items-center gap-2 h-9 px-3.5 rounded-full text-body font-medium whitespace-nowrap transition-colors hover:border-[var(--accent-deep)]';
   const pillStyle = { border: '1px solid var(--line)', background: 'var(--bg-elev)', color: 'var(--ink-200)' };
   const icon = 'w-4 h-4 flex-none';
   return (
@@ -3055,7 +3055,7 @@ function ResultsToolbar({ activeCount, onFilters, sortBy, onSort, onAlerts, shar
       <button type="button" onClick={onFilters} className={pill} style={pillStyle}>
         <SlidersHorizontal className={icon} strokeWidth={1.8} aria-hidden="true" />Filters
         {activeCount > 0 && (
-          <span className="inline-grid place-items-center min-w-[20px] h-5 px-1.5 rounded-full text-fine font-semibold" style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>{activeCount}</span>
+          <span className="inline-grid place-items-center min-w-[20px] h-5 px-1.5 rounded-full text-fine font-semibold" style={{ background: 'var(--accent-bright)', color: 'var(--ink-on-accent)' }}>{activeCount}</span>
         )}
       </button>
       <label className={`${pill} relative cursor-pointer`} style={pillStyle}>
@@ -3107,8 +3107,8 @@ function ActiveFilterChips({ filters, onEdit, query = '' }) {
       <button
         type="button"
         onClick={onEdit}
-        className="text-meta px-1 transition-colors hover:text-[var(--gold-bright)]"
-        style={{ minHeight: 32, color: 'var(--ink-200)', borderBottom: '0.5px solid var(--gold-deep)' }}
+        className="text-meta px-1 transition-colors hover:text-[var(--accent-bright)]"
+        style={{ minHeight: 32, color: 'var(--ink-200)', borderBottom: '0.5px solid var(--accent-deep)' }}
       >
         Edit filters
       </button>
@@ -3175,21 +3175,21 @@ function TeamFilter({ filters, setFilter }) {
     padding: '0 16px',
     fontSize: 14,
     border: `1px solid ${on ? 'transparent' : 'var(--line)'}`,
-    background: on ? 'var(--gold-bright)' : 'var(--bg-elev-2)',
-    color: on ? 'var(--ink-on-gold)' : 'var(--ink-200)',
+    background: on ? 'var(--accent-bright)' : 'var(--bg-elev-2)',
+    color: on ? 'var(--ink-on-accent)' : 'var(--ink-200)',
     fontWeight: on ? 600 : 400,
   });
   const subChip = (on, dashed = false) => ({
     minHeight: 36,
     padding: '0 13px',
     fontSize: 13,
-    border: `1px ${dashed ? 'dashed' : 'solid'} ${on ? 'var(--gold)' : 'var(--line)'}`,
+    border: `1px ${dashed ? 'dashed' : 'solid'} ${on ? 'var(--accent)' : 'var(--line)'}`,
     background: on ? 'rgba(201,149,74,0.10)' : 'var(--bg-elev-2)',
-    color: on ? 'var(--gold-bright)' : dashed ? 'var(--ink-400)' : 'var(--ink-200)',
+    color: on ? 'var(--accent-bright)' : dashed ? 'var(--ink-400)' : 'var(--ink-200)',
   });
   const subLabel = (text, hint) => (
     <div className="flex items-baseline justify-between mb-3">
-      <span className="text-fine font-medium" style={{ color: 'var(--gold)' }}>{text}</span>
+      <span className="text-fine font-medium" style={{ color: 'var(--accent)' }}>{text}</span>
       {hint && <span className="text-fine" style={{ color: 'var(--ink-600)' }}>{hint}</span>}
     </div>
   );
@@ -3209,7 +3209,7 @@ function TeamFilter({ filters, setFilter }) {
       </div>
 
       {league && (
-        <div className="mt-4 rise" style={{ animationDuration: '0.4s', padding: '16px 18px', background: 'rgba(20,17,13,0.3)', borderLeft: '2px solid var(--gold-deep)' }}>
+        <div className="mt-4 rise" style={{ animationDuration: '0.4s', padding: '16px 18px', background: 'rgba(20,17,13,0.3)', borderLeft: '2px solid var(--accent-deep)' }}>
           {league === 'College' && (
             <div className="mb-4">
               {subLabel('Conference')}
@@ -3232,7 +3232,7 @@ function TeamFilter({ filters, setFilter }) {
                   return (
                     <button key={t.key} type="button" onClick={() => toggleTeam(t.key)} aria-pressed={on} title={t.label} className="inline-flex items-center gap-1.5 rounded-full transition-colors" style={subChip(on)}>
                       {t.short}
-                      {n ? <span className="text-fine" style={{ color: on ? 'var(--gold-bright)' : 'var(--ink-600)' }}>{n}</span> : null}
+                      {n ? <span className="text-fine" style={{ color: on ? 'var(--accent-bright)' : 'var(--ink-600)' }}>{n}</span> : null}
                     </button>
                   );
                 })}

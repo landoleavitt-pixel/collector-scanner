@@ -157,7 +157,7 @@ function highlightTyped(name, typed) {
   name.replace(re, (m, pre, word, idx) => {
     const start = idx + pre.length;
     if (start > last) out.push(name.slice(last, start));
-    out.push(<mark key={start} style={{ background: 'none', color: 'var(--gold-bright)', fontWeight: 500 }}>{word}</mark>);
+    out.push(<mark key={start} style={{ background: 'none', color: 'var(--accent-bright)', fontWeight: 500 }}>{word}</mark>);
     last = start + word.length;
     return m;
   });
@@ -224,7 +224,7 @@ function PlayerSuggestDropdown({ id, rows, active, typed, rect, label, onHover, 
           >
             {row.kind === 'fix' ? (
               <span>
-                Did you mean <strong style={{ color: 'var(--gold-bright)', fontWeight: 500 }}>{row.value}</strong>?
+                Did you mean <strong style={{ color: 'var(--accent-bright)', fontWeight: 500 }}>{row.value}</strong>?
               </span>
             ) : (
               <>
@@ -233,8 +233,8 @@ function PlayerSuggestDropdown({ id, rows, active, typed, rect, label, onHover, 
                   className="font-mono flex-none rounded-full"
                   style={{
                     fontSize: 12,
-                    color: row.kind === 'team' ? 'var(--gold)' : 'var(--ink-600)',
-                    border: `0.5px solid ${row.kind === 'team' ? 'var(--gold-deep)' : 'var(--line)'}`,
+                    color: row.kind === 'team' ? 'var(--accent)' : 'var(--ink-600)',
+                    border: `0.5px solid ${row.kind === 'team' ? 'var(--accent-deep)' : 'var(--line)'}`,
                     padding: '3px 8px',
                   }}
                 >
@@ -259,7 +259,7 @@ export function DidYouMeanLine({ fix, onPick, onDismiss }) {
         type="button"
         onClick={onPick}
         className="transition-colors hover:text-[var(--ink-100)]"
-        style={{ color: 'var(--gold-bright)', borderBottom: '0.5px solid var(--gold-deep)' }}
+        style={{ color: 'var(--accent-bright)', borderBottom: '0.5px solid var(--accent-deep)' }}
       >
         {fix}
       </button>
@@ -334,8 +334,8 @@ export function EditableSearchHeading({ value, onSubmit, side = 'sports', placeh
           fontSize: 'clamp(2rem, 5.5vw, 3.6rem)',
           lineHeight: 1.05,
           letterSpacing: '-0.015em',
-          color: 'var(--gold-bright)',
-          borderBottomColor: 'var(--gold)',
+          color: 'var(--accent-bright)',
+          borderBottomColor: 'var(--accent)',
         }}
       />
       {suggest.dropdown}
@@ -351,16 +351,16 @@ export function EditableSearchHeading({ value, onSubmit, side = 'sports', placeh
       title="Click to search a different name"
     >
       <span
-        className="font-display italic transition-colors group-hover:text-[var(--gold-bright)]"
+        className="font-display italic transition-colors group-hover:text-[var(--accent-bright)]"
         style={{
           fontSize: 'clamp(2rem, 5.5vw, 3.6rem)',
           lineHeight: 1.05,
           letterSpacing: '-0.015em',
-          color: 'var(--gold)',
+          color: 'var(--accent)',
           display: 'inline-block',
           borderBottom: '0.5px dashed transparent',
         }}
-        onMouseEnter={(e) => { e.currentTarget.style.borderBottomColor = 'var(--gold-deep)'; }}
+        onMouseEnter={(e) => { e.currentTarget.style.borderBottomColor = 'var(--accent-deep)'; }}
         onMouseLeave={(e) => { e.currentTarget.style.borderBottomColor = 'transparent'; }}
       >
         {value || placeholder}

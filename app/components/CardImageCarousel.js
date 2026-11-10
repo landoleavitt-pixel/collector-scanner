@@ -143,8 +143,8 @@ export default function CardImageCarousel({
       left: lensPos.x - MAGNIFIER_DIAM / 2,
       top:  lensPos.y - MAGNIFIER_DIAM / 2,
       borderRadius: '50%',
-      border: `2px solid ${borderColor || 'var(--gold)'}`,
-      boxShadow: `0 0 0 1px rgba(0,0,0,0.4), 0 8px 24px -4px rgba(0,0,0,0.6), 0 0 12px -2px ${borderColor || 'var(--gold)'}`,
+      border: `2px solid ${borderColor || 'var(--accent)'}`,
+      boxShadow: `0 0 0 1px rgba(0,0,0,0.4), 0 8px 24px -4px rgba(0,0,0,0.6), 0 0 12px -2px ${borderColor || 'var(--accent)'}`,
       backgroundImage: `url(${activeImg})`,
       backgroundRepeat: 'no-repeat',
       backgroundSize: `${bgW}px ${bgH}px`,
@@ -189,7 +189,7 @@ export default function CardImageCarousel({
 
       {hasMultiple && (
         <div className="absolute top-2 left-2 text-fine px-2 py-0.5 rounded"
-             style={{ background: 'rgba(10,9,7,0.65)', backdropFilter: 'blur(4px)', color: 'var(--gold)', border: '0.5px solid rgba(201,149,74,0.3)' }}>
+             style={{ background: 'rgba(10,9,7,0.65)', backdropFilter: 'blur(4px)', color: 'var(--accent)', border: '0.5px solid rgba(201,149,74,0.3)' }}>
           {safeIndex + 1} / {safeImages.length}
         </div>
       )}

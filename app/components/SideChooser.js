@@ -51,8 +51,8 @@ export default function SideChooser() {
       <button type="button" onClick={() => pick('/fables')}
               className="relative flex flex-col justify-end text-left px-6 pb-12 pt-10 overflow-hidden"
               style={{ background: 'radial-gradient(420px 300px at 70% 20%,rgba(143,211,232,.12),transparent 60%),linear-gradient(180deg,#10131f,#080a12)', color: '#eef0f7', borderTop: '1px solid #242a3d' }}>
-        <span className="text-h1 leading-none italic" style={{ fontFamily: "'Fraunces', serif" }}>
-          Foils <span style={{ background: 'linear-gradient(100deg,#9fe3f5,#b6a8f0,#f0b3d0,#f3d9a0)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>&amp;</span> Fables
+        <span className="text-h1 leading-none italic" style={{ fontFamily: "'Instrument Serif', serif" }}>
+          Foils <span style={{ color: '#b9e6f2', fontStyle: 'normal' }}>&amp;</span> Fables
         </span>
         <span className="text-body mt-2 pr-16" style={{ color: '#9198b0' }}>Trading card games and collectible cards</span>
         <span className="absolute right-6 bottom-12 w-11 h-11 rounded-full grid place-items-center" style={{ background: '#b9e6f2', color: '#071018' }}>

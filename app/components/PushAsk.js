@@ -60,7 +60,7 @@ export function usePushAsk() {
           aria-modal="true"
           aria-labelledby="push-ask-title"
           className="w-full max-w-[400px] rounded-xl p-6"
-          style={{ background: 'var(--bg-elev-2)', border: '0.5px solid var(--gold-deep)', boxShadow: '0 30px 60px rgba(0,0,0,0.6)' }}
+          style={{ background: 'var(--bg-elev-2)', border: '0.5px solid var(--accent-deep)', boxShadow: '0 30px 60px rgba(0,0,0,0.6)' }}
         >
           <h2 id="push-ask-title" className="font-display italic text-price leading-tight">Get your alerts</h2>
           <p className="mt-2 text-body leading-relaxed" style={{ color: 'var(--ink-200)' }}>{PUSH_REASON}</p>
@@ -70,7 +70,7 @@ export function usePushAsk() {
               onClick={allow}
               autoFocus
               className="w-full h-11 rounded-lg text-meta font-semibold"
-              style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}
+              style={{ background: 'var(--accent-bright)', color: 'var(--ink-on-accent)' }}
             >
               Continue
             </button>

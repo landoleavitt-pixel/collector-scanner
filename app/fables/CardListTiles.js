@@ -67,12 +67,13 @@ export function PopularListsRow({ count = 12 }) {
     <section aria-labelledby="popular-lists">
       <div className="flex items-baseline justify-between mb-3">
         <h2 id="popular-lists" className="font-display font-normal text-h3">Popular card lists</h2>
-        <Link href="/fables/lists" className="text-body min-h-[44px] inline-flex items-center" style={{ color: 'var(--gold-bright)' }}>See all</Link>
+        <Link href="/fables/lists" className="text-body min-h-[44px] inline-flex items-center" style={{ color: 'var(--accent-bright)' }}>See all</Link>
       </div>
       <div className="flex gap-3 overflow-x-auto -mx-5 px-5 scroll-px-5 md:mx-0 md:px-0 pb-1.5 snap-x md:grid md:grid-cols-6 md:overflow-visible">
         {shown.map((c, i) => (c
           ? <CardListTile key={`${c.game}|${c.key}`} card={c} />
-          : <span key={i} className="flex-none w-[132px] aspect-[63/88] rounded-[7px] shimmer" style={{ background: 'var(--bg-elev)' }} />))}
+          // While loading: our card back, so nothing sits blank.
+          : <span key={i} className="flex-none w-[132px] opacity-70" aria-hidden="true"><CardFrame game={VERSION_GAMES[i % VERSION_GAMES.length]} /></span>))}
       </div>
     </section>
   );

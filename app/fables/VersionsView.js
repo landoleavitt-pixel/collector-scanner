@@ -91,7 +91,7 @@ export default function VersionsView({ query, game, onUnavailable, onNewSearch, 
       </p>
       {listings.hidden > 0 && (
         <p className="flex items-center gap-2 text-body mt-2.5" style={{ color: 'var(--ink-400)' }}>
-          <ShieldCheck className="w-[17px] h-[17px] flex-none" strokeWidth={2} style={{ color: 'var(--gold)' }} aria-hidden="true" />
+          <ShieldCheck className="w-[17px] h-[17px] flex-none" strokeWidth={2} style={{ color: 'var(--accent)' }} aria-hidden="true" />
           We hid {plural(listings.hidden, 'listing that isn’t', 'listings that aren’t')} this card.
         </p>
       )}
@@ -114,7 +114,7 @@ export default function VersionsView({ query, game, onUnavailable, onNewSearch, 
                   </span>
                   {/* No count here: the row's number came from one sample of
                       listings and didn't match what "Find it" shows (QA 2026-11-07 #4). */}
-                  <span className="block text-body font-medium mt-0.5" style={{ color: 'var(--gold-bright)' }}>For sale now</span>
+                  <span className="block text-body font-medium mt-0.5" style={{ color: 'var(--accent-bright)' }}>For sale now</span>
                 </span>
               </Link>
             );
@@ -136,13 +136,13 @@ export default function VersionsView({ query, game, onUnavailable, onNewSearch, 
       )}
 
       {alertState === 'on' ? (
-        <p className="w-full min-h-[60px] rounded-2xl flex items-center justify-center gap-2.5 text-lede mt-5" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)', color: 'var(--gold-bright)' }}>
+        <p className="w-full min-h-[60px] rounded-2xl flex items-center justify-center gap-2.5 text-lede mt-5" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)', color: 'var(--accent-bright)' }}>
           <Bell className="w-5 h-5" strokeWidth={2} aria-hidden="true" />Alerts are on
         </p>
       ) : (
         <button type="button" onClick={() => (user ? setAsk(true) : window.location.assign(`/signup?src=alert&next=${encodeURIComponent(here)}`))}
                 className="w-full min-h-[60px] rounded-2xl flex items-center justify-center gap-2.5 text-lede font-semibold mt-5"
-                style={{ background: 'linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom))', color: 'var(--ink-on-gold)' }}>
+                style={{ background: 'linear-gradient(180deg,var(--accent-fill-top),var(--accent-fill-bottom))', color: 'var(--ink-on-accent)' }}>
           <Bell className="w-5 h-5 flex-none" strokeWidth={2} aria-hidden="true" />Alert me when one I need is listed
         </button>
       )}

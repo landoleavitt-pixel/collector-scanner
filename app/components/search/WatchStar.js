@@ -114,8 +114,8 @@ export function WatchStar({ item, payload }) {
       style={{
         background: 'rgba(10,9,7,0.55)',
         backdropFilter: 'blur(4px)',
-        border: `0.5px solid ${saved ? 'var(--gold)' : 'rgba(201,149,74,0.3)'}`,
-        color: saved ? 'var(--gold-bright)' : 'var(--ink-400)',
+        border: `0.5px solid ${saved ? 'var(--accent)' : 'rgba(201,149,74,0.3)'}`,
+        color: saved ? 'var(--accent-bright)' : 'var(--ink-400)',
       }}
     >
       <Star className="w-4 h-4" strokeWidth={1.6} fill={saved ? 'currentColor' : 'none'} aria-hidden="true" />
@@ -243,7 +243,7 @@ export function KeepCardPrompt({ item, payload, onClose, onSaved }) {
   const btn = 'w-full h-11 rounded-lg flex items-center justify-center gap-2 text-meta font-semibold transition-opacity hover:opacity-90 disabled:opacity-50';
   // The first button is the solid gold one: Apple in the app, Google on the web.
   const showApple = native || APPLE_ON_WEB;
-  const primaryStyle = { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' };
+  const primaryStyle = { background: 'var(--accent-bright)', color: 'var(--ink-on-accent)' };
   const outlineStyle = { background: 'transparent', color: 'var(--ink-100)', border: '0.5px solid var(--ink-600)' };
   return createPortal(
     <div
@@ -256,7 +256,7 @@ export function KeepCardPrompt({ item, payload, onClose, onSaved }) {
         aria-modal="true"
         aria-labelledby="keep-card-title"
         className="relative w-full max-w-[400px] rounded-xl p-6"
-        style={{ background: 'var(--bg-elev-2)', border: '0.5px solid var(--gold-deep)', boxShadow: '0 30px 60px rgba(0,0,0,0.6)' }}
+        style={{ background: 'var(--bg-elev-2)', border: '0.5px solid var(--accent-deep)', boxShadow: '0 30px 60px rgba(0,0,0,0.6)' }}
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -268,7 +268,7 @@ export function KeepCardPrompt({ item, payload, onClose, onSaved }) {
         >
           <X className="w-4 h-4" strokeWidth={1.75} aria-hidden="true" />
         </button>
-        <div className="font-mono text-fine" style={{ color: 'var(--gold)' }}>Free account</div>
+        <div className="font-mono text-fine" style={{ color: 'var(--accent)' }}>Free account</div>
         <h2 id="keep-card-title" className="font-display italic text-price leading-tight mt-2">Keep this card</h2>
         {item.title && (
           <p className="mt-2 text-meta leading-snug line-clamp-2" style={{ color: 'var(--ink-200)' }}>{item.title}</p>
@@ -299,7 +299,7 @@ export function KeepCardPrompt({ item, payload, onClose, onSaved }) {
         {error && <p className="mt-3 text-meta text-[var(--crit)]">{error}</p>}
         <p className="mt-4 text-fine text-center" style={{ color: 'var(--ink-600)' }}>
           Already have an account?{' '}
-          <Link href={`/login?next=${encodeURIComponent(next)}&src=star`} onClick={() => stashPendingStar(payload)} className="underline underline-offset-2 hover:text-[var(--gold-bright)]">Sign in</Link>
+          <Link href={`/login?next=${encodeURIComponent(next)}&src=star`} onClick={() => stashPendingStar(payload)} className="underline underline-offset-2 hover:text-[var(--accent-bright)]">Sign in</Link>
         </p>
       </div>
     </div>,
@@ -320,15 +320,15 @@ export function AlertBand({ query, filters, onAlert, returnPath = null }) {
 
   const next = returnPath || resultsReturnPath(null);
   const ctaClass = 'inline-flex items-center gap-2 h-11 px-5 rounded-full text-meta font-semibold whitespace-nowrap transition-opacity hover:opacity-90';
-  const ctaStyle = { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' };
+  const ctaStyle = { background: 'var(--accent-bright)', color: 'var(--ink-on-accent)' };
   return (
     <div
       className="mt-10 rounded-xl px-5 py-5 md:px-6 flex flex-wrap items-center justify-between gap-4"
-      style={{ border: '0.5px solid var(--gold-deep)', background: 'var(--ff-band-bg, linear-gradient(90deg, rgba(201,149,74,0.09), transparent))' }}
+      style={{ border: '0.5px solid var(--accent-deep)', background: 'var(--ff-band-bg, linear-gradient(90deg, rgba(201,149,74,0.09), transparent))' }}
     >
       <div className="min-w-0 max-w-[520px]">
         <p className="font-display text-h3 md:text-h3 leading-snug">
-          Get an email when a new <em className="text-[var(--gold-bright)]">{query}</em> card lists.
+          Get an email when a new <em className="text-[var(--accent-bright)]">{query}</em> card lists.
         </p>
         <p className="mt-1 text-meta" style={{ color: 'var(--ink-400)' }}>
           We check eBay every hour with these filters. {PAYMENTS_LIVE ? 'Your first alert is free.' : 'Alerts are free during early access.'}

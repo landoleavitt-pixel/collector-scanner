@@ -20,7 +20,7 @@ function NavList({ links }) {
         <li key={link.href}>
           <Link
             href={link.href}
-            className="py-1.5 hover:text-[var(--gold)] transition-colors"
+            className="py-1.5 hover:text-[var(--accent)] transition-colors"
           >
             {link.label}
             {link.badge && (
@@ -48,7 +48,7 @@ export default function Footer() {
         <div data-ff-footer-main className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
           <div className="col-span-2">
             <Link href="/fables" data-fables-only className="flex items-center gap-3 mb-4 group w-fit">
-              <span className="font-display text-lede">Foils <em className="ff-foil-text not-italic">&amp;</em> Fables</span>
+              <span className="font-display text-lede">Foils <em className="text-[var(--accent)] not-italic">&amp;</em> Fables</span>
             </Link>
             <p data-fables-only className="text-body text-[var(--ink-400)] max-w-xs leading-relaxed">
               Search trading card listings on eBay by rarity, language and grade, rarest first.
@@ -56,7 +56,7 @@ export default function Footer() {
             <Link href="/" data-sports-only className="flex items-center gap-3 mb-4 group w-fit">
               <Seal size={20} />
               <span className="font-display text-lede">
-                Fields <em className="text-[var(--gold)] not-italic">&amp;</em> Floors Collectors
+                Fields <em className="text-[var(--accent)] not-italic">&amp;</em> Floors Collectors
               </span>
             </Link>
             <p data-sports-only className="text-body text-[var(--ink-400)] max-w-xs leading-relaxed">
@@ -85,10 +85,10 @@ export default function Footer() {
         <div data-ff-footer-legal className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pt-8 border-t border-[var(--line-soft)] text-fine text-[var(--ink-600)]">
           <div><span data-sports-only>© 2026 Fields &amp; Floors</span><span data-fables-only>© 2026 Foils &amp; Fables, a Fields &amp; Floors site</span></div>
           <div className="flex gap-6 items-center flex-wrap">
-            <span data-sports-only><TourLink className="hover:text-[var(--gold)] transition-colors">Site tour</TourLink></span>
-            <Link href="/contact" className="hover:text-[var(--gold)] transition-colors">Support</Link>
-            <Link href="/privacy" className="hover:text-[var(--gold)] transition-colors">Privacy</Link>
-            <Link href="/terms" className="hover:text-[var(--gold)] transition-colors">Terms</Link>
+            <span data-sports-only><TourLink className="hover:text-[var(--accent)] transition-colors">Site tour</TourLink></span>
+            <Link href="/contact" className="hover:text-[var(--accent)] transition-colors">Support</Link>
+            <Link href="/privacy" className="hover:text-[var(--accent)] transition-colors">Privacy</Link>
+            <Link href="/terms" className="hover:text-[var(--accent)] transition-colors">Terms</Link>
             <span>A search tool only. Purchases happen on eBay between you and the seller. Listing data via eBay. <span data-sports-only>Not affiliated with eBay Inc.</span><span data-fables-only>Not affiliated with eBay or any game publisher.</span></span>
           </div>
         </div>

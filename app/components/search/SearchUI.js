@@ -54,7 +54,7 @@ function PriceBox({ label, value, placeholder, onCommit }) {
     onCommit(Number.isFinite(n) ? n : null);
   }
   return (
-    <label className="flex-1 min-w-0 flex items-center gap-1.5 h-12 px-3 rounded-lg focus-within:border-[var(--gold-bright)]"
+    <label className="flex-1 min-w-0 flex items-center gap-1.5 h-12 px-3 rounded-lg focus-within:border-[var(--accent-bright)]"
            style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
       <span className="text-lede" style={{ color: 'var(--ink-400)' }}>$</span>
       <input
@@ -103,7 +103,7 @@ export function PriceRangeSlider({ min, max, onChange }) {
       <button key={label} type="button" onClick={() => pick(cap)} aria-pressed={on}
               className="h-10 px-3.5 rounded-full text-body whitespace-nowrap transition-colors"
               style={on
-                ? { border: '1px solid var(--gold-bright)', color: 'var(--gold-bright)', background: 'var(--ff-chip-on-bg, rgba(230,185,107,0.08))' }
+                ? { border: '1px solid var(--accent-bright)', color: 'var(--accent-bright)', background: 'var(--ff-chip-on-bg, rgba(230,185,107,0.08))' }
                 : { border: '1px solid var(--line)', color: 'var(--ink-200)', background: 'var(--bg-elev)' }}>
         {label}
       </button>
@@ -153,7 +153,7 @@ export function FilterChip({ on, onClick, children }) {
     <button type="button" onClick={onClick} aria-pressed={on}
             className="text-meta inline-flex items-center rounded-full transition-all whitespace-nowrap"
             style={{ minHeight: 36, padding: '0 14px', ...(on
-              ? { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', border: '1px solid var(--gold-bright)', fontWeight: 600 }
+              ? { background: 'var(--accent-bright)', color: 'var(--ink-on-accent)', border: '1px solid var(--accent-bright)', fontWeight: 600 }
               : { border: '1px solid var(--line)', background: 'var(--bg-elev-2)', color: 'var(--ink-200)', fontWeight: 500 }) }}>
       {children}
     </button>
@@ -241,8 +241,8 @@ export function SegmentedGroup({ value, onChange, options, vertical = false }) {
             style={
               active
                 ? {
-                    background: 'var(--gold-bright)',
-                    color: 'var(--ink-on-gold)',
+                    background: 'var(--accent-bright)',
+                    color: 'var(--ink-on-accent)',
                     fontWeight: 600,
                     borderRightColor: 'transparent',
                   }
@@ -267,7 +267,7 @@ export function SegmentedGroup({ value, onChange, options, vertical = false }) {
 export function ResultsSidebar({ children, onSearch, hasPending }) {
   return (
     <aside className="border border-[var(--line-soft)] bg-[var(--bg-elev)]/30 px-5 py-6">
-      <h2 className="text-fine text-[var(--gold)] mb-5 pb-4 border-b border-[var(--line-soft)]">
+      <h2 className="text-fine text-[var(--accent)] mb-5 pb-4 border-b border-[var(--line-soft)]">
         Filters
       </h2>
 
@@ -281,14 +281,14 @@ export function ResultsSidebar({ children, onSearch, hasPending }) {
             hasPending ? 'pending-pulse' : ''
           }`}
           style={{
-            background: 'var(--gold-bright)',
-            color: 'var(--ink-on-gold)',
+            background: 'var(--accent-bright)',
+            color: 'var(--ink-on-accent)',
           }}
         >
           Search <ArrowRight className="inline-block w-3.5 h-3.5 ml-1 -mt-0.5" strokeWidth={2} aria-hidden="true" />
         </button>
         {hasPending && (
-          <p className="text-fine text-[var(--gold)] italic text-center mt-3 leading-tight">
+          <p className="text-fine text-[var(--accent)] italic text-center mt-3 leading-tight">
             Filters changed. Press Search to update.
           </p>
         )}
@@ -328,7 +328,7 @@ export function MobileFilterBar({ activeCount, onOpenFilters, onOpenSort }) {
         {activeCount > 0 && (
           <span
             className="inline-flex items-center justify-center text-fine font-bold rounded-full"
-            style={{ minWidth: 18, height: 18, padding: '0 5px', background: 'var(--gold)', color: 'var(--ink-on-gold)', letterSpacing: 0 }}
+            style={{ minWidth: 18, height: 18, padding: '0 5px', background: 'var(--accent)', color: 'var(--ink-on-accent)', letterSpacing: 0 }}
           >
             {activeCount}
           </span>
@@ -444,8 +444,8 @@ export function MobileFilterDrawer({ open, onClose, filters, onSearch, onCloseWi
           style={{
             minHeight: 52,
             borderRadius: 12,
-            background: 'var(--gold-bright)',
-            color: 'var(--ink-on-gold)',
+            background: 'var(--accent-bright)',
+            color: 'var(--ink-on-accent)',
           }}
         >
           Search <ArrowRight className="inline-block w-3.5 h-3.5 ml-1 -mt-0.5" strokeWidth={2} aria-hidden="true" />
@@ -468,10 +468,10 @@ export function MobileSortSheet({ open, onClose, value, onChange, options = SPOR
               key={v}
               onClick={() => onChange(v)}
               className="w-full flex items-center justify-between text-left text-body"
-              style={{ minHeight: 50, borderBottom: '1px solid var(--line-soft)', color: sel ? 'var(--gold-bright)' : 'var(--ink-200)' }}
+              style={{ minHeight: 50, borderBottom: '1px solid var(--line-soft)', color: sel ? 'var(--accent-bright)' : 'var(--ink-200)' }}
             >
               <span>{l}</span>
-              {sel && <span style={{ color: 'var(--gold-bright)' }}><Check className="inline-block w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" /></span>}
+              {sel && <span style={{ color: 'var(--accent-bright)' }}><Check className="inline-block w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" /></span>}
             </button>
           );
         })}
@@ -494,7 +494,7 @@ export function SortDropdown({ value, onChange, options = SPORTS_SORT_OPTIONS })
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="bg-transparent border-b border-[var(--line)] focus:border-[var(--gold)] outline-none pb-1 pr-6 text-[var(--ink-100)] tracking-[0.04em] cursor-pointer appearance-none"
+        className="bg-transparent border-b border-[var(--line)] focus:border-[var(--accent)] outline-none pb-1 pr-6 text-[var(--ink-100)] tracking-[0.04em] cursor-pointer appearance-none"
         style={{
           backgroundImage:
             "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='none' stroke='%23a89870' stroke-width='1.4' d='M1 1l4 4 4-4'/%3E%3C/svg%3E\")",
@@ -555,7 +555,7 @@ export function PendingSearchModal({ open, onSearch, onCancel, onDismiss, floati
         className={`relative w-full max-w-[400px] rounded-lg p-7 text-center ${floating ? 'pointer-events-auto' : ''}`}
         style={{
           background: 'var(--bg-elev)',
-          border: '1px solid var(--gold-deep)',
+          border: '1px solid var(--accent-deep)',
           boxShadow: floating
             ? '0 40px 100px -20px rgba(0,0,0,0.85), 0 0 40px -8px var(--ff-glow, rgba(230,185,107,0.4))'
             : '0 30px 80px -20px rgba(0,0,0,0.6), 0 0 32px -10px var(--ff-glow, rgba(230,185,107,0.3))',
@@ -567,13 +567,13 @@ export function PendingSearchModal({ open, onSearch, onCancel, onDismiss, floati
           <button
             onClick={onDismiss}
             aria-label="Dismiss"
-            className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
+            className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full text-[var(--ink-400)] hover:text-[var(--accent-bright)] transition-colors"
             style={{ border: '1px solid var(--line-soft)', background: 'var(--bg-base)' }}
           >
             <X className="w-4 h-4" strokeWidth={1.75} aria-hidden="true" />
           </button>
         )}
-        <p className="text-fine mb-4" style={{ color: 'var(--gold)' }}>
+        <p className="text-fine mb-4" style={{ color: 'var(--accent)' }}>
           Filters changed
         </p>
         <h3 className="font-display italic text-price leading-tight mb-3" style={{ color: 'var(--ink-100)' }}>
@@ -587,8 +587,8 @@ export function PendingSearchModal({ open, onSearch, onCancel, onDismiss, floati
             onClick={onSearch}
             className="w-full min-h-[48px] rounded-lg text-fine font-bold"
             style={{
-              background: 'var(--gold-bright)',
-              color: 'var(--ink-on-gold)',
+              background: 'var(--accent-bright)',
+              color: 'var(--ink-on-accent)',
               border: 'none',
               cursor: 'pointer',
             }}
@@ -629,8 +629,8 @@ export function BackToTop() {
       className="fixed bottom-6 right-6 z-50 w-11 h-11 rounded-full flex items-center justify-center transition-opacity hover:opacity-90"
       style={{
         background: 'var(--bg-elev)',
-        border: '0.5px solid var(--gold-deep)',
-        color: 'var(--gold)',
+        border: '0.5px solid var(--accent-deep)',
+        color: 'var(--accent)',
         boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
       }}
     >
@@ -644,7 +644,7 @@ export function LoadingState({ phrase }) {
     <div className="pt-2">
       <div className="flex items-baseline justify-between pb-4 mb-8 border-b border-[var(--line)]">
         <span className="font-display text-lede">Searching</span>
-        <span className="font-mono text-fine text-[var(--gold)] tracking-wider shimmer">●</span>
+        <span className="font-mono text-fine text-[var(--accent)] tracking-wider shimmer">●</span>
       </div>
       <p key={phrase} className="font-display italic text-price text-[var(--ink-200)] rise" style={{ animationDuration: '0.5s' }}>
         {phrase}…
@@ -675,13 +675,13 @@ export function NoResultsState({ onSuggested, appliedFilters, nameFix = null, on
       {nameFix ? (
         <>
           <p className="font-display italic text-price text-[var(--ink-200)] leading-snug text-balance max-w-md">
-            Nothing found. Did you mean <span style={{ color: 'var(--gold-bright)' }}>{nameFix}</span>?
+            Nothing found. Did you mean <span style={{ color: 'var(--accent-bright)' }}>{nameFix}</span>?
           </p>
           <button
             type="button"
             onClick={() => onNameFix?.(nameFix)}
             className="mt-5 inline-flex items-center gap-2 rounded-full text-body font-semibold transition-opacity hover:opacity-90"
-            style={{ minHeight: 44, padding: '0 18px', background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}
+            style={{ minHeight: 44, padding: '0 18px', background: 'var(--accent-bright)', color: 'var(--ink-on-accent)' }}
           >
             Search {nameFix} <ArrowRight className="w-4 h-4" strokeWidth={2} />
           </button>

@@ -62,9 +62,9 @@ export function tierChipStyle(tier) {
  * Same look across watchlist tile, homepage example, and email template.
  */
 export const OUTLINE_CHIP_STYLE = {
-  color: 'var(--gold-bright)',
+  color: 'var(--accent-bright)',
   background: 'rgba(201,149,74,0.06)',
-  border: '0.5px solid var(--gold-deep)',
+  border: '0.5px solid var(--accent-deep)',
 };
 
 /**
