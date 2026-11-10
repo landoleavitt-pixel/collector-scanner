@@ -42,13 +42,13 @@ export default function AdminFunnelPage() {
   return (
     <main className="min-h-[calc(100vh-200px)] py-12 md:py-16">
       <div className="max-w-[900px] mx-auto px-6 lg:px-10">
-        <div className="text-[10px] tracking-[0.22em] uppercase mb-3" style={{ color: 'var(--gold)' }}>
+        <div className="text-fine mb-3" style={{ color: 'var(--gold)' }}>
           Admin · Funnel
         </div>
-        <h1 className="font-display italic text-[36px] md:text-[44px] leading-[1.05]" style={{ color: 'var(--ink-100)' }}>
+        <h1 className="font-display italic text-h1 md:text-h1 leading-[1.05]" style={{ color: 'var(--ink-100)' }}>
           Who gets where.
         </h1>
-        <p className="text-[13px] mt-2 max-w-[520px] leading-[1.5]" style={{ color: 'var(--ink-400)' }}>
+        <p className="text-meta mt-2 max-w-[520px] leading-[1.5]" style={{ color: 'var(--ink-400)' }}>
           People who reached each step. Anonymous: no emails, names or search text are stored.
         </p>
 
@@ -59,7 +59,7 @@ export default function AdminFunnelPage() {
               role="tab"
               aria-selected={days === d}
               onClick={() => setDays(d)}
-              className="text-[11px] tracking-[0.14em] uppercase px-4 py-2 rounded-full"
+              className="text-fine px-4 py-2 rounded-full"
               style={{
                 color: days === d ? 'var(--bg-base)' : 'var(--ink-200)',
                 background: days === d ? 'var(--gold-bright)' : 'transparent',
@@ -73,14 +73,14 @@ export default function AdminFunnelPage() {
 
         {state.loading && <p style={{ color: 'var(--ink-400)' }}>Loading…</p>}
         {state.error && (
-          <p role="alert" className="text-[14px]" style={{ color: 'var(--ink-200)' }}>{state.error}</p>
+          <p role="alert" className="text-body" style={{ color: 'var(--ink-200)' }}>{state.error}</p>
         )}
 
         {!state.loading && !state.error && (
           <div style={{ border: '1px solid var(--line)', borderRadius: 12, overflow: 'hidden' }}>
-            <table className="w-full text-[14px]" style={{ color: 'var(--ink-200)', borderCollapse: 'collapse' }}>
+            <table className="w-full text-body" style={{ color: 'var(--ink-200)', borderCollapse: 'collapse' }}>
               <thead>
-                <tr className="text-[10px] tracking-[0.16em] uppercase" style={{ color: 'var(--ink-400)', background: 'var(--bg-elev-2)' }}>
+                <tr className="text-fine" style={{ color: 'var(--ink-400)', background: 'var(--bg-elev-2)' }}>
                   <th className="text-left p-3">Step</th>
                   <th className="text-right p-3">People</th>
                   <th className="text-right p-3">% of visitors</th>
@@ -102,20 +102,20 @@ export default function AdminFunnelPage() {
         )}
         {!state.loading && !state.error && state.data?.health && (
           <div className="mt-8" style={{ border: '1px solid var(--line)', borderRadius: 12, padding: '16px 20px', color: 'var(--ink-200)' }}>
-            <div className="text-[10px] tracking-[0.16em] uppercase mb-3" style={{ color: 'var(--ink-400)' }}>
+            <div className="text-fine mb-3" style={{ color: 'var(--ink-400)' }}>
               Is free the right size? (all time, accounts older than 14 days)
             </div>
-            <p className="text-[14px] leading-[1.6]">
+            <p className="text-body leading-[1.6]">
               <strong style={{ color: 'var(--ink-100)' }}>{state.data.health.freeStillOnAlert}</strong> of{' '}
               {state.data.health.freeOlderThan14Days} free accounts still have their one alert on.
             </p>
-            <p className="text-[14px] leading-[1.6]">
+            <p className="text-body leading-[1.6]">
               <strong style={{ color: 'var(--ink-100)' }}>{state.data.health.trialsNowPaying}</strong> of{' '}
               {state.data.health.trialsOlderThan14Days} free trials that began 14+ days ago are now paying.
             </p>
           </div>
         )}
-        <p className="text-[12px] mt-4 leading-[1.5]" style={{ color: 'var(--ink-600)' }}>
+        <p className="text-fine mt-4 leading-[1.5]" style={{ color: 'var(--ink-600)' }}>
           Your own browsers are left out (any browser where you've signed in as admin, or opened ?internal=1), counted from Oct 23 on. Account and trial steps are counted per signed-in user; the rest per browser, so the
           percentages are a guide rather than an exact conversion rate.
         </p>

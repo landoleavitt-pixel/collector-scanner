@@ -9,21 +9,21 @@ function FilterRow({ name, summary, catches, ignores }) {
   return (
     <div className="py-7 border-t border-[var(--line-soft)] first:border-t-0 first:pt-0">
       <div className="flex items-baseline justify-between gap-4 mb-3">
-        <h3 className="font-display text-2xl text-[var(--ink-100)] tracking-tight">{name}</h3>
+        <h3 className="font-display text-price text-[var(--ink-100)] tracking-tight">{name}</h3>
       </div>
       <p className="text-[var(--ink-200)] leading-relaxed mb-4 text-pretty">
         {summary}
       </p>
       {catches && (
-        <div className="mb-2 text-sm">
-          <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--ink-400)] mr-3">Catches</span>
-          <span className="text-[var(--ink-200)] font-mono text-[13px]">{catches}</span>
+        <div className="mb-2 text-body">
+          <span className="text-fine text-[var(--ink-400)] mr-3">Catches</span>
+          <span className="text-[var(--ink-200)] font-mono text-meta">{catches}</span>
         </div>
       )}
       {ignores && (
-        <div className="text-sm">
-          <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--ink-400)] mr-3">Ignores</span>
-          <span className="text-[var(--ink-200)] font-mono text-[13px]">{ignores}</span>
+        <div className="text-body">
+          <span className="text-fine text-[var(--ink-400)] mr-3">Ignores</span>
+          <span className="text-[var(--ink-200)] font-mono text-meta">{ignores}</span>
         </div>
       )}
     </div>

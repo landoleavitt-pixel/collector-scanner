@@ -313,12 +313,12 @@ function TreeStyles() {
       .rt-big-sm { font-size: 24px; color: var(--ink-200); }
       .rt-line { font-size: 14px; line-height: 1.45; color: var(--ink-200); }
 
-      .rt-key { display: flex; justify-content: space-between; gap: 12px; padding: 8px 18px; border-top: 1px solid var(--line); background: var(--bg-elev-2); font: 500 11px 'Geist Mono', ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-400); }
+      .rt-key { display: flex; justify-content: space-between; gap: 12px; padding: 8px 18px; border-top: 1px solid var(--line); background: var(--bg-elev-2); font: 500 12px 'Geist Mono', ui-monospace, monospace; color: var(--ink-400); }
 
       .rt-ladder { padding: 6px 10px 10px; }
-      .rt-tier { margin: 12px 10px 4px; display: flex; align-items: center; gap: 10px; font: 500 11px 'Geist Mono', ui-monospace, monospace; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-400); white-space: nowrap; }
+      .rt-tier { margin: 12px 10px 4px; display: flex; align-items: center; gap: 10px; font: 500 12px 'Geist Mono', ui-monospace, monospace; color: var(--ink-400); white-space: nowrap; }
       .rt-tier::after { content: ''; flex: 1; height: 1px; background: var(--line-soft); }
-      .rt-tier-word { font: 500 11px 'Geist Mono', ui-monospace, monospace; letter-spacing: .2em; text-transform: uppercase; }
+      .rt-tier-word { font: 500 12px 'Geist Mono', ui-monospace, monospace; }
 
       .rt-row { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 40px; padding: 6px 10px; border: 0; border-radius: 8px; background: transparent; color: var(--ink-200); text-align: left; cursor: pointer; font: inherit; }
       .rt-row:hover { background: var(--bg-elev); }
@@ -330,10 +330,10 @@ function TreeStyles() {
       .rt-row.me .rt-made { color: var(--ink-100); font-weight: 500; }
       .rt-dots { display: inline-flex; align-items: center; gap: 6px; }
       .rt-dots i, .rt-detail i { width: 14px; height: 14px; border-radius: 50%; flex: none; box-shadow: inset 0 0 0 .5px ${mix('--ink-200', 45)}; }
-      .rt-dots em { font: 500 11px 'Geist Mono', ui-monospace, monospace; font-style: normal; color: var(--ink-400); }
+      .rt-dots em { font: 500 12px 'Geist Mono', ui-monospace, monospace; font-style: normal; color: var(--ink-400); }
       .rt-me { display: inline-flex; align-items: center; gap: 10px; min-width: 0; }
       .rt-me-name { font-size: 14px; font-weight: 500; color: var(--ink-100); white-space: nowrap; }
-      .rt-tag { flex: none; font: 600 11px 'Geist Mono', ui-monospace, monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--bg-base); background: var(--gold-bright); padding: 2px 6px; border-radius: 3px; }
+      .rt-tag { flex: none; font: 600 12px 'Geist Mono', ui-monospace, monospace; color: var(--bg-base); background: var(--gold-bright); padding: 2px 6px; border-radius: 3px; }
       .rt-thumb { flex: none; max-width: none; width: 34px; height: 48px; object-fit: cover; border-radius: 3px; box-shadow: 0 0 0 2px var(--gold-bright); }
 
       .rt-detail { list-style: none; margin: 2px 0 8px 10px; padding: 4px 0 4px 104px; }

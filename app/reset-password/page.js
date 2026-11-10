@@ -56,7 +56,7 @@ export default function ResetPasswordPage() {
     <main className="min-h-screen flex flex-col" style={{ background: 'var(--bg-base)' }}>
       <div className="flex items-center gap-3 px-6 pt-8 opacity-70">
         <Seal className="w-6 h-6" />
-        <span className="font-serif text-base" style={{ color: 'var(--ink-200)' }}>
+        <span className="font-serif text-lede" style={{ color: 'var(--ink-200)' }}>
           Fields &amp; Floors
         </span>
       </div>
@@ -71,23 +71,23 @@ export default function ResetPasswordPage() {
           }}
         >
           {checking ? (
-            <p className="text-center text-[13px]" style={{ color: 'var(--ink-400)' }}>
+            <p className="text-center text-meta" style={{ color: 'var(--ink-400)' }}>
               Verifying your reset link…
             </p>
           ) : !authed ? (
             <>
               <h1
-                className="font-serif italic text-[26px] leading-tight text-center mb-1"
+                className="font-serif italic text-price leading-tight text-center mb-1"
                 style={{ color: 'var(--ink-200)' }}
               >
                 Reset link expired.
               </h1>
-              <p className="text-[13px] text-center mb-6" style={{ color: 'var(--ink-400)' }}>
+              <p className="text-meta text-center mb-6" style={{ color: 'var(--ink-400)' }}>
                 Request a fresh one to continue.
               </p>
               <a
                 href="/forgot-password"
-                className="block w-full py-3 rounded-lg text-sm font-medium text-center transition-opacity hover:opacity-90"
+                className="block w-full py-3 rounded-lg text-body font-medium text-center transition-opacity hover:opacity-90"
                 style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', textDecoration: 'none' }}
               >
                 Request new link
@@ -96,12 +96,12 @@ export default function ResetPasswordPage() {
           ) : (
             <>
               <h1
-                className="font-serif italic text-[26px] leading-tight text-center mb-1"
+                className="font-serif italic text-price leading-tight text-center mb-1"
                 style={{ color: 'var(--ink-200)' }}
               >
                 Set a new password.
               </h1>
-              <p className="text-[13px] text-center mb-6" style={{ color: 'var(--ink-400)' }}>
+              <p className="text-meta text-center mb-6" style={{ color: 'var(--ink-400)' }}>
                 Choose something at least ten characters long.
               </p>
 
@@ -109,7 +109,7 @@ export default function ResetPasswordPage() {
                 <div className="mb-4">
                   <label
                     htmlFor="password"
-                    className="block text-[11px] mb-1.5 tracking-wide"
+                    className="block text-fine mb-1.5 tracking-wide"
                     style={{ color: 'var(--ink-400)' }}
                   >
                     New password
@@ -121,7 +121,7 @@ export default function ResetPasswordPage() {
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full px-3 py-2.5 pr-10 rounded-lg text-sm focus:outline-none"
+                      className="w-full px-3 py-2.5 pr-10 rounded-lg text-body focus:outline-none"
                       style={{
                         background: 'var(--bg-elev-2)',
                         border: '0.5px solid rgba(232,226,213,0.15)',
@@ -141,7 +141,7 @@ export default function ResetPasswordPage() {
                 </div>
 
                 {error && (
-                  <p className="text-[13px] mb-3 text-center" style={{ color: 'var(--crit)' }}>
+                  <p className="text-meta mb-3 text-center" style={{ color: 'var(--crit)' }}>
                     {error}
                   </p>
                 )}
@@ -149,7 +149,7 @@ export default function ResetPasswordPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 rounded-lg text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50 mb-3"
+                  className="w-full py-3 rounded-lg text-body font-medium transition-opacity hover:opacity-90 disabled:opacity-50 mb-3"
                   style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', border: 'none' }}
                 >
                   {loading ? 'Updating…' : 'Update password'}
@@ -157,7 +157,7 @@ export default function ResetPasswordPage() {
               </form>
 
               <div
-                className="text-center text-[13px] pt-4"
+                className="text-center text-meta pt-4"
                 style={{ color: 'var(--ink-400)', borderTop: '0.5px solid rgba(232,226,213,0.08)' }}
               >
                 You'll be signed in once it's saved.

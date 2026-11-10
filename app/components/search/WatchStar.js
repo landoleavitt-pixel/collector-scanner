@@ -240,7 +240,7 @@ export function KeepCardPrompt({ item, payload, onClose, onSaved }) {
     }
   }
 
-  const btn = 'w-full h-11 rounded-lg flex items-center justify-center gap-2 text-[13px] font-semibold transition-opacity hover:opacity-90 disabled:opacity-50';
+  const btn = 'w-full h-11 rounded-lg flex items-center justify-center gap-2 text-meta font-semibold transition-opacity hover:opacity-90 disabled:opacity-50';
   // The first button is the solid gold one: Apple in the app, Google on the web.
   const showApple = native || APPLE_ON_WEB;
   const primaryStyle = { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' };
@@ -264,16 +264,16 @@ export function KeepCardPrompt({ item, payload, onClose, onSaved }) {
           type="button"
           onClick={onClose}
           aria-label="Close"
-          className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center text-[18px] text-[var(--ink-400)] hover:text-[var(--ink-100)]"
+          className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center text-lede text-[var(--ink-400)] hover:text-[var(--ink-100)]"
         >
           <X className="w-4 h-4" strokeWidth={1.75} aria-hidden="true" />
         </button>
-        <div className="font-mono text-[10px] uppercase tracking-[0.22em]" style={{ color: 'var(--gold)' }}>Free account</div>
-        <h2 id="keep-card-title" className="font-display italic text-[26px] leading-tight mt-2">Keep this card</h2>
+        <div className="font-mono text-fine" style={{ color: 'var(--gold)' }}>Free account</div>
+        <h2 id="keep-card-title" className="font-display italic text-price leading-tight mt-2">Keep this card</h2>
         {item.title && (
-          <p className="mt-2 text-[13px] leading-snug line-clamp-2" style={{ color: 'var(--ink-200)' }}>{item.title}</p>
+          <p className="mt-2 text-meta leading-snug line-clamp-2" style={{ color: 'var(--ink-200)' }}>{item.title}</p>
         )}
-        <p className="mt-2 text-[13px] leading-relaxed" style={{ color: 'var(--ink-400)' }}>
+        <p className="mt-2 text-meta leading-relaxed" style={{ color: 'var(--ink-400)' }}>
           We’ll keep its price up to date and tell you if it sells. No credit card.
         </p>
         <div className="mt-5 grid gap-2">
@@ -296,8 +296,8 @@ export function KeepCardPrompt({ item, payload, onClose, onSaved }) {
             Use email instead
           </Link>
         </div>
-        {error && <p className="mt-3 text-[13px] text-[var(--crit)]">{error}</p>}
-        <p className="mt-4 text-[11px] text-center" style={{ color: 'var(--ink-600)' }}>
+        {error && <p className="mt-3 text-meta text-[var(--crit)]">{error}</p>}
+        <p className="mt-4 text-fine text-center" style={{ color: 'var(--ink-600)' }}>
           Already have an account?{' '}
           <Link href={`/login?next=${encodeURIComponent(next)}&src=star`} onClick={() => stashPendingStar(payload)} className="underline underline-offset-2 hover:text-[var(--gold-bright)]">Sign in</Link>
         </p>
@@ -319,7 +319,7 @@ export function AlertBand({ query, filters, onAlert, returnPath = null }) {
   if (!query) return null;
 
   const next = returnPath || resultsReturnPath(null);
-  const ctaClass = 'inline-flex items-center gap-2 h-11 px-5 rounded-full text-[13px] font-semibold whitespace-nowrap transition-opacity hover:opacity-90';
+  const ctaClass = 'inline-flex items-center gap-2 h-11 px-5 rounded-full text-meta font-semibold whitespace-nowrap transition-opacity hover:opacity-90';
   const ctaStyle = { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' };
   return (
     <div
@@ -327,10 +327,10 @@ export function AlertBand({ query, filters, onAlert, returnPath = null }) {
       style={{ border: '0.5px solid var(--gold-deep)', background: 'var(--ff-band-bg, linear-gradient(90deg, rgba(201,149,74,0.09), transparent))' }}
     >
       <div className="min-w-0 max-w-[520px]">
-        <p className="font-display text-[20px] md:text-[22px] leading-snug">
+        <p className="font-display text-h3 md:text-h3 leading-snug">
           Get an email when a new <em className="text-[var(--gold-bright)]">{query}</em> card lists.
         </p>
-        <p className="mt-1 text-[13px]" style={{ color: 'var(--ink-400)' }}>
+        <p className="mt-1 text-meta" style={{ color: 'var(--ink-400)' }}>
           We check eBay every hour with these filters. {PAYMENTS_LIVE ? 'Your first alert is free.' : 'Alerts are free during early access.'}
         </p>
       </div>

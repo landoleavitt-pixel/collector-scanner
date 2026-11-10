@@ -438,7 +438,7 @@ export default function FablesHome() {
           <div className="flex flex-wrap items-end justify-between gap-6 pb-6 mb-8 border-b border-[var(--line)]">
             <div className="min-w-0 flex-1">
               <h1 className="sr-only">{shownQuery || gameLabel || 'All games'} cards</h1>
-              <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--ink-400)] mb-2">Searching for</p>
+              <p className="text-fine text-[var(--ink-400)] mb-2">Searching for</p>
               <EditableSearchHeading
                 side="fables"
                 value={shownQuery}
@@ -465,7 +465,7 @@ export default function FablesHome() {
                 }}
               />
               {!loading && (
-                <p className="text-[13px] mt-3" style={{ color: 'var(--ink-400)' }}>
+                <p className="text-meta mt-3" style={{ color: 'var(--ink-400)' }}>
                   <span style={{ color: 'var(--gold)' }}>{res.total}</span>{' '}
                   {res.total === 1 ? 'listing' : 'listings'}, rarest first{res.stub ? ' (sample data)' : ''}
                 </p>
@@ -483,7 +483,7 @@ export default function FablesHome() {
               </div>
               <button
                 onClick={handleOpenSave}
-                className="flex items-center gap-2 px-4 py-2 rounded-full text-[11px] uppercase tracking-[0.18em] transition-colors"
+                className="flex items-center gap-2 px-4 py-2 rounded-full text-fine transition-colors"
                 style={{ border: '0.5px solid var(--gold)', color: 'var(--gold)', background: 'transparent' }}
               >
                 <Bookmark className="w-[13px] h-[13px]" strokeWidth={1.6} aria-hidden="true" />
@@ -491,7 +491,7 @@ export default function FablesHome() {
               </button>
               <button
                 onClick={newSearch}
-                className="py-3 -my-3 text-[11px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
+                className="py-3 -my-3 text-fine text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
               >
                 New search
               </button>
@@ -500,7 +500,7 @@ export default function FablesHome() {
 
           {applied?.q && !loading && (canHaveVersions ? (
             <button type="button" onClick={() => setShowAllListings(false)}
-                    className="w-full lg:w-auto lg:px-6 min-h-[56px] rounded-2xl inline-flex items-center justify-center gap-2 text-[16px] font-semibold mb-6"
+                    className="w-full lg:w-auto lg:px-6 min-h-[56px] rounded-2xl inline-flex items-center justify-center gap-2 text-lede font-semibold mb-6"
                     style={{ border: '1.5px solid var(--gold-bright)', color: 'var(--gold-bright)' }}>
               <Layers className="w-5 h-5" strokeWidth={2} aria-hidden="true" />See every version
             </button>
@@ -623,7 +623,7 @@ function EveryCardButton({ query, game }) {
   if (!family) return null;
   return (
     <Link href={`/fables/checklist?${gameQuery(game)}name=${encodeURIComponent(family)}`}
-          className="w-full lg:w-auto lg:px-6 min-h-[56px] rounded-2xl inline-flex items-center justify-center gap-2 text-[16px] font-semibold mb-6"
+          className="w-full lg:w-auto lg:px-6 min-h-[56px] rounded-2xl inline-flex items-center justify-center gap-2 text-lede font-semibold mb-6"
           style={{ border: '1.5px solid var(--gold-bright)', color: 'var(--gold-bright)' }}>
       <Layers className="w-5 h-5" strokeWidth={2} aria-hidden="true" />See every {family} card
     </Link>
@@ -650,7 +650,7 @@ function SearchBar({ query, setQuery, onSubmit, onPick }) {
           onBlur={suggest.close}
           {...suggest.inputProps}
           placeholder="Which card? Try Charizard" aria-label="Which card?"
-          className="flex-1 min-w-0 bg-transparent outline-none text-[18px] py-2" style={{ color: 'var(--ink-100)' }}
+          className="flex-1 min-w-0 bg-transparent outline-none text-lede py-2" style={{ color: 'var(--ink-100)' }}
         />
         <button type="submit" aria-label="Show cards" className="w-[52px] h-[52px] rounded-xl grid place-items-center flex-none"
                 style={{ background: 'linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom))', color: 'var(--ink-on-gold)' }}>
@@ -658,17 +658,17 @@ function SearchBar({ query, setQuery, onSubmit, onPick }) {
         </button>
       </form>
       {suggest.dropdown}
-      <p className="text-[13px] mt-2.5 px-0.5 md:text-center" style={{ color: 'var(--ink-600)' }}>Every version for {VERSION_GAMES_TEXT}.</p>
+      <p className="text-meta mt-2.5 px-0.5 md:text-center" style={{ color: 'var(--ink-600)' }}>Every version for {VERSION_GAMES_TEXT}.</p>
     </>
   );
 }
 
 export function TcgChip({ item }) {
   const of = serialOf(item);
-  if (of) return <span className="inline-flex items-center px-2.5 py-1 font-mono text-[11px] font-bold tracking-[0.1em]" style={TIER_STYLE.grail}>/{of}</span>;
+  if (of) return <span className="inline-flex items-center px-2.5 py-1 font-mono text-fine font-bold tracking-[0.1em]" style={TIER_STYLE.grail}>/{of}</span>;
   if (!item.rarity) return null;
   return (
-    <span className="inline-block max-w-full align-middle px-2.5 py-1 text-[11px] leading-snug font-semibold tracking-[0.04em]" style={TIER_STYLE[item.tier] || { color: 'var(--ink-200)', border: '1px solid var(--line)' }}>
+    <span className="inline-block max-w-full align-middle px-2.5 py-1 text-fine leading-snug font-semibold tracking-[0.04em]" style={TIER_STYLE[item.tier] || { color: 'var(--ink-200)', border: '1px solid var(--line)' }}>
       {item.rarity}
     </span>
   );
@@ -687,7 +687,7 @@ export function CardBadges({ item, meaning = false }) {
       {g ? (
         <>
           <GroupChip group={item.rarityGroup} />
-          {item.rarity && item.rarity !== g.label && <span className="self-center text-[12px]" style={{ color: 'var(--ink-400)' }}>{item.rarity}</span>}
+          {item.rarity && item.rarity !== g.label && <span className="self-center text-fine" style={{ color: 'var(--ink-400)' }}>{item.rarity}</span>}
           {of && <Badge mono>/{of}</Badge>}
         </>
       ) : <TcgChip item={item} />}
@@ -696,7 +696,7 @@ export function CardBadges({ item, meaning = false }) {
       {item.shadowless && <Badge>Shadowless</Badge>}
       {gradeText(item) && <Badge>{gradeText(item)}</Badge>}
       {meaning && g && (
-        <p className="w-full text-[14px] mt-1" style={{ color: 'var(--ink-200)' }}><b className="font-semibold">{g.label}:</b> {g.meaning.charAt(0).toLowerCase() + g.meaning.slice(1)}.</p>
+        <p className="w-full text-body mt-1" style={{ color: 'var(--ink-200)' }}><b className="font-semibold">{g.label}:</b> {g.meaning.charAt(0).toLowerCase() + g.meaning.slice(1)}.</p>
       )}
     </>
   );
@@ -728,22 +728,22 @@ function SignedOut({ query, setQuery, onSearch, error }) {
   return (
     <>
       <section className="max-w-[760px] mx-auto px-5 md:px-6 pt-7 md:pt-14">
-        <h1 className="font-display text-[40px] md:text-[60px] leading-[1.04] tracking-[-0.01em] mb-2 md:text-center">
+        <h1 className="font-display text-h1 md:text-hero leading-[1.04] tracking-[-0.01em] mb-2 md:text-center">
           Find any card. <em className="ff-foil-text">See every version.</em>
         </h1>
-        <p className="text-[18px] mb-5 md:mb-7 md:text-center" style={{ color: 'var(--ink-200)' }}>Then keep track of the ones you have.</p>
+        <p className="text-lede mb-5 md:mb-7 md:text-center" style={{ color: 'var(--ink-200)' }}>Then keep track of the ones you have.</p>
         <SearchBar query={query} setQuery={setQuery} onSubmit={() => onSearch()} onPick={(v) => onSearch(v)} />
-        {error && <p className="text-[13px] mt-2" style={{ color: 'var(--crit)' }}>{error}</p>}
+        {error && <p className="text-meta mt-2" style={{ color: 'var(--crit)' }}>{error}</p>}
       </section>
       <div className="max-w-[1080px] mx-auto px-5 md:px-8 mt-8 md:mt-10">
         <PopularListsRow />
-        <Link href="/fables/lists" className="flex md:inline-flex items-center justify-center gap-2 min-h-[56px] md:px-8 mt-4 rounded-2xl text-[16px] font-medium"
+        <Link href="/fables/lists" className="flex md:inline-flex items-center justify-center gap-2 min-h-[56px] md:px-8 mt-4 rounded-2xl text-lede font-medium"
               style={{ border: '1.5px solid var(--line)', color: 'var(--ink-100)' }}>
           <List className="w-5 h-5" strokeWidth={2} aria-hidden="true" />Browse every card list
         </Link>
         <ul className="list-none m-0 p-0 mt-7 grid gap-3.5 md:grid-cols-3 md:gap-6">
           {REASON_LINES.map(([Icon, line]) => (
-            <li key={line} className="flex items-center gap-3 text-[15px]" style={{ color: 'var(--ink-400)' }}>
+            <li key={line} className="flex items-center gap-3 text-body" style={{ color: 'var(--ink-400)' }}>
               <span className="w-[30px] h-[30px] rounded-[9px] grid place-items-center flex-none" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)', color: 'var(--gold-bright)' }}>
                 <Icon className="w-4 h-4" strokeWidth={2} aria-hidden="true" />
               </span>
@@ -752,7 +752,7 @@ function SignedOut({ query, setQuery, onSearch, error }) {
           ))}
         </ul>
       </div>
-      <p className="max-w-[760px] mx-auto px-5 text-center text-[12px] leading-relaxed mt-8 pb-4" style={{ color: 'var(--ink-600)' }}>
+      <p className="max-w-[760px] mx-auto px-5 text-center text-fine leading-relaxed mt-8 pb-4" style={{ color: 'var(--ink-600)' }}>
         {!PAYMENTS_LIVE && 'Free during early access. '}Not affiliated with eBay or any game publisher.
       </p>
     </>
@@ -773,18 +773,18 @@ function SignedIn({ query, setQuery, onSearch, recents, error, onCardClick }) {
   return (
     <section className="max-w-[1040px] mx-auto px-5 md:px-6 lg:px-10 pt-8 md:pt-12 pb-16">
       <SearchBar query={query} setQuery={setQuery} onSubmit={() => onSearch()} onPick={(v) => onSearch(v)} />
-      {error && <p className="text-[13px] mt-2" style={{ color: 'var(--crit)' }}>{error}</p>}
+      {error && <p className="text-meta mt-2" style={{ color: 'var(--crit)' }}>{error}</p>}
       {(saved.length > 0 || shownRecents.length > 0) && (
         <div className="flex gap-2 mt-3 overflow-x-auto md:flex-wrap pb-1">
           {saved.map((s) => (
             <button key={s.id} type="button" onClick={() => onSearch(s.query || '', { ...DEFAULT_FILTERS, ...(s.filters || {}) })}
-                    className="flex-none inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] whitespace-nowrap" style={{ color: 'var(--ink-200)', border: '1px solid var(--gold-deep)' }}>
+                    className="flex-none inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-meta whitespace-nowrap" style={{ color: 'var(--ink-200)', border: '1px solid var(--gold-deep)' }}>
               <Crosshair className="w-3.5 h-3.5" strokeWidth={1.75} style={{ color: 'var(--gold)' }} aria-hidden="true" />{s.name}
             </button>
           ))}
           {shownRecents.map((r) => (
             <button key={r} type="button" onClick={() => onSearch(r, DEFAULT_FILTERS)}
-                    className="flex-none inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] whitespace-nowrap" style={{ color: 'var(--ink-200)', border: '1px solid var(--line)' }}>
+                    className="flex-none inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-meta whitespace-nowrap" style={{ color: 'var(--ink-200)', border: '1px solid var(--line)' }}>
               <Clock className="w-3.5 h-3.5" strokeWidth={1.75} style={{ color: 'var(--ink-400)' }} aria-hidden="true" />{r}
             </button>
           ))}
@@ -809,15 +809,15 @@ function ForSaleShelf({ count, onCardClick }) {
   if (items && !items.length) return null;
   return (
     <div>
-      <h2 className="text-[13px] font-normal mb-3" style={{ color: 'var(--ink-400)' }}>For sale now on eBay</h2>
+      <h2 className="text-meta font-normal mb-3" style={{ color: 'var(--ink-400)' }}>For sale now on eBay</h2>
       <div className={`grid gap-3 ${count > 2 ? 'grid-cols-2 md:grid-cols-5' : 'grid-cols-2'}`}>
         {(items || Array.from({ length: count }, () => null)).map((it, i) => (
           <a key={it?.id || i} href={it?.url || undefined} target="_blank" rel="noopener noreferrer"
              onClick={(e) => { if (it && onCardClick && !(e.metaKey || e.ctrlKey)) { e.preventDefault(); onCardClick(it); } }}
              className="block min-w-0">
             <CardImage src={it?.image} alt={it?.title || ''} className="mb-2 rounded-lg" />
-            <span className="block text-[14px] font-medium leading-snug line-clamp-2">{it?.title}</span>
-            <span className="text-[14px]" style={{ color: 'var(--ink-200)' }}>{it ? money(it.price, it.currency) : ''}</span>
+            <span className="block text-body font-medium leading-snug line-clamp-2">{it?.title}</span>
+            <span className="text-body" style={{ color: 'var(--ink-200)' }}>{it ? money(it.price, it.currency) : ''}</span>
           </a>
         ))}
       </div>
@@ -832,13 +832,13 @@ function FilterChips({ meta, filters, onEdit }) {
   return (
     <div className="mt-3 flex flex-wrap items-center gap-2">
       {chips.map((c) => (
-        <span key={c.label} className="inline-flex items-center rounded-full text-[12px]"
+        <span key={c.label} className="inline-flex items-center rounded-full text-fine"
               style={{ minHeight: 26, padding: '0 10px', ...(c.group ? groupOf(c.group).chip : { color: 'var(--gold-bright)', background: 'rgba(143,211,232,0.06)', border: '0.5px solid var(--gold-deep)' }) }}>
           {c.label}
         </span>
       ))}
-      {chips.length === 0 && <span className="text-[13px]" style={{ color: 'var(--ink-400)' }}>All cards</span>}
-      <button type="button" onClick={onEdit} className="text-[13px] px-1 transition-colors hover:text-[var(--gold-bright)]"
+      {chips.length === 0 && <span className="text-meta" style={{ color: 'var(--ink-400)' }}>All cards</span>}
+      <button type="button" onClick={onEdit} className="text-meta px-1 transition-colors hover:text-[var(--gold-bright)]"
               style={{ minHeight: 32, color: 'var(--ink-200)', borderBottom: '0.5px solid var(--gold-deep)' }}>
         Edit filters
       </button>
@@ -852,7 +852,7 @@ function ResultsList({ loading, loadingMore, res, error, query, appliedFilters, 
     return (
       <div>
         {error
-          ? <p className="font-display italic text-2xl leading-snug pt-2" style={{ color: 'var(--crit)' }}>{error}</p>
+          ? <p className="font-display italic text-price leading-snug pt-2" style={{ color: 'var(--crit)' }}>{error}</p>
           : <NoResultsState appliedFilters={appliedFilters} nameFix={nameFix} onNameFix={onNameFix} emptyText="No cards found with your current filters. Try fewer filters or another spelling." />}
         <AlertBand query={query} filters={appliedFilters} onAlert={onAlert} returnPath={returnPath} />
       </div>
@@ -877,11 +877,11 @@ function ResultsList({ loading, loadingMore, res, error, query, appliedFilters, 
       </div>
       {res.nextOffset != null && (
         <div className="pt-8 flex flex-col items-center gap-3">
-          <span className="text-[12px]" style={{ color: 'var(--ink-600)' }}>Showing {res.items.length} of {res.total}</span>
+          <span className="text-fine" style={{ color: 'var(--ink-600)' }}>Showing {res.items.length} of {res.total}</span>
           <button
             onClick={onMore}
             disabled={loadingMore}
-            className="text-[11px] uppercase tracking-[0.2em] px-6 py-3 rounded-full transition-opacity hover:opacity-90 disabled:opacity-60"
+            className="text-fine px-6 py-3 rounded-full transition-opacity hover:opacity-90 disabled:opacity-60"
             style={{ border: '0.5px solid var(--gold-deep)', color: 'var(--gold)' }}
           >
             {loadingMore ? 'Loading…' : `Load ${Math.min(48, remaining || 48)} more`}
@@ -902,7 +902,7 @@ function Chip({ on, onClick, children, tier }) {
     : { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', border: '1px solid var(--gold-bright)', fontWeight: 600 };
   return (
     <button type="button" onClick={onClick} aria-pressed={on}
-            className="text-[13px] inline-flex items-center rounded-full transition-all whitespace-nowrap"
+            className="text-meta inline-flex items-center rounded-full transition-all whitespace-nowrap"
             style={{ minHeight: 36, padding: '0 14px', ...(on ? onStyle : { border: '1px solid var(--line)', background: 'var(--bg-elev-2)', color: 'var(--ink-200)', fontWeight: 500 }) }}>
       {children}
     </button>
@@ -931,8 +931,8 @@ function FilterControls({ meta, filters, setFilter, compact = false }) {
                     style={{ background: on ? 'var(--bg-elev-2)' : 'var(--bg-base)', border: `1.5px solid ${on ? 'var(--gold-bright)' : 'var(--line)'}` }}>
               <span className="w-[22px] h-[22px] rounded-md flex-none" style={g.dot ? { background: g.dot } : { border: '1px solid var(--line)' }} aria-hidden="true" />
               <span className="flex-1 min-w-0">
-                <span className="block text-[16px] font-medium" style={{ color: 'var(--ink-100)' }}>{g.label}</span>
-                <span className="text-[13px]" style={{ color: 'var(--ink-400)' }}>{g.meaning}</span>
+                <span className="block text-lede font-medium" style={{ color: 'var(--ink-100)' }}>{g.label}</span>
+                <span className="text-meta" style={{ color: 'var(--ink-400)' }}>{g.meaning}</span>
               </span>
               <span className="w-6 h-6 rounded-md grid place-items-center flex-none"
                     style={on ? { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' } : { border: '2px solid var(--ink-600)' }}>
@@ -941,7 +941,7 @@ function FilterControls({ meta, filters, setFilter, compact = false }) {
             </button>
           );
         })}
-        <p className="text-[12px] mt-1" style={{ color: 'var(--ink-600)' }}>{RARITY_SOURCE}</p>
+        <p className="text-fine mt-1" style={{ color: 'var(--ink-600)' }}>{RARITY_SOURCE}</p>
       </div>
       <SectionDivider />
       <div>
@@ -993,7 +993,7 @@ function FilterControls({ meta, filters, setFilter, compact = false }) {
       <div>
         <div className="flex items-baseline justify-between mb-3">
           <SectionLabel className="!mb-0">Price Range</SectionLabel>
-          <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--ink-600)]">USD</span>
+          <span className="text-fine text-[var(--ink-600)]">USD</span>
         </div>
         <PriceRangeSlider
           min={filters.priceMin}
@@ -1005,7 +1005,7 @@ function FilterControls({ meta, filters, setFilter, compact = false }) {
       <MoreFilters active={moreActive(filters)}>
         <MoreFablesFilters meta={meta} filters={filters} setFilter={setFilter} />
       </MoreFilters>
-      <p className="text-[12px]" style={{ color: 'var(--ink-600)' }}>Sealed product, lots and proxies are hidden.</p>
+      <p className="text-fine" style={{ color: 'var(--ink-600)' }}>Sealed product, lots and proxies are hidden.</p>
     </div>
   );
 }
@@ -1027,7 +1027,7 @@ function MoreFablesFilters({ meta, filters, setFilter }) {
           <div className="flex flex-wrap gap-2">
             {finishes.map(([k, l]) => <Chip key={k} on={(filters.finish || []).includes(k)} onClick={() => toggleIn('finish', k)}>{l}</Chip>)}
           </div>
-          <p className="text-[12px] mt-2" style={{ color: 'var(--ink-600)' }}>Shows listings whose title says so.</p>
+          <p className="text-fine mt-2" style={{ color: 'var(--ink-600)' }}>Shows listings whose title says so.</p>
         </div>
       )}
       {arts.length > 0 && (
@@ -1038,14 +1038,14 @@ function MoreFablesFilters({ meta, filters, setFilter }) {
           </div>
         </div>
       )}
-      {!filters.game && <p className="text-[13px]" style={{ color: 'var(--ink-600)' }}>Pick a game for foil and special-art filters.</p>}
+      {!filters.game && <p className="text-meta" style={{ color: 'var(--ink-600)' }}>Pick a game for foil and special-art filters.</p>}
       {filters.graded === 'raw' && more.conditions?.length > 0 && (
         <div>
           <SectionLabel>Card condition</SectionLabel>
           <div className="flex flex-wrap gap-2">
             {more.conditions.map((c) => <Chip key={c.key} on={(filters.cond || []).includes(c.key)} onClick={() => toggleIn('cond', c.key)}>{c.label}</Chip>)}
           </div>
-          <p className="text-[12px] mt-2" style={{ color: 'var(--ink-600)' }}>{more.conditionNote || 'Hides listings with no condition stated'}</p>
+          <p className="text-fine mt-2" style={{ color: 'var(--ink-600)' }}>{more.conditionNote || 'Hides listings with no condition stated'}</p>
         </div>
       )}
       <div>
@@ -1064,31 +1064,31 @@ function EditPanel({ meta, query, setQuery, filters, setFilter, editingSearch, o
   return (
     <section className="relative max-w-[1100px] mx-auto px-6 lg:px-10 pt-12 lg:pt-16 pb-16">
       <div className="flex items-center justify-between mb-9">
-        <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--gold)]">
+        <p className="text-fine text-[var(--gold)]">
           <span className="inline-block w-6 h-px bg-[var(--gold)] align-middle mr-3 -translate-y-[2px]" />
           Editing · <span className="normal-case tracking-normal italic font-display text-[var(--ink-100)] ml-1">{editingSearch?.name}</span>
         </p>
-        <button onClick={onCancel} className="text-[11px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors">
+        <button onClick={onCancel} className="text-fine text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors">
           Cancel
         </button>
       </div>
       <div className="mb-12 rise">
-        <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--ink-400)] mb-3">Searching for</p>
+        <p className="text-fine text-[var(--ink-400)] mb-3">Searching for</p>
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') onSubmit(); }}
           placeholder="Any card"
-          className="w-full font-display text-4xl md:text-5xl bg-transparent border-b border-[var(--line)] focus:border-[var(--gold)] outline-none text-[var(--ink-100)] italic pb-2 transition-colors"
+          className="w-full font-display text-h1 md:text-h1 bg-transparent border-b border-[var(--line)] focus:border-[var(--gold)] outline-none text-[var(--ink-100)] italic pb-2 transition-colors"
         />
       </div>
       <div className="mb-12 rise" style={{ animationDelay: '120ms' }}>
         <FilterControls meta={meta} filters={filters} setFilter={setFilter} />
       </div>
       <div className="flex justify-between items-center rise" style={{ animationDelay: '220ms' }}>
-        <span className="text-[11px] text-[var(--ink-600)]">All filters apply together</span>
-        <button onClick={onSubmit} className="group inline-flex items-center gap-3 px-9 py-4 transition-all text-sm font-semibold tracking-[0.12em] uppercase"
+        <span className="text-fine text-[var(--ink-600)]">All filters apply together</span>
+        <button onClick={onSubmit} className="group inline-flex items-center gap-3 px-9 py-4 transition-all text-body font-semibold"
                 style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
           Update search criteria
           <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" strokeWidth={1.8} />

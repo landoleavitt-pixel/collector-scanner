@@ -60,7 +60,7 @@ function DailyChart({ data, label }) {
           );
         })}
       </svg>
-      <figcaption className="flex justify-between text-[11px] mt-1" style={{ color: 'var(--ink-400)' }}>
+      <figcaption className="flex justify-between text-fine mt-1" style={{ color: 'var(--ink-400)' }}>
         <span>{short(data[0].day)}</span>
         <span>Busiest day: {n(max)} visitors</span>
         <span>{short(data[data.length - 1].day)}</span>
@@ -72,19 +72,19 @@ function DailyChart({ data, label }) {
 function Block({ title, children }) {
   return (
     <div className="mt-7">
-      <div className="text-[11px] tracking-[0.16em] uppercase mb-2" style={{ color: 'var(--ink-400)' }}>{title}</div>
+      <div className="text-fine mb-2" style={{ color: 'var(--ink-400)' }}>{title}</div>
       {children}
     </div>
   );
 }
 
 function Rows({ rows, empty = 'Nothing yet.' }) {
-  if (!rows.length) return <p className="text-[14px]" style={{ color: 'var(--ink-400)' }}>{empty}</p>;
+  if (!rows.length) return <p className="text-body" style={{ color: 'var(--ink-400)' }}>{empty}</p>;
   const max = Math.max(1, ...rows.map((r) => r.value));
   return (
     <ul className="grid gap-1.5">
       {rows.map((r) => (
-        <li key={r.label} className="text-[14px]" style={{ color: 'var(--ink-200)' }}>
+        <li key={r.label} className="text-body" style={{ color: 'var(--ink-200)' }}>
           <div className="flex justify-between gap-3">
             <span className="truncate">{r.label}</span>
             <span style={{ color: 'var(--ink-100)' }}>{n(r.value)}</span>
@@ -108,8 +108,8 @@ function SideSection({ side, win }) {
       className="rounded-[14px] p-5 md:p-6"
       style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}
     >
-      <h2 className="font-display italic text-[26px] leading-tight" style={{ color: 'var(--ink-100)' }}>{SIDE_LABEL[side]}</h2>
-      <p className="text-[14px] mt-1" style={{ color: 'var(--ink-200)' }}>
+      <h2 className="font-display italic text-price leading-tight" style={{ color: 'var(--ink-100)' }}>{SIDE_LABEL[side]}</h2>
+      <p className="text-body mt-1" style={{ color: 'var(--ink-200)' }}>
         <strong style={{ color: 'var(--gold-bright)' }}>{n(visited)}</strong> different people visited
       </p>
 
@@ -118,7 +118,7 @@ function SideSection({ side, win }) {
       <Block title="What they did (people)">
         <ul className="grid gap-1.5">
           {funnel.map((s, i) => (
-            <li key={s.step} className="text-[14px]" style={{ color: 'var(--ink-200)' }}>
+            <li key={s.step} className="text-body" style={{ color: 'var(--ink-200)' }}>
               <div className="flex justify-between gap-3">
                 <span>{s.step}</span>
                 <span style={{ color: 'var(--ink-100)' }}>
@@ -144,12 +144,12 @@ function SideSection({ side, win }) {
       {side === 'fables' && (
         <Block title="Card lists, by game (opens)">
           {win.lists.length === 0 ? (
-            <p className="text-[14px]" style={{ color: 'var(--ink-400)' }}>Nothing yet.</p>
+            <p className="text-body" style={{ color: 'var(--ink-400)' }}>Nothing yet.</p>
           ) : (
             <div style={{ border: '1px solid var(--line)', borderRadius: 12, overflow: 'hidden' }}>
-              <table className="w-full text-[14px]" style={{ color: 'var(--ink-200)', borderCollapse: 'collapse' }}>
+              <table className="w-full text-body" style={{ color: 'var(--ink-200)', borderCollapse: 'collapse' }}>
                 <thead>
-                  <tr className="text-[11px] tracking-[0.12em] uppercase" style={{ color: 'var(--ink-400)', background: 'var(--bg-elev-2)' }}>
+                  <tr className="text-fine" style={{ color: 'var(--ink-400)', background: 'var(--bg-elev-2)' }}>
                     <th className="text-left p-3">Game</th>
                     <th className="text-right p-3">Browsing lists</th>
                     <th className="text-right p-3">A checklist</th>
@@ -167,7 +167,7 @@ function SideSection({ side, win }) {
               </table>
             </div>
           )}
-          <p className="text-[12px] mt-2 leading-[1.5]" style={{ color: 'var(--ink-600)' }}>
+          <p className="text-fine mt-2 leading-[1.5]" style={{ color: 'var(--ink-600)' }}>
             Which game, never which card: card names aren&rsquo;t sent to PostHog.
           </p>
         </Block>
@@ -201,13 +201,13 @@ export default function AdminVisitorsPage() {
   return (
     <main className="min-h-[calc(100vh-200px)] py-12 md:py-16">
       <div className="max-w-[900px] mx-auto px-4 sm:px-6 lg:px-10">
-        <div className="text-[11px] tracking-[0.22em] uppercase mb-3" style={{ color: 'var(--gold)' }}>
+        <div className="text-fine mb-3" style={{ color: 'var(--gold)' }}>
           Admin · Visitors
         </div>
-        <h1 className="font-display italic text-[36px] md:text-[44px] leading-[1.05]" style={{ color: 'var(--ink-100)' }}>
+        <h1 className="font-display italic text-h1 md:text-h1 leading-[1.05]" style={{ color: 'var(--ink-100)' }}>
           Who&rsquo;s visiting.
         </h1>
-        <p className="text-[13px] mt-2 max-w-[560px] leading-[1.5]" style={{ color: 'var(--ink-400)' }}>
+        <p className="text-meta mt-2 max-w-[560px] leading-[1.5]" style={{ color: 'var(--ink-400)' }}>
           Numbers from PostHog, both sites side by side. People, not page loads. No emails, names or search words are in here.
         </p>
 
@@ -218,7 +218,7 @@ export default function AdminVisitorsPage() {
               role="tab"
               aria-selected={days === d}
               onClick={() => setDays(d)}
-              className="text-[11px] tracking-[0.14em] uppercase px-4 py-2.5 rounded-full"
+              className="text-fine px-4 py-2.5 rounded-full"
               style={{
                 color: days === d ? 'var(--bg-base)' : 'var(--ink-200)',
                 background: days === d ? 'var(--gold-bright)' : 'transparent',
@@ -231,12 +231,12 @@ export default function AdminVisitorsPage() {
         </div>
 
         {state.loading && <p style={{ color: 'var(--ink-400)' }}>Loading…</p>}
-        {state.error && <p role="alert" className="text-[14px]" style={{ color: 'var(--ink-200)' }}>{state.error}</p>}
+        {state.error && <p role="alert" className="text-body" style={{ color: 'var(--ink-200)' }}>{state.error}</p>}
 
         {data && data.configured === false && (
           <div className="rounded-[14px] p-5" style={{ border: '1px solid var(--line)', background: 'var(--bg-elev)' }}>
-            <p className="text-[16px]" style={{ color: 'var(--ink-100)' }}>Waiting for the PostHog key.</p>
-            <p className="text-[14px] mt-2 leading-[1.6]" style={{ color: 'var(--ink-400)' }}>
+            <p className="text-lede" style={{ color: 'var(--ink-100)' }}>Waiting for the PostHog key.</p>
+            <p className="text-body mt-2 leading-[1.6]" style={{ color: 'var(--ink-400)' }}>
               This page fills in once the read-only PostHog key and project number are added in Vercel (see LANDON_TODO.md). Nothing is wrong.
             </p>
           </div>
@@ -245,7 +245,7 @@ export default function AdminVisitorsPage() {
         {win && (
           <div className="grid gap-6">
             {win.errors.length > 0 && (
-              <p role="status" className="text-[13px]" style={{ color: 'var(--ink-400)' }}>
+              <p role="status" className="text-meta" style={{ color: 'var(--ink-400)' }}>
                 Some numbers couldn&rsquo;t be loaded ({win.errors.join(', ')}). The rest are fine.
               </p>
             )}
@@ -255,7 +255,7 @@ export default function AdminVisitorsPage() {
         )}
 
         {win && (
-          <p className="text-[12px] mt-6 leading-[1.5]" style={{ color: 'var(--ink-600)' }}>
+          <p className="text-fine mt-6 leading-[1.5]" style={{ color: 'var(--ink-600)' }}>
             Updated {new Date(data.updatedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}; refreshed about every 10 minutes.
             Our own browsers and anyone who turned off Usage stats are left out. People are counted per browser (or per account once signed in), so one person on two devices counts twice.
             The &ldquo;what they did&rdquo; rows count people who did each thing, not a strict step-by-step path.

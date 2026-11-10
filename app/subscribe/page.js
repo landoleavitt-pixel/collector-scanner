@@ -40,9 +40,9 @@ function PlanToggle({ plan, setPlan, prices, native }) {
             color: 'var(--ink-200)',
           }}
         >
-          <span className="block text-[12px] font-bold uppercase tracking-[0.12em]">{o.label}</span>
-          <span className="block text-[13px]" style={{ color: 'var(--ink-400)' }}>{o.sub}</span>
-          {o.note && <span className="block text-[10px] uppercase tracking-[0.12em]" style={{ color: 'var(--gold-bright)' }}>{o.note}</span>}
+          <span className="block text-fine font-bold">{o.label}</span>
+          <span className="block text-meta" style={{ color: 'var(--ink-400)' }}>{o.sub}</span>
+          {o.note && <span className="block text-fine" style={{ color: 'var(--gold-bright)' }}>{o.note}</span>}
         </button>
       ))}
     </div>
@@ -170,7 +170,7 @@ export default function SubscribePage() {
     >
       <div className="flex items-center gap-3 mb-10 opacity-70">
         <Seal className="w-6 h-6" />
-        <span className="font-serif text-base">Fields &amp; Floors</span>
+        <span className="font-serif text-lede">Fields &amp; Floors</span>
       </div>
 
       <div
@@ -179,27 +179,27 @@ export default function SubscribePage() {
       >
         {(stage === 'app' || stage === 'buying') ? (
           <>
-            <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'var(--gold-bright)' }}>
+            <p className="text-fine mb-3" style={{ color: 'var(--gold-bright)' }}>
               Base Plan
             </p>
             <h1
-              className="font-serif italic text-[24px] leading-tight mb-3"
+              className="font-serif italic text-price leading-tight mb-3"
               style={{ color: 'var(--ink-200)' }}
             >
               Get alerted the moment a card lists.
             </h1>
-            <p className="text-[13px] mb-6 leading-relaxed" style={{ color: 'var(--ink-400)' }}>
+            <p className="text-meta mb-6 leading-relaxed" style={{ color: 'var(--ink-400)' }}>
               Save unlimited searches. Get push and email alerts on up to 5 at a time, plus bid reminders.
               14 days free, then {price || 'the listed price'} per {plan === 'annual' ? 'year' : 'month'}.
             </p>
             <PlanToggle plan={plan} setPlan={setPlan} prices={prices} native />
             {error && (
-              <p className="text-[13px] mb-4 leading-relaxed" style={{ color: 'var(--crit)' }}>{error}</p>
+              <p className="text-meta mb-4 leading-relaxed" style={{ color: 'var(--crit)' }}>{error}</p>
             )}
             <button
               onClick={handleBuy}
               disabled={stage === 'buying'}
-              className="w-full min-h-[44px] rounded-lg text-[12px] font-bold uppercase tracking-[0.14em] disabled:opacity-60"
+              className="w-full min-h-[44px] rounded-lg text-fine font-bold disabled:opacity-60"
               style={{
                 background: 'var(--gold-bright)',
                 color: 'var(--ink-on-gold)',
@@ -211,12 +211,12 @@ export default function SubscribePage() {
             <button
               onClick={handleRestore}
               disabled={stage === 'buying'}
-              className="block w-full min-h-[40px] py-3 text-[11px] tracking-[0.14em] uppercase disabled:opacity-60"
+              className="block w-full min-h-[40px] py-3 text-fine disabled:opacity-60"
               style={{ color: 'var(--ink-400)' }}
             >
               Restore purchases
             </button>
-            <p className="text-[11px] mt-2 leading-relaxed" style={{ color: 'var(--ink-600)' }}>
+            <p className="text-fine mt-2 leading-relaxed" style={{ color: 'var(--ink-600)' }}>
               Payment is charged to your Apple ID when the trial ends. The subscription
               renews {plan === 'annual' ? 'yearly' : 'monthly'} unless cancelled at least 24 hours before the end of the
               current period. Manage or cancel any time in your App Store account
@@ -228,23 +228,23 @@ export default function SubscribePage() {
           </>
         ) : stage === 'choose' ? (
           <>
-            <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'var(--gold-bright)' }}>
+            <p className="text-fine mb-3" style={{ color: 'var(--gold-bright)' }}>
               Base Plan
             </p>
-            <h1 className="font-serif italic text-[24px] leading-tight mb-3" style={{ color: 'var(--ink-200)' }}>
+            <h1 className="font-serif italic text-price leading-tight mb-3" style={{ color: 'var(--ink-200)' }}>
               Get alerted the moment a card lists.
             </h1>
-            <p className="text-[13px] mb-6 leading-relaxed" style={{ color: 'var(--ink-400)' }}>
+            <p className="text-meta mb-6 leading-relaxed" style={{ color: 'var(--ink-400)' }}>
               Save unlimited searches. Get email alerts on up to 5 at a time, plus bid reminders. 14 days free, cancel anytime.
             </p>
             <PlanToggle plan={plan} setPlan={setPlan} prices={prices} />
-            <p className="text-[11px] -mt-4 mb-6" style={{ color: 'var(--ink-600)' }}>Plus applicable taxes.</p>
+            <p className="text-fine -mt-4 mb-6" style={{ color: 'var(--ink-600)' }}>Plus applicable taxes.</p>
             {error && (
-              <p className="text-[13px] mb-4 leading-relaxed" style={{ color: '#d97757' }}>{error}</p>
+              <p className="text-meta mb-4 leading-relaxed" style={{ color: '#d97757' }}>{error}</p>
             )}
             <button
               onClick={handleWebCheckout}
-              className="w-full min-h-[44px] rounded-lg text-[12px] font-bold uppercase tracking-[0.14em]"
+              className="w-full min-h-[44px] rounded-lg text-fine font-bold"
               style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', border: 'none' }}
             >
               Start 14-day free trial
@@ -252,21 +252,21 @@ export default function SubscribePage() {
           </>
         ) : stage === 'done' ? (
           <>
-            <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'var(--gold-bright)' }}>
+            <p className="text-fine mb-3" style={{ color: 'var(--gold-bright)' }}>
               Base Plan
             </p>
             <h1
-              className="font-serif italic text-[24px] leading-tight mb-3"
+              className="font-serif italic text-price leading-tight mb-3"
               style={{ color: 'var(--ink-200)' }}
             >
               You're in.
             </h1>
-            <p className="text-[13px] mb-6 leading-relaxed" style={{ color: 'var(--ink-400)' }}>
+            <p className="text-meta mb-6 leading-relaxed" style={{ color: 'var(--ink-400)' }}>
               Turn on alerts for any saved search and we'll notify you the moment a match lists.
             </p>
             <Link
               href="/watchlist"
-              className="block w-full min-h-[44px] py-3 rounded-lg text-[12px] font-bold uppercase tracking-[0.14em]"
+              className="block w-full min-h-[44px] py-3 rounded-lg text-fine font-bold"
               style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}
             >
               Go to saved searches
@@ -274,22 +274,22 @@ export default function SubscribePage() {
           </>
         ) : stage === 'error' ? (
           <>
-            <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'var(--crit)' }}>
+            <p className="text-fine mb-3" style={{ color: 'var(--crit)' }}>
               Something went wrong
             </p>
             <h1
-              className="font-serif italic text-[24px] leading-tight mb-3"
+              className="font-serif italic text-price leading-tight mb-3"
               style={{ color: 'var(--ink-200)' }}
             >
               We couldn't open checkout.
             </h1>
-            <p className="text-[13px] mb-6 leading-relaxed" style={{ color: 'var(--ink-400)' }}>
+            <p className="text-meta mb-6 leading-relaxed" style={{ color: 'var(--ink-400)' }}>
               {error}
             </p>
             <div className="flex flex-col gap-2">
               <button
                 onClick={() => window.location.reload()}
-                className="w-full min-h-[44px] rounded-lg text-[12px] font-bold uppercase tracking-[0.14em]"
+                className="w-full min-h-[44px] rounded-lg text-fine font-bold"
                 style={{
                   background: 'var(--gold-bright)',
                   color: 'var(--ink-on-gold)',
@@ -300,7 +300,7 @@ export default function SubscribePage() {
               </button>
               <Link
                 href="/pricing"
-                className="block w-full min-h-[40px] py-3 text-[11px] tracking-[0.14em] uppercase"
+                className="block w-full min-h-[40px] py-3 text-fine"
                 style={{ color: 'var(--ink-400)' }}
               >
                 Back to pricing
@@ -309,16 +309,16 @@ export default function SubscribePage() {
           </>
         ) : (
           <>
-            <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'var(--gold-bright)' }}>
+            <p className="text-fine mb-3" style={{ color: 'var(--gold-bright)' }}>
               Base Plan
             </p>
             <h1
-              className="font-serif italic text-[24px] leading-tight mb-3"
+              className="font-serif italic text-price leading-tight mb-3"
               style={{ color: 'var(--ink-200)' }}
             >
               Opening secure checkout…
             </h1>
-            <p className="text-[13px] leading-relaxed" style={{ color: 'var(--ink-400)' }}>
+            <p className="text-meta leading-relaxed" style={{ color: 'var(--ink-400)' }}>
               You'll be redirected to secure checkout to start your 14-day free trial.
               One moment.
             </p>

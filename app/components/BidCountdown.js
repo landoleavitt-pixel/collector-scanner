@@ -283,24 +283,23 @@ const digitBoxStyle = {
 const colonStyle = (urgent) => ({
   fontFamily: '"SF Mono", Menlo, ui-monospace, monospace',
   fontSize: 13,
-  color: urgent ? '#ffce6b' : '#6b6253',
+  color: urgent ? '#ffce6b' : 'var(--ink-600)',
   lineHeight: `${CELL_H}px`,
   padding: '0 1px',
 });
 
 const endedTextStyle = {
   fontFamily: '"SF Mono", Menlo, ui-monospace, monospace',
-  fontSize: 10,
+  fontSize: 12,
   fontWeight: 500,
-  textTransform: 'uppercase',
   letterSpacing: '0.16em',
-  color: '#6b6253',
+  color: 'var(--ink-600)',
   padding: '0 4px',
 };
 
 const textLabelStyle = {
   fontFamily: '"SF Mono", Menlo, ui-monospace, monospace',
-  fontSize: 11,
+  fontSize: 12,
   fontWeight: 500,
   color: 'var(--gold)',
   letterSpacing: '0.04em',

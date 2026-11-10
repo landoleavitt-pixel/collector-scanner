@@ -56,17 +56,17 @@ export default function EarlyAccessBanner() {
     >
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
         <div className="flex-1 min-w-0">
-          <p className="text-[10px] uppercase tracking-[0.22em] text-[var(--gold-bright)] mb-1.5 font-medium">
+          <p className="text-fine text-[var(--gold-bright)] mb-1.5 font-medium">
             Premium
           </p>
-          <p className="text-[13px] leading-relaxed text-[var(--ink-200)]">
+          <p className="text-meta leading-relaxed text-[var(--ink-200)]">
             Premium is in the works. Leave your email and we&apos;ll tell you when it&apos;s ready.
           </p>
         </div>
 
         {status === 'success' ? (
           <div
-            className="flex-none px-4 py-2.5 rounded text-[13px] tracking-[0.06em]"
+            className="flex-none px-4 py-2.5 rounded text-meta tracking-[0.06em]"
             style={{
               background: 'rgba(212,175,92,0.10)',
               color: 'var(--gold-bright)',
@@ -86,7 +86,7 @@ export default function EarlyAccessBanner() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
               disabled={status === 'submitting'}
-              className="flex-1 sm:w-[220px] px-3 py-2.5 rounded text-[13px] text-[var(--ink-100)] outline-none transition-colors"
+              className="flex-1 sm:w-[220px] px-3 py-2.5 rounded text-meta text-[var(--ink-100)] outline-none transition-colors"
               style={{
                 background: 'rgba(10,9,7,0.5)',
                 border: '0.5px solid rgba(232,226,213,0.12)',
@@ -97,7 +97,7 @@ export default function EarlyAccessBanner() {
             <button
               type="submit"
               disabled={status === 'submitting' || !email}
-              className="px-4 py-2.5 rounded text-[11px] uppercase tracking-[0.14em] font-medium transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+              className="px-4 py-2.5 rounded text-fine font-medium transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
               style={{
                 background: 'var(--gold-bright)',
                 color: 'var(--ink-on-gold)',
@@ -110,7 +110,7 @@ export default function EarlyAccessBanner() {
       </div>
 
       {status === 'error' && (
-        <p className="text-[13px] mt-3" style={{ color: '#e57373' }}>
+        <p className="text-meta mt-3" style={{ color: '#e57373' }}>
           {errorMessage}
         </p>
       )}

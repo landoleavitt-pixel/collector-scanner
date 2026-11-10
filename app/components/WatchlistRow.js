@@ -143,40 +143,40 @@ function PaywallModal({ onClose }) {
         </button>
 
         <p
-          className="text-[10px] tracking-[0.3em] uppercase mb-4"
+          className="text-fine mb-4"
           style={{ color: 'var(--gold)' }}
         >
           Base Plan
         </p>
         <h3
-          className="font-display italic text-[26px] leading-tight mb-3"
+          className="font-display italic text-price leading-tight mb-3"
           style={{ color: 'var(--ink-100)' }}
         >
           Never miss a card.
         </h3>
         <p
-          className="text-[13px] leading-relaxed mb-2"
+          className="text-meta leading-relaxed mb-2"
           style={{ color: 'var(--ink-400)' }}
         >
           Alerts on up to 5 saved searches + bid reminders.
           We check eBay every hour. eBay's own saved searches email once a day.
         </p>
         <p
-          className="text-[13px] mb-7"
+          className="text-meta mb-7"
           style={{ color: 'var(--gold)' }}
         >
           $6.99 / month · 14-day free trial
         </p>
 
         {error && (
-          <p className="text-[11px] mb-4" style={{ color: 'var(--crit)' }}>{error}</p>
+          <p className="text-fine mb-4" style={{ color: 'var(--crit)' }}>{error}</p>
         )}
 
         <div className="flex flex-col gap-3">
           <button
             onClick={handleUpgrade}
             disabled={loading}
-            className="w-full min-h-[48px] rounded-lg text-[12px] font-bold uppercase tracking-[0.14em] transition-opacity disabled:opacity-60"
+            className="w-full min-h-[48px] rounded-lg text-fine font-bold transition-opacity disabled:opacity-60"
             style={{
               background: 'var(--gold-bright)',
               color: 'var(--ink-on-gold)',
@@ -188,7 +188,7 @@ function PaywallModal({ onClose }) {
           </button>
           <button
             onClick={onClose}
-            className="w-full min-h-[40px] text-[11px] tracking-[0.14em] uppercase"
+            className="w-full min-h-[40px] text-fine"
             style={{ background: 'transparent', color: 'var(--ink-400)', border: 'none', cursor: 'pointer' }}
           >
             Maybe later
@@ -324,18 +324,18 @@ export default function WatchlistRow({ search, canUseAlerts }) {
       >
         <div className="min-w-0">
           <div
-            className="font-serif italic text-[19px] mb-2 truncate"
+            className="font-serif italic text-h3 mb-2 truncate"
             style={{ color: 'var(--ink-200)' }}
           >
             {search.name}
           </div>
-          <div className="flex items-center gap-1.5 text-[11px] mb-1.5" style={{ color: 'var(--ink-400)' }}>
+          <div className="flex items-center gap-1.5 text-fine mb-1.5" style={{ color: 'var(--ink-400)' }}>
             <span className="w-[7px] h-[7px] rounded-full inline-block" aria-hidden="true"
                   style={{ background: search.side === 'fables' ? 'linear-gradient(135deg,#9fe3f5,#b6a8f0,#f0b3d0,#f3d9a0)' : '#e6b96b' }} />
             {search.side === 'fables' ? 'Foils & Fables' : 'Sports'}
           </div>
           <div
-            className="text-[13px] font-serif italic mb-2.5 truncate"
+            className="text-meta font-serif italic mb-2.5 truncate"
             style={{ color: 'var(--ink-400)' }}
           >
             "{search.query}"
@@ -343,7 +343,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
           <div className="flex flex-wrap gap-1.5">
             {chips.length === 0 ? (
               <span
-                className="text-[10px] tracking-[0.18em] uppercase px-2 py-1 rounded"
+                className="text-fine px-2 py-1 rounded"
                 style={TIER_STYLES.neutral}
               >
                 No filters
@@ -354,7 +354,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
                 return (
                   <span
                     key={i}
-                    className="text-[10px] tracking-[0.18em] uppercase px-2 py-1 rounded"
+                    className="text-fine px-2 py-1 rounded"
                     style={{
                       background: style.bg,
                       color: style.color,
@@ -378,7 +378,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
         <div className="flex flex-col items-start lg:items-end gap-1">
         <div className="flex items-center gap-2.5">
           <span
-            className="text-[10px] tracking-[0.18em] uppercase"
+            className="text-fine"
             style={{ color: alertsLive ? 'var(--gold-bright)' : 'var(--ink-600)' }}
           >
             {!canUseAlerts ? 'Notify' : notifyEnabled ? 'Watching' : 'Paused'}
@@ -410,7 +410,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
         </div>
         {limitMsg && (
           <span
-            className="text-[11px] leading-tight text-left lg:text-right max-w-[220px]"
+            className="text-fine leading-tight text-left lg:text-right max-w-[220px]"
             style={{ color: 'var(--crit)' }}
           >
             {limitMsg}
@@ -425,7 +425,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
                 type="button"
                 onClick={handleDelete}
                 disabled={busy}
-                className="px-3 py-1.5 rounded-full text-[10px] tracking-[0.18em] uppercase transition-opacity hover:opacity-90 disabled:opacity-50"
+                className="px-3 py-1.5 rounded-full text-fine transition-opacity hover:opacity-90 disabled:opacity-50"
                 style={{ background: 'var(--crit)', color: 'var(--ink-on-gold)', border: 'none' }}
               >
                 Confirm
@@ -434,7 +434,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
                 type="button"
                 onClick={() => setConfirmDelete(false)}
                 disabled={busy}
-                className="px-3 py-1.5 rounded-full text-[10px] tracking-[0.18em] uppercase"
+                className="px-3 py-1.5 rounded-full text-fine"
                 style={{
                   background: 'transparent',
                   border: '0.5px solid rgba(232,226,213,0.18)',
@@ -449,7 +449,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
               <button
                 type="button"
                 onClick={handleEdit}
-                className="px-3.5 py-1.5 rounded-full text-[10px] tracking-[0.18em] uppercase transition-colors"
+                className="px-3.5 py-1.5 rounded-full text-fine transition-colors"
                 style={{
                   background: 'transparent',
                   border: `0.5px solid rgba(${accentRgb},0.40)`,
@@ -461,7 +461,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
               <button
                 type="button"
                 onClick={handleView}
-                className="px-3.5 py-1.5 rounded-full text-[10px] tracking-[0.18em] uppercase transition-colors hover:text-[var(--gold)]"
+                className="px-3.5 py-1.5 rounded-full text-fine transition-colors hover:text-[var(--gold)]"
                 style={{
                   background: 'transparent',
                   border: '0.5px solid rgba(232,226,213,0.18)',
@@ -473,7 +473,7 @@ export default function WatchlistRow({ search, canUseAlerts }) {
               <button
                 type="button"
                 onClick={handleShare}
-                className="px-3.5 py-1.5 rounded-full text-[10px] tracking-[0.18em] uppercase transition-colors hover:text-[var(--gold)]"
+                className="px-3.5 py-1.5 rounded-full text-fine transition-colors hover:text-[var(--gold)]"
                 style={{
                   background: 'transparent',
                   border: '0.5px solid rgba(232,226,213,0.18)',

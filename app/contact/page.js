@@ -32,12 +32,12 @@ const CONTACTS = [
 function ContactRow({ contact }) {
   return (
     <li className="py-7 border-t border-[var(--line-soft)] first:border-t-0 first:pt-0">
-      <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--ink-400)] mb-2">
+      <p className="text-fine text-[var(--ink-400)] mb-2">
         {contact.label}
       </p>
       <a
         href={contact.href}
-        className="group inline-flex items-baseline gap-2 font-display text-2xl text-[var(--ink-100)] tracking-tight hover:text-[var(--gold)] transition-colors"
+        className="group inline-flex items-baseline gap-2 font-display text-price text-[var(--ink-100)] tracking-tight hover:text-[var(--gold)] transition-colors"
       >
         {contact.handle}
         <ArrowUpRight

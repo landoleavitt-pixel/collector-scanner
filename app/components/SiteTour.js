@@ -83,12 +83,12 @@ function SearchArt({ lg }) {
       className={`w-full flex items-center gap-2 pl-3.5 pr-1.5 ${lg ? 'h-[52px] rounded-xl' : 'max-w-[320px] h-[46px] rounded-lg'}`}
       style={{ background: 'var(--bg-base)', border: '0.5px solid var(--gold-deep)' }}
     >
-      <span className={`flex-1 text-[var(--ink-100)] ${lg ? 'text-[17px]' : 'text-[14px]'}`}>
+      <span className={`flex-1 text-[var(--ink-100)] ${lg ? 'text-lede' : 'text-body'}`}>
         Cooper Flagg<span className="ff-tour-caret text-[var(--gold)]">|</span>
       </span>
       {!lg && (
         <span
-          className="text-[11px] font-semibold rounded-[5px] px-3 py-2"
+          className="text-fine font-semibold rounded-[5px] px-3 py-2"
           style={{ background: 'var(--gold)', color: 'var(--ink-on-gold, #1a1612)' }}
         >
           Search
@@ -99,7 +99,7 @@ function SearchArt({ lg }) {
 }
 
 function FilterArt({ lg }) {
-  const chip = `font-mono tracking-[0.04em] rounded-full ${lg ? 'text-[13px] px-3 py-2' : 'text-[11px] px-2.5 py-1.5'}`;
+  const chip = `font-mono tracking-[0.04em] rounded-full ${lg ? 'text-meta px-3 py-2' : 'text-fine px-2.5 py-1.5'}`;
   return (
     <div className={`flex flex-wrap justify-center ${lg ? 'gap-2' : 'gap-1.5 max-w-[330px]'}`}>
       {['Autographed', 'Rookie', 'Numbered'].map((label) => (
@@ -128,8 +128,8 @@ function TierArt({ lg }) {
     <div className="w-full">
       {lg && (
         <div className="flex items-baseline justify-between mb-2.5 px-1">
-          <span className="font-display italic text-[20px] text-[var(--ink-100)]">Cooper Flagg</span>
-          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--ink-400)]">4 results</span>
+          <span className="font-display italic text-h3 text-[var(--ink-100)]">Cooper Flagg</span>
+          <span className="font-mono text-fine text-[var(--ink-400)]">4 results</span>
         </div>
       )}
       <div
@@ -147,11 +147,11 @@ function TierArt({ lg }) {
               style={{ background: 'linear-gradient(145deg, var(--line), var(--gold-deep) 50%, var(--line-soft))' }}
             />
             <div className="flex-1 min-w-0">
-              <div className={`truncate text-[var(--ink-200)] ${lg ? 'text-[13.5px]' : 'text-[11.5px]'}`}>{title}</div>
-              <div className={`font-mono text-[var(--gold)] ${lg ? 'text-[12px] mt-0.5' : 'text-[10px]'}`}>{price}</div>
+              <div className={`truncate text-[var(--ink-200)] ${lg ? 'text-meta' : 'text-fine'}`}>{title}</div>
+              <div className={`font-mono text-[var(--gold)] ${lg ? 'text-fine mt-0.5' : 'text-fine'}`}>{price}</div>
             </div>
             <span
-              className={`font-mono rounded-full flex-none ${lg ? 'text-[12px] px-2.5 py-1' : 'text-[10px] px-2 py-0.5'}`}
+              className={`font-mono rounded-full flex-none ${lg ? 'text-fine px-2.5 py-1' : 'text-fine px-2 py-0.5'}`}
               style={tierChipStyle(tier)}
             >
               /{run}
@@ -173,9 +173,9 @@ function WatchlistArt({ lg }) {
         className={`rounded-[3px] flex-none ${lg ? 'w-[46px] h-16' : 'w-10 h-14'}`}
         style={{ background: 'linear-gradient(145deg, var(--line), var(--gold-deep) 50%, var(--line-soft))' }}
       />
-      <div className={`flex-1 leading-snug text-[var(--ink-200)] ${lg ? 'text-[14px]' : 'text-[12px]'}`}>
+      <div className={`flex-1 leading-snug text-[var(--ink-200)] ${lg ? 'text-body' : 'text-fine'}`}>
         2025 Bowman Chrome Cooper Flagg Auto /10
-        <span className={`block font-mono text-[var(--gold)] mt-1 ${lg ? 'text-[12px]' : 'text-[11px]'}`}>$1,240 · 2h 14m left</span>
+        <span className={`block font-mono text-[var(--gold)] mt-1 ${lg ? 'text-fine' : 'text-fine'}`}>$1,240 · 2h 14m left</span>
       </div>
       <span className={`ff-tour-star flex-none flex justify-center text-[var(--gold)] ${lg ? 'w-11' : ''}`} aria-hidden="true">
         <Star size={lg ? 24 : 20} strokeWidth={1.75} fill="currentColor" />
@@ -190,13 +190,13 @@ function AlertArt() {
       className="w-full max-w-[320px] p-3.5 rounded-lg"
       style={{ background: 'var(--bg-base)', border: '0.5px solid var(--line)' }}
     >
-      <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--gold)] mb-2">Saved search</div>
-      <div className="text-[13px] text-[var(--ink-100)] mb-2.5">Cooper Flagg · Auto · ≤/25 · under $300</div>
+      <div className="font-mono text-fine text-[var(--gold)] mb-2">Saved search</div>
+      <div className="text-meta text-[var(--ink-100)] mb-2.5">Cooper Flagg · Auto · ≤/25 · under $300</div>
       <div className="flex gap-1.5">
         {['Hourly', 'Daily', 'Weekly'].map((f, i) => (
           <span
             key={f}
-            className="font-mono text-[11px] rounded px-2 py-1"
+            className="font-mono text-fine rounded px-2 py-1"
             style={i === 0
               ? { color: 'var(--gold-bright)', border: '0.5px solid var(--gold)' }
               : { color: 'var(--ink-400)', border: '0.5px solid var(--line)' }}
@@ -223,10 +223,10 @@ function PushArt() {
         <Seal size={26} />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="flex justify-between text-[14px] font-semibold text-[var(--ink-100)]">
-          Fields &amp; Floors <span className="font-normal text-[12px] text-[var(--ink-400)]">now</span>
+        <div className="flex justify-between text-body font-semibold text-[var(--ink-100)]">
+          Fields &amp; Floors <span className="font-normal text-fine text-[var(--ink-400)]">now</span>
         </div>
-        <div className="text-[13.5px] leading-snug text-[var(--ink-200)] mt-0.5">
+        <div className="text-meta leading-snug text-[var(--ink-200)] mt-0.5">
           New match: Cooper Flagg Auto /25 · $280 · Buy It Now
         </div>
       </div>
@@ -238,7 +238,7 @@ function DoneArt({ lg }) {
   return (
     <div className="text-center">
       <div className="flex justify-center mb-3"><Seal size={lg ? 84 : 64} /></div>
-      <span className="font-mono text-[11px] tracking-[0.1em] text-[var(--ink-400)]">YOU&rsquo;RE SET</span>
+      <span className="font-mono text-fine tracking-[0.1em] text-[var(--ink-400)]">YOU&rsquo;RE SET</span>
     </div>
   );
 }
@@ -445,13 +445,13 @@ function TourDialog({ native, onClose }) {
         >
           <div className="w-[38px] h-[5px] rounded-full mx-auto mt-2 flex-none" style={{ background: 'var(--line)' }} aria-hidden="true" />
           <div className="flex items-center justify-between pl-[22px] pr-3 h-[52px] flex-none">
-            <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--gold)]">
+            <span className="font-mono text-fine text-[var(--gold)]">
               {step + 1} of {STEPS.length} · {label}
             </span>
             <button
               type="button"
               onClick={onClose}
-              className="min-w-[64px] min-h-[44px] text-[15px] font-medium text-[var(--ink-400)]"
+              className="min-w-[64px] min-h-[44px] text-body font-medium text-[var(--ink-400)]"
               style={{ visibility: last ? 'hidden' : 'visible' }}
               disabled={last}
             >
@@ -468,10 +468,10 @@ function TourDialog({ native, onClose }) {
           </div>
 
           <div className="px-6 pt-[22px] pb-2 flex-none">
-            <h2 id="ff-tour-title" className="font-display italic text-[34px] leading-[1.05] tracking-[-0.01em] mb-3">
+            <h2 id="ff-tour-title" className="font-display italic text-h1 leading-[1.05] tracking-[-0.01em] mb-3">
               {title}
             </h2>
-            <p id="ff-tour-text" className="text-[16px] leading-[1.55] text-[var(--ink-200)] m-0" aria-live="polite">
+            <p id="ff-tour-text" className="text-lede leading-[1.55] text-[var(--ink-200)] m-0" aria-live="polite">
               {text}
             </p>
           </div>
@@ -483,7 +483,7 @@ function TourDialog({ native, onClose }) {
               <button
                 type="button"
                 onClick={startTrial}
-                className="min-h-[48px] rounded-[14px] text-[16px] font-medium text-[var(--gold-bright)]"
+                className="min-h-[48px] rounded-[14px] text-lede font-medium text-[var(--gold-bright)]"
                 style={{ border: '0.5px solid var(--gold-deep)' }}
               >
                 Start free trial
@@ -493,7 +493,7 @@ function TourDialog({ native, onClose }) {
               ref={primaryRef}
               type="button"
               onClick={() => (last ? onClose() : next())}
-              className="min-h-[52px] rounded-[14px] text-[17px] font-semibold"
+              className="min-h-[52px] rounded-[14px] text-lede font-semibold"
               style={primaryStyle}
             >
               {primaryLabel}
@@ -525,13 +525,13 @@ function TourDialog({ native, onClose }) {
         </div>
 
         <div className="px-6 pt-5 pb-5">
-          <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--gold)] mb-2.5">
+          <div className="font-mono text-fine text-[var(--gold)] mb-2.5">
             Step {step + 1} of {STEPS.length} · {label}
           </div>
-          <h2 id="ff-tour-title" className="font-display italic text-[30px] leading-[1.05] tracking-[-0.01em] mb-2.5">
+          <h2 id="ff-tour-title" className="font-display italic text-price leading-[1.05] tracking-[-0.01em] mb-2.5">
             {title}
           </h2>
-          <p id="ff-tour-text" className="text-[13.5px] leading-relaxed text-[var(--ink-200)] m-0" aria-live="polite">
+          <p id="ff-tour-text" className="text-meta leading-relaxed text-[var(--ink-200)] m-0" aria-live="polite">
             {text}
           </p>
         </div>
@@ -543,7 +543,7 @@ function TourDialog({ native, onClose }) {
               <button
                 type="button"
                 onClick={onClose}
-                className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--ink-400)] hover:text-[var(--gold)] px-2 py-2 transition-colors"
+                className="font-mono text-fine text-[var(--ink-400)] hover:text-[var(--gold)] px-2 py-2 transition-colors"
               >
                 Skip
               </button>
@@ -552,7 +552,7 @@ function TourDialog({ native, onClose }) {
               <button
                 type="button"
                 onClick={back}
-                className="rounded-md px-3.5 py-2 text-[12.5px] font-medium text-[var(--ink-200)] hover:text-[var(--gold)] transition-colors"
+                className="rounded-md px-3.5 py-2 text-meta font-medium text-[var(--ink-200)] hover:text-[var(--gold)] transition-colors"
                 style={{ border: '0.5px solid var(--line)' }}
               >
                 Back
@@ -562,7 +562,7 @@ function TourDialog({ native, onClose }) {
               ref={primaryRef}
               type="button"
               onClick={() => (last ? onClose() : next())}
-              className="rounded-md px-4 py-2 text-[12.5px] font-semibold transition-colors hover:brightness-110"
+              className="rounded-md px-4 py-2 text-meta font-semibold transition-colors hover:brightness-110"
               style={primaryStyle}
             >
               {primaryLabel}

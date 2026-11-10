@@ -148,8 +148,8 @@ export default function Header() {
             // Same as the sports logo: always back to a fresh search.
             if (pathname === '/fables') { e.preventDefault(); window.location.assign('/fables'); }
           }}>
-            <span className="w-8 h-8 rounded-full grid place-items-center font-display italic text-[15px] ff-foil-edge" style={{ color: 'var(--gold)' }} aria-hidden="true">F</span>
-            <span className="font-display text-2xl md:text-3xl tracking-tight leading-none">
+            <span className="w-8 h-8 rounded-full grid place-items-center font-display italic text-body ff-foil-edge" style={{ color: 'var(--gold)' }} aria-hidden="true">F</span>
+            <span className="font-display text-price md:text-price tracking-tight leading-none">
               Foils <em className="ff-foil-text not-italic">&amp;</em> Fables{' '}
               {/* Matches "Fields & Floors Collectors"; inner pages on phones show just the name. */}
               <em className={`text-[var(--gold)] not-italic ${pathname === '/fables' ? '' : 'hidden sm:inline'}`}>Collectors</em>
@@ -174,7 +174,7 @@ export default function Header() {
           <span data-ff-seal className="inline-flex">
             <Seal size={32} />
           </span>
-          <span className="font-display text-2xl md:text-3xl tracking-tight leading-none">
+          <span className="font-display text-price md:text-price tracking-tight leading-none">
             <span data-ff-brand className="inline-block">
               Fields <em className="text-[var(--gold)] not-italic">&amp;</em> Floors
             </span>{' '}
@@ -203,7 +203,7 @@ export default function Header() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="relative py-1 text-[11px] uppercase tracking-[0.2em] transition-colors"
+                    className="relative py-1 text-fine transition-colors"
                     style={{ color: active ? 'var(--gold-bright)' : 'var(--ink-400)' }}
                   >
                     {item.label}
@@ -221,7 +221,7 @@ export default function Header() {
             // Plain wayfinding for first-time visitors. Hidden in the iOS
             // app, which keeps its header free of nav links.
             !native && (
-              <nav data-ff-home-nav className="hidden md:flex items-center gap-7 text-[11px] uppercase tracking-[0.2em]">
+              <nav data-ff-home-nav className="hidden md:flex items-center gap-7 text-fine">
                 {[
                   { href: '#why', label: 'How it works' },
                   { href: '/pricing', label: 'Pricing' },
@@ -248,7 +248,7 @@ export default function Header() {
           ) : isFables ? null : (
             <Link
               href="/"
-              className="whitespace-nowrap text-[11px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
+              className="whitespace-nowrap text-fine text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
             >
               <ArrowLeft className="inline-block w-3.5 h-3.5 mr-1 -mt-0.5" strokeWidth={2} aria-hidden="true" /><span className="hidden sm:inline">Back to search</span><span className="sm:hidden">Search</span>
             </Link>
@@ -265,12 +265,12 @@ export default function Header() {
                 <div className="relative" ref={menuRef}>
                   <button
                     onClick={() => setMenuOpen(!menuOpen)}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-full text-[12px] uppercase tracking-[0.18em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full text-fine text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
                     style={{ border: '0.5px solid var(--line-soft)' }}
                     aria-label="Account menu"
                   >
                     <span
-                      className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-display"
+                      className="w-6 h-6 rounded-full flex items-center justify-center text-fine font-display"
                       style={{ background: 'var(--gold)', color: 'var(--ink-on-gold)' }}
                     >
                       {(user.email?.[0] || '?').toUpperCase()}
@@ -291,10 +291,10 @@ export default function Header() {
                         className="px-4 py-3 border-b"
                         style={{ borderColor: 'rgba(232,226,213,0.08)' }}
                       >
-                        <div className="text-[10px] uppercase tracking-[0.18em] text-[var(--ink-400)] mb-0.5">
+                        <div className="text-fine text-[var(--ink-400)] mb-0.5">
                           Signed in as
                         </div>
-                        <div className="text-[13px] text-[var(--ink-200)] truncate">
+                        <div className="text-meta text-[var(--ink-200)] truncate">
                           {user.email}
                         </div>
                       </div>
@@ -302,11 +302,11 @@ export default function Header() {
                       {/* Nav moved to the bar — this menu now holds only the
                           things that are genuinely about the account. */}
                       {showBilling && (
-                      <div className="flex items-center justify-between px-4 py-2 text-[13px] text-[var(--ink-400)]">
+                      <div className="flex items-center justify-between px-4 py-2 text-meta text-[var(--ink-400)]">
                         <span>Plan</span>
                         {tier && (
                           <span
-                            className="text-[10px] uppercase tracking-[0.16em] px-2 py-0.5 rounded"
+                            className="text-fine px-2 py-0.5 rounded"
                             style={{
                               color: 'var(--gold-bright)',
                               border: '0.5px solid var(--gold-deep)',
@@ -321,7 +321,7 @@ export default function Header() {
                       <button
                         onClick={openPortal}
                         disabled={portalBusy}
-                        className="w-full text-left px-4 py-2 text-[13px] text-[var(--ink-400)] hover:text-[var(--gold)] hover:bg-[rgba(212,175,92,0.05)] transition-colors disabled:opacity-60"
+                        className="w-full text-left px-4 py-2 text-meta text-[var(--ink-400)] hover:text-[var(--gold)] hover:bg-[rgba(212,175,92,0.05)] transition-colors disabled:opacity-60"
                       >
                         Manage membership
                       </button>
@@ -330,7 +330,7 @@ export default function Header() {
                       <button
                         onClick={openPortal}
                         disabled={portalBusy}
-                        className="w-full text-left px-4 py-2 text-[13px] text-[var(--ink-400)] hover:text-[var(--gold)] hover:bg-[rgba(212,175,92,0.05)] transition-colors disabled:opacity-60"
+                        className="w-full text-left px-4 py-2 text-meta text-[var(--ink-400)] hover:text-[var(--gold)] hover:bg-[rgba(212,175,92,0.05)] transition-colors disabled:opacity-60"
                       >
                         Billing history
                       </button>
@@ -339,14 +339,14 @@ export default function Header() {
                       <Link
                         href="/?tour=1"
                         onClick={() => setMenuOpen(false)}
-                        className="block px-4 py-2 text-[13px] text-[var(--ink-400)] hover:text-[var(--gold)] hover:bg-[rgba(212,175,92,0.05)] transition-colors"
+                        className="block px-4 py-2 text-meta text-[var(--ink-400)] hover:text-[var(--gold)] hover:bg-[rgba(212,175,92,0.05)] transition-colors"
                       >
                         Take the tour
                       </Link>
                       <Link
                         href="/privacy#usage-stats"
                         onClick={() => setMenuOpen(false)}
-                        className="block px-4 py-2 text-[13px] text-[var(--ink-400)] hover:text-[var(--gold)] hover:bg-[rgba(212,175,92,0.05)] transition-colors"
+                        className="block px-4 py-2 text-meta text-[var(--ink-400)] hover:text-[var(--gold)] hover:bg-[rgba(212,175,92,0.05)] transition-colors"
                       >
                         Usage stats
                       </Link>
@@ -357,7 +357,7 @@ export default function Header() {
                               key={href}
                               href={href}
                               onClick={() => setMenuOpen(false)}
-                              className="block px-4 py-2 text-[13px] text-[var(--ink-400)] hover:text-[var(--gold)] hover:bg-[rgba(212,175,92,0.05)] transition-colors"
+                              className="block px-4 py-2 text-meta text-[var(--ink-400)] hover:text-[var(--gold)] hover:bg-[rgba(212,175,92,0.05)] transition-colors"
                             >
                               {label}
                             </Link>
@@ -370,13 +370,13 @@ export default function Header() {
                       >
                         <button
                           onClick={handleSignOut}
-                          className="w-full text-left px-4 py-2 text-[13px] text-[var(--ink-400)] hover:text-[var(--gold)] hover:bg-[rgba(212,175,92,0.05)] transition-colors"
+                          className="w-full text-left px-4 py-2 text-meta text-[var(--ink-400)] hover:text-[var(--gold)] hover:bg-[rgba(212,175,92,0.05)] transition-colors"
                         >
                           Sign out
                         </button>
                         <button
                           onClick={() => { setMenuOpen(false); setCloseOpen(true); }}
-                          className="w-full text-left px-4 py-2 text-[13px] transition-colors"
+                          className="w-full text-left px-4 py-2 text-meta transition-colors"
                           style={{ color: 'var(--ink-600)' }}
                           onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--crit)'; }}
                           onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ink-600)'; }}
@@ -392,7 +392,7 @@ export default function Header() {
                   {pathname !== '/login' && (
                     <Link
                       href="/login"
-                      className="hidden sm:inline py-3 -my-3 whitespace-nowrap text-[12px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
+                      className="hidden sm:inline py-3 -my-3 whitespace-nowrap text-fine text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
                     >
                       Sign in
                     </Link>
@@ -400,7 +400,7 @@ export default function Header() {
                   {/* Phones too: the sign-up page has "I have an account". */}
                   <Link
                     href="/signup"
-                    className="inline-block whitespace-nowrap text-[11px] uppercase tracking-[0.2em] font-semibold px-4 py-2 rounded-full transition-opacity hover:opacity-90"
+                    className="inline-block whitespace-nowrap text-fine font-semibold px-4 py-2 rounded-full transition-opacity hover:opacity-90"
                     style={{
                       background: 'var(--gold-bright)',
                       color: 'var(--ink-on-gold)',
@@ -436,7 +436,7 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="flex-none rounded-full px-3.5 py-2 text-[10px] uppercase tracking-[0.16em] whitespace-nowrap transition-colors"
+                className="flex-none rounded-full px-3.5 py-2 text-fine whitespace-nowrap transition-colors"
                 style={{
                   color: active ? 'var(--gold-bright)' : 'var(--ink-400)',
                   border: `0.5px solid ${active ? 'var(--gold-deep)' : 'var(--line)'}`,
@@ -510,21 +510,21 @@ function CloseAccountDialog({ onClose, appleBilled }) {
         style={{ background: 'var(--bg-elev-2)', border: '0.5px solid var(--line)' }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="font-display italic text-[24px] mb-3" style={{ color: 'var(--ink-100)' }}>
+        <h2 className="font-display italic text-price mb-3" style={{ color: 'var(--ink-100)' }}>
           Close your account?
         </h2>
-        <p className="text-[13px] leading-relaxed mb-4" style={{ color: 'var(--ink-400)' }}>
+        <p className="text-meta leading-relaxed mb-4" style={{ color: 'var(--ink-400)' }}>
           This cancels any active subscription and permanently deletes your
           watchlist, saved searches, and profile. It can&rsquo;t be undone.
         </p>
         {appleBilled && (
-          <p className="text-[13px] leading-relaxed mb-4" style={{ color: 'var(--gold-bright)' }}>
+          <p className="text-meta leading-relaxed mb-4" style={{ color: 'var(--gold-bright)' }}>
             Your subscription is billed by Apple, so we can&rsquo;t cancel it for you.
             Cancel it in Settings &gt; your name &gt; Subscriptions, or you&rsquo;ll keep being charged.
           </p>
         )}
         <label
-          className="block text-[11px] uppercase tracking-[0.16em] mb-2"
+          className="block text-fine mb-2"
           style={{ color: 'var(--ink-600)' }}
         >
           Type <span style={{ color: 'var(--crit)' }}>{CONFIRM}</span> to confirm
@@ -534,7 +534,7 @@ function CloseAccountDialog({ onClose, appleBilled }) {
           value={typed}
           onChange={(e) => setTyped(e.target.value)}
           autoComplete="off"
-          className="w-full px-3 py-2.5 rounded-lg text-[14px] mb-4 outline-none"
+          className="w-full px-3 py-2.5 rounded-lg text-body mb-4 outline-none"
           style={{
             background: 'var(--bg-base)',
             border: '0.5px solid var(--line)',
@@ -542,7 +542,7 @@ function CloseAccountDialog({ onClose, appleBilled }) {
           }}
         />
         {error && (
-          <div className="text-[13px] mb-3" style={{ color: 'var(--crit)' }}>
+          <div className="text-meta mb-3" style={{ color: 'var(--crit)' }}>
             {error}
           </div>
         )}
@@ -550,7 +550,7 @@ function CloseAccountDialog({ onClose, appleBilled }) {
           <button
             onClick={onClose}
             disabled={busy}
-            className="px-4 py-2 rounded-full text-[11px] uppercase tracking-[0.16em] disabled:opacity-60"
+            className="px-4 py-2 rounded-full text-fine disabled:opacity-60"
             style={{ border: '0.5px solid var(--line)', color: 'var(--ink-400)', background: 'transparent' }}
           >
             Keep my account
@@ -558,7 +558,7 @@ function CloseAccountDialog({ onClose, appleBilled }) {
           <button
             onClick={handleDelete}
             disabled={typed !== CONFIRM || busy}
-            className="px-4 py-2 rounded-full text-[11px] uppercase tracking-[0.16em] disabled:opacity-40"
+            className="px-4 py-2 rounded-full text-fine disabled:opacity-40"
             style={{ background: 'var(--crit)', color: 'var(--ink-on-gold)', border: 'none' }}
           >
             {busy ? 'Closing…' : 'Close account'}
@@ -577,7 +577,7 @@ function CardListsLink({ pathname, className = '', label }) {
     <Link
       href="/fables/lists"
       aria-current={on ? 'page' : undefined}
-      className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 min-h-[40px] text-[14px] transition-colors ${className}`}
+      className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 min-h-[40px] text-body transition-colors ${className}`}
       style={on ? { border: '1px solid var(--gold)', color: 'var(--gold-bright)' } : { border: '1px solid var(--line)', color: 'var(--ink-100)' }}
     >
       <List className="w-4 h-4 flex-none" strokeWidth={2} aria-hidden="true" />{label}

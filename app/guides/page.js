@@ -69,16 +69,16 @@ export default function GuidesIndexPage() {
             className="block group"
             style={{ borderTop: '0.5px solid rgba(232,226,213,0.08)', paddingTop: '2rem' }}
           >
-            <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--gold)] mb-3">
+            <p className="text-fine text-[var(--gold)] mb-3">
               {g.eyebrow}
             </p>
-            <h2 className="font-display text-3xl lg:text-4xl leading-tight tracking-tight mb-3 group-hover:text-[var(--gold-bright)] transition-colors">
+            <h2 className="font-display text-price lg:text-h1 leading-tight tracking-tight mb-3 group-hover:text-[var(--gold-bright)] transition-colors">
               {g.title}
             </h2>
-            <p className="text-lg text-[var(--ink-200)] leading-relaxed max-w-[60ch]">
+            <p className="text-lede text-[var(--ink-200)] leading-relaxed max-w-[60ch]">
               {g.summary}
             </p>
-            <p className="mt-4 text-[11px] uppercase tracking-[0.22em] text-[var(--ink-600)]">
+            <p className="mt-4 text-fine text-[var(--ink-600)]">
               {g.readTime}
             </p>
           </Link>

@@ -40,19 +40,19 @@ export default async function WatchlistPage() {
         {/* Page header */}
         <div className="mb-10 md:mb-12">
           <div
-            className="text-[10px] tracking-[0.22em] uppercase mb-3"
+            className="text-fine mb-3"
             style={{ color: 'var(--ink-400)' }}
           >
             Your Searches
           </div>
           <h1
-            className="font-display italic text-[36px] md:text-[44px] leading-[1.05] mb-3"
+            className="font-display italic text-h1 md:text-h1 leading-[1.05] mb-3"
             style={{ color: 'var(--ink-100)' }}
           >
             Always watching.
           </h1>
           <p
-            className="text-[14px] max-w-[460px] leading-[1.5]"
+            className="text-body max-w-[460px] leading-[1.5]"
             style={{ color: 'var(--ink-400)' }}
           >
             We check eBay every hour. eBay's own saved searches email once a day. When a new match appears, you'll know first.
@@ -109,13 +109,13 @@ function EmptyState() {
       }}
     >
       <div
-        className="font-serif italic text-[24px] mb-3"
+        className="font-serif italic text-price mb-3"
         style={{ color: 'var(--ink-200)' }}
       >
         Nothing on watch yet.
       </div>
       <p
-        className="text-[14px] max-w-[400px] mx-auto mb-7 leading-[1.5]"
+        className="text-body max-w-[400px] mx-auto mb-7 leading-[1.5]"
         style={{ color: 'var(--ink-400)' }}
       >
         Run a search, dial in your filters, and tap{' '}
@@ -126,7 +126,7 @@ function EmptyState() {
       </p>
       <Link
         href="/"
-        className="inline-block px-5 py-2.5 rounded-full text-[11px] tracking-[0.22em] uppercase transition-opacity hover:opacity-90"
+        className="inline-block px-5 py-2.5 rounded-full text-fine transition-opacity hover:opacity-90"
         style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}
       >
         Start a search

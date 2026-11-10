@@ -35,7 +35,7 @@ export default function ForgotPasswordPage() {
     <main className="min-h-screen flex flex-col" style={{ background: 'var(--bg-base)' }}>
       <div className="flex items-center gap-3 px-6 pt-8 opacity-70">
         <Seal className="w-6 h-6" />
-        <span className="font-serif text-base" style={{ color: 'var(--ink-200)' }}>
+        <span className="font-serif text-lede" style={{ color: 'var(--ink-200)' }}>
           Fields &amp; Floors
         </span>
       </div>
@@ -50,18 +50,18 @@ export default function ForgotPasswordPage() {
           }}
         >
           <h1
-            className="font-serif italic text-[26px] leading-tight text-center mb-1"
+            className="font-serif italic text-price leading-tight text-center mb-1"
             style={{ color: 'var(--ink-200)' }}
           >
             Reset your password.
           </h1>
-          <p className="text-[13px] text-center mb-6" style={{ color: 'var(--ink-400)' }}>
+          <p className="text-meta text-center mb-6" style={{ color: 'var(--ink-400)' }}>
             Enter your email and we'll send a reset link.
           </p>
 
           {resetSent ? (
             <div
-              className="rounded-lg p-4 text-[13px] text-center"
+              className="rounded-lg p-4 text-meta text-center"
               style={{
                 background: 'var(--bg-elev-2)',
                 border: '0.5px solid rgba(212,175,92,0.3)',
@@ -75,7 +75,7 @@ export default function ForgotPasswordPage() {
               <div className="mb-4">
                 <label
                   htmlFor="email"
-                  className="block text-[11px] mb-1.5 tracking-wide"
+                  className="block text-fine mb-1.5 tracking-wide"
                   style={{ color: 'var(--ink-400)' }}
                 >
                   Email
@@ -86,7 +86,7 @@ export default function ForgotPasswordPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
+                  className="w-full px-3 py-2.5 rounded-lg text-body focus:outline-none"
                   style={{
                     background: 'var(--bg-elev-2)',
                     border: '0.5px solid rgba(232,226,213,0.15)',
@@ -96,7 +96,7 @@ export default function ForgotPasswordPage() {
               </div>
 
               {error && (
-                <p className="text-[13px] mb-3 text-center" style={{ color: 'var(--crit)' }}>
+                <p className="text-meta mb-3 text-center" style={{ color: 'var(--crit)' }}>
                   {error}
                 </p>
               )}
@@ -104,7 +104,7 @@ export default function ForgotPasswordPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 rounded-lg text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50 mb-4"
+                className="w-full py-3 rounded-lg text-body font-medium transition-opacity hover:opacity-90 disabled:opacity-50 mb-4"
                 style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', border: 'none' }}
               >
                 {loading ? 'Sending…' : 'Send reset link'}
@@ -113,7 +113,7 @@ export default function ForgotPasswordPage() {
           )}
 
           <div
-            className="text-center text-[13px] pt-4"
+            className="text-center text-meta pt-4"
             style={{ color: 'var(--ink-400)', borderTop: '0.5px solid rgba(232,226,213,0.08)' }}
           >
             <Link href="/login" className="font-serif italic" style={{ color: 'var(--gold-bright)' }}>

@@ -58,7 +58,7 @@ export default function ShareSearchButton({ query, filters, allPresetRuns = [], 
     <button
       type="button"
       onClick={handleShare}
-      className={`inline-flex items-center gap-2 h-9 px-3.5 rounded-full text-[14px] font-medium whitespace-nowrap transition-colors ${className}`}
+      className={`inline-flex items-center gap-2 h-9 px-3.5 rounded-full text-body font-medium whitespace-nowrap transition-colors ${className}`}
       style={{
         border: '1px solid var(--line)',
         color: status === 'idle' ? 'var(--ink-200)' : 'var(--gold-bright)',

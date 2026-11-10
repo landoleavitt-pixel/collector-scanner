@@ -181,14 +181,14 @@ export default function CardImageCarousel({
           draggable={false}
         />
       ) : (
-        <div className="w-full h-full flex items-center justify-center font-serif italic text-5xl"
+        <div className="w-full h-full flex items-center justify-center font-serif italic text-h1"
              style={{ color: 'var(--ink-600)' }}><ImageOff className="w-7 h-7" strokeWidth={1.5} aria-hidden="true" /></div>
       )}
 
       {lensStyle && <div style={lensStyle} aria-hidden="true" />}
 
       {hasMultiple && (
-        <div className="absolute top-2 left-2 text-[10px] tracking-[0.16em] uppercase px-2 py-0.5 rounded"
+        <div className="absolute top-2 left-2 text-fine px-2 py-0.5 rounded"
              style={{ background: 'rgba(10,9,7,0.65)', backdropFilter: 'blur(4px)', color: 'var(--gold)', border: '0.5px solid rgba(201,149,74,0.3)' }}>
           {safeIndex + 1} / {safeImages.length}
         </div>

@@ -45,19 +45,19 @@ export default function AdminUsagePage() {
         <div className="mb-10 md:mb-12 flex flex-wrap items-end justify-between gap-6">
           <div>
             <div
-              className="text-[10px] tracking-[0.22em] uppercase mb-3"
+              className="text-fine mb-3"
               style={{ color: 'var(--gold)' }}
             >
               Admin · eBay API
             </div>
             <h1
-              className="font-display italic text-[36px] md:text-[44px] leading-[1.05]"
+              className="font-display italic text-h1 md:text-h1 leading-[1.05]"
               style={{ color: 'var(--ink-100)' }}
             >
               Quota usage.
             </h1>
             <p
-              className="text-[13px] mt-2 max-w-[460px] leading-[1.5]"
+              className="text-meta mt-2 max-w-[460px] leading-[1.5]"
               style={{ color: 'var(--ink-400)' }}
             >
               Live from eBay's Developer Analytics API. Daily windows only.
@@ -66,7 +66,7 @@ export default function AdminUsagePage() {
           </div>
           <button
             onClick={load}
-            className="px-4 py-2 rounded-full text-[11px] tracking-[0.18em] uppercase transition-colors"
+            className="px-4 py-2 rounded-full text-fine transition-colors"
             style={{
               background: 'transparent',
               border: '0.5px solid var(--gold)',
@@ -93,7 +93,7 @@ function LoadingState() {
       className="rounded-xl p-10 text-center"
       style={{ background: 'var(--ink-on-gold)', border: '0.5px solid rgba(232,226,213,0.08)' }}
     >
-      <div className="font-serif italic text-[18px]" style={{ color: 'var(--ink-200)' }}>
+      <div className="font-serif italic text-lede" style={{ color: 'var(--ink-200)' }}>
         Asking eBay…
       </div>
     </div>
@@ -112,10 +112,10 @@ function ErrorState({ error }) {
         color: 'var(--crit)',
       }}
     >
-      <div className="font-serif italic text-[18px] mb-2" style={{ color: 'var(--ink-200)' }}>
+      <div className="font-serif italic text-lede mb-2" style={{ color: 'var(--ink-200)' }}>
         {isForbidden ? 'Not authorized.' : 'Could not load usage.'}
       </div>
-      <div className="text-[13px]" style={{ color: 'var(--ink-400)' }}>
+      <div className="text-meta" style={{ color: 'var(--ink-400)' }}>
         {error}
       </div>
     </div>
@@ -131,10 +131,10 @@ function UsageTable({ data }) {
         className="rounded-xl p-8 text-center"
         style={{ background: 'var(--ink-on-gold)', border: '0.5px solid rgba(232,226,213,0.08)' }}
       >
-        <div className="font-serif italic text-[18px] mb-2" style={{ color: 'var(--ink-200)' }}>
+        <div className="font-serif italic text-lede mb-2" style={{ color: 'var(--ink-200)' }}>
           No daily quotas to show.
         </div>
-        <div className="text-[13px]" style={{ color: 'var(--ink-400)' }}>
+        <div className="text-meta" style={{ color: 'var(--ink-400)' }}>
           eBay returned zero rate-limited resources for the buy context.
           {' '}This sometimes means the call worked but the data is empty.
         </div>
@@ -146,7 +146,7 @@ function UsageTable({ data }) {
     <div>
       {/* Last refreshed */}
       <div
-        className="text-[10px] uppercase tracking-[0.18em] mb-4"
+        className="text-fine mb-4"
         style={{ color: 'var(--ink-400)' }}
       >
         Fetched {new Date(data.fetchedAt).toLocaleString()}
@@ -160,7 +160,7 @@ function UsageTable({ data }) {
 
       {/* Caveat: eBay's endpoint has a known reliability issue */}
       <div
-        className="text-[11px] mt-8 p-4 rounded-lg"
+        className="text-fine mt-8 p-4 rounded-lg"
         style={{
           background: 'rgba(255,217,122,0.04)',
           border: '0.5px solid rgba(255,217,122,0.12)',
@@ -205,18 +205,18 @@ function UsageRow({ row }) {
     >
       <div className="flex items-baseline justify-between mb-2 gap-4 flex-wrap">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.16em]" style={{ color: 'var(--ink-400)' }}>
+          <div className="text-fine" style={{ color: 'var(--ink-400)' }}>
             {row.apiName}
           </div>
-          <div className="font-serif italic text-[15px]" style={{ color: 'var(--ink-100)' }}>
+          <div className="font-serif italic text-body" style={{ color: 'var(--ink-100)' }}>
             {row.resource}
           </div>
         </div>
         <div className="text-right">
-          <div className="font-display italic text-[20px]" style={{ color: 'var(--gold)' }}>
-            {used.toLocaleString()} <span style={{ color: 'var(--ink-400)' }} className="text-[13px]">/ {limit.toLocaleString()}</span>
+          <div className="font-display italic text-h3" style={{ color: 'var(--gold)' }}>
+            {used.toLocaleString()} <span style={{ color: 'var(--ink-400)' }} className="text-meta">/ {limit.toLocaleString()}</span>
           </div>
-          <div className="text-[11px]" style={{ color: 'var(--ink-400)' }}>
+          <div className="text-fine" style={{ color: 'var(--ink-400)' }}>
             resets {resetLabel}
           </div>
         </div>

@@ -47,7 +47,7 @@ export default function SetFilter({ game, value, onChange }) {
           type="button"
           onClick={() => { onChange(''); setTyped(''); }}
           aria-label={`Remove set ${picked?.name || value}`}
-          className="text-[13px] inline-flex items-center rounded-full"
+          className="text-meta inline-flex items-center rounded-full"
           style={{ minHeight: 36, padding: '0 14px', background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', fontWeight: 600 }}
         >
           {picked?.name || value} ×
@@ -60,7 +60,7 @@ export default function SetFilter({ game, value, onChange }) {
             onChange={(e) => setTyped(e.target.value)}
             placeholder="Type a set name or code"
             aria-label="Find a set"
-            className="w-full text-[16px] sm:text-[14px] px-3 py-2 rounded-lg"
+            className="w-full text-lede sm:text-body px-3 py-2 rounded-lg"
             style={{ border: '1px solid var(--line)', background: 'var(--bg-elev-2)', color: 'var(--ink-100)' }}
           />
           {typed.trim() && (
@@ -70,19 +70,19 @@ export default function SetFilter({ game, value, onChange }) {
                   <button
                     type="button"
                     onClick={() => { onChange(s.code); setTyped(''); }}
-                    className="w-full text-left text-[13px] px-3 py-2"
+                    className="w-full text-left text-meta px-3 py-2"
                     style={{ color: 'var(--ink-100)' }}
                   >
                     {s.name} <span style={{ color: 'var(--ink-400)' }}>{s.code}{s.released ? ` · ${s.released.slice(0, 4)}` : ''}</span>
                   </button>
                 </li>
               ))}
-              {!matches.length && <li className="text-[13px] px-3 py-2" style={{ color: 'var(--ink-400)' }}>No set by that name</li>}
+              {!matches.length && <li className="text-meta px-3 py-2" style={{ color: 'var(--ink-400)' }}>No set by that name</li>}
             </ul>
           )}
         </>
       )}
-      <p className="text-[12px] mt-2" style={{ color: 'var(--ink-600)' }}>Shows listings we can match to this set, or whose title names it.</p>
+      <p className="text-fine mt-2" style={{ color: 'var(--ink-600)' }}>Shows listings we can match to this set, or whose title names it.</p>
     </div>
   );
 }

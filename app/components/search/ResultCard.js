@@ -117,10 +117,10 @@ export function ResultCard({ item, formatPrice, index, hasPendingFilters, onPend
          className="group block rise min-w-0" style={{ animationDelay: `${Math.min(index * 40, 400)}ms` }}>
         {photo(true)}
         {badges && <div className="flex flex-wrap gap-1.5 mt-3">{badges}</div>}
-        <h3 className="text-[13px] font-medium leading-[1.35] mt-2 line-clamp-2 text-[var(--ink-200)] group-hover:text-[var(--ink-100)]">{title}</h3>
+        <h3 className="text-meta font-medium leading-[1.35] mt-2 line-clamp-2 text-[var(--ink-200)] group-hover:text-[var(--ink-100)]">{title}</h3>
         <div className="flex items-baseline justify-between gap-2 mt-2">
-          <span className="font-display text-[24px] leading-none text-[var(--ink-100)]">{formatPrice(item.price)}</span>
-          <span className="text-[12px] whitespace-nowrap text-[var(--ink-400)]"><ListingLine item={item} short /></span>
+          <span className="font-display text-price leading-none text-[var(--ink-100)]">{formatPrice(item.price)}</span>
+          <span className="text-fine whitespace-nowrap text-[var(--ink-400)]"><ListingLine item={item} short /></span>
         </div>
       </a>
     );
@@ -132,16 +132,16 @@ export function ResultCard({ item, formatPrice, index, hasPendingFilters, onPend
       <div className="grid grid-cols-[52px_minmax(0,1fr)_auto] sm:grid-cols-[62px_minmax(0,1fr)_auto] gap-3 sm:gap-4 items-center px-1 sm:px-4 py-3 sm:py-3.5 rounded-[8px] transition-colors group-hover:bg-[var(--bg-elev)]">
         {photo(false)}
         <div className="min-w-0">
-          <h3 className="text-[14px] sm:text-[15px] font-medium leading-[1.35] line-clamp-2 text-[var(--ink-100)]">{title}</h3>
-          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 mt-1.5 sm:mt-2 text-[12px] sm:text-[13px] text-[var(--ink-400)]">
+          <h3 className="text-body sm:text-body font-medium leading-[1.35] line-clamp-2 text-[var(--ink-100)]">{title}</h3>
+          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 mt-1.5 sm:mt-2 text-fine sm:text-meta text-[var(--ink-400)]">
             {badges}
             <SellerLine item={item} className="hidden sm:inline" />
             {Number(item.sellerFeedback) === 0 && item.sellerFeedback != null && <span className="sm:hidden" style={{ color: '#d9907c' }}>New seller</span>}
           </div>
         </div>
         <div className="text-right min-w-0 sm:min-w-[104px]">
-          <div className="font-display text-[22px] sm:text-[28px] leading-none text-[var(--ink-100)] whitespace-nowrap">{formatPrice(item.price)}</div>
-          <div className="mt-1.5 text-[12px] sm:text-[13px] whitespace-nowrap text-[var(--ink-400)]">
+          <div className="font-display text-h3 sm:text-price leading-none text-[var(--ink-100)] whitespace-nowrap">{formatPrice(item.price)}</div>
+          <div className="mt-1.5 text-fine sm:text-meta whitespace-nowrap text-[var(--ink-400)]">
             <span className="sm:hidden"><ListingLine item={item} short /></span>
             <span className="hidden sm:inline"><ListingLine item={item} /></span>
           </div>
@@ -184,7 +184,7 @@ export function Badge({ children, subtle, auction, tier }) {
     className = 'border-[var(--gold-deep)] text-[var(--gold-bright)] bg-[var(--gold)]/[0.06]';
   }
   return (
-    <span className={`inline-flex items-center h-6 px-2 rounded-[4px] text-[12px] font-medium leading-none whitespace-nowrap border ${className}`} style={inlineStyle}>
+    <span className={`inline-flex items-center h-6 px-2 rounded-[4px] text-fine font-medium leading-none whitespace-nowrap border ${className}`} style={inlineStyle}>
       {children}
     </span>
   );

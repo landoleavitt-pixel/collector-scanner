@@ -53,7 +53,7 @@ export default function SaveSearchPrompt({ query, returnPath, onClose }) {
     }
   }
 
-  const btn = 'w-full h-11 rounded-lg flex items-center justify-center gap-2 text-[13px] font-semibold transition-opacity hover:opacity-90 disabled:opacity-50';
+  const btn = 'w-full h-11 rounded-lg flex items-center justify-center gap-2 text-meta font-semibold transition-opacity hover:opacity-90 disabled:opacity-50';
   return createPortal(
     <div className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.7)' }} onClick={onClose}>
       <div role="dialog" aria-modal="true" aria-labelledby="save-search-title" className="relative w-full max-w-[400px] rounded-xl p-6"
@@ -63,10 +63,10 @@ export default function SaveSearchPrompt({ query, returnPath, onClose }) {
                 className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center text-[var(--ink-400)] hover:text-[var(--ink-100)]">
           <X className="w-4 h-4" strokeWidth={1.75} aria-hidden="true" />
         </button>
-        <div className="font-mono text-[10px] uppercase tracking-[0.22em]" style={{ color: 'var(--gold)' }}>Free account</div>
-        <h2 id="save-search-title" className="font-display italic text-[26px] leading-tight mt-2">Save this search</h2>
-        {query && <p className="mt-2 text-[13px] leading-snug line-clamp-2" style={{ color: 'var(--ink-200)' }}>{query}</p>}
-        <p className="mt-2 text-[13px] leading-relaxed" style={{ color: 'var(--ink-400)' }}>
+        <div className="font-mono text-fine" style={{ color: 'var(--gold)' }}>Free account</div>
+        <h2 id="save-search-title" className="font-display italic text-price leading-tight mt-2">Save this search</h2>
+        {query && <p className="mt-2 text-meta leading-snug line-clamp-2" style={{ color: 'var(--ink-200)' }}>{query}</p>}
+        <p className="mt-2 text-meta leading-relaxed" style={{ color: 'var(--ink-400)' }}>
           We’ll email you when a new match lists, and bring you right back here. No credit card.
         </p>
         <div className="mt-5 grid gap-2">
@@ -84,8 +84,8 @@ export default function SaveSearchPrompt({ query, returnPath, onClose }) {
             Use email instead
           </Link>
         </div>
-        {error && <p className="mt-3 text-[13px] text-[var(--crit)]">{error}</p>}
-        <p className="mt-4 text-[11px] text-center" style={{ color: 'var(--ink-600)' }}>
+        {error && <p className="mt-3 text-meta text-[var(--crit)]">{error}</p>}
+        <p className="mt-4 text-fine text-center" style={{ color: 'var(--ink-600)' }}>
           Already have an account?{' '}
           <Link href={`/login?next=${encodeURIComponent(returnPath)}`} className="underline underline-offset-2 hover:text-[var(--gold-bright)]">Sign in</Link>
         </p>

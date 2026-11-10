@@ -76,7 +76,7 @@ function ReadingItem({ item }) {
         className="group block"
       >
         <div className="flex items-baseline justify-between gap-4 mb-2">
-          <h3 className="font-display text-2xl text-[var(--ink-100)] tracking-tight group-hover:text-[var(--gold)] transition-colors">
+          <h3 className="font-display text-price text-[var(--ink-100)] tracking-tight group-hover:text-[var(--gold)] transition-colors">
             {item.title}
           </h3>
           <ArrowUpRight

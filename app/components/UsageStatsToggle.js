@@ -35,7 +35,7 @@ export default function UsageStatsToggle({ id = 'usage-stats' }) {
         <p className="text-[var(--ink-100)] font-medium" id={`${id}-label`}>
           Share usage stats
         </p>
-        <p className="mt-1 text-[14px] text-[var(--ink-400)] leading-relaxed">
+        <p className="mt-1 text-body text-[var(--ink-400)] leading-relaxed">
           Counts steps like searching or opening a card, with no name, email or
           search words. Also covers our product analytics. Your choice is saved
           on this device.

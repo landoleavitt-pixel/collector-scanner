@@ -41,7 +41,7 @@ export function GroupChip({ group, className = '' }) {
   const g = groupOf(group);
   if (!g) return null;
   return (
-    <span className={`inline-flex items-center px-2.5 py-1 rounded-[7px] text-[12px] font-semibold tracking-[0.02em] whitespace-nowrap ${className}`} style={g.chip}>
+    <span className={`inline-flex items-center px-2.5 py-1 rounded-[7px] text-fine font-semibold tracking-[0.02em] whitespace-nowrap ${className}`} style={g.chip}>
       {g.label}
     </span>
   );
@@ -52,7 +52,7 @@ export function GroupDot({ group, small = false }) {
   const g = groupOf(group);
   if (!g) return null;
   return (
-    <span className={`inline-flex items-center gap-1.5 ${small ? 'text-[12px]' : 'text-[13px]'}`} style={{ color: small ? 'var(--ink-400)' : 'var(--ink-200)' }}>
+    <span className={`inline-flex items-center gap-1.5 ${small ? 'text-fine' : 'text-meta'}`} style={{ color: small ? 'var(--ink-400)' : 'var(--ink-200)' }}>
       <i className={`${small ? 'w-2 h-2' : 'w-2.5 h-2.5'} rounded-full flex-none`} style={g.dot ? { background: g.dot } : { border: '1.5px solid var(--ink-600)' }} aria-hidden="true" />
       {g.label}
     </span>

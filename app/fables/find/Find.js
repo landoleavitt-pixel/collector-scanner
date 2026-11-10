@@ -82,23 +82,23 @@ export default function Find() {
 
   return (
     <main className="max-w-[1000px] mx-auto px-5 md:px-6 lg:px-10 pt-4 md:pt-8 pb-16">
-      <a href={back} className="inline-flex items-center gap-1.5 text-[16px] min-h-[44px]" style={{ color: 'var(--ink-400)' }}>
+      <a href={back} className="inline-flex items-center gap-1.5 text-lede min-h-[44px]" style={{ color: 'var(--ink-400)' }}>
         <ChevronLeft className="w-5 h-5" strokeWidth={2} aria-hidden="true" />Back to the list
       </a>
-      <h1 className="font-display italic text-[34px] md:text-[44px] leading-tight mt-1">{name}</h1>
-      <p className="text-[17px] mt-1 mb-6" style={{ color: 'var(--ink-200)' }}>{[no && `No. ${no}`, label].filter(Boolean).join(' · ')}</p>
+      <h1 className="font-display italic text-h1 md:text-h1 leading-tight mt-1">{name}</h1>
+      <p className="text-lede mt-1 mb-6" style={{ color: 'var(--ink-200)' }}>{[no && `No. ${no}`, label].filter(Boolean).join(' · ')}</p>
 
       {res === null && <LoadingState phrase="Searching eBay" />}
       {res && res.items.length === 0 && (
         <div className="rounded-2xl p-5" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
-          <p className="text-[18px]" style={{ color: 'var(--ink-100)' }}>{res.notFound ? 'We can’t find this card.' : res.error ? 'eBay didn’t answer. Try again in a minute.' : 'None for sale right now'}</p>
-          <a href={back} className="inline-flex items-center justify-center min-h-[52px] px-5 rounded-xl text-[16px] font-semibold mt-4"
+          <p className="text-lede" style={{ color: 'var(--ink-100)' }}>{res.notFound ? 'We can’t find this card.' : res.error ? 'eBay didn’t answer. Try again in a minute.' : 'None for sale right now'}</p>
+          <a href={back} className="inline-flex items-center justify-center min-h-[52px] px-5 rounded-xl text-lede font-semibold mt-4"
              style={{ border: '1.5px solid var(--gold-bright)', color: 'var(--gold-bright)' }}>Back to the list</a>
         </div>
       )}
       {res && res.items.length > 0 && (
         <>
-          <p className="text-[13px] mb-2" style={{ color: 'var(--ink-400)' }}>
+          <p className="text-meta mb-2" style={{ color: 'var(--ink-400)' }}>
             <span style={{ color: 'var(--gold)' }}>{res.total}</span> for sale on eBay now
           </p>
           {(() => {
@@ -127,8 +127,8 @@ export default function Find() {
                 {list(named, 0, true)}
                 {unnamed.length > 0 && (
                   <>
-                    <h2 className="font-display italic text-[22px] mt-8 mb-1" style={{ color: 'var(--ink-200)' }}>The seller didn’t say which version</h2>
-                    <p className="text-[15px] mb-2" style={{ color: 'var(--ink-400)' }}>It’s this card and number, but the listing doesn’t say which version it is. Check the photos.</p>
+                    <h2 className="font-display italic text-h3 mt-8 mb-1" style={{ color: 'var(--ink-200)' }}>The seller didn’t say which version</h2>
+                    <p className="text-body mb-2" style={{ color: 'var(--ink-400)' }}>It’s this card and number, but the listing doesn’t say which version it is. Check the photos.</p>
                     {list(unnamed, named.length, named.length === 0)}
                   </>
                 )}
@@ -138,7 +138,7 @@ export default function Find() {
           {res.nextOffset != null && (
             <div className="pt-8 flex justify-center">
               <button onClick={loadMore} disabled={more}
-                      className="text-[11px] uppercase tracking-[0.2em] px-6 py-3 rounded-full disabled:opacity-60"
+                      className="text-fine px-6 py-3 rounded-full disabled:opacity-60"
                       style={{ border: '0.5px solid var(--gold-deep)', color: 'var(--gold)' }}>
                 {more ? 'Loading…' : 'Load more'}
               </button>
@@ -151,7 +151,7 @@ export default function Find() {
         <CardModal item={selected} printRun={null} onClose={() => setSelected(null)} side={SIDE}
                    chips={<CardBadges item={selected} meaning />} watchPayload={fablesPayload(selected)} />
       )}
-      {credit && <p className="text-[12px] mt-8 text-center" style={{ color: 'var(--ink-600)' }}>{credit} Photos are from sellers’ eBay listings.</p>}
+      {credit && <p className="text-fine mt-8 text-center" style={{ color: 'var(--ink-600)' }}>{credit} Photos are from sellers’ eBay listings.</p>}
       <BackToTop />
     </main>
   );

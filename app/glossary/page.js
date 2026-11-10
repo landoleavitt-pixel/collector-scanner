@@ -50,7 +50,7 @@ const TERMS = [
 function GlossaryEntry({ entry }) {
   return (
     <div className="grid grid-cols-[180px_1fr] gap-x-8 py-5 border-t border-[var(--line-soft)] first:border-t-0 first:pt-0 items-baseline">
-      <dt className="font-display text-xl text-[var(--ink-100)] tracking-tight">
+      <dt className="font-display text-h3 text-[var(--ink-100)] tracking-tight">
         {entry.term}
       </dt>
       <dd className="text-[var(--ink-200)] leading-relaxed text-pretty">

@@ -11,7 +11,7 @@
   --ink-100: #f7f1e1;     /* primary text on dark */
   --ink-200: #e8dfc9;     /* secondary */
   --ink-400: #a99e85;     /* tertiary, captions */
-  --ink-600: #6b6354;     /* hint */
+  --ink-600: #8f8571;     /* hint (5.5:1 on the background; was #6b6354 at 3.4:1) */
 
   --bg-base: #0a0907;     /* near-black, very warm */
   --bg-elev: #14110c;     /* card / surface */
@@ -439,7 +439,7 @@ html.native-app [data-ff-footer-legal] { padding-top: 0; border-top: 0; }
   --ink-100: #eef0f7;
   --ink-200: #d5d9e8;
   --ink-400: #9198b0;
-  --ink-600: #5d6480;
+  --ink-600: #858cab;     /* hint (5.5:1; was #5d6480) */
   --bg-base: #080a12;
   --bg-elev: #10131f;
   --bg-elev-2: #161a29;

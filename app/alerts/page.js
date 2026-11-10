@@ -70,14 +70,14 @@ export default function AlertsPage() {
       <div className="mt-10 flex flex-col sm:flex-row gap-3">
         <Link
           href="/pricing"
-          className="inline-flex items-center justify-center px-6 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase transition-opacity hover:opacity-90"
+          className="inline-flex items-center justify-center px-6 py-3 rounded-full text-fine transition-opacity hover:opacity-90"
           style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}
         >
           See pricing
         </Link>
         <Link
           href="/signup?next=/subscribe"
-          className="inline-flex items-center justify-center px-6 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase transition-colors"
+          className="inline-flex items-center justify-center px-6 py-3 rounded-full text-fine transition-colors"
           style={{
             background: 'transparent',
             border: '0.5px solid rgba(232,226,213,0.18)',

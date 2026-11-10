@@ -69,12 +69,12 @@ export default function NotifyFrequency({ initialFrequency = 'hourly', canUsePro
       style={{ background: 'var(--ink-on-gold)', border: '0.5px solid rgba(232,226,213,0.08)' }}
     >
       <div
-        className="font-mono uppercase mb-1"
-        style={{ fontSize: 10, letterSpacing: '0.2em', color: 'var(--gold)' }}
+        className="font-mono mb-1"
+        style={{ fontSize: 12, color: 'var(--gold)' }}
       >
         Alert frequency
       </div>
-      <p className="text-[13px] mb-4" style={{ color: 'var(--ink-400)' }}>
+      <p className="text-meta mb-4" style={{ color: 'var(--ink-400)' }}>
         How often we email you about new matches. Applies to all your watched searches.
       </p>
 
@@ -99,20 +99,19 @@ export default function NotifyFrequency({ initialFrequency = 'hourly', canUsePro
               }}
             >
               <div
-                className="text-[13px] mb-0.5"
+                className="text-meta mb-0.5"
                 style={{ color: selected ? 'var(--gold-bright)' : 'var(--ink-200)' }}
               >
                 {opt.label}
               </div>
-              <div className="text-[11px] leading-snug" style={{ color: 'var(--ink-400)' }}>
+              <div className="text-fine leading-snug" style={{ color: 'var(--ink-400)' }}>
                 {opt.hint}
               </div>
               {showProNote && (
                 <div
-                  className="mt-1.5 font-mono uppercase inline-block px-1.5 py-0.5 rounded"
+                  className="mt-1.5 font-mono inline-block px-1.5 py-0.5 rounded"
                   style={{
-                    fontSize: 10,
-                    letterSpacing: '0.16em',
+                    fontSize: 12,
                     color: 'var(--gold-bright)',
                     background: 'rgba(201,149,74,0.06)',
                     border: '0.5px solid var(--gold-deep)',
@@ -127,7 +126,7 @@ export default function NotifyFrequency({ initialFrequency = 'hourly', canUsePro
       </div>
 
       {error && (
-        <div className="mt-3 text-[11px]" style={{ color: 'var(--crit)' }}>
+        <div className="mt-3 text-fine" style={{ color: 'var(--crit)' }}>
           {error}
         </div>
       )}

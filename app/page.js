@@ -866,7 +866,7 @@ function Home() {
               />
               {/* No count while searching: "0 for sale" read as no results. */}
               {!loading && (
-                <span className="text-[15px]" style={{ color: 'var(--ink-400)' }}>
+                <span className="text-body" style={{ color: 'var(--ink-400)' }}>
                   {resultsSummary(sortedResults.length, query, filters.sortBy)}
                 </span>
               )}
@@ -1157,7 +1157,7 @@ function SplashIntro() {
           </div>
           <div
             ref={subRef}
-            className="mt-4 text-[11px] tracking-[0.32em] uppercase text-[var(--gold)] rise"
+            className="mt-4 text-fine text-[var(--gold)] rise"
             style={{ animationDelay: '160ms', animationDuration: '320ms', transition: 'opacity 0.2s ease', fontFamily: 'ui-monospace, monospace' }}
           >
             A Holy Grail search engine
@@ -1230,7 +1230,7 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
             <span className="sr-only"> Search eBay for rare numbered sports cards, rarest first.</span>
           </h1>
           <p
-            className="mt-5 md:mt-7 font-display italic text-[20px] md:text-[22px] leading-none rise"
+            className="mt-5 md:mt-7 font-display italic text-h3 md:text-h3 leading-none rise"
             style={{ color: 'var(--gold-bright)', animationDelay: '300ms' }}
           >
             Just try it.
@@ -1260,13 +1260,13 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
                 {...suggest.inputProps}
                 disabled={loading}
                 aria-label="Search a player"
-                className="relative w-full pl-5 pr-[128px] py-4 md:py-5 bg-transparent border-0 text-xl md:text-2xl font-display text-[var(--ink-100)] focus:outline-none"
+                className="relative w-full pl-5 pr-[128px] py-4 md:py-5 bg-transparent border-0 text-h3 md:text-price font-display text-[var(--ink-100)] focus:outline-none"
               />
               {!query && !loading && <RotatingPlaceholder align="left" padRight="128px" />}
               <button
                 onClick={onSearch}
                 disabled={loading}
-                className="absolute right-2 h-11 px-4 rounded-lg flex items-center gap-1.5 text-[13px] font-semibold whitespace-nowrap transition-opacity hover:opacity-90 disabled:opacity-40 z-10"
+                className="absolute right-2 h-11 px-4 rounded-lg flex items-center gap-1.5 text-meta font-semibold whitespace-nowrap transition-opacity hover:opacity-90 disabled:opacity-40 z-10"
                 style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}
               >
                 Show cards
@@ -1274,16 +1274,16 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
               </button>
             </div>
             {suggest.dropdown}
-            {error && <p className="mt-3 text-[13px] text-[var(--crit)]">{error}</p>}
+            {error && <p className="mt-3 text-meta text-[var(--crit)]">{error}</p>}
 
-            <p className="mt-2 text-[11px]" style={{ color: 'var(--ink-600)' }}>Not affiliated with eBay</p>
+            <p className="mt-2 text-fine" style={{ color: 'var(--ink-600)' }}>Not affiliated with eBay</p>
           </div>
 
           {/* Returning visitors get their own searches back; everyone else
               gets ready-made hunts that land straight on results. */}
           <div className="mt-7 rise" style={{ animationDelay: '460ms' }}>
             <div
-              className="text-[10px] uppercase tracking-[0.24em] mb-3 font-mono"
+              className="text-fine mb-3 font-mono"
               style={{ color: 'var(--ink-600)' }}
             >
               {recent.length > 0 ? 'Pick up where you left off' : 'Popular hunts'}
@@ -1299,7 +1299,7 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
                     type="button"
                     onClick={() => onSuggested(name)}
                     disabled={loading}
-                    className="text-[13px] px-4 py-2 rounded-full transition-colors disabled:opacity-40 hover:border-[var(--gold-deep)] hover:text-[var(--gold-bright)]"
+                    className="text-meta px-4 py-2 rounded-full transition-colors disabled:opacity-40 hover:border-[var(--gold-deep)] hover:text-[var(--gold-bright)]"
                     style={{ border: '0.5px solid var(--line)', color: 'var(--ink-200)', background: 'var(--bg-elev)' }}
                   >
                     {name}
@@ -1315,7 +1315,7 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
                     onClick={() => onChipSearch(h.query, h.filters)}
                     disabled={loading}
                     aria-label={h.label}
-                    className="group inline-flex items-center gap-2 text-[13px] pl-4 pr-2 py-1.5 rounded-full transition-colors disabled:opacity-40 hover:border-[var(--gold-deep)]"
+                    className="group inline-flex items-center gap-2 text-meta pl-4 pr-2 py-1.5 rounded-full transition-colors disabled:opacity-40 hover:border-[var(--gold-deep)]"
                     style={{ border: '0.5px solid var(--line)', background: 'var(--bg-elev)', color: 'var(--ink-200)', minHeight: 36 }}
                   >
                     <span className="group-hover:text-[var(--gold-bright)] transition-colors">{h.text}</span>
@@ -1341,13 +1341,13 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
             <div className="mt-8 flex gap-8 rise" style={{ animationDelay: '560ms' }}>
               <Link
                 href="/watchlist"
-                className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
+                className="flex items-center gap-2 text-fine text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
               >
                 <Crosshair className="w-3.5 h-3.5 text-[var(--gold)]" strokeWidth={1.6} aria-hidden="true" /> My hunts
               </Link>
               <Link
                 href="/watchlist-cards"
-                className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
+                className="flex items-center gap-2 text-fine text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
               >
                 <Star className="w-3.5 h-3.5 text-[var(--gold)]" strokeWidth={1.6} aria-hidden="true" /> Watchlist
               </Link>
@@ -1411,7 +1411,7 @@ function RarityStrip({ onCardClick, onChipSearch }) {
             <button
               type="button"
               onClick={() => onChipSearch(data.player, { autoCards: true, numberedCards: true, selectedPrintRuns: RARITY_STRIP_RUNS })}
-              className="py-3 -my-3 inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
+              className="py-3 -my-3 inline-flex items-center gap-1.5 text-fine text-[var(--ink-400)] hover:text-[var(--gold-bright)] transition-colors"
             >
               See all <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.75} aria-hidden="true" />
             </button>
@@ -1447,10 +1447,10 @@ function RarityStrip({ onCardClick, onChipSearch }) {
                 </span>
               )}
               {it.title && (
-                <span className="text-[11px] leading-snug line-clamp-2" style={{ color: 'var(--ink-400)' }}>{it.title}</span>
+                <span className="text-fine leading-snug line-clamp-2" style={{ color: 'var(--ink-400)' }}>{it.title}</span>
               )}
               {it.price != null && (
-                <span className="font-display text-[17px] leading-none text-[var(--gold-bright)]">{fmt(it.price)}</span>
+                <span className="font-display text-lede leading-none text-[var(--gold-bright)]">{fmt(it.price)}</span>
               )}
             </button>
           ))}
@@ -1482,7 +1482,7 @@ function RotatingPlaceholder({ align = 'center', padRight = '4rem' }) {
     >
       <span
         key={animKey}
-        className={`block font-display italic text-[var(--ink-600)] rotate-placeholder ${align === 'left' ? 'text-xl md:text-2xl truncate' : 'text-2xl md:text-3xl text-center'}`}
+        className={`block font-display italic text-[var(--ink-600)] rotate-placeholder ${align === 'left' ? 'text-h3 md:text-price truncate' : 'text-price md:text-price text-center'}`}
         style={{ lineHeight: 1.4, paddingBottom: '0.15em' }}
       >
         {SUGGESTED_SEARCHES[idx]}
@@ -1513,7 +1513,7 @@ function WhyFields({ user }) {
           {steps.map(([Icon, label], i) => (
             <li
               key={label}
-              className={`flex items-center gap-3 py-4 md:py-5 md:px-5 text-[16px] font-medium ${i ? 'border-t md:border-t-0 md:border-l' : ''}`}
+              className={`flex items-center gap-3 py-4 md:py-5 md:px-5 text-lede font-medium ${i ? 'border-t md:border-t-0 md:border-l' : ''}`}
               style={{ borderColor: 'var(--line-soft)', color: 'var(--ink-100)' }}
             >
               <Icon className="w-[22px] h-[22px] flex-none" strokeWidth={1.75} style={{ color: 'var(--gold-bright)' }} aria-hidden="true" />
@@ -1534,7 +1534,7 @@ function TierChip({ run }) {
   if (!tier) return null;
   return (
     <span
-      className="font-mono text-[11px] px-1.5 py-[2px] rounded flex-none"
+      className="font-mono text-fine px-1.5 py-[2px] rounded flex-none"
       style={tierChipStyle(tier)}
     >
       {run.startsWith('/') ? run : `/${run}`}
@@ -1553,15 +1553,15 @@ function PlanCard({ name, price, unit, line, ctaLabel, ctaHref, featured = false
         : { border: '1px solid var(--line)', opacity: muted ? 0.8 : 1 }}
     >
       <div className="min-w-0">
-        <div className="text-[13px] font-medium" style={{ color: featured ? 'var(--gold)' : 'var(--ink-400)' }}>{name}</div>
-        <div className="font-display italic leading-none text-[28px] md:text-[34px] mt-1" style={{ color: muted ? 'var(--ink-400)' : 'var(--ink-100)' }}>
-          {price}{unit && <small className="not-italic font-sans text-[13px] ml-1" style={{ color: 'var(--ink-400)' }}>{unit}</small>}
+        <div className="text-meta font-medium" style={{ color: featured ? 'var(--gold)' : 'var(--ink-400)' }}>{name}</div>
+        <div className="font-display italic leading-none text-price md:text-h1 mt-1" style={{ color: muted ? 'var(--ink-400)' : 'var(--ink-100)' }}>
+          {price}{unit && <small className="not-italic font-sans text-meta ml-1" style={{ color: 'var(--ink-400)' }}>{unit}</small>}
         </div>
-        <div className="text-[14px] mt-1.5" style={{ color: 'var(--ink-200)' }}>{line}</div>
+        <div className="text-body mt-1.5" style={{ color: 'var(--ink-200)' }}>{line}</div>
       </div>
       <Link
         href={ctaHref}
-        className={`flex-none text-center rounded-lg text-[12px] tracking-[0.12em] uppercase font-semibold no-underline whitespace-nowrap ${featured ? 'mt-3 py-3' : 'px-3.5 py-2.5 md:mt-3 md:py-3'}`}
+        className={`flex-none text-center rounded-lg text-fine font-semibold no-underline whitespace-nowrap ${featured ? 'mt-3 py-3' : 'px-3.5 py-2.5 md:mt-3 md:py-3'}`}
         style={featured
           ? { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }
           : { color: 'var(--ink-100)', border: '1px solid var(--ink-600)' }}
@@ -1581,7 +1581,7 @@ function PlansSection({ user }) {
   if (!PAYMENTS_LIVE) {
     return (
       <section className="max-w-[1040px] mx-auto px-6 lg:px-10 pt-8 pb-16">
-        <p className="text-center text-[15px]" style={{ color: 'var(--ink-200)' }}>
+        <p className="text-center text-body" style={{ color: 'var(--ink-200)' }}>
           Free during early access. Alerts on up to 5 saved searches.
         </p>
       </section>
@@ -1617,7 +1617,7 @@ function PlansSection({ user }) {
         />
       </div>
       {!native && (
-        <p className="text-center text-[12px] mt-5" style={{ color: 'var(--ink-600)' }}>
+        <p className="text-center text-fine mt-5" style={{ color: 'var(--ink-600)' }}>
           Base is also $59/yr, over 3 months free. Prices in CAD, plus applicable taxes.
         </p>
       )}
@@ -1674,7 +1674,7 @@ function SignedInHome({ query, setQuery, onSearch, onSuggested, recentSearches =
       <h1 className="text-center font-display text-[clamp(2.4rem,7vw,3.5rem)] leading-[1] tracking-[-0.015em]" style={{ textWrap: 'balance' }}>
         The <em className="text-[var(--gold-bright)]">Grail</em> Hunter.
       </h1>
-      <p className="text-center mt-3 mb-7 md:mb-9 font-display italic text-[19px] md:text-[22px] leading-none" style={{ color: 'var(--ink-400)' }}>
+      <p className="text-center mt-3 mb-7 md:mb-9 font-display italic text-h3 md:text-h3 leading-none" style={{ color: 'var(--ink-400)' }}>
         One search. Rarest first.
       </p>
       <form
@@ -1693,27 +1693,27 @@ function SignedInHome({ query, setQuery, onSearch, onSuggested, recentSearches =
           {...suggest.inputProps}
           placeholder="Search a player or team"
           aria-label="Search a player or team"
-          className="flex-1 min-w-0 bg-transparent outline-none text-[19px] md:text-[22px] py-3"
+          className="flex-1 min-w-0 bg-transparent outline-none text-h3 md:text-h3 py-3"
           style={{ color: 'var(--ink-100)' }}
         />
-        <button type="submit" aria-label="Show cards" className="h-12 md:h-14 px-4 md:px-6 rounded-xl inline-flex items-center gap-2 flex-none text-[16px] font-semibold" style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
+        <button type="submit" aria-label="Show cards" className="h-12 md:h-14 px-4 md:px-6 rounded-xl inline-flex items-center gap-2 flex-none text-lede font-semibold" style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>
           <span className="hidden md:inline">Show cards</span>
           <ArrowRight className="w-5 h-5" strokeWidth={2} />
         </button>
       </form>
       {suggest.dropdown}
-      {error && <p className="text-[13px] mt-2" style={{ color: 'var(--crit)' }}>{error}</p>}
+      {error && <p className="text-meta mt-2" style={{ color: 'var(--crit)' }}>{error}</p>}
 
       {(saved.length > 0 || recents.length > 0) && (
         <div className="flex gap-2.5 mt-5 overflow-x-auto md:flex-wrap md:justify-center pb-1 -mx-1 px-1">
           {saved.map((s) => (
-            <a key={s.id} href={`/?savedSearch=${s.id}`} className="flex-none inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-[15px] whitespace-nowrap"
+            <a key={s.id} href={`/?savedSearch=${s.id}`} className="flex-none inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-body whitespace-nowrap"
                style={{ color: 'var(--ink-200)', border: '1px solid var(--gold-deep)' }}>
               <Crosshair className="w-4 h-4" strokeWidth={1.75} style={{ color: 'var(--gold)' }} aria-hidden="true" />{s.name}
             </a>
           ))}
           {recents.map((r) => (
-            <button key={r} type="button" onClick={() => onSuggested(r)} className="flex-none inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-[15px] whitespace-nowrap"
+            <button key={r} type="button" onClick={() => onSuggested(r)} className="flex-none inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-body whitespace-nowrap"
                     style={{ color: 'var(--ink-200)', border: '1px solid var(--line)' }}>
               <Clock className="w-4 h-4" strokeWidth={1.75} style={{ color: 'var(--ink-400)' }} aria-hidden="true" />{r}
             </button>
@@ -1727,7 +1727,7 @@ function SignedInHome({ query, setQuery, onSearch, onSuggested, recentSearches =
       <LiveRightNow onCardClick={onCardClick} recentSearches={recentSearches} />
 
       {PAYMENTS_LIVE && !native && home && home.tier === 'free' && (
-        <div className="flex items-center justify-between gap-3 mt-8 rounded-xl px-4 py-3 text-[14px]" style={{ border: '1px solid var(--line)', color: 'var(--ink-200)' }}>
+        <div className="flex items-center justify-between gap-3 mt-8 rounded-xl px-4 py-3 text-body" style={{ border: '1px solid var(--line)', color: 'var(--ink-200)' }}>
           <span>You have 1 alert on the free plan.</span>
           <Link href="/subscribe" className="inline-flex items-center gap-1.5 whitespace-nowrap" style={{ color: 'var(--gold-bright)' }}>
             Get alerts on 5 searches <ArrowRight className="w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" />
@@ -1758,8 +1758,8 @@ function SinceLastVisit({ home, hasSaved }) {
   const nothing = home && !matches.length && !drops.length && !ending.length;
   const Head = (
     <div className="flex items-baseline justify-between mt-14 mb-4">
-      <h2 className="font-display italic text-[26px] md:text-[30px]">Since you were last here</h2>
-      {home?.since && <span className="text-[13px]" style={{ color: 'var(--ink-400)' }}>{sinceLabel(home.since)}</span>}
+      <h2 className="font-display italic text-price md:text-price">Since you were last here</h2>
+      {home?.since && <span className="text-meta" style={{ color: 'var(--ink-400)' }}>{sinceLabel(home.since)}</span>}
     </div>
   );
   if (!home) return <>{Head}<div className="h-[120px] rounded-xl shimmer" style={{ background: 'var(--bg-elev)' }} /></>;
@@ -1767,10 +1767,10 @@ function SinceLastVisit({ home, hasSaved }) {
     return (
       <>{Head}
         <div className="rounded-xl px-4 py-4" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
-          <div className="flex items-center gap-2 text-[14px]" style={{ color: 'var(--ink-200)' }}>
+          <div className="flex items-center gap-2 text-body" style={{ color: 'var(--ink-200)' }}>
             <Bell className="w-4 h-4" strokeWidth={1.75} style={{ color: 'var(--gold)' }} aria-hidden="true" />Nothing new yet
           </div>
-          <p className="text-[13px] mt-1.5" style={{ color: 'var(--ink-600)' }}>
+          <p className="text-meta mt-1.5" style={{ color: 'var(--ink-600)' }}>
             {hasSaved ? 'New matches, price drops and ending auctions will show up here.' : 'Save a search or star a card and changes will show up here.'}
           </p>
         </div>
@@ -1779,7 +1779,7 @@ function SinceLastVisit({ home, hasSaved }) {
   }
   const Panel = ({ icon: Icon, title, children }) => (
     <div className="rounded-xl px-5 py-4" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
-      <div className="flex items-center gap-2 text-[17px] font-medium mb-1.5" style={{ color: 'var(--ink-100)' }}>
+      <div className="flex items-center gap-2 text-lede font-medium mb-1.5" style={{ color: 'var(--ink-100)' }}>
         <Icon className="w-5 h-5" strokeWidth={1.75} style={{ color: 'var(--gold)' }} aria-hidden="true" />{title}
       </div>
       {children}
@@ -1791,12 +1791,12 @@ function SinceLastVisit({ home, hasSaved }) {
         {image && <img src={image} alt="" className="w-full h-full object-cover" loading="lazy" />}
       </span>
       <span className="min-w-0">
-        <span className="block text-[14px] leading-snug line-clamp-2" style={{ color: 'var(--ink-200)' }}>{title}</span>
-        {meta && <span className="block text-[12px] mt-0.5" style={{ color: 'var(--ink-400)' }}>{meta}</span>}
+        <span className="block text-body leading-snug line-clamp-2" style={{ color: 'var(--ink-200)' }}>{title}</span>
+        {meta && <span className="block text-fine mt-0.5" style={{ color: 'var(--ink-400)' }}>{meta}</span>}
       </span>
       <span className="text-right whitespace-nowrap">
-        <span className="block text-[16px] font-medium" style={{ color: rightTone || 'var(--ink-100)' }}>{right}</span>
-        {rightSub && <span className="block text-[12px]" style={{ color: 'var(--ink-400)' }}>{rightSub}</span>}
+        <span className="block text-lede font-medium" style={{ color: rightTone || 'var(--ink-100)' }}>{right}</span>
+        {rightSub && <span className="block text-fine" style={{ color: 'var(--ink-400)' }}>{rightSub}</span>}
       </span>
     </a>
   );
@@ -1807,7 +1807,7 @@ function SinceLastVisit({ home, hasSaved }) {
         {matches.length > 0 && (
           <Panel icon={Bell} title={`${matches.reduce((n, m) => n + m.count, 0)} new matches`}>
             {matches.map((m) => (
-              <a key={m.id} href={`/?savedSearch=${m.id}`} className="flex items-center justify-between gap-3 py-2.5 text-[15px]" style={{ borderTop: '1px solid var(--line-soft)', color: 'var(--ink-200)' }}>
+              <a key={m.id} href={`/?savedSearch=${m.id}`} className="flex items-center justify-between gap-3 py-2.5 text-body" style={{ borderTop: '1px solid var(--line-soft)', color: 'var(--ink-200)' }}>
                 <span className="truncate">{m.name}</span>
                 <span className="whitespace-nowrap" style={{ color: 'var(--gold-bright)' }}>{m.count} new</span>
               </a>
@@ -1862,8 +1862,8 @@ function LiveRightNow({ onCardClick, recentSearches = [] }) {
   return (
     <>
       <div className="flex items-baseline justify-between mt-14 mb-4">
-        <h2 className="font-display italic text-[26px] md:text-[30px]">Live right now</h2>
-        <span className="text-[13px]" style={{ color: 'var(--ink-400)' }}>Updated hourly</span>
+        <h2 className="font-display italic text-price md:text-price">Live right now</h2>
+        <span className="text-meta" style={{ color: 'var(--ink-400)' }}>Updated hourly</span>
       </div>
       <div className="flex md:grid md:grid-cols-5 gap-4 overflow-x-auto pb-1 -mx-1 px-1">
         {(items || Array.from({ length: 5 }, () => null)).map((it, i) => (
@@ -1872,12 +1872,12 @@ function LiveRightNow({ onCardClick, recentSearches = [] }) {
             <span className="block aspect-[3/4] rounded overflow-hidden mb-2" style={{ background: 'var(--bg-elev-2)' }}>
               {it?.image && <img src={upscaleEbayImage(it.image)} alt="" className="w-full h-full object-cover" loading="lazy" />}
             </span>
-            <span className="block text-[14px] leading-snug h-[38px] overflow-hidden" style={{ color: 'var(--ink-200)' }}>
+            <span className="block text-body leading-snug h-[38px] overflow-hidden" style={{ color: 'var(--ink-200)' }}>
               {it?.printRun && <TierChip run={`/${it.printRun}`} />} {it?.title || ''}
             </span>
-            <span className="block font-display text-[22px] leading-none mt-2.5" style={{ color: 'var(--gold-bright)' }}>{it ? featuredPrice(it) : ''}</span>
+            <span className="block font-display text-h3 leading-none mt-2.5" style={{ color: 'var(--gold-bright)' }}>{it ? featuredPrice(it) : ''}</span>
             {it?.from && (
-              <span className="block text-[13px] mt-1.5 truncate" style={{ color: 'var(--ink-400)' }}>From {it.from}</span>
+              <span className="block text-meta mt-1.5 truncate" style={{ color: 'var(--ink-400)' }}>From {it.from}</span>
             )}
           </button>
         ))}
@@ -1981,7 +1981,7 @@ function HeroCard({ featured, onCardClick }) {
       </button>
 
       {/* Live line + chips + price — reads as a caption to the card. */}
-      <div className="mt-6 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em]" style={{ color: 'var(--ink-400)' }}>
+      <div className="mt-6 flex items-center gap-2 font-mono text-fine" style={{ color: 'var(--ink-400)' }}>
         <span className="ff-live-dot" aria-hidden="true" />
         Featured find · Live on eBay
       </div>
@@ -1992,7 +1992,7 @@ function HeroCard({ featured, onCardClick }) {
             {item.printRun && <Badge mono tier={tierForRun(item.printRun) || 'grail'}>/{item.printRun}</Badge>}
             {grade && <Badge>{grade}</Badge>}
             {price && (
-              <span className="ml-2 font-display text-[22px] leading-none text-[var(--gold-bright)]">{price}</span>
+              <span className="ml-2 font-display text-h3 leading-none text-[var(--gold-bright)]">{price}</span>
             )}
           </>
         )}
@@ -2011,7 +2011,7 @@ function HeroLiveRow({ featured, onCardClick }) {
   const grade = featuredGrade(item);
   return (
     <>
-      <div className="mb-3 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em]" style={{ color: 'var(--ink-400)' }}>
+      <div className="mb-3 flex items-center gap-2 font-mono text-fine" style={{ color: 'var(--ink-400)' }}>
         <span className="ff-live-dot" aria-hidden="true" />
         Live right now
       </div>
@@ -2036,12 +2036,12 @@ function HeroLiveRow({ featured, onCardClick }) {
             {item?.hasAuto && <Badge>Auto</Badge>}
             {grade && <Badge>{grade}</Badge>}
           </div>
-          <div className="text-[13px] leading-snug line-clamp-2" style={{ color: 'var(--ink-200)' }}>
+          <div className="text-meta leading-snug line-clamp-2" style={{ color: 'var(--ink-200)' }}>
             {item ? item.title : ' '}
           </div>
         </div>
         {price && (
-          <span className="flex-none font-display text-[20px] leading-none text-[var(--gold-bright)]">{price}</span>
+          <span className="flex-none font-display text-h3 leading-none text-[var(--gold-bright)]">{price}</span>
         )}
       </button>
     </>
@@ -2096,13 +2096,13 @@ function FilterControls({ filters, setFilter, compact = false }) {
             }}
           >
             <div className="flex items-baseline justify-between mb-4">
-              <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--gold)]">Print Run</span>
+              <span className="text-fine text-[var(--gold)]">Print Run</span>
               <button
                 onClick={() => {
                   const allSelected = filters.selectedPrintRuns.length === ALL_PRESET_PRINT_RUNS.length;
                   setFilter('selectedPrintRuns', allSelected ? [] : ALL_PRESET_PRINT_RUNS);
                 }}
-                className="py-2 -my-2 text-[10px] uppercase tracking-[0.18em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
+                className="py-2 -my-2 text-fine text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
               >
                 {filters.selectedPrintRuns.length === ALL_PRESET_PRINT_RUNS.length ? 'Clear all' : 'Select all'}
               </button>
@@ -2134,8 +2134,8 @@ function FilterControls({ filters, setFilter, compact = false }) {
                     {/* Tier header: name, range, and a master switch for the whole group */}
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-baseline gap-2.5">
-                        <span className="font-display text-base leading-tight" style={{ color: tierColor }}>{tier.label}</span>
-                        <span className="font-mono text-[11px] tracking-[0.1em] text-[var(--ink-600)]">{tier.range.replace('–', ' – ')}</span>
+                        <span className="font-display text-lede leading-tight" style={{ color: tierColor }}>{tier.label}</span>
+                        <span className="font-mono text-fine tracking-[0.1em] text-[var(--ink-600)]">{tier.range.replace('–', ' – ')}</span>
                       </div>
                       <button
                         type="button"
@@ -2173,7 +2173,7 @@ function FilterControls({ filters, setFilter, compact = false }) {
                             type="button"
                             key={r}
                             onClick={() => toggleRun(r)}
-                            className="font-mono text-[13px] inline-flex items-center rounded-full transition-all"
+                            className="font-mono text-meta inline-flex items-center rounded-full transition-all"
                             style={{
                               minHeight: 36,
                               padding: '0 14px',
@@ -2253,7 +2253,7 @@ function FilterControls({ filters, setFilter, compact = false }) {
       <div>
         <div className="flex items-baseline justify-between mb-3">
           <SectionLabel className="!mb-0">Price Range</SectionLabel>
-          <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--ink-600)]">USD</span>
+          <span className="text-fine text-[var(--ink-600)]">USD</span>
         </div>
         <PriceRangeSlider
           min={filters.priceMin}
@@ -2285,7 +2285,7 @@ function TypeToggleCard({ label, checked, onChange }) {
         background: checked ? 'linear-gradient(135deg, rgba(201,164,71,0.10), rgba(201,164,71,0.02))' : 'rgba(20,17,13,0.5)',
       }}
     >
-      <span className={`text-sm ${checked ? 'text-[var(--ink-100)]' : 'text-[var(--ink-200)]'}`}>
+      <span className={`text-body ${checked ? 'text-[var(--ink-100)]' : 'text-[var(--ink-200)]'}`}>
         {label}
       </span>
       <span
@@ -2315,7 +2315,7 @@ function FilterPanel({ query, setQuery, filters, setFilter, onSubmit, onCancel, 
     <section className="relative max-w-[1100px] mx-auto px-6 lg:px-10 pt-12 lg:pt-16 pb-16">
       {/* Eyebrow + back link */}
       <div className="flex items-center justify-between mb-9">
-        <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--gold)]">
+        <p className="text-fine text-[var(--gold)]">
           <span className="inline-block w-6 h-px bg-[var(--gold)] align-middle mr-3 -translate-y-[2px]" />
           {isEditing ? (
             <>Editing · <span className="normal-case tracking-normal italic font-serif text-[var(--ink-100)] ml-1">{editingSearch.name}</span></>
@@ -2325,7 +2325,7 @@ function FilterPanel({ query, setQuery, filters, setFilter, onSubmit, onCancel, 
         </p>
         <button
           onClick={onCancel}
-          className="text-[11px] uppercase tracking-[0.22em] text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
+          className="text-fine text-[var(--ink-400)] hover:text-[var(--gold)] transition-colors"
         >
           {isEditing ? 'Cancel' : <><ArrowLeft className="inline-block w-3.5 h-3.5 mr-1 -mt-0.5" strokeWidth={2} aria-hidden="true" />Back</>}
         </button>
@@ -2333,7 +2333,7 @@ function FilterPanel({ query, setQuery, filters, setFilter, onSubmit, onCancel, 
 
       {/* The query — editable inline */}
       <div className="mb-12 rise">
-        <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--ink-400)] mb-3">
+        <p className="text-fine text-[var(--ink-400)] mb-3">
           Searching for
         </p>
         <input
@@ -2343,7 +2343,7 @@ function FilterPanel({ query, setQuery, filters, setFilter, onSubmit, onCancel, 
           onKeyDown={(e) => {
             if (e.key === 'Enter') onSubmit();
           }}
-          className="w-full font-display text-4xl md:text-5xl bg-transparent border-b border-[var(--line)] focus:border-[var(--gold)] outline-none text-[var(--ink-100)] italic pb-2 transition-colors"
+          className="w-full font-display text-h1 md:text-h1 bg-transparent border-b border-[var(--line)] focus:border-[var(--gold)] outline-none text-[var(--ink-100)] italic pb-2 transition-colors"
         />
       </div>
 
@@ -2354,10 +2354,10 @@ function FilterPanel({ query, setQuery, filters, setFilter, onSubmit, onCancel, 
 
       {/* Search CTA — becomes "Update search criteria" in edit mode */}
       <div className="flex justify-between items-center rise" style={{ animationDelay: '220ms' }}>
-        <span className="text-[11px] text-[var(--ink-600)]">All filters apply with AND logic</span>
+        <span className="text-fine text-[var(--ink-600)]">All filters apply with AND logic</span>
         <button
           onClick={onSubmit}
-          className="group inline-flex items-center gap-3 px-9 py-4 transition-all text-sm font-semibold tracking-[0.12em] uppercase"
+          className="group inline-flex items-center gap-3 px-9 py-4 transition-all text-body font-semibold"
           style={{
             background: 'var(--gold-bright)',
             color: 'var(--ink-on-gold)',
@@ -2418,7 +2418,7 @@ function Filters({ filters, setFilter }) {
         {filters.numberedCards && (
           <div className="mt-5 pl-1 rise" style={{ animationDuration: '0.4s' }}>
             <div className="flex items-baseline justify-between mb-3">
-              <p className="text-[10px] uppercase tracking-[0.22em] text-[var(--ink-400)]">
+              <p className="text-fine text-[var(--ink-400)]">
                 Print run
               </p>
               <button
@@ -2426,7 +2426,7 @@ function Filters({ filters, setFilter }) {
                   const allSelected = filters.selectedPrintRuns.length === ALL_PRESET_PRINT_RUNS.length;
                   setFilter('selectedPrintRuns', allSelected ? [] : ALL_PRESET_PRINT_RUNS);
                 }}
-                className="py-2 -my-2 text-[10px] uppercase tracking-[0.18em] text-[var(--ink-600)] hover:text-[var(--gold)] transition-colors"
+                className="py-2 -my-2 text-fine text-[var(--ink-600)] hover:text-[var(--gold)] transition-colors"
               >
                 {filters.selectedPrintRuns.length === ALL_PRESET_PRINT_RUNS.length ? 'Clear all' : 'Select all'}
               </button>
@@ -2459,8 +2459,8 @@ function Filters({ filters, setFilter }) {
                           : 'border-[var(--line)] text-[var(--ink-400)] hover:text-[var(--ink-100)] hover:border-[var(--ink-400)]'
                     }`}
                   >
-                    <span className="text-sm">{tier.label}</span>
-                    <span className="font-mono text-[11px] tracking-wider opacity-80">
+                    <span className="text-body">{tier.label}</span>
+                    <span className="font-mono text-fine tracking-wider opacity-80">
                       {tier.range}
                     </span>
                   </button>
@@ -2470,7 +2470,7 @@ function Filters({ filters, setFilter }) {
 
             {/* Custom print run section */}
             <div className="mt-5 pt-4 border-t border-[var(--line-soft)]">
-              <p className="text-[10px] uppercase tracking-[0.18em] text-[var(--ink-600)] mb-2">
+              <p className="text-fine text-[var(--ink-600)] mb-2">
                 Custom
               </p>
               <CustomPrintRunInput
@@ -2503,7 +2503,7 @@ function Filters({ filters, setFilter }) {
               <button
                 key={value}
                 onClick={() => setFilter('listingType', value)}
-                className={`flex items-center gap-3 w-full text-left text-sm py-1 transition-colors ${
+                className={`flex items-center gap-3 w-full text-left text-body py-1 transition-colors ${
                   active ? 'text-[var(--gold)]' : 'text-[var(--ink-400)] hover:text-[var(--ink-100)]'
                 }`}
               >
@@ -2535,7 +2535,7 @@ function Filters({ filters, setFilter }) {
               <button
                 key={value}
                 onClick={() => setFilter('condition', value)}
-                className={`flex items-center gap-3 w-full text-left text-sm py-1 transition-colors ${
+                className={`flex items-center gap-3 w-full text-left text-body py-1 transition-colors ${
                   active ? 'text-[var(--gold)]' : 'text-[var(--ink-400)] hover:text-[var(--ink-100)]'
                 }`}
               >
@@ -2580,7 +2580,7 @@ function Filters({ filters, setFilter }) {
               <button
                 key={value}
                 onClick={() => setFilter('sortBy', value)}
-                className={`flex items-center gap-3 w-full text-left text-sm py-1 transition-colors ${
+                className={`flex items-center gap-3 w-full text-left text-body py-1 transition-colors ${
                   active ? 'text-[var(--gold)]' : 'text-[var(--ink-400)] hover:text-[var(--ink-100)]'
                 }`}
               >
@@ -2602,15 +2602,15 @@ function Filters({ filters, setFilter }) {
 function FilterSectionHeader({ label, number }) {
   return (
     <div className="flex items-baseline justify-between border-b border-[var(--line)] pb-3 mb-2">
-      <span className="font-display text-lg">{label}</span>
-      <span className="font-mono text-[11px] text-[var(--ink-600)] tracking-wider">{number}</span>
+      <span className="font-display text-lede">{label}</span>
+      <span className="font-mono text-fine text-[var(--ink-600)] tracking-wider">{number}</span>
     </div>
   );
 }
 
 function FilterLabel({ children }) {
   return (
-    <h3 className="text-[10px] uppercase tracking-[0.28em] text-[var(--ink-400)] mb-4">
+    <h3 className="text-fine text-[var(--ink-400)] mb-4">
       {children}
     </h3>
   );
@@ -2642,7 +2642,7 @@ function CustomPrintRunInput({ customRuns, onAdd, onRemove }) {
   return (
     <div>
       <div className="flex items-center gap-2">
-        <span className="font-mono text-xs text-[var(--ink-400)]">/</span>
+        <span className="font-mono text-fine text-[var(--ink-400)]">/</span>
         <input
           type="text"
           inputMode="numeric"
@@ -2651,12 +2651,12 @@ function CustomPrintRunInput({ customRuns, onAdd, onRemove }) {
           onChange={(e) => setVal(e.target.value.replace(/[^0-9]/g, ''))}
           onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
           placeholder="e.g. 73"
-          className="flex-1 min-w-0 bg-transparent border-b border-[var(--line)] focus:border-[var(--gold)] outline-none font-mono text-[11px] py-1 text-[var(--ink-100)] placeholder:text-[var(--ink-600)] transition-colors"
+          className="flex-1 min-w-0 bg-transparent border-b border-[var(--line)] focus:border-[var(--gold)] outline-none font-mono text-fine py-1 text-[var(--ink-100)] placeholder:text-[var(--ink-600)] transition-colors"
         />
         <button
           onClick={handleAdd}
           disabled={!val.trim()}
-          className="py-2 -my-2 text-[10px] uppercase tracking-[0.18em] text-[var(--gold)] disabled:text-[var(--ink-600)] disabled:cursor-not-allowed hover:text-[var(--gold-bright)] transition-colors"
+          className="py-2 -my-2 text-fine text-[var(--gold)] disabled:text-[var(--ink-600)] disabled:cursor-not-allowed hover:text-[var(--gold-bright)] transition-colors"
         >
           Add
         </button>
@@ -2669,7 +2669,7 @@ function CustomPrintRunInput({ customRuns, onAdd, onRemove }) {
             <button
               key={run}
               onClick={() => onRemove(run)}
-              className="inline-flex items-center gap-1 px-2 py-1 font-mono text-[11px] text-[var(--gold)] bg-[var(--gold)]/[0.08] border border-[var(--gold-deep)] hover:bg-[var(--gold)]/[0.14] transition-colors"
+              className="inline-flex items-center gap-1 px-2 py-1 font-mono text-fine text-[var(--gold)] bg-[var(--gold)]/[0.08] border border-[var(--gold-deep)] hover:bg-[var(--gold)]/[0.14] transition-colors"
               title="Click to remove"
             >
               {run}
@@ -2679,7 +2679,7 @@ function CustomPrintRunInput({ customRuns, onAdd, onRemove }) {
         </div>
       )}
 
-      {err && <p className="text-[11px] text-[var(--crit)] mt-1.5">{err}</p>}
+      {err && <p className="text-fine text-[var(--crit)] mt-1.5">{err}</p>}
     </div>
   );
 }
@@ -2691,7 +2691,7 @@ function ToggleRow({ label, checked, onChange }) {
       className="group flex items-center justify-between w-full py-1.5 text-left"
     >
       <span
-        className={`text-sm transition-colors ${
+        className={`text-body transition-colors ${
           checked ? 'text-[var(--ink-100)]' : 'text-[var(--ink-200)] group-hover:text-[var(--ink-100)]'
         }`}
       >
@@ -2745,7 +2745,7 @@ function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase
   return (
     <div>
       {capped && (
-        <p className="text-[12px] text-[var(--ink-400)] mb-4 leading-relaxed">
+        <p className="text-fine text-[var(--ink-400)] mb-4 leading-relaxed">
           Showing the first {results.length} matches. This is a broad search.
           Add more filters to narrow it down to the rarest cards.
         </p>
@@ -2766,12 +2766,12 @@ function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase
 
       {remaining > 0 && (
         <div className="pt-8 flex flex-col items-center gap-3">
-          <span className="text-[12px]" style={{ color: 'var(--ink-600)' }}>
+          <span className="text-fine" style={{ color: 'var(--ink-600)' }}>
             Showing {visible.length} of {results.length}
           </span>
           <button
             onClick={() => setShown((n) => n + PAGE_DISPLAY_SIZE)}
-            className="text-[11px] uppercase tracking-[0.2em] px-6 py-3 rounded-full transition-opacity hover:opacity-90"
+            className="text-fine px-6 py-3 rounded-full transition-opacity hover:opacity-90"
             style={{ border: '0.5px solid rgba(201,149,74,0.5)', color: 'var(--gold)' }}
           >
             Load {Math.min(PAGE_DISPLAY_SIZE, remaining)} more
@@ -2876,10 +2876,10 @@ function ResolveState({ onSuggested }) {
   return (
     <div className="pt-2">
       <div className="flex items-baseline justify-between pb-4 mb-8 border-b border-[var(--line)]">
-        <span className="font-display text-lg">Begin</span>
-        <span className="font-mono text-[11px] text-[var(--ink-600)] tracking-wider">02</span>
+        <span className="font-display text-lede">Begin</span>
+        <span className="font-mono text-fine text-[var(--ink-600)] tracking-wider">02</span>
       </div>
-      <p className="font-display italic text-2xl text-[var(--ink-200)] leading-relaxed text-balance max-w-md">
+      <p className="font-display italic text-price text-[var(--ink-200)] leading-relaxed text-balance max-w-md">
         The marketplace awaits. Try a search above, or one of these.
       </p>
       <div className="mt-8 grid grid-cols-2 gap-y-2 gap-x-6 max-w-md">
@@ -2887,9 +2887,9 @@ function ResolveState({ onSuggested }) {
           <button
             key={s}
             onClick={() => onSuggested(s)}
-            className="group flex items-center gap-2 text-left py-1 text-sm text-[var(--ink-200)] hover:text-[var(--gold)] transition-colors"
+            className="group flex items-center gap-2 text-left py-1 text-body text-[var(--ink-200)] hover:text-[var(--gold)] transition-colors"
           >
-            <span className="font-mono text-[11px] text-[var(--ink-600)] group-hover:text-[var(--gold)] transition-colors">
+            <span className="font-mono text-fine text-[var(--ink-600)] group-hover:text-[var(--gold)] transition-colors">
               {String(i + 1).padStart(2, '0')}
             </span>
             <span className="border-b border-transparent group-hover:border-[var(--gold)] pb-0.5">{s}</span>
@@ -2966,8 +2966,8 @@ function CardCompanyFilter({ filters, setFilter }) {
           style={{ animationDuration: '0.4s', padding: '16px 18px', background: 'rgba(20,17,13,0.3)', borderLeft: '2px solid var(--gold-deep)' }}
         >
           <div className="flex items-baseline justify-between mb-3">
-            <span className="text-[11px] uppercase tracking-[0.22em] font-medium" style={{ color: 'var(--gold)' }}>{c.label} lines</span>
-            <span className="text-[13px]" style={{ color: 'var(--ink-600)' }}>Optional</span>
+            <span className="text-fine font-medium" style={{ color: 'var(--gold)' }}>{c.label} lines</span>
+            <span className="text-meta" style={{ color: 'var(--ink-600)' }}>Optional</span>
           </div>
           <div className="flex flex-wrap gap-2">
             {c.lines.map((l) => {
@@ -2994,7 +2994,7 @@ function CardCompanyFilter({ filters, setFilter }) {
             })}
           </div>
           {COMPANY_NOTES[c.key] && (
-            <p className="text-[13px] mt-3 leading-snug" style={{ color: 'var(--ink-600)' }}>{COMPANY_NOTES[c.key]}</p>
+            <p className="text-meta mt-3 leading-snug" style={{ color: 'var(--ink-600)' }}>{COMPANY_NOTES[c.key]}</p>
           )}
         </div>
       ))}
@@ -3046,7 +3046,7 @@ function resultsSummary(n, query, sortBy) {
 /* The results controls in one row: Filters (with how many are on), Sort,
    Get alerts, Share, and List / Grid. */
 function ResultsToolbar({ activeCount, onFilters, sortBy, onSort, onAlerts, share, view, onView }) {
-  const pill = 'inline-flex items-center gap-2 h-9 px-3.5 rounded-full text-[14px] font-medium whitespace-nowrap transition-colors hover:border-[var(--gold-deep)]';
+  const pill = 'inline-flex items-center gap-2 h-9 px-3.5 rounded-full text-body font-medium whitespace-nowrap transition-colors hover:border-[var(--gold-deep)]';
   const pillStyle = { border: '1px solid var(--line)', background: 'var(--bg-elev)', color: 'var(--ink-200)' };
   const icon = 'w-4 h-4 flex-none';
   return (
@@ -3055,7 +3055,7 @@ function ResultsToolbar({ activeCount, onFilters, sortBy, onSort, onAlerts, shar
       <button type="button" onClick={onFilters} className={pill} style={pillStyle}>
         <SlidersHorizontal className={icon} strokeWidth={1.8} aria-hidden="true" />Filters
         {activeCount > 0 && (
-          <span className="inline-grid place-items-center min-w-[20px] h-5 px-1.5 rounded-full text-[12px] font-semibold" style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>{activeCount}</span>
+          <span className="inline-grid place-items-center min-w-[20px] h-5 px-1.5 rounded-full text-fine font-semibold" style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}>{activeCount}</span>
         )}
       </button>
       <label className={`${pill} relative cursor-pointer`} style={pillStyle}>
@@ -3076,7 +3076,7 @@ function ResultsToolbar({ activeCount, onFilters, sortBy, onSort, onAlerts, shar
       <div className="ml-auto hidden sm:inline-flex flex-none p-[3px] rounded-full" role="group" aria-label="Show as" style={{ border: '1px solid var(--line)', background: 'var(--bg-elev)' }}>
         {[['list', 'List', List], ['grid', 'Grid', LayoutGrid]].map(([v, l, Icon]) => (
           <button key={v} type="button" onClick={() => onView(v)} aria-pressed={view === v}
-                  className="inline-flex items-center gap-1.5 h-[30px] px-3 rounded-full text-[13px] font-medium"
+                  className="inline-flex items-center gap-1.5 h-[30px] px-3 rounded-full text-meta font-medium"
                   style={view === v ? { background: 'var(--bg-elev-2)', color: 'var(--ink-100)', boxShadow: 'inset 0 0 0 1px var(--line)' } : { color: 'var(--ink-400)' }}>
             <Icon className="w-3.5 h-3.5" strokeWidth={1.8} aria-hidden="true" /><span className="hidden sm:inline">{l}</span>
           </button>
@@ -3095,19 +3095,19 @@ function ActiveFilterChips({ filters, onEdit, query = '' }) {
       {chips.map((c) => (
         <span
           key={c.label}
-          className="inline-flex items-center rounded-full text-[12px]"
+          className="inline-flex items-center rounded-full text-fine"
           style={{ minHeight: 26, padding: '0 10px', ...(c.tier ? tierChipStyle(c.tier) : OUTLINE_CHIP_STYLE) }}
         >
           {c.label}
         </span>
       ))}
       {chips.length === 0 && (
-        <span className="text-[13px]" style={{ color: 'var(--ink-400)' }}>All cards</span>
+        <span className="text-meta" style={{ color: 'var(--ink-400)' }}>All cards</span>
       )}
       <button
         type="button"
         onClick={onEdit}
-        className="text-[13px] px-1 transition-colors hover:text-[var(--gold-bright)]"
+        className="text-meta px-1 transition-colors hover:text-[var(--gold-bright)]"
         style={{ minHeight: 32, color: 'var(--ink-200)', borderBottom: '0.5px solid var(--gold-deep)' }}
       >
         Edit filters
@@ -3189,8 +3189,8 @@ function TeamFilter({ filters, setFilter }) {
   });
   const subLabel = (text, hint) => (
     <div className="flex items-baseline justify-between mb-3">
-      <span className="text-[11px] uppercase tracking-[0.22em] font-medium" style={{ color: 'var(--gold)' }}>{text}</span>
-      {hint && <span className="text-[12px]" style={{ color: 'var(--ink-600)' }}>{hint}</span>}
+      <span className="text-fine font-medium" style={{ color: 'var(--gold)' }}>{text}</span>
+      {hint && <span className="text-fine" style={{ color: 'var(--ink-600)' }}>{hint}</span>}
     </div>
   );
 
@@ -3232,7 +3232,7 @@ function TeamFilter({ filters, setFilter }) {
                   return (
                     <button key={t.key} type="button" onClick={() => toggleTeam(t.key)} aria-pressed={on} title={t.label} className="inline-flex items-center gap-1.5 rounded-full transition-colors" style={subChip(on)}>
                       {t.short}
-                      {n ? <span className="text-[12px]" style={{ color: on ? 'var(--gold-bright)' : 'var(--ink-600)' }}>{n}</span> : null}
+                      {n ? <span className="text-fine" style={{ color: on ? 'var(--gold-bright)' : 'var(--ink-600)' }}>{n}</span> : null}
                     </button>
                   );
                 })}

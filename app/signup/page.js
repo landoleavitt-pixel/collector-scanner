@@ -106,7 +106,7 @@ function SignupForm() {
           }}
         >
           <h1
-            className="font-serif italic text-[26px] leading-tight text-center mb-1"
+            className="font-serif italic text-price leading-tight text-center mb-1"
             style={{ color: 'var(--ink-200)' }}
           >
             Create your free account.
@@ -115,7 +115,7 @@ function SignupForm() {
 
           {confirmationSent ? (
             <div
-              className="rounded-lg p-4 text-[13px] text-center"
+              className="rounded-lg p-4 text-meta text-center"
               style={{
                 background: 'var(--bg-elev-2)',
                 border: '0.5px solid rgba(212,175,92,0.3)',
@@ -131,7 +131,7 @@ function SignupForm() {
                 type="button"
                 onClick={() => handleOAuth('google')}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-lg text-sm mb-2 transition-opacity hover:opacity-80 disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-lg text-body mb-2 transition-opacity hover:opacity-80 disabled:opacity-50"
                 style={{
                   background: 'transparent',
                   border: '0.5px solid rgba(232,226,213,0.22)',
@@ -148,7 +148,7 @@ function SignupForm() {
                 type="button"
                 onClick={() => handleOAuth('apple')}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-lg text-sm mb-4 transition-opacity hover:opacity-80 disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-lg text-body mb-4 transition-opacity hover:opacity-80 disabled:opacity-50"
                 style={{
                   background: 'transparent',
                   border: '0.5px solid rgba(232,226,213,0.22)',
@@ -162,7 +162,7 @@ function SignupForm() {
 
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex-1 h-px" style={{ background: 'rgba(232,226,213,0.12)' }} />
-                <span className="text-[11px] tracking-[0.08em] uppercase" style={{ color: 'var(--ink-400)' }}>
+                <span className="text-fine" style={{ color: 'var(--ink-400)' }}>
                   or
                 </span>
                 <div className="flex-1 h-px" style={{ background: 'rgba(232,226,213,0.12)' }} />
@@ -172,7 +172,7 @@ function SignupForm() {
                 <div className="mb-2.5">
                   <label
                     htmlFor="email"
-                    className="block text-[11px] mb-1.5 tracking-wide"
+                    className="block text-fine mb-1.5 tracking-wide"
                     style={{ color: 'var(--ink-400)' }}
                   >
                     Email
@@ -184,7 +184,7 @@ function SignupForm() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@example.com"
-                    className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
+                    className="w-full px-3 py-2.5 rounded-lg text-body focus:outline-none"
                     style={{
                       background: 'var(--bg-elev-2)',
                       border: '0.5px solid rgba(232,226,213,0.15)',
@@ -196,7 +196,7 @@ function SignupForm() {
                 <div className="mb-4">
                   <label
                     htmlFor="password"
-                    className="block text-[11px] mb-1.5 tracking-wide"
+                    className="block text-fine mb-1.5 tracking-wide"
                     style={{ color: 'var(--ink-400)' }}
                   >
                     Password
@@ -209,7 +209,7 @@ function SignupForm() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Minimum 10 characters"
-                      className="w-full px-3 py-2.5 pr-10 rounded-lg text-sm focus:outline-none"
+                      className="w-full px-3 py-2.5 pr-10 rounded-lg text-body focus:outline-none"
                       style={{
                         background: 'var(--bg-elev-2)',
                         border: '0.5px solid rgba(232,226,213,0.15)',
@@ -229,7 +229,7 @@ function SignupForm() {
                 </div>
 
                 {error && (
-                  <p className="text-[13px] mb-3 text-center" style={{ color: 'var(--crit)' }}>
+                  <p className="text-meta mb-3 text-center" style={{ color: 'var(--crit)' }}>
                     {error}
                   </p>
                 )}
@@ -237,7 +237,7 @@ function SignupForm() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 rounded-lg text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50 mb-3"
+                  className="w-full py-3 rounded-lg text-body font-medium transition-opacity hover:opacity-90 disabled:opacity-50 mb-3"
                   style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', border: 'none' }}
                 >
                   {loading ? 'Creating account…' : 'Create account'}
@@ -245,7 +245,7 @@ function SignupForm() {
               </form>
 
               <p
-                className="text-[11px] leading-relaxed text-center mb-3"
+                className="text-fine leading-relaxed text-center mb-3"
                 style={{ color: 'var(--ink-600)' }}
               >
                 By continuing you agree to our{' '}
@@ -262,7 +262,7 @@ function SignupForm() {
           )}
 
           <div
-            className="text-center text-[13px] pt-4"
+            className="text-center text-meta pt-4"
             style={{ color: 'var(--ink-400)', borderTop: '0.5px solid rgba(232,226,213,0.08)' }}
           >
             Already have an account?{' '}

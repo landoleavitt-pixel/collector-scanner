@@ -79,18 +79,18 @@ export default function VersionsView({ query, game, onUnavailable, onNewSearch, 
 
   return (
     <section className="max-w-[720px] mx-auto px-5 md:px-6 pt-4 md:pt-8 pb-16 stage-in">
-      <button type="button" onClick={onNewSearch} className="inline-flex items-center gap-1 text-[15px] min-h-[40px]" style={{ color: 'var(--ink-400)' }}>
+      <button type="button" onClick={onNewSearch} className="inline-flex items-center gap-1 text-body min-h-[40px]" style={{ color: 'var(--ink-400)' }}>
         <ChevronLeft className="w-[18px] h-[18px]" strokeWidth={2} aria-hidden="true" />New search
       </button>
       <h1 className="sr-only">Every version of {title}</h1>
       <div className="mt-1 mb-2.5">
         <EditableSearchHeading side="fables" value={title} onSubmit={(next) => { const t = (next || '').trim(); if (t && norm(t) !== norm(title)) onSearch(t); }} />
       </div>
-      <p className="text-[18px]" style={{ color: 'var(--ink-200)' }}>
+      <p className="text-lede" style={{ color: 'var(--ink-200)' }}>
         <b className="font-semibold" style={{ color: 'var(--ink-100)' }}>{plural(versionCount, 'version', 'versions')}</b> · {listings.total.toLocaleString('en-US')}{listings.capped ? '+' : ''} {listings.total === 1 ? 'listing' : 'listings'} for sale now
       </p>
       {listings.hidden > 0 && (
-        <p className="flex items-center gap-2 text-[14px] mt-2.5" style={{ color: 'var(--ink-400)' }}>
+        <p className="flex items-center gap-2 text-body mt-2.5" style={{ color: 'var(--ink-400)' }}>
           <ShieldCheck className="w-[17px] h-[17px] flex-none" strokeWidth={2} style={{ color: 'var(--gold)' }} aria-hidden="true" />
           We hid {plural(listings.hidden, 'listing that isn’t', 'listings that aren’t')} this card.
         </p>
@@ -98,7 +98,7 @@ export default function VersionsView({ query, game, onUnavailable, onNewSearch, 
 
       {shown.map((g) => (
         <div key={g.set}>
-          <h2 className="font-display italic text-[21px] mt-6 mb-2.5" style={{ color: 'var(--ink-200)' }}>{g.name}{g.year && !g.name.includes(g.year) ? ` · ${g.year}` : ''}</h2>
+          <h2 className="font-display italic text-h3 mt-6 mb-2.5" style={{ color: 'var(--ink-200)' }}>{g.name}{g.year && !g.name.includes(g.year) ? ` · ${g.year}` : ''}</h2>
           {g.rows.map(({ r, v, n }) => {
             const label = versionLabel(game, v);
             const photo = listings.photos[r.id];
@@ -107,14 +107,14 @@ export default function VersionsView({ query, game, onUnavailable, onNewSearch, 
                     style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
                 <CardFrame src={photo ? sized(photo, 300) : null} game={game} className="!w-[50px]" />
                 <span className="flex-1 min-w-0">
-                  <span className="block text-[17px] font-medium leading-tight" style={{ color: 'var(--ink-100)' }}>{r.cardName}</span>
-                  <span className="flex flex-wrap items-center gap-x-2 text-[14px] mt-0.5" style={{ color: 'var(--ink-400)' }}>
+                  <span className="block text-lede font-medium leading-tight" style={{ color: 'var(--ink-100)' }}>{r.cardName}</span>
+                  <span className="flex flex-wrap items-center gap-x-2 text-body mt-0.5" style={{ color: 'var(--ink-400)' }}>
                     <span>No. {cardNumber(game, r)} · {label}</span>
                     {v.rarityGroup && <GroupDot group={v.rarityGroup} small />}
                   </span>
                   {/* No count here: the row's number came from one sample of
                       listings and didn't match what "Find it" shows (QA 2026-11-07 #4). */}
-                  <span className="block text-[15px] font-medium mt-0.5" style={{ color: 'var(--gold-bright)' }}>For sale now</span>
+                  <span className="block text-body font-medium mt-0.5" style={{ color: 'var(--gold-bright)' }}>For sale now</span>
                 </span>
               </Link>
             );
@@ -122,44 +122,44 @@ export default function VersionsView({ query, game, onUnavailable, onNewSearch, 
         </div>
       ))}
       {!showAll && sets.length > SETS_SHOWN && (
-        <button type="button" onClick={() => setShowAll(true)} className="w-full min-h-[56px] rounded-2xl text-[16px] mt-2"
+        <button type="button" onClick={() => setShowAll(true)} className="w-full min-h-[56px] rounded-2xl text-lede mt-2"
                 style={{ border: '1px dashed var(--line)', color: 'var(--ink-400)' }}>
           Show {sets.length - SETS_SHOWN} older sets
         </button>
       )}
 
       {unsure > 0 && (
-        <Link href={unsureHref} className="block rounded-[14px] p-3.5 mt-3.5 text-[15px]" style={{ border: '1px dashed var(--line)', color: 'var(--ink-200)' }}>
+        <Link href={unsureHref} className="block rounded-[14px] p-3.5 mt-3.5 text-body" style={{ border: '1px dashed var(--line)', color: 'var(--ink-200)' }}>
           {plural(unsure, 'more is', 'more are')} {title}, but the seller didn’t say which version.
-          <span className="block text-[13px] mt-0.5" style={{ color: 'var(--ink-400)' }}>Listed separately, so you can check them yourself.</span>
+          <span className="block text-meta mt-0.5" style={{ color: 'var(--ink-400)' }}>Listed separately, so you can check them yourself.</span>
         </Link>
       )}
 
       {alertState === 'on' ? (
-        <p className="w-full min-h-[60px] rounded-2xl flex items-center justify-center gap-2.5 text-[17px] mt-5" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)', color: 'var(--gold-bright)' }}>
+        <p className="w-full min-h-[60px] rounded-2xl flex items-center justify-center gap-2.5 text-lede mt-5" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)', color: 'var(--gold-bright)' }}>
           <Bell className="w-5 h-5" strokeWidth={2} aria-hidden="true" />Alerts are on
         </p>
       ) : (
         <button type="button" onClick={() => (user ? setAsk(true) : window.location.assign(`/signup?src=alert&next=${encodeURIComponent(here)}`))}
-                className="w-full min-h-[60px] rounded-2xl flex items-center justify-center gap-2.5 text-[17px] font-semibold mt-5"
+                className="w-full min-h-[60px] rounded-2xl flex items-center justify-center gap-2.5 text-lede font-semibold mt-5"
                 style={{ background: 'linear-gradient(180deg,var(--gold-fill-top),var(--gold-fill-bottom))', color: 'var(--ink-on-gold)' }}>
           <Bell className="w-5 h-5 flex-none" strokeWidth={2} aria-hidden="true" />Alert me when one I need is listed
         </button>
       )}
-      {alertState && alertState !== 'on' && alertState !== 'saving' && <p className="text-[14px] mt-3" style={{ color: 'var(--ink-200)' }}>{alertState}</p>}
+      {alertState && alertState !== 'on' && alertState !== 'saving' && <p className="text-body mt-3" style={{ color: 'var(--ink-200)' }}>{alertState}</p>}
 
-      <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-4 text-[15px]" style={{ color: 'var(--ink-400)' }}>
+      <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-4 text-body" style={{ color: 'var(--ink-400)' }}>
         <button type="button" onClick={onShowAll} className="min-h-[40px] underline underline-offset-[3px]">See all listings</button>
         <Link href={checklistHref} className="inline-flex items-center min-h-[40px] underline underline-offset-[3px]">Mark the ones you have</Link>
       </div>
-      {data.source && <p className="text-[12px] mt-6 text-center" style={{ color: 'var(--ink-600)' }}>{data.source} Photos are from sellers’ eBay listings.</p>}
+      {data.source && <p className="text-fine mt-6 text-center" style={{ color: 'var(--ink-600)' }}>{data.source} Photos are from sellers’ eBay listings.</p>}
 
       {ask && (
         <Sheet onClose={() => setAsk(false)}>
-          <h3 className="font-display italic text-[28px] leading-tight mb-1">Alert you when one you need is listed?</h3>
-          <p className="text-[16px] mb-5" style={{ color: 'var(--ink-400)' }}>We skip the ones you’ve marked as yours. We’ll email you.</p>
+          <h3 className="font-display italic text-price leading-tight mb-1">Alert you when one you need is listed?</h3>
+          <p className="text-lede mb-5" style={{ color: 'var(--ink-400)' }}>We skip the ones you’ve marked as yours. We’ll email you.</p>
           <BigButton onClick={turnOnAlert} disabled={alertState === 'saving'}>{alertState === 'saving' ? 'Saving…' : 'Yes, alert me'}</BigButton>
-          <button type="button" onClick={() => setAsk(false)} className="w-full min-h-[56px] text-[17px] mt-1.5" style={{ color: 'var(--ink-400)' }}>Not now</button>
+          <button type="button" onClick={() => setAsk(false)} className="w-full min-h-[56px] text-lede mt-1.5" style={{ color: 'var(--ink-400)' }}>Not now</button>
         </Sheet>
       )}
       {pushAsk.node}

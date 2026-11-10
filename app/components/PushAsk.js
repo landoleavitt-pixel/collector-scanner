@@ -62,14 +62,14 @@ export function usePushAsk() {
           className="w-full max-w-[400px] rounded-xl p-6"
           style={{ background: 'var(--bg-elev-2)', border: '0.5px solid var(--gold-deep)', boxShadow: '0 30px 60px rgba(0,0,0,0.6)' }}
         >
-          <h2 id="push-ask-title" className="font-display italic text-[24px] leading-tight">Get your alerts</h2>
-          <p className="mt-2 text-[14px] leading-relaxed" style={{ color: 'var(--ink-200)' }}>{PUSH_REASON}</p>
+          <h2 id="push-ask-title" className="font-display italic text-price leading-tight">Get your alerts</h2>
+          <p className="mt-2 text-body leading-relaxed" style={{ color: 'var(--ink-200)' }}>{PUSH_REASON}</p>
           <div className="mt-5 grid gap-2">
             <button
               type="button"
               onClick={allow}
               autoFocus
-              className="w-full h-11 rounded-lg text-[13px] font-semibold"
+              className="w-full h-11 rounded-lg text-meta font-semibold"
               style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}
             >
               Continue
@@ -77,13 +77,13 @@ export function usePushAsk() {
             <button
               type="button"
               onClick={notNow}
-              className="w-full h-11 rounded-lg text-[13px]"
+              className="w-full h-11 rounded-lg text-meta"
               style={{ background: 'transparent', color: 'var(--ink-200)', border: '0.5px solid var(--line)' }}
             >
               Not now
             </button>
           </div>
-          <p className="mt-3 text-[12px] text-center" style={{ color: 'var(--ink-400)' }}>Email alerts still work either way.</p>
+          <p className="mt-3 text-fine text-center" style={{ color: 'var(--ink-400)' }}>Email alerts still work either way.</p>
         </div>
       </div>,
       document.body,

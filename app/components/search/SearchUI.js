@@ -25,7 +25,7 @@ export const SPORTS_SORT_OPTIONS = [
 /* Section label — small uppercase eyebrow above each filter section */
 export function SectionLabel({ children, className = '' }) {
   return (
-    <h3 className={`text-[10px] uppercase tracking-[0.28em] text-[var(--ink-400)] mb-4 font-medium ${className}`}>
+    <h3 className={`text-fine text-[var(--ink-400)] mb-4 font-medium ${className}`}>
       {children}
     </h3>
   );
@@ -56,7 +56,7 @@ function PriceBox({ label, value, placeholder, onCommit }) {
   return (
     <label className="flex-1 min-w-0 flex items-center gap-1.5 h-12 px-3 rounded-lg focus-within:border-[var(--gold-bright)]"
            style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
-      <span className="text-[16px]" style={{ color: 'var(--ink-400)' }}>$</span>
+      <span className="text-lede" style={{ color: 'var(--ink-400)' }}>$</span>
       <input
         type="text"
         inputMode="numeric"
@@ -68,7 +68,7 @@ function PriceBox({ label, value, placeholder, onCommit }) {
         onBlur={(e) => commit(e.target.value)}
         onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur(); } }}
         aria-label={label}
-        className="flex-1 min-w-0 bg-transparent border-0 outline-none text-[17px]"
+        className="flex-1 min-w-0 bg-transparent border-0 outline-none text-lede"
         style={{ color: 'var(--ink-100)' }}
       />
     </label>
@@ -101,7 +101,7 @@ export function PriceRangeSlider({ min, max, onChange }) {
     const on = cap === hi;
     return (
       <button key={label} type="button" onClick={() => pick(cap)} aria-pressed={on}
-              className="h-10 px-3.5 rounded-full text-[14px] whitespace-nowrap transition-colors"
+              className="h-10 px-3.5 rounded-full text-body whitespace-nowrap transition-colors"
               style={on
                 ? { border: '1px solid var(--gold-bright)', color: 'var(--gold-bright)', background: 'var(--ff-chip-on-bg, rgba(230,185,107,0.08))' }
                 : { border: '1px solid var(--line)', color: 'var(--ink-200)', background: 'var(--bg-elev)' }}>
@@ -118,10 +118,10 @@ export function PriceRangeSlider({ min, max, onChange }) {
       </div>
       <div className="flex items-center gap-2.5">
         <PriceBox label="Minimum price" value={lo > 0 ? lo : null} placeholder="No min" onCommit={(v) => set(v, hi)} />
-        <span className="text-[14px]" style={{ color: 'var(--ink-400)' }}>to</span>
+        <span className="text-body" style={{ color: 'var(--ink-400)' }}>to</span>
         <PriceBox label="Maximum price" value={hi >= PRICE_NO_MAX ? null : hi} placeholder="No max" onCommit={(v) => set(lo, v ?? PRICE_NO_MAX)} />
       </div>
-      <p className="mt-3 text-[13px]" style={{ color: 'var(--ink-400)' }}>
+      <p className="mt-3 text-meta" style={{ color: 'var(--ink-400)' }}>
         Showing <span style={{ color: 'var(--ink-100)' }}>{priceRangeLabel(lo, hi)}</span>
       </p>
     </div>
@@ -137,7 +137,7 @@ export function MoreFilters({ active = 0, children }) {
   return (
     <div>
       <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open}
-              className="w-full flex items-center justify-between text-[13px] font-medium py-2"
+              className="w-full flex items-center justify-between text-meta font-medium py-2"
               style={{ color: 'var(--ink-200)' }}>
         <span>More filters{active ? ` (${active})` : ''}</span>
         <span aria-hidden="true" style={{ color: 'var(--ink-400)', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .15s' }}>⌄</span>
@@ -151,7 +151,7 @@ export function MoreFilters({ active = 0, children }) {
 export function FilterChip({ on, onClick, children }) {
   return (
     <button type="button" onClick={onClick} aria-pressed={on}
-            className="text-[13px] inline-flex items-center rounded-full transition-all whitespace-nowrap"
+            className="text-meta inline-flex items-center rounded-full transition-all whitespace-nowrap"
             style={{ minHeight: 36, padding: '0 14px', ...(on
               ? { background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', border: '1px solid var(--gold-bright)', fontWeight: 600 }
               : { border: '1px solid var(--line)', background: 'var(--bg-elev-2)', color: 'var(--ink-200)', fontWeight: 500 }) }}>
@@ -184,7 +184,7 @@ export function ShippingFilters({ filters, setFilter }) {
         <FilterChip on={filters.shipFrom === 'CA'} onClick={() => setFilter('shipFrom', filters.shipFrom === 'CA' ? '' : 'CA')}>Ships from Canada</FilterChip>
         <FilterChip on={!!filters.returns} onClick={() => setFilter('returns', !filters.returns)}>Returns accepted</FilterChip>
       </div>
-      {filters.offers && <p className="text-[12px] mt-2" style={{ color: 'var(--ink-600)' }}>Offers are only on Buy It Now listings.</p>}
+      {filters.offers && <p className="text-fine mt-2" style={{ color: 'var(--ink-600)' }}>Offers are only on Buy It Now listings.</p>}
     </div>
   );
 }
@@ -203,7 +203,7 @@ export function SegmentedGroup({ value, onChange, options, vertical = false }) {
             <button
               key={v}
               onClick={() => onChange(v)}
-              className="px-3.5 py-2.5 text-[13px] tracking-[0.04em] text-left transition-all border"
+              className="px-3.5 py-2.5 text-meta tracking-[0.04em] text-left transition-all border"
               style={
                 active
                   ? {
@@ -235,7 +235,7 @@ export function SegmentedGroup({ value, onChange, options, vertical = false }) {
           <button
             key={v}
             onClick={() => onChange(v)}
-            className={`flex-1 px-3 py-3 text-[13px] tracking-[0.06em] transition-colors text-center ${
+            className={`flex-1 px-3 py-3 text-meta tracking-[0.06em] transition-colors text-center ${
               idx !== options.length - 1 ? 'border-r border-[var(--line-soft)]' : ''
             }`}
             style={
@@ -267,7 +267,7 @@ export function SegmentedGroup({ value, onChange, options, vertical = false }) {
 export function ResultsSidebar({ children, onSearch, hasPending }) {
   return (
     <aside className="border border-[var(--line-soft)] bg-[var(--bg-elev)]/30 px-5 py-6">
-      <h2 className="text-[10px] uppercase tracking-[0.28em] text-[var(--gold)] mb-5 pb-4 border-b border-[var(--line-soft)]">
+      <h2 className="text-fine text-[var(--gold)] mb-5 pb-4 border-b border-[var(--line-soft)]">
         Filters
       </h2>
 
@@ -277,7 +277,7 @@ export function ResultsSidebar({ children, onSearch, hasPending }) {
       <div className="mt-7 pt-5 border-t border-[var(--line-soft)]">
         <button
           onClick={onSearch}
-          className={`group block w-full px-5 py-3 transition-all text-[12px] font-semibold tracking-[0.14em] uppercase text-center ${
+          className={`group block w-full px-5 py-3 transition-all text-fine font-semibold text-center ${
             hasPending ? 'pending-pulse' : ''
           }`}
           style={{
@@ -288,7 +288,7 @@ export function ResultsSidebar({ children, onSearch, hasPending }) {
           Search <ArrowRight className="inline-block w-3.5 h-3.5 ml-1 -mt-0.5" strokeWidth={2} aria-hidden="true" />
         </button>
         {hasPending && (
-          <p className="text-[11px] text-[var(--gold)] italic text-center mt-3 leading-tight">
+          <p className="text-fine text-[var(--gold)] italic text-center mt-3 leading-tight">
             Filters changed. Press Search to update.
           </p>
         )}
@@ -307,7 +307,7 @@ export function ResultsSidebar({ children, onSearch, hasPending }) {
 
 export function MobileFilterBar({ activeCount, onOpenFilters, onOpenSort }) {
   const pill =
-    'flex-1 inline-flex items-center justify-center gap-2 h-11 rounded-full text-[12px] uppercase tracking-[0.12em] font-medium text-[var(--ink-100)]';
+    'flex-1 inline-flex items-center justify-center gap-2 h-11 rounded-full text-fine font-medium text-[var(--ink-100)]';
   const pillStyle = { border: '1px solid var(--line)', background: 'var(--bg-elev)' };
   return (
     <div
@@ -327,7 +327,7 @@ export function MobileFilterBar({ activeCount, onOpenFilters, onOpenSort }) {
         Filters
         {activeCount > 0 && (
           <span
-            className="inline-flex items-center justify-center text-[11px] font-bold rounded-full"
+            className="inline-flex items-center justify-center text-fine font-bold rounded-full"
             style={{ minWidth: 18, height: 18, padding: '0 5px', background: 'var(--gold)', color: 'var(--ink-on-gold)', letterSpacing: 0 }}
           >
             {activeCount}
@@ -390,7 +390,7 @@ export function MobileSheet({ open, onClose, title, children, footer, full = fal
           <span style={{ width: 38, height: 4, borderRadius: 999, background: 'var(--line)', display: 'block' }} />
         </button>
         <div className="flex items-center justify-between px-6 pb-4 pt-1" style={{ borderBottom: '1px solid var(--line-soft)' }}>
-          <span className="font-display italic text-2xl text-[var(--ink-100)]">{title}</span>
+          <span className="font-display italic text-price text-[var(--ink-100)]">{title}</span>
           <button
             onClick={onClose}
             aria-label="Close"
@@ -440,7 +440,7 @@ export function MobileFilterDrawer({ open, onClose, filters, onSearch, onCloseWi
       footer={
         <button
           onClick={onSearch}
-          className="w-full text-[13px] font-bold uppercase tracking-[0.14em]"
+          className="w-full text-meta font-bold"
           style={{
             minHeight: 52,
             borderRadius: 12,
@@ -467,7 +467,7 @@ export function MobileSortSheet({ open, onClose, value, onChange, options = SPOR
             <button
               key={v}
               onClick={() => onChange(v)}
-              className="w-full flex items-center justify-between text-left text-[15px]"
+              className="w-full flex items-center justify-between text-left text-body"
               style={{ minHeight: 50, borderBottom: '1px solid var(--line-soft)', color: sel ? 'var(--gold-bright)' : 'var(--ink-200)' }}
             >
               <span>{l}</span>
@@ -476,7 +476,7 @@ export function MobileSortSheet({ open, onClose, value, onChange, options = SPOR
           );
         })}
       </div>
-      <p className="text-[11px] italic mt-3 leading-relaxed" style={{ color: 'var(--ink-600)' }}>
+      <p className="text-fine italic mt-3 leading-relaxed" style={{ color: 'var(--ink-600)' }}>
         {note}
       </p>
     </MobileSheet>
@@ -489,7 +489,7 @@ export function MobileSortSheet({ open, onClose, value, onChange, options = SPOR
    ───────────────────────────────────────────── */
 export function SortDropdown({ value, onChange, options = SPORTS_SORT_OPTIONS }) {
   return (
-    <label className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-[var(--ink-400)]">
+    <label className="inline-flex items-center gap-2 text-fine text-[var(--ink-400)]">
       <span>Sort</span>
       <select
         value={value}
@@ -573,19 +573,19 @@ export function PendingSearchModal({ open, onSearch, onCancel, onDismiss, floati
             <X className="w-4 h-4" strokeWidth={1.75} aria-hidden="true" />
           </button>
         )}
-        <p className="text-[10px] tracking-[0.3em] uppercase mb-4" style={{ color: 'var(--gold)' }}>
+        <p className="text-fine mb-4" style={{ color: 'var(--gold)' }}>
           Filters changed
         </p>
-        <h3 className="font-display italic text-[26px] leading-tight mb-3" style={{ color: 'var(--ink-100)' }}>
+        <h3 className="font-display italic text-price leading-tight mb-3" style={{ color: 'var(--ink-100)' }}>
           Search with new filters?
         </h3>
-        <p className="text-[13px] leading-relaxed mb-6" style={{ color: 'var(--ink-400)' }}>
+        <p className="text-meta leading-relaxed mb-6" style={{ color: 'var(--ink-400)' }}>
           You’ve adjusted your filters since your last search. Run it again to see updated results.
         </p>
         <div className="flex flex-col gap-3">
           <button
             onClick={onSearch}
-            className="w-full min-h-[48px] rounded-lg text-[12px] font-bold uppercase tracking-[0.14em]"
+            className="w-full min-h-[48px] rounded-lg text-fine font-bold"
             style={{
               background: 'var(--gold-bright)',
               color: 'var(--ink-on-gold)',
@@ -597,7 +597,7 @@ export function PendingSearchModal({ open, onSearch, onCancel, onDismiss, floati
           </button>
           <button
             onClick={onCancel}
-            className="w-full min-h-[40px] text-[11px] tracking-[0.14em] uppercase"
+            className="w-full min-h-[40px] text-fine"
             style={{ background: 'transparent', color: 'var(--ink-400)', border: 'none', cursor: 'pointer' }}
           >
             Cancel · keep previous filters
@@ -643,10 +643,10 @@ export function LoadingState({ phrase }) {
   return (
     <div className="pt-2">
       <div className="flex items-baseline justify-between pb-4 mb-8 border-b border-[var(--line)]">
-        <span className="font-display text-lg">Searching</span>
-        <span className="font-mono text-[11px] text-[var(--gold)] tracking-wider shimmer">●</span>
+        <span className="font-display text-lede">Searching</span>
+        <span className="font-mono text-fine text-[var(--gold)] tracking-wider shimmer">●</span>
       </div>
-      <p key={phrase} className="font-display italic text-2xl text-[var(--ink-200)] rise" style={{ animationDuration: '0.5s' }}>
+      <p key={phrase} className="font-display italic text-price text-[var(--ink-200)] rise" style={{ animationDuration: '0.5s' }}>
         {phrase}…
       </p>
       <div className="mt-10 space-y-6">
@@ -669,25 +669,25 @@ export function NoResultsState({ onSuggested, appliedFilters, nameFix = null, on
   return (
     <div className="pt-2">
       <div className="flex items-baseline justify-between pb-4 mb-8 border-b border-[var(--line)]">
-        <span className="font-display text-lg">No matches</span>
-        <span className="font-mono text-[11px] text-[var(--ink-600)] tracking-wider">00</span>
+        <span className="font-display text-lede">No matches</span>
+        <span className="font-mono text-fine text-[var(--ink-600)] tracking-wider">00</span>
       </div>
       {nameFix ? (
         <>
-          <p className="font-display italic text-2xl text-[var(--ink-200)] leading-snug text-balance max-w-md">
+          <p className="font-display italic text-price text-[var(--ink-200)] leading-snug text-balance max-w-md">
             Nothing found. Did you mean <span style={{ color: 'var(--gold-bright)' }}>{nameFix}</span>?
           </p>
           <button
             type="button"
             onClick={() => onNameFix?.(nameFix)}
-            className="mt-5 inline-flex items-center gap-2 rounded-full text-[14px] font-semibold transition-opacity hover:opacity-90"
+            className="mt-5 inline-flex items-center gap-2 rounded-full text-body font-semibold transition-opacity hover:opacity-90"
             style={{ minHeight: 44, padding: '0 18px', background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}
           >
             Search {nameFix} <ArrowRight className="w-4 h-4" strokeWidth={2} />
           </button>
         </>
       ) : (
-        <p className="font-display italic text-2xl text-[var(--ink-200)] leading-snug text-balance max-w-md">
+        <p className="font-display italic text-price text-[var(--ink-200)] leading-snug text-balance max-w-md">
           {emptyText}
         </p>
       )}

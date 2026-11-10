@@ -178,10 +178,10 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
           color: 'var(--ink-200)',
         }}
       >
-        <h2 className="font-serif italic text-[22px] text-center mb-1">
+        <h2 className="font-serif italic text-h3 text-center mb-1">
           {isEditing ? 'Update search criteria.' : 'Save this search.'}
         </h2>
-        <p className="text-[13px] text-center mb-5" style={{ color: 'var(--ink-400)' }}>
+        <p className="text-meta text-center mb-5" style={{ color: 'var(--ink-400)' }}>
           {isEditing
             ? 'Overwrite your saved search with these new filters.'
             : "We'll notify you when new matches appear."}
@@ -194,7 +194,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
               return (
                 <span
                   key={i}
-                  className="text-[10px] tracking-[0.18em] uppercase px-2.5 py-1 rounded"
+                  className="text-fine px-2.5 py-1 rounded"
                   style={{
                     background: style.bg,
                     color: style.color,
@@ -211,7 +211,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
         <div className="mb-4">
           <label
             htmlFor="search-name"
-            className="block text-[11px] mb-1.5 tracking-wide"
+            className="block text-fine mb-1.5 tracking-wide"
             style={{ color: 'var(--ink-400)' }}
           >
             Name this search
@@ -221,7 +221,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
+            className="w-full px-3 py-2.5 rounded-lg text-body focus:outline-none"
             style={{
               background: 'var(--bg-elev-2)',
               border: '0.5px solid rgba(232,226,213,0.15)',
@@ -238,15 +238,15 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
           >
             <div className="flex items-center justify-between gap-3">
               <div>
-                <div className="text-[13px]" style={{ color: 'var(--ink-200)' }}>
+                <div className="text-meta" style={{ color: 'var(--ink-200)' }}>
                   Email me new matches
                 </div>
-                <div className="text-[11px]" style={{ color: 'var(--ink-400)' }}>
+                <div className="text-fine" style={{ color: 'var(--ink-400)' }}>
                   Alerts are part of Base. Saving searches is always free.
                 </div>
               </div>
               <span
-                className="text-[10px] uppercase tracking-[0.16em] px-2 py-1 rounded flex-none"
+                className="text-fine px-2 py-1 rounded flex-none"
                 style={{ color: 'var(--ink-on-gold)', background: 'var(--gold-bright)', fontWeight: 700 }}
               >
                 Base
@@ -255,7 +255,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
             <button
               type="button"
               onClick={() => router.push('/subscribe')}
-              className="w-full mt-3 py-2 rounded-lg text-[11px] uppercase tracking-[0.16em]"
+              className="w-full mt-3 py-2 rounded-lg text-fine"
               style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', fontWeight: 600 }}
             >
               Start 14-day free trial
@@ -264,10 +264,10 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
         ) : (
           <div className="flex items-center justify-between py-2 mb-4">
             <div>
-              <div className="text-[13px]" style={{ color: 'var(--ink-200)' }}>
+              <div className="text-meta" style={{ color: 'var(--ink-200)' }}>
                 Email me new matches
               </div>
-              <div className="text-[11px]" style={{ color: atWatchLimit ? 'var(--crit)' : 'var(--ink-400)' }}>
+              <div className="text-fine" style={{ color: atWatchLimit ? 'var(--crit)' : 'var(--ink-400)' }}>
                 {atWatchLimit
                   ? `Watching ${watchLimit} of ${watchLimit}. Pause one to turn on alerts here.`
                   : 'Quiet mode pauses notifications'}
@@ -293,7 +293,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
         )}
 
         {error && (
-          <p className="text-[13px] mb-3 text-center" style={{ color: 'var(--crit)' }}>
+          <p className="text-meta mb-3 text-center" style={{ color: 'var(--crit)' }}>
             {error}
           </p>
         )}
@@ -303,7 +303,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="py-3 rounded-lg text-sm transition-opacity hover:opacity-80 disabled:opacity-50"
+            className="py-3 rounded-lg text-body transition-opacity hover:opacity-80 disabled:opacity-50"
             style={{
               background: 'transparent',
               border: '0.5px solid rgba(232,226,213,0.22)',
@@ -316,7 +316,7 @@ export default function SaveSearchModal({ open, onClose, query, filters, chips =
             type="button"
             onClick={handleSave}
             disabled={loading}
-            className="py-3 rounded-lg text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50"
+            className="py-3 rounded-lg text-body font-medium transition-opacity hover:opacity-90 disabled:opacity-50"
             style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', border: 'none' }}
           >
             {loading ? (isEditing ? 'Updating…' : 'Saving…') : (isEditing ? 'Update' : 'Save')}

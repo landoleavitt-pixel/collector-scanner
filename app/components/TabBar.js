@@ -74,7 +74,7 @@ export default function TabBar() {
                 {ICONS[t.icon]}
               </svg>
             </span>
-            <span className="text-[11px] font-medium">{t.label}</span>
+            <span className="text-fine font-medium">{t.label}</span>
           </>
         );
         const cls = 'flex flex-col items-center justify-center gap-1 min-h-[44px]';

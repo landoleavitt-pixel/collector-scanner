@@ -133,7 +133,7 @@ export default function PrintRunsGuide() {
             consistently behaves at different rarity levels.
           </p>
 
-          <h3 className="font-display text-xl mt-8 mb-2 text-[var(--gold-bright)]">
+          <h3 className="font-display text-h3 mt-8 mb-2 text-[var(--gold-bright)]">
             /1: One of one
           </h3>
           <p>
@@ -143,7 +143,7 @@ export default function PrintRunsGuide() {
             tier. Auction-only territory for most players.
           </p>
 
-          <h3 className="font-display text-xl mt-8 mb-2 text-[var(--gold-bright)]">
+          <h3 className="font-display text-h3 mt-8 mb-2 text-[var(--gold-bright)]">
             /5 to /25: Grail tier
           </h3>
           <p>
@@ -155,7 +155,7 @@ export default function PrintRunsGuide() {
             findable.
           </p>
 
-          <h3 className="font-display text-xl mt-8 mb-2 text-[var(--gold-bright)]">
+          <h3 className="font-display text-h3 mt-8 mb-2 text-[var(--gold-bright)]">
             /50 to /99: Ultra rare
           </h3>
           <p>
@@ -167,7 +167,7 @@ export default function PrintRunsGuide() {
             tier is the answer.
           </p>
 
-          <h3 className="font-display text-xl mt-8 mb-2 text-[var(--gold-bright)]">
+          <h3 className="font-display text-h3 mt-8 mb-2 text-[var(--gold-bright)]">
             /100 to /499: Rare
           </h3>
           <p>
@@ -177,7 +177,7 @@ export default function PrintRunsGuide() {
             many players the /199 tier is the entry point into numbered collecting.
           </p>
 
-          <h3 className="font-display text-xl mt-8 mb-2 text-[var(--gold-bright)]">
+          <h3 className="font-display text-h3 mt-8 mb-2 text-[var(--gold-bright)]">
             /500 and above: Scarce
           </h3>
           <p>
@@ -334,14 +334,14 @@ export default function PrintRunsGuide() {
         </Prose>
 
         <div className="mt-16 pt-10" style={{ borderTop: '0.5px solid rgba(232,226,213,0.08)' }}>
-          <p className="text-[11px] uppercase tracking-[0.22em] text-[var(--gold)] mb-4">Next</p>
-          <p className="text-lg text-[var(--ink-200)] leading-relaxed mb-6 max-w-[60ch]">
+          <p className="text-fine text-[var(--gold)] mb-4">Next</p>
+          <p className="text-lede text-[var(--ink-200)] leading-relaxed mb-6 max-w-[60ch]">
             Want to put this into practice? Search eBay with filters that actually
             understand print runs, autographs, rookies, and grades.
           </p>
           <Link
             href="/"
-            className="inline-flex items-center justify-center px-6 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase transition-opacity hover:opacity-90"
+            className="inline-flex items-center justify-center px-6 py-3 rounded-full text-fine transition-opacity hover:opacity-90"
             style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)' }}
           >
             Try a search <ArrowRight className="inline-block w-3.5 h-3.5 ml-1 -mt-0.5" strokeWidth={2} aria-hidden="true" />

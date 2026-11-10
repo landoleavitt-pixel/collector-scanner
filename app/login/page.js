@@ -113,18 +113,18 @@ export default function LoginPage() {
           }}
         >
           <h1
-            className="font-serif italic text-[26px] leading-tight text-center mb-1"
+            className="font-serif italic text-price leading-tight text-center mb-1"
             style={{ color: 'var(--ink-200)' }}
           >
             Welcome back.
           </h1>
-          <p className="text-[13px] text-center mb-6" style={{ color: 'var(--ink-400)' }}>
+          <p className="text-meta text-center mb-6" style={{ color: 'var(--ink-400)' }}>
             Your alerts, watchlist and saved searches are waiting.
           </p>
 
           {magicLinkSent ? (
             <div
-              className="rounded-lg p-4 text-[13px] text-center"
+              className="rounded-lg p-4 text-meta text-center"
               style={{
                 background: 'var(--bg-elev-2)',
                 border: '0.5px solid rgba(212,175,92,0.3)',
@@ -141,7 +141,7 @@ export default function LoginPage() {
                 type="button"
                 onClick={() => handleOAuth('google')}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-lg text-sm mb-2 transition-opacity hover:opacity-80 disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-lg text-body mb-2 transition-opacity hover:opacity-80 disabled:opacity-50"
                 style={{
                   background: 'transparent',
                   border: '0.5px solid rgba(232,226,213,0.22)',
@@ -159,7 +159,7 @@ export default function LoginPage() {
                 type="button"
                 onClick={() => handleOAuth('apple')}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-lg text-sm mb-4 transition-opacity hover:opacity-80 disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-lg text-body mb-4 transition-opacity hover:opacity-80 disabled:opacity-50"
                 style={{
                   background: 'transparent',
                   border: '0.5px solid rgba(232,226,213,0.22)',
@@ -174,7 +174,7 @@ export default function LoginPage() {
               {/* Divider */}
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex-1 h-px" style={{ background: 'rgba(232,226,213,0.12)' }} />
-                <span className="text-[11px] tracking-[0.08em] uppercase" style={{ color: 'var(--ink-400)' }}>
+                <span className="text-fine" style={{ color: 'var(--ink-400)' }}>
                   or
                 </span>
                 <div className="flex-1 h-px" style={{ background: 'rgba(232,226,213,0.12)' }} />
@@ -185,7 +185,7 @@ export default function LoginPage() {
                 <div className="mb-2.5">
                   <label
                     htmlFor="email"
-                    className="block text-[11px] mb-1.5 tracking-wide"
+                    className="block text-fine mb-1.5 tracking-wide"
                     style={{ color: 'var(--ink-400)' }}
                   >
                     Email
@@ -196,7 +196,7 @@ export default function LoginPage() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
+                    className="w-full px-3 py-2.5 rounded-lg text-body focus:outline-none"
                     style={{
                       background: 'var(--bg-elev-2)',
                       border: '0.5px solid rgba(232,226,213,0.15)',
@@ -207,12 +207,12 @@ export default function LoginPage() {
 
                 <div className="mb-4">
                   <div className="flex justify-between mb-1.5">
-                    <label htmlFor="password" className="text-[11px] tracking-wide" style={{ color: 'var(--ink-400)' }}>
+                    <label htmlFor="password" className="text-fine tracking-wide" style={{ color: 'var(--ink-400)' }}>
                       Password
                     </label>
                     <Link
                       href="/forgot-password"
-                      className="text-[11px] font-serif italic"
+                      className="text-fine font-serif italic"
                       style={{ color: 'var(--gold-bright)' }}
                     >
                       Forgot?
@@ -225,7 +225,7 @@ export default function LoginPage() {
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full px-3 py-2.5 pr-10 rounded-lg text-sm focus:outline-none"
+                      className="w-full px-3 py-2.5 pr-10 rounded-lg text-body focus:outline-none"
                       style={{
                         background: 'var(--bg-elev-2)',
                         border: '0.5px solid rgba(232,226,213,0.15)',
@@ -245,7 +245,7 @@ export default function LoginPage() {
                 </div>
 
                 {error && (
-                  <p className="text-[13px] mb-3 text-center" style={{ color: 'var(--crit)' }}>
+                  <p className="text-meta mb-3 text-center" style={{ color: 'var(--crit)' }}>
                     {error}
                   </p>
                 )}
@@ -253,7 +253,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 rounded-lg text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50 mb-3"
+                  className="w-full py-3 rounded-lg text-body font-medium transition-opacity hover:opacity-90 disabled:opacity-50 mb-3"
                   style={{ background: 'var(--gold-bright)', color: 'var(--ink-on-gold)', border: 'none' }}
                 >
                   {loading ? 'Signing in…' : 'Sign in'}
@@ -262,7 +262,7 @@ export default function LoginPage() {
 
               {/* Magic link option — web only; the link would open Safari, not the app. */}
               {!native && (
-              <div className="text-center text-[13px] mb-4" style={{ color: 'var(--ink-400)' }}>
+              <div className="text-center text-meta mb-4" style={{ color: 'var(--ink-400)' }}>
                 <button
                   type="button"
                   onClick={handleMagicLink}
@@ -278,7 +278,7 @@ export default function LoginPage() {
           )}
 
           <div
-            className="text-center text-[13px] pt-4"
+            className="text-center text-meta pt-4"
             style={{ color: 'var(--ink-400)', borderTop: '0.5px solid rgba(232,226,213,0.08)' }}
           >
             New here?{' '}

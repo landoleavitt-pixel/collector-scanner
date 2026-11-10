@@ -77,12 +77,12 @@ export default function ImageBlockNotice() {
       <div className="flex items-start justify-between gap-3">
         <div>
           <div
-            className="font-mono uppercase mb-1.5"
-            style={{ fontSize: 10, letterSpacing: '0.2em', color: 'var(--gold)' }}
+            className="font-mono mb-1.5"
+            style={{ fontSize: 12, color: 'var(--gold)' }}
           >
             Card images blocked
           </div>
-          <p className="text-[13px] leading-relaxed m-0" style={{ color: 'var(--ink-200)' }}>
+          <p className="text-meta leading-relaxed m-0" style={{ color: 'var(--ink-200)' }}>
             Your browser&rsquo;s tracking protection is blocking eBay&rsquo;s image server.
             Click the shield icon in the address bar and turn protection off for this
             site to see the photos.

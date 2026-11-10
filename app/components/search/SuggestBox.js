@@ -230,10 +230,9 @@ function PlayerSuggestDropdown({ id, rows, active, typed, rect, label, onHover, 
               <>
                 <span className="truncate">{highlightTyped(row.value, typed)}</span>
                 <span
-                  className="font-mono uppercase flex-none rounded-full"
+                  className="font-mono flex-none rounded-full"
                   style={{
-                    fontSize: 10,
-                    letterSpacing: '0.14em',
+                    fontSize: 12,
                     color: row.kind === 'team' ? 'var(--gold)' : 'var(--ink-600)',
                     border: `0.5px solid ${row.kind === 'team' ? 'var(--gold-deep)' : 'var(--line)'}`,
                     padding: '3px 8px',
@@ -254,7 +253,7 @@ function PlayerSuggestDropdown({ id, rows, active, typed, rect, label, onHover, 
 /* One quiet line under the results heading when the name looks misspelled. */
 export function DidYouMeanLine({ fix, onPick, onDismiss }) {
   return (
-    <p className="mt-3 text-[15px]" style={{ color: 'var(--ink-400)' }}>
+    <p className="mt-3 text-body" style={{ color: 'var(--ink-400)' }}>
       Did you mean{' '}
       <button
         type="button"
@@ -269,7 +268,7 @@ export function DidYouMeanLine({ fix, onPick, onDismiss }) {
         type="button"
         onClick={onDismiss}
         aria-label="Dismiss suggestion"
-        className="ml-2 text-[13px] px-1 transition-colors hover:text-[var(--ink-200)]"
+        className="ml-2 text-meta px-1 transition-colors hover:text-[var(--ink-200)]"
         style={{ color: 'var(--ink-600)' }}
       >
         <X className="w-4 h-4" strokeWidth={1.75} aria-hidden="true" />
@@ -367,7 +366,7 @@ export function EditableSearchHeading({ value, onSubmit, side = 'sports', placeh
         {value || placeholder}
       </span>
       <span
-        className="ml-3 text-[10px] uppercase tracking-[0.22em] opacity-0 group-hover:opacity-100 transition-opacity align-middle"
+        className="ml-3 text-fine opacity-0 group-hover:opacity-100 transition-opacity align-middle"
         style={{ color: 'var(--ink-400)' }}
       >
         ✎ edit

@@ -16,7 +16,7 @@ export default function SideSwitch({ fables, className = '' }) {
     if (siteForHost(window.location.host) === 'fables') setSportsHref(SPORTS_ORIGIN);
   }, []);
   const item = (on) => ({
-    className: 'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-medium whitespace-nowrap transition-colors',
+    className: 'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-fine font-medium whitespace-nowrap transition-colors',
     style: on
       ? { background: 'var(--bg-elev-2)', color: 'var(--ink-100)', boxShadow: 'inset 0 0 0 1px var(--line)' }
       : { color: 'var(--ink-400)' },

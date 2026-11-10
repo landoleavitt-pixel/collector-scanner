@@ -51,9 +51,9 @@ export function CardListTile({ card, wide = false }) {
   return (
     <Link href={listHref(card.game, card.name)} className={`block min-w-0 ${wide ? '' : 'flex-none w-[132px] snap-start'}`}>
       <CardFrame src={card.image ? sized(card.image, 400) : null} game={card.game} alt="" className="mb-2" />
-      <span className="block text-[16px] font-medium leading-tight" style={{ color: 'var(--ink-100)' }}>{card.name}</span>
-      <span className="block text-[14px]" style={{ color: 'var(--ink-400)' }}>{card.versions.toLocaleString('en-US')} versions</span>
-      <span className="block text-[12px]" style={{ color: 'var(--ink-600)' }}>{GAME_NAMES[card.game]}</span>
+      <span className="block text-lede font-medium leading-tight" style={{ color: 'var(--ink-100)' }}>{card.name}</span>
+      <span className="block text-body" style={{ color: 'var(--ink-400)' }}>{card.versions.toLocaleString('en-US')} versions</span>
+      <span className="block text-fine" style={{ color: 'var(--ink-600)' }}>{GAME_NAMES[card.game]}</span>
     </Link>
   );
 }
@@ -66,8 +66,8 @@ export function PopularListsRow({ count = 12 }) {
   return (
     <section aria-labelledby="popular-lists">
       <div className="flex items-baseline justify-between mb-3">
-        <h2 id="popular-lists" className="font-display font-normal text-[22px]">Popular card lists</h2>
-        <Link href="/fables/lists" className="text-[15px] min-h-[44px] inline-flex items-center" style={{ color: 'var(--gold-bright)' }}>See all</Link>
+        <h2 id="popular-lists" className="font-display font-normal text-h3">Popular card lists</h2>
+        <Link href="/fables/lists" className="text-body min-h-[44px] inline-flex items-center" style={{ color: 'var(--gold-bright)' }}>See all</Link>
       </div>
       <div className="flex gap-3 overflow-x-auto -mx-5 px-5 scroll-px-5 md:mx-0 md:px-0 pb-1.5 snap-x md:grid md:grid-cols-6 md:overflow-visible">
         {shown.map((c, i) => (c

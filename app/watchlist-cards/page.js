@@ -151,13 +151,13 @@ export default function WatchlistCardsPage() {
 
         {/* Page header */}
         <div className="mb-8">
-          <div className="text-[10px] tracking-[0.22em] uppercase mb-3" style={{ color: 'var(--ink-400)' }}>
+          <div className="text-fine mb-3" style={{ color: 'var(--ink-400)' }}>
             Your Watchlist
           </div>
-          <h1 className="font-display italic text-[36px] md:text-[44px] leading-[1.05] mb-3" style={{ color: 'var(--ink-100)' }}>
+          <h1 className="font-display italic text-h1 md:text-h1 leading-[1.05] mb-3" style={{ color: 'var(--ink-100)' }}>
             Cards worth keeping.
           </h1>
-          <p className="text-sm max-w-md leading-relaxed" style={{ color: 'var(--ink-400)' }}>
+          <p className="text-body max-w-md leading-relaxed" style={{ color: 'var(--ink-400)' }}>
             Individual listings you've starred. We check their status against eBay each time you open this page.
           </p>
         </div>
@@ -168,7 +168,7 @@ export default function WatchlistCardsPage() {
             <button
               key={t}
               onClick={() => setTab(t)}
-              className="pb-3 text-[11px] uppercase tracking-[0.14em] transition-colors relative"
+              className="pb-3 text-fine transition-colors relative"
               style={{ color: tab === t ? 'var(--ink-100)' : 'var(--ink-600)' }}
             >
               {t === 'active' ? 'Active' : 'Sold'}
@@ -178,7 +178,7 @@ export default function WatchlistCardsPage() {
             </button>
           ))}
           {checking && (
-            <span className="ml-auto pb-3 text-[10px] uppercase tracking-[0.14em] self-center" style={{ color: 'var(--ink-600)' }}>
+            <span className="ml-auto pb-3 text-fine self-center" style={{ color: 'var(--ink-600)' }}>
               Checking eBay…
             </span>
           )}
@@ -192,7 +192,7 @@ export default function WatchlistCardsPage() {
               const on = sideFilter === k;
               return (
                 <button key={k} type="button" onClick={() => setSideFilter(k)} aria-pressed={on}
-                        className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px]"
+                        className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-meta"
                         style={on ? { background: 'var(--bg-elev-2)', color: 'var(--ink-100)', boxShadow: 'inset 0 0 0 1px var(--gold)' } : { color: 'var(--ink-200)', border: '1px solid var(--line)' }}>
                   {k !== 'all' && <SideDot side={k} />}{label} · {n}
                 </button>
@@ -203,7 +203,7 @@ export default function WatchlistCardsPage() {
 
         {/* Grid / states */}
         {loading ? (
-          <p className="text-sm" style={{ color: 'var(--ink-400)' }}>Loading…</p>
+          <p className="text-body" style={{ color: 'var(--ink-400)' }}>Loading…</p>
         ) : listings.length === 0 ? (
           <EmptyState tab={tab} onBrowse={() => router.push('/')} />
         ) : (
@@ -246,11 +246,11 @@ function Toast({ message, onClose }) {
       }}
     >
       <span className="mt-0.5" style={{ color: 'var(--gold-bright)' }}><Check className="inline-block w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" /></span>
-      <p className="flex-1 text-[13px] leading-relaxed" style={{ color: 'var(--ink-200)' }}>{message}</p>
+      <p className="flex-1 text-meta leading-relaxed" style={{ color: 'var(--ink-200)' }}>{message}</p>
       <button
         onClick={onClose}
         aria-label="Dismiss"
-        className="text-[16px] leading-none mt-0.5 transition-colors"
+        className="text-lede leading-none mt-0.5 transition-colors"
         style={{ color: 'var(--ink-600)' }}
       >
         <X className="w-4 h-4" strokeWidth={1.75} aria-hidden="true" />
@@ -262,10 +262,10 @@ function Toast({ message, onClose }) {
 function EmptyState({ tab, onBrowse }) {
   return (
     <div className="py-16 text-center">
-      <p className="font-display italic text-2xl mb-3" style={{ color: 'var(--ink-200)' }}>
+      <p className="font-display italic text-price mb-3" style={{ color: 'var(--ink-200)' }}>
         {tab === 'active' ? 'No cards on your watchlist yet.' : 'Nothing sold yet.'}
       </p>
-      <p className="text-sm mb-6" style={{ color: 'var(--ink-400)' }}>
+      <p className="text-body mb-6" style={{ color: 'var(--ink-400)' }}>
         {tab === 'active'
           ? 'Star a card from any search to keep an eye on it here.'
           : 'When a card you’re watching sells or ends, it moves here.'}
@@ -273,7 +273,7 @@ function EmptyState({ tab, onBrowse }) {
       {tab === 'active' && (
         <button
           onClick={onBrowse}
-          className="text-[11px] uppercase tracking-[0.2em] px-5 py-2.5 rounded-full transition-opacity hover:opacity-90"
+          className="text-fine px-5 py-2.5 rounded-full transition-opacity hover:opacity-90"
           style={{ background: 'var(--gold)', color: 'var(--ink-on-gold)' }}
         >
           Start searching
@@ -333,7 +333,7 @@ function WatchlistTile({ listing, onRemove, onToast, onCardClick }) {
         )}
 
         {isSold && (
-          <span className="absolute top-2.5 left-2.5 text-[10px] uppercase tracking-[0.12em] px-2 py-1 rounded" style={{ background: 'rgba(180,60,40,0.9)', color: '#fff' }}>
+          <span className="absolute top-2.5 left-2.5 text-fine px-2 py-1 rounded" style={{ background: 'rgba(180,60,40,0.9)', color: '#fff' }}>
             {listing.status === 'sold' ? 'Sold' : 'Ended'}
           </span>
         )}
@@ -356,39 +356,39 @@ function WatchlistTile({ listing, onRemove, onToast, onCardClick }) {
 
       {/* Info strip */}
       <div className="p-3.5" style={{ borderTop: '0.5px solid var(--line-soft)' }}>
-        <div className="text-[13px] leading-snug mb-2" style={{ color: 'var(--ink-100)', minHeight: 34 }}>
+        <div className="text-meta leading-snug mb-2" style={{ color: 'var(--ink-100)', minHeight: 34 }}>
           {listing.title}
         </div>
-        <div className="flex items-center gap-1.5 text-[11px] mb-1.5" style={{ color: 'var(--ink-400)' }}>
+        <div className="flex items-center gap-1.5 text-fine mb-1.5" style={{ color: 'var(--ink-400)' }}>
           <SideDot side={listing.side || 'sports'} />{listing.side === 'fables' ? 'Foils & Fables' : 'Sports'}
         </div>
         <div className="flex flex-wrap gap-1 mb-2.5">
           {listing.side === 'fables' && b.serial && (
-            <span className="text-[11px] font-bold px-1.5 py-0.5 rounded" style={FABLES_CHIP.grail}>/{b.serial}</span>
+            <span className="text-fine font-bold px-1.5 py-0.5 rounded" style={FABLES_CHIP.grail}>/{b.serial}</span>
           )}
           {listing.side === 'fables' && !b.serial && b.rarity && (
-            <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded" style={FABLES_CHIP[b.tier] || outChip}>{b.rarity}</span>
+            <span className="text-fine font-semibold px-1.5 py-0.5 rounded" style={FABLES_CHIP[b.tier] || outChip}>{b.rarity}</span>
           )}
-          {listing.side === 'fables' && b.grade && <span className="text-[11px] px-1.5 py-0.5 rounded" style={outChip}>{b.grade}</span>}
-          {listing.side === 'fables' && b.language && b.language !== 'English' && <span className="text-[11px] px-1.5 py-0.5 rounded" style={outChip}>{b.language}</span>}
+          {listing.side === 'fables' && b.grade && <span className="text-fine px-1.5 py-0.5 rounded" style={outChip}>{b.grade}</span>}
+          {listing.side === 'fables' && b.language && b.language !== 'English' && <span className="text-fine px-1.5 py-0.5 rounded" style={outChip}>{b.language}</span>}
           {b.printRun && b.tier && (
-            <span className="text-[10px] uppercase tracking-[0.08em] px-1.5 py-0.5 rounded" style={TIER_CHIP[b.tier]}>/{b.printRun}</span>
+            <span className="text-fine px-1.5 py-0.5 rounded" style={TIER_CHIP[b.tier]}>/{b.printRun}</span>
           )}
-          {b.auto && <span className="text-[10px] uppercase tracking-[0.08em] px-1.5 py-0.5 rounded" style={outChip}>Auto</span>}
-          {b.rookie && <span className="text-[10px] uppercase tracking-[0.08em] px-1.5 py-0.5 rounded" style={outChip}>RC</span>}
-          {b.psa && <span className="text-[10px] uppercase tracking-[0.08em] px-1.5 py-0.5 rounded" style={outChip}>PSA {b.psa}</span>}
-          {b.bgs && <span className="text-[10px] uppercase tracking-[0.08em] px-1.5 py-0.5 rounded" style={outChip}>BGS {b.bgs}</span>}
-          {b.isAuction && <span className="text-[10px] uppercase tracking-[0.08em] px-1.5 py-0.5 rounded" style={{ color: '#e6a86b', background: 'rgba(201,122,58,0.10)', border: '0.5px solid #c97a3a' }}>Auction</span>}
-          {!b.isAuction && b.isBuyItNow && <span className="text-[10px] uppercase tracking-[0.08em] px-1.5 py-0.5 rounded" style={outChip}>Buy It Now</span>}
+          {b.auto && <span className="text-fine px-1.5 py-0.5 rounded" style={outChip}>Auto</span>}
+          {b.rookie && <span className="text-fine px-1.5 py-0.5 rounded" style={outChip}>RC</span>}
+          {b.psa && <span className="text-fine px-1.5 py-0.5 rounded" style={outChip}>PSA {b.psa}</span>}
+          {b.bgs && <span className="text-fine px-1.5 py-0.5 rounded" style={outChip}>BGS {b.bgs}</span>}
+          {b.isAuction && <span className="text-fine px-1.5 py-0.5 rounded" style={{ color: '#e6a86b', background: 'rgba(201,122,58,0.10)', border: '0.5px solid #c97a3a' }}>Auction</span>}
+          {!b.isAuction && b.isBuyItNow && <span className="text-fine px-1.5 py-0.5 rounded" style={outChip}>Buy It Now</span>}
         </div>
         <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1.5">
-          <span className="font-display italic text-[20px] sm:text-[22px] min-w-0" style={{ color: 'var(--gold)' }}>{price}</span>
+          <span className="font-display italic text-h3 sm:text-h3 min-w-0" style={{ color: 'var(--gold)' }}>{price}</span>
           {listing.listing_url && (
             <a
               href={listing.listing_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[10px] uppercase tracking-[0.18em] px-3 py-1.5 rounded-full transition-colors"
+              className="text-fine px-3 py-1.5 rounded-full transition-colors"
               style={{ border: `0.5px solid rgba(${accentRgb},0.5)`, color: 'var(--gold)' }}
             >
               View
@@ -399,12 +399,12 @@ function WatchlistTile({ listing, onRemove, onToast, onCardClick }) {
         {/* Live status line — bid count for active auctions; last-bid summary
             once an auction has ended so the user can see how it closed. */}
         {listing.is_auction && !isSold && listing.bid_count != null && (
-          <div className="text-[11px] tracking-[0.06em] mt-1.5" style={{ color: 'var(--ink-200)' }}>
+          <div className="text-fine tracking-[0.06em] mt-1.5" style={{ color: 'var(--ink-200)' }}>
             {listing.bid_count} BID{listing.bid_count === 1 ? '' : 'S'}
           </div>
         )}
         {isSold && listing.is_auction && (
-          <div className="text-[11px] tracking-[0.06em] mt-1.5" style={{ color: 'var(--ink-200)' }}>
+          <div className="text-fine tracking-[0.06em] mt-1.5" style={{ color: 'var(--ink-200)' }}>
             {listing.price != null ? `LAST BID ${price}` : 'ENDED'}
             {listing.bid_count != null ? ` · ${listing.bid_count} BID${listing.bid_count === 1 ? '' : 'S'}` : ''}
           </div>
@@ -488,7 +488,7 @@ function BidReminderControl({ listing, onToast }) {
     <div className="mt-3 pt-3" style={{ borderTop: '0.5px solid var(--line-soft)' }}>
       <button
         onClick={() => setModalOpen(true)}
-        className="flex items-center gap-2 text-[11px] uppercase tracking-[0.14em] transition-colors"
+        className="flex items-center gap-2 text-fine transition-colors"
         style={{ color: on ? 'var(--gold-bright)' : 'var(--ink-400)' }}
       >
         {on ? <Bell className="w-3.5 h-3.5" strokeWidth={1.75} aria-hidden="true" /> : <Plus className="w-3.5 h-3.5" strokeWidth={1.75} aria-hidden="true" />}
@@ -529,17 +529,17 @@ function BidReminderModal({ listing, initialPrice, initialOffsets, isSet, onSubm
         onClick={(e) => e.stopPropagation()}
       >
         <div className="px-6 pt-6 pb-5">
-          <div className="text-[10px] uppercase tracking-[0.22em] mb-3" style={{ color: 'var(--gold)' }}>
+          <div className="text-fine mb-3" style={{ color: 'var(--gold)' }}>
             Bid reminder
           </div>
-          <h3 className="font-display italic text-[24px] leading-[1.15] mb-2" style={{ color: 'var(--ink-100)' }}>
+          <h3 className="font-display italic text-price leading-[1.15] mb-2" style={{ color: 'var(--ink-100)' }}>
             Remind me before it ends
           </h3>
-          <p className="text-[13px] leading-relaxed mb-5" style={{ color: 'var(--ink-400)' }}>
+          <p className="text-meta leading-relaxed mb-5" style={{ color: 'var(--ink-400)' }}>
             Pick when you want a reminder. Choose as many as you like; each one is sent once.
           </p>
 
-          <div className="text-[11px] line-clamp-2 mb-4 italic" style={{ color: 'var(--ink-600)' }}>
+          <div className="text-fine line-clamp-2 mb-4 italic" style={{ color: 'var(--ink-600)' }}>
             {listing.title}
           </div>
 
@@ -548,7 +548,7 @@ function BidReminderModal({ listing, initialPrice, initialOffsets, isSet, onSubm
               const on = times.includes(min);
               return (
                 <button key={min} type="button" onClick={() => toggle(min)} aria-pressed={on}
-                        className="h-10 px-3.5 rounded-full text-[14px] whitespace-nowrap transition-colors"
+                        className="h-10 px-3.5 rounded-full text-body whitespace-nowrap transition-colors"
                         style={on
                           ? { border: '1px solid var(--gold-bright)', color: 'var(--gold-bright)', background: 'rgba(230,185,107,0.08)' }
                           : { border: '1px solid var(--line)', color: 'var(--ink-200)', background: 'var(--bg-elev-2)' }}>
@@ -557,15 +557,15 @@ function BidReminderModal({ listing, initialPrice, initialOffsets, isSet, onSubm
               );
             })}
           </div>
-          <p className="text-[12px] mb-5" style={{ color: times.length ? 'var(--ink-600)' : 'var(--crit)' }}>
+          <p className="text-fine mb-5" style={{ color: times.length ? 'var(--ink-600)' : 'var(--crit)' }}>
             {times.length ? 'Before the auction ends.' : 'Pick at least one time.'}
           </p>
 
-          <label className="block text-[10px] uppercase tracking-[0.14em] mb-2" style={{ color: 'var(--ink-400)' }}>
+          <label className="block text-fine mb-2" style={{ color: 'var(--ink-400)' }}>
             Only remind me if the bid is at or below (optional)
           </label>
           <div className="flex items-center mb-2" style={{ border: '0.5px solid var(--line)', borderRadius: 8, overflow: 'hidden' }}>
-            <span className="text-[16px] px-3" style={{ color: 'var(--ink-400)' }}>$</span>
+            <span className="text-lede px-3" style={{ color: 'var(--ink-400)' }}>$</span>
             <input
               type="number"
               inputMode="numeric"
@@ -573,7 +573,7 @@ function BidReminderModal({ listing, initialPrice, initialOffsets, isSet, onSubm
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               placeholder="Any amount"
-              className="flex-1 bg-transparent text-[16px] py-3 pr-3 outline-none"
+              className="flex-1 bg-transparent text-lede py-3 pr-3 outline-none"
               style={{ color: 'var(--ink-100)' }}
               onKeyDown={(e) => { if (e.key === 'Enter') submit(); }}
             />
@@ -584,7 +584,7 @@ function BidReminderModal({ listing, initialPrice, initialOffsets, isSet, onSubm
           <button
             onClick={submit}
             disabled={!times.length}
-            className="flex-1 text-[11px] uppercase tracking-[0.18em] py-3 rounded-full transition-opacity hover:opacity-90 disabled:opacity-40"
+            className="flex-1 text-fine py-3 rounded-full transition-opacity hover:opacity-90 disabled:opacity-40"
             style={{ background: 'var(--gold)', color: 'var(--ink-on-gold)' }}
           >
             {isSet ? 'Update reminder' : 'Set reminder'}
@@ -592,7 +592,7 @@ function BidReminderModal({ listing, initialPrice, initialOffsets, isSet, onSubm
           {isSet ? (
             <button
               onClick={onRemove}
-              className="text-[11px] uppercase tracking-[0.14em] px-4 py-3 transition-colors"
+              className="text-fine px-4 py-3 transition-colors"
               style={{ color: 'var(--ink-400)' }}
             >
               Remove
@@ -600,7 +600,7 @@ function BidReminderModal({ listing, initialPrice, initialOffsets, isSet, onSubm
           ) : (
             <button
               onClick={onClose}
-              className="text-[11px] uppercase tracking-[0.14em] px-4 py-3 transition-colors"
+              className="text-fine px-4 py-3 transition-colors"
               style={{ color: 'var(--ink-400)' }}
             >
               Cancel
@@ -608,7 +608,7 @@ function BidReminderModal({ listing, initialPrice, initialOffsets, isSet, onSubm
           )}
         </div>
 
-        <p className="px-6 pb-5 text-[11px] leading-relaxed" style={{ color: 'var(--ink-600)' }}>
+        <p className="px-6 pb-5 text-fine leading-relaxed" style={{ color: 'var(--ink-600)' }}>
           This doesn't buy or bid on the card. We only remind you, by email and in the
           app, so you can decide and bid yourself on eBay. Prices and availability can change.
         </p>
