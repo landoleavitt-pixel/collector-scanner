@@ -30,7 +30,7 @@ import {
   MoreFilters, ShippingFilters, shippingActive, shippingLabels, FilterChip,
 } from './components/search/SearchUI';
 import { WatchStar, usePendingStarSave, AlertBand } from './components/search/WatchStar';
-import { ResultCard, Badge, CornerMarks, upscaleEbayImage, tierChipLabel } from './components/search/ResultCard';
+import { ResultCard, Badge, CornerMarks, upscaleEbayImage, tierChipLabel, tidyTitle } from './components/search/ResultCard';
 import { detectPrintRun, hasAutoText } from '../lib/listingFilter';
 
 // Print run tiers — grouped visually by rarity.
@@ -87,8 +87,8 @@ function withPriceNoMax(f) {
 // Ready-made hunts for the landing page: one tap to real results. Hero
 // renders them and calls onChipSearch(query, filters).
 const PRESET_HUNTS = [
-  { label: 'Caitlin Clark autos /1–25', query: 'Caitlin Clark', filters: { autoCards: true, numberedCards: true, selectedPrintRuns: PRINT_RUN_TIERS[0].runs } },
-  { label: 'Paul Skenes rookies /26–99', query: 'Paul Skenes', filters: { rookieCards: true, numberedCards: true, selectedPrintRuns: PRINT_RUN_TIERS[1].runs } },
+  { label: 'Caitlin Clark autographs', chip: '1–25 made', query: 'Caitlin Clark', filters: { autoCards: true, numberedCards: true, selectedPrintRuns: PRINT_RUN_TIERS[0].runs } },
+  { label: 'Paul Skenes rookie cards', chip: '26–99 made', query: 'Paul Skenes', filters: { rookieCards: true, numberedCards: true, selectedPrintRuns: PRINT_RUN_TIERS[1].runs } },
   { label: 'Connor Bedard graded', query: 'Connor Bedard', filters: { condition: 'graded', numberedCards: false } },
 ];
 
@@ -716,7 +716,7 @@ function Home() {
                 name: 'How does Fields & Floors filter eBay listings differently?',
                 acceptedAnswer: {
                   '@type': 'Answer',
-                  text: 'eBay\'s native search caps results at 200 listings and lacks filters for exact print run (/5, /10, /99), autograph status, and rookie cards. Fields & Floors pre-filters at the API level so the most relevant cards reach you, and post-filters with pattern matching to reject false positives like dates or inventory numbers being mistaken for print runs.',
+                  text: 'eBay\'s search stops at 200 listings and can\'t tell you how many of a card were made. We search more widely, then throw out listings that only look rare, so the scarcest cards come first.',
                 },
               },
               {
@@ -1194,13 +1194,10 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
   const recent = recentSearches;
   // Signed in after starring a card from the sign-up prompt? Save it now.
   usePendingStarSave();
-  // "Caitlin Clark autos /1–25" → text plus a tier-coloured range chip.
+  // "Caitlin Clark autographs" plus a tier-coloured "1–25 made" chip.
   const hunts = presetHunts.map((h) => {
-    const m = h.label.match(/^(.*?)\s+(\/\d+[–-]\d+)$/);
     const firstRun = h.filters?.selectedPrintRuns?.[0];
-    return m
-      ? { ...h, text: m[1], chip: m[2], tier: (firstRun && tierForRun(firstRun)) || null }
-      : { ...h, text: h.label, chip: null, tier: null };
+    return { ...h, text: h.label, chip: h.chip || null, tier: (h.chip && firstRun && tierForRun(firstRun)) || null };
   });
   return (
     <section className="relative border-b border-[var(--line-soft)] overflow-hidden">
@@ -1402,9 +1399,9 @@ function RarityStrip({ onCardClick, onChipSearch }) {
               {data?.player && (
                 <>
                   <Badge>{data.player}</Badge>
-                  <Badge>Auto</Badge>
-                  <Badge mono tier="grail">/1–25</Badge>
-                  <Badge mono tier="ultra">/26–50</Badge>
+                  <Badge>Autograph</Badge>
+                  <Badge tier="grail">Grail · 1–25 made</Badge>
+                  <Badge tier="ultra">Ultra · 26–99 made</Badge>
                 </>
               )}
             </div>
@@ -1445,11 +1442,11 @@ function RarityStrip({ onCardClick, onChipSearch }) {
               </div>
               {it.printRun != null && (
                 <span className="justify-self-start">
-                  <Badge mono tier={tierForRun(`/${it.printRun}`) || 'grail'}>/{it.printRun}</Badge>
+                  <Badge tier={tierForRun(`/${it.printRun}`) || 'grail'}>{tierChipLabel(tierForRun(`/${it.printRun}`) || 'grail', it.printRun)}</Badge>
                 </span>
               )}
               {it.title && (
-                <span className="text-fine leading-snug line-clamp-2" style={{ color: 'var(--ink-400)' }}>{it.title}</span>
+                <span className="text-fine leading-snug line-clamp-2" style={{ color: 'var(--ink-400)' }}>{tidyTitle(it.title)}</span>
               )}
               {it.price != null && (
                 <span className="font-display text-lede leading-none text-[var(--accent-bright)]">{fmt(it.price)}</span>
@@ -1503,7 +1500,7 @@ function WhyFields({ user }) {
   // How it works as three icons, then the plans. Show, don't tell: the card
   // strip above already demonstrates the product.
   const steps = [
-    [ListFilter, 'Pick print runs'],
+    [ListFilter, 'Pick how rare'],
     [Star, 'Star cards'],
     [Bell, 'Get alerted'],
   ];
@@ -1875,7 +1872,7 @@ function LiveRightNow({ onCardClick, recentSearches = [] }) {
               {it?.image && <img src={upscaleEbayImage(it.image)} alt="" className="w-full h-full object-cover" loading="lazy" />}
             </span>
             <span className="block text-body leading-snug h-[38px] overflow-hidden" style={{ color: 'var(--ink-200)' }}>
-              {it?.printRun && <TierChip run={`/${it.printRun}`} />} {it?.title || ''}
+              {it?.printRun && <TierChip run={`/${it.printRun}`} />} {tidyTitle(it?.title || '')}
             </span>
             <span className="block font-display text-h3 leading-none mt-2.5" style={{ color: 'var(--accent-bright)' }}>{it ? featuredPrice(it) : ''}</span>
             {it?.from && (
@@ -1990,8 +1987,8 @@ function HeroCard({ featured, onCardClick }) {
       <div className="mt-3 min-h-[30px] flex items-center justify-center gap-1.5">
         {item && (
           <>
-            {item.hasAuto && <Badge>Auto</Badge>}
-            {item.printRun && <Badge mono tier={tierForRun(item.printRun) || 'grail'}>/{item.printRun}</Badge>}
+            {item.hasAuto && <Badge>Autograph</Badge>}
+            {item.printRun && <Badge tier={tierForRun(item.printRun) || 'grail'}>{tierChipLabel(tierForRun(item.printRun) || 'grail', item.printRun)}</Badge>}
             {grade && <Badge>{grade}</Badge>}
             {price && (
               <span className="ml-2 font-display text-h3 leading-none text-[var(--accent-bright)]">{price}</span>
@@ -2034,12 +2031,12 @@ function HeroLiveRow({ featured, onCardClick }) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap gap-1 mb-1 min-h-[20px]">
-            {item?.printRun && <Badge mono tier={tierForRun(item.printRun) || 'grail'}>/{item.printRun}</Badge>}
-            {item?.hasAuto && <Badge>Auto</Badge>}
+            {item?.printRun && <Badge tier={tierForRun(item.printRun) || 'grail'}>{tierChipLabel(tierForRun(item.printRun) || 'grail', item.printRun)}</Badge>}
+            {item?.hasAuto && <Badge>Autograph</Badge>}
             {grade && <Badge>{grade}</Badge>}
           </div>
           <div className="text-meta leading-snug line-clamp-2" style={{ color: 'var(--ink-200)' }}>
-            {item ? item.title : ' '}
+            {item ? tidyTitle(item.title) : ' '}
           </div>
         </div>
         {price && (
@@ -2086,7 +2083,7 @@ function FilterControls({ filters, setFilter, compact = false }) {
             }}
           >
             <div className="flex items-baseline justify-between mb-4">
-              <span className="text-fine text-[var(--accent)]">Print Run</span>
+              <span className="text-fine text-[var(--accent)]">How many made</span>
               <button
                 onClick={() => {
                   const allSelected = filters.selectedPrintRuns.length === ALL_PRESET_PRINT_RUNS.length;
@@ -2524,8 +2521,8 @@ function Filters({ filters, setFilter }) {
           {[
             ['price-low', 'Price, low to high'],
             ['price-high', 'Price, high to low'],
-            ['printrun-rarest', 'Rarest print run first'],
-            ['printrun-common', 'Largest print run first'],
+            ['printrun-rarest', 'Rarest first'],
+            ['printrun-common', 'Most common first'],
             ['newest', 'Newly listed'],
           ].map(([value, label]) => {
             const active = filters.sortBy === value;
@@ -2699,8 +2696,7 @@ function Results({ loading, hasSearched, results, error, formatPrice, scanPhrase
     <div>
       {capped && (
         <p className="text-fine text-[var(--ink-400)] mb-4 leading-relaxed">
-          Showing the first {results.length} matches. This is a broad search.
-          Add more filters to narrow it down to the rarest cards.
+          {results.length.toLocaleString('en-US')} cards for sale. Too many? Add a year or set, or pick how rare.
         </p>
       )}
       {view === 'grid' ? (

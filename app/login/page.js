@@ -27,8 +27,13 @@ export default function LoginPage() {
     const src = new URLSearchParams(window.location.search).get('src') || 'direct';
     return `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath())}&src=${encodeURIComponent(src)}`;
   };
+  // Came from a page that needs an account (Watchlist, Alerts)? Say so
+  // plainly instead of "Welcome back", which is wrong for a first visit.
+  const [fromPage, setFromPage] = useState('');
   useEffect(() => {
     setQuery(window.location.search);
+    const n = new URLSearchParams(window.location.search).get('next') || '';
+    setFromPage(n.startsWith('/watchlist') ? 'watchlist' : n.startsWith('/alerts') ? 'alerts' : '');
     // Already signed in: no form to fill, go straight there.
     supabase.auth.getSession().then(({ data }) => {
       if (data?.session) router.replace(nextPath());
@@ -116,10 +121,12 @@ export default function LoginPage() {
             className="font-serif italic text-price leading-tight text-center mb-1"
             style={{ color: 'var(--ink-200)' }}
           >
-            Welcome back.
+            {fromPage === 'watchlist' ? 'Your watchlist' : fromPage === 'alerts' ? 'Your alerts' : 'Welcome back.'}
           </h1>
           <p className="text-meta text-center mb-6" style={{ color: 'var(--ink-400)' }}>
-            Your alerts, watchlist and saved searches are waiting.
+            {fromPage
+              ? <>Sign in to see the {fromPage === 'watchlist' ? 'cards you’ve starred' : 'searches you get alerts for'}. New here? <Link href={`/signup${query}`} style={{ color: 'var(--accent-bright)' }}>Make a free account</Link>.</>
+              : 'Your alerts, watchlist and saved searches are waiting.'}
           </p>
 
           {magicLinkSent ? (

@@ -450,10 +450,31 @@ function CardModalInner({ item, printRun, onClose, expired = false, side = 'spor
     onClose?.();
   }, [closing, resetTilt, runFlight, onClose]);
 
-  // ─ Keyboard + scroll lock ────────────────────────────────────────
+  // ─ Keyboard, focus trap + scroll lock ─────────────────────────────
+  // A real dialog for keyboard and screen-reader users: focus moves into
+  // the popup, Tab stays inside it, Escape closes, and focus goes back to
+  // the card that opened it.
   useEffect(() => {
     if (!item) return;
-    const onKey = (e) => { if (e.key === 'Escape') handleClose(); };
+    const opener = document.activeElement;
+    const focusables = () => [...(overlayRef.current?.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])'
+    ) || [])].filter((el) => el.offsetParent !== null);
+    requestAnimationFrame(() => {
+      if (overlayRef.current && !overlayRef.current.contains(document.activeElement)) {
+        (focusables()[0] || overlayRef.current).focus({ preventScroll: true });
+      }
+    });
+    const onKey = (e) => {
+      if (e.key === 'Escape') { handleClose(); return; }
+      if (e.key !== 'Tab') return;
+      const els = focusables();
+      if (!els.length) { e.preventDefault(); return; }
+      const first = els[0];
+      const last = els[els.length - 1];
+      if (e.shiftKey && (document.activeElement === first || !overlayRef.current.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    };
     document.addEventListener('keydown', onKey);
     // Lock body scroll while open. Saves the previous overflow style
     // so we don't clobber anything the page was doing.
@@ -462,6 +483,7 @@ function CardModalInner({ item, printRun, onClose, expired = false, side = 'spor
     return () => {
       document.removeEventListener('keydown', onKey);
       document.body.style.overflow = prevOverflow;
+      if (opener && typeof opener.focus === 'function') opener.focus({ preventScroll: true });
     };
   }, [item, handleClose]);
 
@@ -472,7 +494,11 @@ function CardModalInner({ item, printRun, onClose, expired = false, side = 'spor
     return (
       <div
         ref={overlayRef}
-        className={`fixed inset-0 z-[100] flex items-center justify-center px-4 ${closing ? 'animate-out' : 'animate-in'}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Listing unavailable"
+        tabIndex={-1}
+        className={`fixed inset-0 z-[100] flex items-center justify-center px-4 outline-none ${closing ? 'animate-out' : 'animate-in'}`}
         style={overlayStyle}
         onClick={(e) => { if (e.target === overlayRef.current) handleClose(); }}
       >
@@ -484,7 +510,7 @@ function CardModalInner({ item, printRun, onClose, expired = false, side = 'spor
             boxShadow: '0 40px 80px -20px rgba(0,0,0,0.85)',
           }}
         >
-          <button onClick={handleClose} data-no-tilt
+          <button onClick={handleClose} data-no-tilt aria-label="Close"
                   className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center"
                   style={{ background: 'rgba(20,17,12,0.7)', border: '0.5px solid rgba(232,226,213,0.18)', color: 'var(--ink-200)' }}>
             <X size={14} />
@@ -517,7 +543,11 @@ function CardModalInner({ item, printRun, onClose, expired = false, side = 'spor
   return (
     <div
       ref={overlayRef}
-      className={`fixed inset-0 z-[100] overflow-y-auto px-4 py-6 ${closing ? 'animate-out' : 'animate-in'}`}
+      role="dialog"
+      aria-modal="true"
+      aria-label={item.title || 'Card details'}
+      tabIndex={-1}
+      className={`fixed inset-0 z-[100] overflow-y-auto px-4 py-6 outline-none ${closing ? 'animate-out' : 'animate-in'}`}
       style={overlayStyle}
       onClick={(e) => { if (e.target === overlayRef.current) handleClose(); }}
     >

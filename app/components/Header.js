@@ -248,7 +248,7 @@ export default function Header() {
           ) : isFables ? null : (
             <Link
               href="/"
-              className="whitespace-nowrap text-fine text-[var(--ink-400)] hover:text-[var(--accent)] transition-colors"
+              className="hidden sm:inline whitespace-nowrap text-fine text-[var(--ink-400)] hover:text-[var(--accent)] transition-colors"
             >
               <ArrowLeft className="inline-block w-3.5 h-3.5 mr-1 -mt-0.5" strokeWidth={2} aria-hidden="true" /><span className="hidden sm:inline">Back to search</span><span className="sm:hidden">Search</span>
             </Link>

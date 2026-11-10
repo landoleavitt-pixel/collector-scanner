@@ -29,7 +29,7 @@ export default function HowItWorksPage() {
           Type <code>Cooper Flagg</code> into eBay and you'll get Cooper Flagg cards, along with stacks of unrelated listings that happen to contain the words "Cooper" or "Flagg." Bulk lots. Misindexed cards. Sellers stuffing keywords.
         </p>
         <p>
-          We verify that the full player name (or a known variant) appears in the listing title before showing it to you. <strong>"Robert Williams"</strong> stops surfacing when you search for <strong>"Cooper Flagg."</strong> The eBay API doesn't do this for you. We do it after.
+          Search <strong>"Cooper Flagg"</strong> and you only see Cooper Flagg cards, not other players who share part of his name. eBay's own search doesn't check this. We do.
         </p>
         <p>
           The result: a search for an obscure prospect returns ten of their cards, not three hundred listings that mostly aren't.
@@ -44,7 +44,7 @@ export default function HowItWorksPage() {
           On eBay, a print run is whatever the seller types. Some fill in a Print Run field. Many just put <code>/10</code> in the title, where it looks a lot like <code>"2024-25 season"</code> or <code>"5/25/2024"</code> or <code>"+NEW 12/12"</code> stock counts.
         </p>
         <p>
-          Our parser knows the difference. It catches the real ones (<code>/10</code>, <code>#5/10</code>, <code>1/1</code>, <code>numbered to 25</code>, <code>2/10</code>, <code>jersey #44/99</code>) and rejects the false positives: season years, calendar dates, inventory counts, card numbers without a denominator.
+          Sellers put lots of numbers in their titles: years, dates, stock counts. We only call a card numbered when the title says how many were made, like <code>/10</code> or <code>1 of 1</code>. Everything else is ignored.
         </p>
         <p>
           Once a real print run is found, we sort it into a tier. Collectors think in tiers, so the filter speaks the same language:
