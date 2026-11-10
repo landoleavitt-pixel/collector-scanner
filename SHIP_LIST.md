@@ -66,6 +66,7 @@ Landon wants the week's remaining usage spent, so all 4 agents run (above the us
 
 | When | What | Commit |
 |---|---|---|
+| 2026-11-09 | Card lists: for sale on eBay per row and version, version-not-named handled, Check eBay on big lists; accurate Find it per card number; deeper eBay reads for big families; our own card back when no one is selling | 04728db |
 | 2026-11-09 | Next.js 14.2.35 security upgrade; image optimizer endpoint off; /admin/visitors (PostHog numbers, admin only); funnel steps sent to PostHog | e6b0fbf |
 | 2026-11-09 | PostHog analytics (EU, account ID only, no replay, off with Share usage stats); Privacy update; Foils & Fables Collectors header | 4c76c2a + key set in Vercel |
 | 2026-11-09 | New Foils & Fables home ("Find any card. See every version."), versions-first search and card lists (popular lists, /fables/lists, Lists tab) for Pokémon, Magic, Yu-Gi-Oh! and Lorcana; set filter; Vintage; grade and reprint fixes; per-side colours on saved searches and starred cards; push ask at first alert; Save this search sheet | de0fe53 (poller deploy pending: set/rarity keys + cron secret) |
