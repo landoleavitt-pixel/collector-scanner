@@ -66,6 +66,7 @@ Landon wants the week's remaining usage spent, so all 4 agents run (above the us
 
 | When | What | Commit |
 |---|---|---|
+| 2026-11-10 | Design review fixes 1–5: compact results, readable text, Fables sister-site type and accent, consistent filters and one tier ladder, plain words; card popup dialog with focus trap; reduced motion; signed-out Watchlist/Alerts text | 412e4d5 → f47238e |
 | 2026-11-09 | Card lists: for sale on eBay per row and version, version-not-named handled, Check eBay on big lists; accurate Find it per card number; deeper eBay reads for big families; our own card back when no one is selling | 04728db |
 | 2026-11-09 | Next.js 14.2.35 security upgrade; image optimizer endpoint off; /admin/visitors (PostHog numbers, admin only); funnel steps sent to PostHog | e6b0fbf |
 | 2026-11-09 | PostHog analytics (EU, account ID only, no replay, off with Share usage stats); Privacy update; Foils & Fables Collectors header | 4c76c2a + key set in Vercel |
