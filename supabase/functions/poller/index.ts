@@ -642,10 +642,10 @@ async function callAppSearch(query: string, filters: Record<string, unknown>): P
 // (same names as its query string). Mirrors savedSearchParams in
 // lib/tcg/search.js: newest listings, the whole filtered pool.
 // More filters (2026-11-01): finish, art, promos, cond, and shipping and offers.
-const TCG_FILTER_KEYS = ["game", "set", "rarity", "lang", "graded", "grader", "grade", "firstEd", "serialOnly", "priceMin", "priceMax", "listing", "finish", "art", "promos", "cond", "freeShip", "offers", "shipFrom", "returns"];
+const TCG_FILTER_KEYS = ["game", "set", "shiny", "rarity", "lang", "graded", "grader", "grade", "firstEd", "serialOnly", "priceMin", "priceMax", "listing", "finish", "art", "promos", "cond", "freeShip", "offers", "shipFrom", "returns"];
 // Saved searches with a `card` are card-family searches: GET
 // /api/tcg-family-search. Mirrors familySavedParams in lib/tcg/familySearch.js.
-const FAMILY_FILTER_KEYS = ["game", "card", "cards", "versions", "set", "rarity", "lang", "graded", "priceMin", "priceMax", "listing", "freeShip", "offers", "shipFrom", "returns"];
+const FAMILY_FILTER_KEYS = ["game", "card", "cards", "versions", "set", "shiny", "rarity", "lang", "graded", "priceMin", "priceMax", "listing", "freeShip", "offers", "shipFrom", "returns"];
 function familyCardKeys(filters: Record<string, unknown>): string[] {
   const list = Array.isArray(filters?.cards) ? (filters.cards as unknown[]).map(String) : [];
   if (filters?.card) list.push(String(filters.card));

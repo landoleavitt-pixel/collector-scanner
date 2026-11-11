@@ -36,6 +36,7 @@ const { cardVersions, findCards, familyCards, cardFamily } = await import(pathTo
 const { familySavedParams, readFamilyCriteria } = await import(pathToFileURL(path.join(dir, 'familySearch.mjs')).href);
 const { catalogRarity, catalogGroup, applyCatalog } = await import(pathToFileURL(path.join(dir, 'catalogMatch.mjs')).href);
 const { getCard } = await import(pathToFileURL(path.join(dir, 'catalog.mjs')).href);
+const { versionsShiny, listingShiny } = await import(pathToFileURL(path.join(dir, 'shiny.mjs')).href);
 const { toResult } = await import(pathToFileURL(path.join(dir, 'search.mjs')).href);
 const { parseTitle } = await import(pathToFileURL(path.join(dir, 'parseTitle.mjs')).href);
 const { rarityValuesToGroups } = await import(pathToFileURL(path.join(dir, 'ladders.mjs')).href);
@@ -124,6 +125,25 @@ const checks = [
   ['Find it for one version takes only listings pinned to it', () => { const c = readFamilyCriteria(new URLSearchParams({ game: 'yugioh', card: 'dark-magician-the-pharaohs-servant', versions: 'MAMO:EN001:grand-master-rare', lang: 'en' })); return c.q === 'dark magician the pharaoh\'s servant' || c.q.length > 0; }],
   ['Find it searches eBay for the card and its number', () => readFamilyCriteria(new URLSearchParams({ game: 'pokemon', card: 'pikachu', versions: 'sv03.5:070:n' })).q === 'Pikachu (70, 070)'],
   ['Find it for Yu-Gi-Oh! searches the printed code', () => readFamilyCriteria(new URLSearchParams({ game: 'yugioh', card: 'dark-magician', versions: 'LOB:EN005:ultra-rare' })).q === 'Dark Magician LOB-EN005'],
+  ...[
+    ['pokemon', 'charizard', 'Charizard 4/102 Base Set Holo Rare PSA 8', true],
+    ['pokemon', 'pikachu', 'Pikachu 58/102 Base Set Common Non-Holo', false],
+    ['pokemon', 'umbreon', 'Umbreon 059/131 Prismatic Evolutions Reverse Holo NM', true],
+    ['pokemon', 'pikachu', 'Pikachu Pokemon card NM', null],
+    ['mtg', 'sheoldred-the-apocalypse', 'Sheoldred, the Apocalypse DMU 107 NM', null],
+    ['mtg', 'sheoldred-the-apocalypse', 'Sheoldred, the Apocalypse Foil Dominaria United 107', true],
+    ['mtg', 'lightning-bolt', 'Lightning Bolt (Foil Etched) Commander Masters', true],
+    ['mtg', 'lightning-bolt', 'Lightning Bolt Non-Foil Magic 2010', false],
+    ['yugioh', 'pot-of-greed', 'Pot of Greed SD1-EN015 Common 1st Edition', false],
+    ['yugioh', 'dark-magician', 'Dark Magician RA04-EN106 Platinum Secret Rare', true],
+    ['lorcana', 'elsa-spirit-of-winter', 'Elsa - Spirit of Winter 207/204 Enchanted', true],
+    ['lorcana', 'belle-strange-but-special', 'Belle - Strange but Special 142/204 The First Chapter Regular', null],
+    ['lorcana', 'belle-strange-but-special', 'Belle - Strange but Special 142/204 Cold Foil', true],
+  ].map(([g, key, title, want]) => [`Shiny: ${title} → ${want}`, () => {
+    const card = getCard(g, key); const m = matchListing(g, card, title);
+    return listingShiny(['exact', 'set'].includes(m.kind) ? versionsShiny(g, card, m.versions) : null, m.parsed) === want;
+  }]),
+  ['Saved searches keep Shiny', () => familySavedParams({ game: 'mtg', card: 'lightning-bolt', shiny: 'no' }, 'Lightning Bolt').get('shiny') === 'no'],
   ['Old saved rarity values map to groups', () => rarityValuesToGroups(['sir'], ['pokemon'])[0] === 'extremely_rare' && rarityValuesToGroups(['pokemon:dr'], ['pokemon','mtg'])[0] === 'very_rare' && rarityValuesToGroups(['enchanted'], ['lorcana'])[0] === 'extremely_rare'],
   ['Group values pass through; junk is dropped', () => JSON.stringify(rarityValuesToGroups(['promo', 'vintage', 'nonsense'], ['pokemon'])) === '["promo","vintage"]'],
   ['Serialized One Ring is a grail', () => cardVersions('mtg', 'the-one-ring').sets.flatMap((s) => s.numbers.flatMap((n) => n.versions)).some((v) => v.rarityKey === 'serialized' && v.tier === 'grail')],

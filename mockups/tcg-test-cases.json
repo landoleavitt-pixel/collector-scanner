@@ -2644,7 +2644,9 @@
    "title": "Blastoise 2/102 Base Set Non-Holo Error",
    "hint": "pokemon",
    "expect": {
-    "finish": []
+    "finish": [
+     "nonholo"
+    ]
    }
   },
   {
