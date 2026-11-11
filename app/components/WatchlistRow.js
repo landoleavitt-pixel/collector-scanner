@@ -27,6 +27,8 @@ function buildFablesChips(f, setName) {
   const chips = [];
   if (FABLES_GAMES[f.game]) chips.push({ label: FABLES_GAMES[f.game], tier: 'neutral' });
   if (f.needOnly) chips.push({ label: 'Only ones I need', tier: 'neutral' });
+  if (f.shiny === 'yes') chips.push({ label: 'Shiny', tier: 'neutral' });
+  if (f.shiny === 'no') chips.push({ label: 'Not shiny', tier: 'neutral' });
   (f.rarity || []).forEach((k) => { const g = groupOf(k); chips.push({ label: g ? g.label : k, tier: 'neutral' }); });
   if (f.set) chips.push({ label: setName || 'One set', tier: 'neutral' });
   const lang = Array.isArray(f.lang) ? f.lang : f.lang ? String(f.lang).split(',') : [];

@@ -109,6 +109,7 @@ export function toParams(q, f = {}, extra = {}) {
   if (f.firstEd) p.set('firstEd', '1');
   if (f.serialOnly) p.set('serialOnly', '1');
   if (f.listing && f.listing !== 'any') p.set('listing', f.listing);
+  if (f.shiny === 'yes' || f.shiny === 'no') p.set('shiny', f.shiny);
   if (f.priceMin) p.set('priceMin', String(f.priceMin));
   if (f.priceMax && f.priceMax < 100000) p.set('priceMax', String(f.priceMax));
   if (f.sort && f.sort !== 'rarest') p.set('sort', f.sort);
@@ -145,6 +146,7 @@ export function fromParams(sp) {
       firstEd: sp.get('firstEd') === '1',
       serialOnly: sp.get('serialOnly') === '1',
       listing: ['auction', 'bin'].includes(sp.get('listing')) ? sp.get('listing') : 'any',
+      shiny: ['yes', 'no'].includes(sp.get('shiny')) ? sp.get('shiny') : '',
       priceMin: Number(sp.get('priceMin')) || 0,
       priceMax: Number(sp.get('priceMax')) || 100000,
       sort: sp.get('sort') || 'rarest',
@@ -178,7 +180,7 @@ export async function searchCards(q, filters, offset = 0) {
     }
     const d = await r.json();
     const items = (d.items || []).map(withListingFlags);
-    return { items, total: d.total ?? items.length, nextOffset: d.nextOffset ?? null };
+    return { items, total: d.total ?? items.length, nextOffset: d.nextOffset ?? null, shinyUnknown: d.shinyUnknown || 0 };
   } catch {
     // Engine not live yet: filter the stub so the UI can be exercised.
     const words = (q || '').toLowerCase().split(/\s+/).filter(Boolean);

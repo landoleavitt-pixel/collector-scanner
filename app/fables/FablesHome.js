@@ -40,11 +40,12 @@ import { VERSION_GAMES, VERSION_GAMES_TEXT, gameQuery } from './versions';
 const DEFAULT_FILTERS = {
   game: '', rarity: [], lang: [], graded: 'any', grader: '', grade: '', firstEd: false, serialOnly: false,
   listing: 'any', priceMin: 0, priceMax: PRICE_NO_MAX, sort: 'rarest',
+  shiny: '', // '' all, 'yes' shiny (holo or foil), 'no' not shiny
   // More filters (research/fables-filters-2.md)
   set: '', finish: [], art: [], promos: 'show', cond: [], freeShip: false, offers: false, shipFrom: '', returns: false,
 };
 // How many More filters are in use (for the fold's count and the badge).
-const moreActive = (f) => (f.set ? 1 : 0) + (f.finish?.length ? 1 : 0) + (f.art?.length ? 1 : 0) + (f.promos && f.promos !== 'show' ? 1 : 0)
+const moreActive = (f) => (f.set ? 1 : 0) + (f.art?.length ? 1 : 0) + (f.promos && f.promos !== 'show' ? 1 : 0)
   + (f.graded === 'raw' && f.cond?.length ? 1 : 0) + shippingActive(f);
 // Filters that need a new search when changed. Sort is left out, as on sports:
 // it reorders without asking.
@@ -96,6 +97,7 @@ function countActiveFilters(f) {
   if (f.firstEd) n++;
   if (f.serialOnly) n++;
   if (f.listing && f.listing !== 'any') n++;
+  if (f.shiny) n++;
   if ((f.priceMin || 0) > 0 || (f.priceMax ?? PRICE_NO_MAX) < PRICE_NO_MAX) n++;
   return n + moreActive(f);
 }
@@ -112,6 +114,8 @@ function filterLabels(f, meta, setName) {
   if (f.graded === 'raw') out.push({ label: 'Raw' });
   if (f.firstEd) out.push({ label: '1st Edition' });
   if (f.serialOnly) out.push({ label: 'Serial-numbered' });
+  if (f.shiny === 'yes') out.push({ label: 'Shiny' });
+  if (f.shiny === 'no') out.push({ label: 'Not shiny' });
   if (f.listing === 'bin') out.push({ label: 'Buy It Now' });
   if (f.listing === 'auction') out.push({ label: 'Auction' });
   const min = f.priceMin || 0;
@@ -177,7 +181,10 @@ export default function FablesHome() {
 
   useEffect(() => { fetchMeta().then(setMeta); setRecentSearches(getRecents()); }, []);
 
-  const setFilter = (key, value) => setFilters((f) => ({ ...f, [key]: value, ...(key === 'game' && value !== f.game ? { set: '', finish: [], art: [] } : {}) }));
+  const setFilter = (key, value) => setFilters((f) => ({ ...f, [key]: value,
+    ...(key === 'game' && value !== f.game ? { set: '', finish: [], art: [] } : {}),
+    // The finer finishes only make sense for shiny cards.
+    ...(key === 'shiny' && value !== 'yes' ? { finish: [] } : {}) }));
   const appliedFilters = applied?.f || null;
   function filtersDifferFromApplied() {
     if (!appliedFilters) return false;
@@ -469,6 +476,11 @@ export default function FablesHome() {
                 <p className="text-meta mt-3" style={{ color: 'var(--ink-400)' }}>
                   <span style={{ color: 'var(--accent)' }}>{res.total}</span>{' '}
                   {res.total === 1 ? 'listing' : 'listings'}, rarest first{res.stub ? ' (sample data)' : ''}
+                </p>
+              )}
+              {!loading && applied?.f?.shiny && res.shinyUnknown > 0 && (
+                <p className="text-meta mt-1" style={{ color: 'var(--ink-400)' }}>
+                  {res.shinyUnknown.toLocaleString('en-US')} more {res.shinyUnknown === 1 ? 'listing didn’t' : 'listings didn’t'} say whether {res.shinyUnknown === 1 ? 'it’s' : 'they’re'} shiny, so they’re not shown.
                 </p>
               )}
             </div>
@@ -943,6 +955,7 @@ function FilterControls({ meta, filters, setFilter, compact = false }) {
           {meta.games.map((g) => <Chip key={g.key} on={filters.game === g.key} onClick={() => setFilter('game', g.key)}>{g.label}</Chip>)}
         </div>
       </div>
+      <ShinyFilter meta={meta} filters={filters} setFilter={setFilter} />
       <div>
         <SectionLabel>Rarity</SectionLabel>
         {RARITY_GROUPS.map((g) => {
@@ -1032,26 +1045,42 @@ function FilterControls({ meta, filters, setFilter, compact = false }) {
   );
 }
 
+// Shiny or not, up front (the engine reads the title's finish words, or the
+// card's printings when they all agree). The finer finishes (Reverse holo,
+// Etched foil, Cold foil) show under Shiny, for a picked game that has them.
+const PLAIN_FINISHES = new Set(['holo', 'foil', 'nonfoil']);
+function ShinyFilter({ meta, filters, setFilter }) {
+  const finer = (filters.game ? meta.more?.finishes?.[filters.game] || [] : []).filter(([k]) => !PLAIN_FINISHES.has(k));
+  const toggleFinish = (k) => setFilter('finish', (filters.finish || []).includes(k) ? filters.finish.filter((x) => x !== k) : [...(filters.finish || []), k]);
+  return (
+    <div>
+      <SectionLabel>Shiny</SectionLabel>
+      <div className="flex flex-wrap gap-2">
+        {[['', 'Any'], ['yes', 'Shiny'], ['no', 'Not shiny']].map(([v, l]) => <Chip key={l} on={(filters.shiny || '') === v} onClick={() => setFilter('shiny', v)}>{l}</Chip>)}
+      </div>
+      {filters.shiny === 'yes' && finer.length > 0 && (
+        <div className="mt-3 pl-3" style={{ borderLeft: '2px solid var(--line)' }}>
+          <p className="text-meta mb-2" style={{ color: 'var(--ink-400)' }}>Only a certain kind of shiny?</p>
+          <div className="flex flex-wrap gap-2">
+            {finer.map(([k, l]) => <Chip key={k} on={(filters.finish || []).includes(k)} onClick={() => toggleFinish(k)}>{l}</Chip>)}
+          </div>
+        </div>
+      )}
+      <p className="text-fine mt-2" style={{ color: 'var(--ink-600)' }}>Holo and foil cards count as shiny. Listings that don’t say are left out.</p>
+    </div>
+  );
+}
+
 // Behind "More filters". Finish and special art show only for a picked game
 // that has them, and Condition only for raw cards. Title-read filters keep
 // only listings whose title says so; they never hide the rest of a game.
 function MoreFablesFilters({ meta, filters, setFilter }) {
   const more = meta.more || {};
-  const finishes = filters.game ? more.finishes?.[filters.game] || [] : [];
   const arts = filters.game ? more.arts?.[filters.game] || [] : [];
   const toggleIn = (k, v) => setFilter(k, (filters[k] || []).includes(v) ? filters[k].filter((x) => x !== v) : [...(filters[k] || []), v]);
   return (
     <>
       <SetFilter game={filters.game} value={filters.set || ''} onChange={(v) => setFilter('set', v)} />
-      {finishes.length > 0 && (
-        <div>
-          <SectionLabel>Foil or holo</SectionLabel>
-          <div className="flex flex-wrap gap-2">
-            {finishes.map(([k, l]) => <Chip key={k} on={(filters.finish || []).includes(k)} onClick={() => toggleIn('finish', k)}>{l}</Chip>)}
-          </div>
-          <p className="text-fine mt-2" style={{ color: 'var(--ink-600)' }}>Shows listings whose title says so.</p>
-        </div>
-      )}
       {arts.length > 0 && (
         <div>
           <SectionLabel>Special art</SectionLabel>
