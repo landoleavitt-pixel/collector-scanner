@@ -23,7 +23,7 @@ import CardModal from '../components/CardModal';
 import { useNameSuggest, useSuggestBox, DidYouMeanLine, EditableSearchHeading } from '../components/search/SuggestBox';
 import {
   PRICE_NO_MAX, SectionLabel, SectionDivider, PriceRangeSlider, priceRangeLabel, SegmentedGroup, ResultsSidebar,
-  MobileFilterBar, MobileFilterDrawer, MobileSortSheet, SortDropdown, PendingSearchModal, BackToTop, LoadingState, NoResultsState,
+  MobileFilterDrawer, ResultsToolbar, PendingSearchModal, BackToTop, LoadingState, NoResultsState,
   MoreFilters, ShippingFilters, shippingActive, shippingLabels,
 } from '../components/search/SearchUI';
 import { usePendingStarSave, AlertBand } from '../components/search/WatchStar';
@@ -166,7 +166,10 @@ export default function FablesHome() {
   const [saveModalOpen, setSaveModalOpen] = useState(false);
   const [savePromptOpen, setSavePromptOpen] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [mobileSortOpen, setMobileSortOpen] = useState(false);
+  // List or grid results; remembered on this device (same choice as sports).
+  const [resultsView, setResultsViewState] = useState('list');
+  useEffect(() => { try { if (localStorage.getItem('ffResultsView') === 'grid') setResultsViewState('grid'); } catch {} }, []);
+  const setResultsView = (v) => { setResultsViewState(v); try { localStorage.setItem('ffResultsView', v); } catch {} };
   const [pendingSearchOpen, setPendingSearchOpen] = useState(false);
   const [isDesktopViewport, setIsDesktopViewport] = useState(false);
   const [recentSearches, setRecentSearches] = useState([]);
@@ -443,10 +446,9 @@ export default function FablesHome() {
     return (
       <main className="relative min-h-screen z-10">
         <section className="max-w-[1200px] mx-auto px-6 lg:px-10 pt-10 pb-16 relative z-10 stage-in">
-          <div className="flex flex-wrap items-end justify-between gap-6 pb-6 mb-8 border-b border-[var(--line)]">
-            <div className="min-w-0 flex-1">
-              <h1 className="sr-only">{shownQuery || gameLabel || 'All games'} cards</h1>
-              <p className="text-fine text-[var(--ink-400)] mb-2">Searching for</p>
+          <div className="min-w-0">
+            <h1 className="sr-only">{shownQuery || gameLabel || 'All games'} cards</h1>
+            <div className="flex flex-wrap items-baseline gap-x-3.5 gap-y-1">
               <EditableSearchHeading
                 side="fables"
                 value={shownQuery}
@@ -457,59 +459,42 @@ export default function FablesHome() {
                   handleSearch(trimmed, { ...filters });
                 }}
               />
-              {nameFix && !loading && res.items.length > 0 && dismissedFix !== shownQuery && (
-                <DidYouMeanLine fix={nameFix.query} onPick={() => searchFix(nameFix.query)} onDismiss={() => setDismissedFix(shownQuery)} />
-              )}
-              <FilterChips
-                meta={meta}
-                filters={appliedFilters || filters}
-                onEdit={() => {
-                  if (isDesktopViewport) {
-                    sidebarRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    sidebarRef.current?.querySelector('button')?.focus({ preventScroll: true });
-                  } else {
-                    setMobileFiltersOpen(true);
-                  }
-                }}
-              />
+              {/* No count while searching: "0 for sale" read as no results. */}
               {!loading && (
-                <p className="text-meta mt-3" style={{ color: 'var(--ink-400)' }}>
-                  <span style={{ color: 'var(--accent)' }}>{res.total}</span>{' '}
-                  {res.total === 1 ? 'listing' : 'listings'}, rarest first{res.stub ? ' (sample data)' : ''}
-                </p>
-              )}
-              {!loading && applied?.f?.shiny && res.shinyUnknown > 0 && (
-                <p className="text-meta mt-1" style={{ color: 'var(--ink-400)' }}>
-                  {res.shinyUnknown.toLocaleString('en-US')} more {res.shinyUnknown === 1 ? 'listing didn’t' : 'listings didn’t'} say whether {res.shinyUnknown === 1 ? 'it’s' : 'they’re'} shiny, so they’re not shown.
-                </p>
+                <span className="text-body" style={{ color: 'var(--ink-400)' }}>
+                  {[`${(res.total || 0).toLocaleString('en-US')} for sale`, (SORT_OPTIONS.find(([v]) => v === (appliedFilters?.sort || filters.sort))?.[1] || 'Rarest first').toLowerCase()].join(' · ')}{res.stub ? ' (sample data)' : ''}
+                </span>
               )}
             </div>
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
-              <ShareSearchButton
-                query={query}
-                filters={filters}
-                url={`${origin()}/fables?${toParams(query, filters)}`}
-                siteName="Foils & Fables"
-              />
-              <div className="hidden lg:block">
-                <SortDropdown value={filters.sort} onChange={changeSort} options={SORT_OPTIONS} />
-              </div>
-              <button
-                onClick={handleOpenSave}
-                className="flex items-center gap-2 px-4 py-2 rounded-full text-fine transition-colors"
-                style={{ border: '0.5px solid var(--accent)', color: 'var(--accent)', background: 'transparent' }}
-              >
-                <Bookmark className="w-[13px] h-[13px]" strokeWidth={1.6} aria-hidden="true" />
-                Save this search
-              </button>
-              <button
-                onClick={newSearch}
-                className="py-3 -my-3 text-fine text-[var(--ink-400)] hover:text-[var(--accent)] transition-colors"
-              >
-                New search
-              </button>
-            </div>
+            {!loading && applied?.f?.shiny && res.shinyUnknown > 0 && (
+              <p className="text-meta mt-1" style={{ color: 'var(--ink-400)' }}>
+                {res.shinyUnknown.toLocaleString('en-US')} more {res.shinyUnknown === 1 ? 'listing didn’t' : 'listings didn’t'} say whether {res.shinyUnknown === 1 ? 'it’s' : 'they’re'} shiny, so they’re not shown.
+              </p>
+            )}
+            {nameFix && !loading && res.items.length > 0 && dismissedFix !== shownQuery && (
+              <DidYouMeanLine fix={nameFix.query} onPick={() => searchFix(nameFix.query)} onDismiss={() => setDismissedFix(shownQuery)} />
+            )}
           </div>
+
+          {/* One row of controls, as on sports: Filters, Sort, Get alerts, Share, List / Grid. */}
+          <ResultsToolbar
+            activeCount={countActiveFilters(filters)}
+            onFilters={() => {
+              if (isDesktopViewport) {
+                sidebarRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                sidebarRef.current?.querySelector('button')?.focus({ preventScroll: true });
+              } else {
+                setMobileFiltersOpen(true);
+              }
+            }}
+            sortBy={filters.sort}
+            onSort={changeSort}
+            onAlerts={handleOpenSave}
+            share={<ShareSearchButton query={query} filters={filters} url={`${origin()}/fables?${toParams(query, filters)}`} siteName="Foils & Fables" />}
+            view={resultsView}
+            onView={setResultsView}
+            options={SORT_OPTIONS}
+          />
 
           {applied?.q && !loading && (canHaveVersions ? (
             <button type="button" onClick={() => setShowAllListings(false)}
@@ -518,12 +503,6 @@ export default function FablesHome() {
               <Layers className="w-5 h-5" strokeWidth={2} aria-hidden="true" />See every version
             </button>
           ) : <EveryCardButton query={applied.q} game={appliedFilters?.game || mainGame(res.items)} />)}
-
-          <MobileFilterBar
-            activeCount={countActiveFilters(filters)}
-            onOpenFilters={() => setMobileFiltersOpen(true)}
-            onOpenSort={() => setMobileSortOpen(true)}
-          />
 
           <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-x-12 gap-y-8 items-start">
             <div ref={sidebarRef} className="hidden lg:block scroll-mt-6">
@@ -546,6 +525,7 @@ export default function FablesHome() {
               onAlert={handleOpenSave}
               returnPath={resultsReturn}
               onMore={loadMore}
+              view={resultsView}
             />
           </div>
 
@@ -558,14 +538,6 @@ export default function FablesHome() {
           >
             <FilterControls meta={meta} filters={filters} setFilter={setFilter} compact />
           </MobileFilterDrawer>
-          <MobileSortSheet
-            open={mobileSortOpen}
-            onClose={() => setMobileSortOpen(false)}
-            value={filters.sort}
-            options={SORT_OPTIONS}
-            note="Sort reloads these results in the new order. Your filters stay the same."
-            onChange={(v) => { changeSort(v); setMobileSortOpen(false); }}
-          />
           <PendingSearchModal
             open={pendingSearchOpen}
             floating={isDesktopViewport}
@@ -880,7 +852,7 @@ function FilterChips({ meta, filters, onEdit }) {
   );
 }
 
-function ResultsList({ loading, loadingMore, res, error, query, appliedFilters, hasPendingFilters, onPendingClick, onCardClick, nameFix, onNameFix, onAlert, returnPath, onMore }) {
+function ResultsList({ loading, loadingMore, res, error, query, appliedFilters, hasPendingFilters, onPendingClick, onCardClick, nameFix, onNameFix, onAlert, returnPath, onMore, view = 'list' }) {
   if (loading) return <LoadingState phrase="Searching eBay" />;
   if (res.items.length === 0) {
     return (
@@ -896,19 +868,30 @@ function ResultsList({ loading, loadingMore, res, error, query, appliedFilters, 
   const remaining = Math.max(0, (res.total || 0) - res.items.length);
   return (
     <div>
-      <div className="divide-y divide-[var(--line-soft)]">
-        {res.items.flatMap((item, i) => {
-          const card = (
+      {view === 'grid' ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-7">
+          {res.items.map((item, i) => (
             <ResultCard
-              key={item.id} item={item} formatPrice={formatPrice} index={i}
+              key={item.id} item={item} formatPrice={formatPrice} index={i} view="grid"
               hasPendingFilters={hasPendingFilters} onPendingClick={onPendingClick} onCardClick={onCardClick}
-              payload={fablesPayload(item)} rowStyle={rowStyleFor(item)}
-              badges={<CardBadges item={item} />} hasBadges={hasCardBadges(item)}
+              payload={fablesPayload(item)} badges={<CardBadges item={item} />}
             />
-          );
-          return i === 3 ? [card, <SignupPromptCard key="signup-prompt" />] : [card];
-        })}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="divide-y divide-[var(--line-soft)]">
+          {res.items.flatMap((item, i) => {
+            const card = (
+              <ResultCard
+                key={item.id} item={item} formatPrice={formatPrice} index={i}
+                hasPendingFilters={hasPendingFilters} onPendingClick={onPendingClick} onCardClick={onCardClick}
+                payload={fablesPayload(item)} badges={<CardBadges item={item} />}
+              />
+            );
+            return i === 3 ? [card, <SignupPromptCard key="signup-prompt" />] : [card];
+          })}
+        </div>
+      )}
       {res.nextOffset != null && (
         <div className="pt-8 flex flex-col items-center gap-3">
           <span className="text-fine" style={{ color: 'var(--ink-600)' }}>Showing {res.items.length} of {res.total}</span>

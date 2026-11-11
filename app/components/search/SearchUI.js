@@ -8,7 +8,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { ArrowRight, ArrowUp, Check, X } from 'lucide-react';
+import { ArrowRight, ArrowUp, Check, X, SlidersHorizontal, ChevronDown, Bell, List, LayoutGrid } from 'lucide-react';
 
 // Price filter value meaning "no maximum".
 export const PRICE_NO_MAX = 100000;
@@ -624,6 +624,50 @@ export function NoResultsState({ onSuggested, appliedFilters, nameFix = null, on
           {emptyText}
         </p>
       )}
+    </div>
+  );
+}
+
+/* The results controls in one row: Filters (with how many are on), Sort,
+   Get alerts, Share, and List / Grid. Both sides; Foils & Fables passes its
+   own sort options. */
+export function ResultsToolbar({ activeCount, onFilters, sortBy, onSort, onAlerts, share, view, onView, options = SPORTS_SORT_OPTIONS }) {
+  const pill = 'inline-flex items-center gap-2 h-9 px-3.5 rounded-full text-body font-medium whitespace-nowrap transition-colors hover:border-[var(--accent-deep)]';
+  const pillStyle = { border: '1px solid var(--line)', background: 'var(--bg-elev)', color: 'var(--ink-200)' };
+  const icon = 'w-4 h-4 flex-none';
+  return (
+    <div className="sticky top-0 lg:static z-30 -mx-6 px-6 lg:mx-0 lg:px-0 py-3 mt-3 mb-4 lg:mb-6 flex items-center gap-2 overflow-x-auto [scrollbar-width:none]"
+         style={{ background: 'var(--bg-base)', borderBottom: '1px solid var(--line-soft)' }}>
+      <button type="button" onClick={onFilters} className={pill} style={pillStyle}>
+        <SlidersHorizontal className={icon} strokeWidth={1.8} aria-hidden="true" />Filters
+        {activeCount > 0 && (
+          <span className="inline-grid place-items-center min-w-[20px] h-5 px-1.5 rounded-full text-fine font-semibold" style={{ background: 'var(--accent-bright)', color: 'var(--ink-on-accent)' }}>{activeCount}</span>
+        )}
+      </button>
+      <label className={`${pill} relative cursor-pointer`} style={pillStyle}>
+        <span className="sr-only">Sort</span>
+        <span aria-hidden="true" className="hidden sm:inline">Sort:</span>
+        <span aria-hidden="true">{options.find(([v]) => v === sortBy)?.[1] || 'Rarest first'}</span>
+        <ChevronDown className={icon} strokeWidth={1.8} aria-hidden="true" />
+        <select value={sortBy} onChange={(e) => onSort(e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer" aria-label="Sort">
+          {options.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+        </select>
+      </label>
+      {/* Phones: Filters, Sort and a bell for alerts on this search (signed-in
+          members save it here; the header's Get alerts is for visitors). */}
+      <button type="button" onClick={onAlerts} aria-label="Get alerts for this search" className={`${pill} max-sm:px-2.5`} style={pillStyle}>
+        <Bell className={icon} strokeWidth={1.8} aria-hidden="true" /><span className="hidden sm:inline">Get alerts</span>
+      </button>
+      <span className="hidden sm:contents">{share}</span>
+      <div className="ml-auto hidden sm:inline-flex flex-none p-[3px] rounded-full" role="group" aria-label="Show as" style={{ border: '1px solid var(--line)', background: 'var(--bg-elev)' }}>
+        {[['list', 'List', List], ['grid', 'Grid', LayoutGrid]].map(([v, l, Icon]) => (
+          <button key={v} type="button" onClick={() => onView(v)} aria-pressed={view === v}
+                  className="inline-flex items-center gap-1.5 h-[30px] px-3 rounded-full text-meta font-medium"
+                  style={view === v ? { background: 'var(--bg-elev-2)', color: 'var(--ink-100)', boxShadow: 'inset 0 0 0 1px var(--line)' } : { color: 'var(--ink-400)' }}>
+            <Icon className="w-3.5 h-3.5" strokeWidth={1.8} aria-hidden="true" /><span className="hidden sm:inline">{l}</span>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
