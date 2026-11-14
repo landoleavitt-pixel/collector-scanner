@@ -4,7 +4,7 @@ Data files only, no code. They're used by the card-game engine (`lib/tcg`, owned
 
 | File | What it is | Size |
 |---|---|---|
-| `ja-coverage.json` | Every Japanese set TCGdex lists (184: 169 Japanese plus 15 Chinese-language sets that TCGdex files under Japanese). Each entry has the set code, Japanese name, release date, era, cards in set, cards in the catalog, % complete, and `full` (true at 98% or more). | 184 sets |
+| `ja-coverage.json` (moved to lib/tcg/catalog/ja-coverage.json on 2026-11-14; refreshed by scripts/build-tcg-ja.mjs) | Every Japanese set TCGdex lists (184: 169 Japanese plus 15 Chinese-language sets that TCGdex files under Japanese). Each entry has the set code, Japanese name, release date, era, cards in set, cards in the catalog, % complete, and `full` (true at 98% or more). | 184 sets |
 | `ja-names.json` | Japanese trainer, item, tool and stadium names mapped to official English card names, each with a `highValue` flag and how the pair was found. Pokémon cards don't need this; they're matched by Pokédex number. | 85 names (59 high-value) |
 
 **How to use it:** label a Japanese listing with an exact version only when its set has `full: true`. Otherwise show "Japanese printing, version not named" (decided 2026-10-31).

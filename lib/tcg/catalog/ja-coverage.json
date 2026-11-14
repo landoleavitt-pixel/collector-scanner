@@ -1,6 +1,6 @@
 {
  "source": "TCGdex API v2 (https://api.tcgdex.net/v2/ja/sets), database licensed MIT (https://github.com/tcgdex/cards-database)",
- "checked": "2026-10-31",
+ "checked": "2026-11-14",
  "fullThresholdPercent": 98,
  "note": "cardsInSet = TCGdex cardCount.total (includes secret rares). The DP (2006-08) and Black & White (2010-13) Japanese eras are not listed by TCGdex at all, so they do not appear here.",
  "sets": [
@@ -12,7 +12,7 @@
    "language": "ja",
    "cardsInSet": 102,
    "cardsInCatalog": 102,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -23,7 +23,7 @@
    "language": "ja",
    "cardsInSet": 48,
    "cardsInCatalog": 48,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -34,7 +34,7 @@
    "language": "ja",
    "cardsInSet": 48,
    "cardsInCatalog": 48,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -45,7 +45,7 @@
    "language": "ja",
    "cardsInSet": 65,
    "cardsInCatalog": 65,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -56,7 +56,7 @@
    "language": "ja",
    "cardsInSet": 96,
    "cardsInCatalog": 96,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -67,7 +67,7 @@
    "language": "ja",
    "cardsInSet": 98,
    "cardsInCatalog": 98,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -78,7 +78,7 @@
    "language": "ja",
    "cardsInSet": 96,
    "cardsInCatalog": 96,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -89,7 +89,7 @@
    "language": "ja",
    "cardsInSet": 57,
    "cardsInCatalog": 57,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -100,7 +100,7 @@
    "language": "ja",
    "cardsInSet": 57,
    "cardsInCatalog": 57,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -111,7 +111,7 @@
    "language": "ja",
    "cardsInSet": 113,
    "cardsInCatalog": 113,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -122,7 +122,7 @@
    "language": "ja",
    "cardsInSet": 143,
    "cardsInCatalog": 143,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -144,7 +144,7 @@
    "language": "ja",
    "cardsInSet": 128,
    "cardsInCatalog": 128,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -155,7 +155,7 @@
    "language": "ja",
    "cardsInSet": 92,
    "cardsInCatalog": 92,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -166,7 +166,7 @@
    "language": "ja",
    "cardsInSet": 90,
    "cardsInCatalog": 90,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -177,7 +177,7 @@
    "language": "ja",
    "cardsInSet": 91,
    "cardsInCatalog": 91,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -188,7 +188,7 @@
    "language": "ja",
    "cardsInSet": 91,
    "cardsInCatalog": 91,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -199,7 +199,7 @@
    "language": "ja",
    "cardsInSet": 55,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -210,7 +210,7 @@
    "language": "ja",
    "cardsInSet": 53,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -221,7 +221,7 @@
    "language": "ja",
    "cardsInSet": 54,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -232,7 +232,7 @@
    "language": "ja",
    "cardsInSet": 80,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -243,7 +243,7 @@
    "language": "ja",
    "cardsInSet": 83,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -254,7 +254,7 @@
    "language": "ja",
    "cardsInSet": 82,
    "cardsInCatalog": 82,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -265,7 +265,7 @@
    "language": "ja",
    "cardsInSet": 82,
    "cardsInCatalog": 82,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -276,7 +276,7 @@
    "language": "ja",
    "cardsInSet": 85,
    "cardsInCatalog": 85,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -287,7 +287,7 @@
    "language": "ja",
    "cardsInSet": 106,
    "cardsInCatalog": 106,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -298,7 +298,7 @@
    "language": "ja",
    "cardsInSet": 86,
    "cardsInCatalog": 86,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -309,7 +309,7 @@
    "language": "ja",
    "cardsInSet": 86,
    "cardsInCatalog": 86,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -320,7 +320,7 @@
    "language": "ja",
    "cardsInSet": 52,
    "cardsInCatalog": 52,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -331,7 +331,7 @@
    "language": "ja",
    "cardsInSet": 75,
    "cardsInCatalog": 75,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -342,7 +342,7 @@
    "language": "ja",
    "cardsInSet": 68,
    "cardsInCatalog": 68,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -353,7 +353,7 @@
    "language": "ja",
    "cardsInSet": 108,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -364,7 +364,7 @@
    "language": "ja",
    "cardsInSet": 70,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -375,7 +375,7 @@
    "language": "ja",
    "cardsInSet": 70,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -386,7 +386,7 @@
    "language": "ja",
    "cardsInSet": 70,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -397,7 +397,7 @@
    "language": "ja",
    "cardsInSet": 40,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -408,18 +408,194 @@
    "language": "ja",
    "cardsInSet": 70,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
-   "setCode": "XY1a",
-   "nameJa": "コレクションX",
-   "releaseDate": "2013-12-13",
+   "setCode": "BW1b",
+   "nameJa": "ホワイトコレクション",
+   "releaseDate": "2010-12-17",
+   "era": "Black & White (2010-2013)",
+   "language": "ja",
+   "cardsInSet": 53,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "BW1a",
+   "nameJa": "ブラックコレクション",
+   "releaseDate": "2010-12-17",
+   "era": "Black & White (2010-2013)",
+   "language": "ja",
+   "cardsInSet": 53,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "BW2",
+   "nameJa": "レッドコレクション",
+   "releaseDate": "2011-07-15",
+   "era": "Black & White (2010-2013)",
+   "language": "ja",
+   "cardsInSet": 66,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "BW3a",
+   "nameJa": "サイコドライブ",
+   "releaseDate": "2011-09-16",
+   "era": "Black & White (2010-2013)",
+   "language": "ja",
+   "cardsInSet": 52,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "BW3b",
+   "nameJa": "ヘイルブリザード",
+   "releaseDate": "2011-09-16",
+   "era": "Black & White (2010-2013)",
+   "language": "ja",
+   "cardsInSet": 52,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "BW4",
+   "nameJa": "ダークラッシュ",
+   "releaseDate": "2011-12-16",
+   "era": "Black & White (2010-2013)",
+   "language": "ja",
+   "cardsInSet": 69,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "DS",
+   "nameJa": "ドラゴンセレクション",
+   "releaseDate": "2012-01-27",
+   "era": "DP (2006-2008)",
+   "language": "ja",
+   "cardsInSet": 20,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "BW5a",
+   "nameJa": "リューズブラスト",
+   "releaseDate": "2012-03-16",
+   "era": "Black & White (2010-2013)",
+   "language": "ja",
+   "cardsInSet": 50,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "BW5b",
+   "nameJa": "リューノブレード",
+   "releaseDate": "2012-03-16",
+   "era": "Black & White (2010-2013)",
+   "language": "ja",
+   "cardsInSet": 50,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "BW6b",
+   "nameJa": "コールドフレア",
+   "releaseDate": "2012-07-13",
+   "era": "Black & White (2010-2013)",
+   "language": "ja",
+   "cardsInSet": 59,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "BW6a",
+   "nameJa": "フリーズボルト",
+   "releaseDate": "2012-07-13",
+   "era": "Black & White (2010-2013)",
+   "language": "ja",
+   "cardsInSet": 59,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "BW7",
+   "nameJa": "プラズマゲイル",
+   "releaseDate": "2012-09-14",
+   "era": "Black & White (2010-2013)",
+   "language": "ja",
+   "cardsInSet": 70,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "BW8a",
+   "nameJa": "ラセンフォース",
+   "releaseDate": "2012-12-14",
+   "era": "Black & White (2010-2013)",
+   "language": "ja",
+   "cardsInSet": 58,
+   "cardsInCatalog": 58,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "BW8b",
+   "nameJa": "ライデンナックル",
+   "releaseDate": "2012-12-14",
+   "era": "Black & White (2010-2013)",
+   "language": "ja",
+   "cardsInSet": 51,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "SC",
+   "nameJa": "シャイニーコレクション",
+   "releaseDate": "2013-02-01",
    "era": "XY (2013-2015)",
    "language": "ja",
-   "cardsInSet": 60,
+   "cardsInSet": 20,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "BW9",
+   "nameJa": "メガロキャノン",
+   "releaseDate": "2013-03-15",
+   "era": "Black & White (2010-2013)",
+   "language": "ja",
+   "cardsInSet": 76,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "EBB",
+   "nameJa": "EXバトルブースト",
+   "releaseDate": "2013-07-13",
+   "era": "XY (2013-2015)",
+   "language": "ja",
+   "cardsInSet": 96,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -430,7 +606,18 @@
    "language": "ja",
    "cardsInSet": 60,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "XY1a",
+   "nameJa": "コレクションX",
+   "releaseDate": "2013-12-13",
+   "era": "XY (2013-2015)",
+   "language": "ja",
+   "cardsInSet": 60,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -441,7 +628,7 @@
    "language": "ja",
    "cardsInSet": 80,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -452,7 +639,7 @@
    "language": "ja",
    "cardsInSet": 96,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -463,7 +650,7 @@
    "language": "ja",
    "cardsInSet": 88,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -474,7 +661,7 @@
    "language": "ja",
    "cardsInSet": 70,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -485,7 +672,7 @@
    "language": "ja",
    "cardsInSet": 70,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -496,7 +683,7 @@
    "language": "ja",
    "cardsInSet": 34,
    "cardsInCatalog": 34,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -507,7 +694,7 @@
    "language": "ja",
    "cardsInSet": 78,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -518,7 +705,7 @@
    "language": "ja",
    "cardsInSet": 81,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -529,19 +716,8 @@
    "language": "ja",
    "cardsInSet": 27,
    "cardsInCatalog": 27,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
-  },
-  {
-   "setCode": "XY8a",
-   "nameJa": "青い衝撃",
-   "releaseDate": "2015-09-26",
-   "era": "XY (2013-2015)",
-   "language": "ja",
-   "cardsInSet": 59,
-   "cardsInCatalog": 0,
-   "percentComplete": 0.0,
-   "full": false
   },
   {
    "setCode": "XY8b",
@@ -551,7 +727,18 @@
    "language": "ja",
    "cardsInSet": 59,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "XY8a",
+   "nameJa": "青い衝撃",
+   "releaseDate": "2015-09-26",
+   "era": "XY (2013-2015)",
+   "language": "ja",
+   "cardsInSet": 59,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -562,7 +749,7 @@
    "language": "ja",
    "cardsInSet": 80,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -573,7 +760,7 @@
    "language": "ja",
    "cardsInSet": 32,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -584,7 +771,7 @@
    "language": "ja",
    "cardsInSet": 78,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -595,7 +782,7 @@
    "language": "ja",
    "cardsInSet": 131,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -606,7 +793,7 @@
    "language": "ja",
    "cardsInSet": 54,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -617,7 +804,7 @@
    "language": "ja",
    "cardsInSet": 54,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -628,7 +815,7 @@
    "language": "ja",
    "cardsInSet": 36,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -639,7 +826,7 @@
    "language": "ja",
    "cardsInSet": 87,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -650,7 +837,7 @@
    "language": "ja",
    "cardsInSet": 4,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -661,7 +848,7 @@
    "language": "ja",
    "cardsInSet": 73,
    "cardsInCatalog": 73,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -672,7 +859,7 @@
    "language": "ja",
    "cardsInSet": 73,
    "cardsInCatalog": 73,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -683,18 +870,18 @@
    "language": "ja",
    "cardsInSet": 51,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
-   "setCode": "SM1p",
-   "nameJa": "サン＆ムーン",
-   "releaseDate": "2017-01-27",
+   "setCode": "SM2L",
+   "nameJa": "アローラの月光",
+   "releaseDate": "2017-03-17",
    "era": "Sun & Moon (2016-2019)",
    "language": "ja",
-   "cardsInSet": 68,
-   "cardsInCatalog": 68,
-   "percentComplete": 100.0,
+   "cardsInSet": 62,
+   "cardsInCatalog": 62,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -705,29 +892,7 @@
    "language": "ja",
    "cardsInSet": 61,
    "cardsInCatalog": 61,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "SM2L",
-   "nameJa": "アローラの月光",
-   "releaseDate": "2017-03-17",
-   "era": "Sun & Moon (2016-2019)",
-   "language": "ja",
-   "cardsInSet": 62,
-   "cardsInCatalog": 62,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "SM2p",
-   "nameJa": "新たなる試練の向こう",
-   "releaseDate": "2017-04-21",
-   "era": "Sun & Moon (2016-2019)",
-   "language": "ja",
-   "cardsInSet": 65,
-   "cardsInCatalog": 65,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -738,19 +903,8 @@
    "language": "ja",
    "cardsInSet": 49,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
-  },
-  {
-   "setCode": "SM3H",
-   "nameJa": "闘う虹を見たか",
-   "releaseDate": "2017-06-16",
-   "era": "Sun & Moon (2016-2019)",
-   "language": "ja",
-   "cardsInSet": 64,
-   "cardsInCatalog": 64,
-   "percentComplete": 100.0,
-   "full": true
   },
   {
    "setCode": "SM3N",
@@ -760,7 +914,18 @@
    "language": "ja",
    "cardsInSet": 64,
    "cardsInCatalog": 64,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SM3H",
+   "nameJa": "闘う虹を見たか",
+   "releaseDate": "2017-06-16",
+   "era": "Sun & Moon (2016-2019)",
+   "language": "ja",
+   "cardsInSet": 64,
+   "cardsInCatalog": 64,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -771,19 +936,8 @@
    "language": "ja",
    "cardsInSet": 72,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
-  },
-  {
-   "setCode": "SM3p",
-   "nameJa": "ひかる伝説",
-   "releaseDate": "2017-07-15",
-   "era": "Sun & Moon (2016-2019)",
-   "language": "ja",
-   "cardsInSet": 82,
-   "cardsInCatalog": 82,
-   "percentComplete": 100.0,
-   "full": true
   },
   {
    "setCode": "SM4A",
@@ -793,7 +947,7 @@
    "language": "ja",
    "cardsInSet": 61,
    "cardsInCatalog": 61,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -804,7 +958,7 @@
    "language": "ja",
    "cardsInSet": 62,
    "cardsInCatalog": 62,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -815,19 +969,8 @@
    "language": "ja",
    "cardsInSet": 114,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
-  },
-  {
-   "setCode": "SM4p",
-   "nameJa": "GXバトルブースト",
-   "releaseDate": "2017-10-20",
-   "era": "Sun & Moon (2016-2019)",
-   "language": "ja",
-   "cardsInSet": 125,
-   "cardsInCatalog": 125,
-   "percentComplete": 100.0,
-   "full": true
   },
   {
    "setCode": "SM5M",
@@ -837,7 +980,7 @@
    "language": "ja",
    "cardsInSet": 78,
    "cardsInCatalog": 78,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -848,7 +991,7 @@
    "language": "ja",
    "cardsInSet": 78,
    "cardsInCatalog": 78,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -859,19 +1002,8 @@
    "language": "ja",
    "cardsInSet": 50,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
-  },
-  {
-   "setCode": "SM5p",
-   "nameJa": "ウルトラフォース",
-   "releaseDate": "2018-01-19",
-   "era": "Sun & Moon (2016-2019)",
-   "language": "ja",
-   "cardsInSet": 63,
-   "cardsInCatalog": 63,
-   "percentComplete": 100.0,
-   "full": true
   },
   {
    "setCode": "SM6",
@@ -881,7 +1013,7 @@
    "language": "ja",
    "cardsInSet": 110,
    "cardsInCatalog": 110,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -892,7 +1024,7 @@
    "language": "ja",
    "cardsInSet": 66,
    "cardsInCatalog": 66,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -903,7 +1035,7 @@
    "language": "ja",
    "cardsInSet": 86,
    "cardsInCatalog": 86,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -914,7 +1046,7 @@
    "language": "ja",
    "cardsInSet": 112,
    "cardsInCatalog": 112,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -925,7 +1057,7 @@
    "language": "ja",
    "cardsInSet": 73,
    "cardsInCatalog": 73,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -936,7 +1068,7 @@
    "language": "ja",
    "cardsInSet": 63,
    "cardsInCatalog": 63,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -947,18 +1079,7 @@
    "language": "ja",
    "cardsInSet": 111,
    "cardsInCatalog": 111,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "SM8a",
-   "nameJa": "ダークオーダー",
-   "releaseDate": "2018-10-05",
-   "era": "Sun & Moon (2016-2019)",
-   "language": "ja",
-   "cardsInSet": 65,
-   "cardsInCatalog": 65,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -969,7 +1090,18 @@
    "language": "ja",
    "cardsInSet": 250,
    "cardsInCatalog": 250,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SM8a",
+   "nameJa": "ダークオーダー",
+   "releaseDate": "2018-10-05",
+   "era": "Sun & Moon (2016-2019)",
+   "language": "ja",
+   "cardsInSet": 65,
+   "cardsInCatalog": 65,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -980,7 +1112,7 @@
    "language": "ja",
    "cardsInSet": 118,
    "cardsInCatalog": 118,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -991,7 +1123,7 @@
    "language": "ja",
    "cardsInSet": 70,
    "cardsInCatalog": 70,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -1002,7 +1134,7 @@
    "language": "ja",
    "cardsInSet": 69,
    "cardsInCatalog": 69,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -1013,7 +1145,7 @@
    "language": "ja",
    "cardsInSet": 116,
    "cardsInCatalog": 116,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -1024,7 +1156,7 @@
    "language": "ja",
    "cardsInSet": 69,
    "cardsInCatalog": 69,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -1035,7 +1167,7 @@
    "language": "ja",
    "cardsInSet": 69,
    "cardsInCatalog": 69,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -1046,7 +1178,7 @@
    "language": "ja",
    "cardsInSet": 24,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -1057,7 +1189,7 @@
    "language": "ja",
    "cardsInSet": 115,
    "cardsInCatalog": 115,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -1068,7 +1200,7 @@
    "language": "ja",
    "cardsInSet": 80,
    "cardsInCatalog": 80,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -1079,7 +1211,7 @@
    "language": "ja",
    "cardsInSet": 75,
    "cardsInCatalog": 75,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -1090,7 +1222,7 @@
    "language": "ja",
    "cardsInSet": 117,
    "cardsInCatalog": 117,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -1101,7 +1233,7 @@
    "language": "ja",
    "cardsInSet": 226,
    "cardsInCatalog": 226,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -1112,7 +1244,7 @@
    "language": "ja",
    "cardsInSet": 60,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -1123,7 +1255,7 @@
    "language": "ja",
    "cardsInSet": 60,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -1134,7 +1266,7 @@
    "language": "ja",
    "cardsInSet": 70,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -1145,18 +1277,7 @@
    "language": "ja",
    "cardsInSet": 96,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
-   "full": false
-  },
-  {
-   "setCode": "S2a",
-   "nameJa": "爆炎ウォーカー",
-   "releaseDate": "2020-04-24",
-   "era": "Sword & Shield (2019-2022)",
-   "language": "ja",
-   "cardsInSet": 70,
-   "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -1167,7 +1288,7 @@
    "language": "ja",
    "cardsInSet": 100,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -1178,568 +1299,7 @@
    "language": "ja",
    "cardsInSet": 76,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
-   "full": false
-  },
-  {
-   "setCode": "S4",
-   "nameJa": "仰天のボルテッカー",
-   "releaseDate": "2020-09-18",
-   "era": "Sword & Shield (2019-2022)",
-   "language": "ja",
-   "cardsInSet": 100,
-   "cardsInCatalog": 0,
-   "percentComplete": 0.0,
-   "full": false
-  },
-  {
-   "setCode": "S4a",
-   "nameJa": "シャイニースターV",
-   "releaseDate": "2020-11-20",
-   "era": "Sword & Shield (2019-2022)",
-   "language": "ja",
-   "cardsInSet": 190,
-   "cardsInCatalog": 0,
-   "percentComplete": 0.0,
-   "full": false
-  },
-  {
-   "setCode": "S5I",
-   "nameJa": "一撃マスター",
-   "releaseDate": "2021-01-22",
-   "era": "Sword & Shield (2019-2022)",
-   "language": "ja",
-   "cardsInSet": 91,
-   "cardsInCatalog": 91,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "S5R",
-   "nameJa": "連撃マスター",
-   "releaseDate": "2021-01-22",
-   "era": "Sword & Shield (2019-2022)",
-   "language": "ja",
-   "cardsInSet": 70,
-   "cardsInCatalog": 0,
-   "percentComplete": 0.0,
-   "full": false
-  },
-  {
-   "setCode": "S5a",
-   "nameJa": "双璧のファイター",
-   "releaseDate": "2021-03-19",
-   "era": "Sword & Shield (2019-2022)",
-   "language": "ja",
-   "cardsInSet": 70,
-   "cardsInCatalog": 0,
-   "percentComplete": 0.0,
-   "full": false
-  },
-  {
-   "setCode": "S6H",
-   "nameJa": "白銀のランス",
-   "releaseDate": "2021-04-23",
-   "era": "Sword & Shield (2019-2022)",
-   "language": "ja",
-   "cardsInSet": 95,
-   "cardsInCatalog": 95,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "S6K",
-   "nameJa": "漆黒のガイスト",
-   "releaseDate": "2021-04-23",
-   "era": "Sword & Shield (2019-2022)",
-   "language": "ja",
-   "cardsInSet": 95,
-   "cardsInCatalog": 95,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "S6a",
-   "nameJa": "イーブイヒーローズ",
-   "releaseDate": "2021-05-28",
-   "era": "Sword & Shield (2019-2022)",
-   "language": "ja",
-   "cardsInSet": 69,
-   "cardsInCatalog": 0,
-   "percentComplete": 0.0,
-   "full": false
-  },
-  {
-   "setCode": "S7D",
-   "nameJa": "摩天パーフェクト",
-   "releaseDate": "2021-07-09",
-   "era": "Sword & Shield (2019-2022)",
-   "language": "ja",
-   "cardsInSet": 90,
-   "cardsInCatalog": 90,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "S7R",
-   "nameJa": "蒼空ストリーム",
-   "releaseDate": "2021-07-09",
-   "era": "Sword & Shield (2019-2022)",
-   "language": "ja",
-   "cardsInSet": 67,
-   "cardsInCatalog": 0,
-   "percentComplete": 0.0,
-   "full": false
-  },
-  {
-   "setCode": "S8",
-   "nameJa": "フュージョンアーツ",
-   "releaseDate": "2021-09-24",
-   "era": "Sword & Shield (2019-2022)",
-   "language": "ja",
-   "cardsInSet": 129,
-   "cardsInCatalog": 129,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "S8a",
-   "nameJa": "25th アニバーサリーコレクション",
-   "releaseDate": "2021-10-22",
-   "era": "Sword & Shield (2019-2022)",
-   "language": "ja",
-   "cardsInSet": 28,
-   "cardsInCatalog": 0,
-   "percentComplete": 0.0,
-   "full": false
-  },
-  {
-   "setCode": "S8b",
-   "nameJa": "VMAXクライマックス",
-   "releaseDate": "2021-12-03",
-   "era": "Sword & Shield (2019-2022)",
-   "language": "ja",
-   "cardsInSet": 285,
-   "cardsInCatalog": 285,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "S9",
-   "nameJa": "スターバース",
-   "releaseDate": "2022-01-14",
-   "era": "Sword & Shield (2019-2022)",
-   "language": "ja",
-   "cardsInSet": 127,
-   "cardsInCatalog": 127,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "S9a",
-   "nameJa": "バトルリージョン",
-   "releaseDate": "2022-02-25",
-   "era": "Sword & Shield (2019-2022)",
-   "language": "ja",
-   "cardsInSet": 93,
-   "cardsInCatalog": 93,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "S10D",
-   "nameJa": "タイムゲイザー",
-   "releaseDate": "2022-04-08",
-   "era": "Sword & Shield (2019-2022)",
-   "language": "ja",
-   "cardsInSet": 67,
-   "cardsInCatalog": 0,
-   "percentComplete": 0.0,
-   "full": false
-  },
-  {
-   "setCode": "S10P",
-   "nameJa": "スペースジャグラー",
-   "releaseDate": "2022-04-08",
-   "era": "Sword & Shield (2019-2022)",
-   "language": "ja",
-   "cardsInSet": 88,
-   "cardsInCatalog": 88,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "S10a",
-   "nameJa": "ダークファンタズマ",
-   "releaseDate": "2022-05-13",
-   "era": "Sword & Shield (2019-2022)",
-   "language": "ja",
-   "cardsInSet": 99,
-   "cardsInCatalog": 99,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "S10b",
-   "nameJa": "Pokémon GO",
-   "releaseDate": "2022-06-17",
-   "era": "Sword & Shield (2019-2022)",
-   "language": "ja",
-   "cardsInSet": 71,
-   "cardsInCatalog": 0,
-   "percentComplete": 0.0,
-   "full": false
-  },
-  {
-   "setCode": "S11",
-   "nameJa": "ロストアビス",
-   "releaseDate": "2022-07-15",
-   "era": "Sword & Shield (2019-2022)",
-   "language": "ja",
-   "cardsInSet": 127,
-   "cardsInCatalog": 127,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "S11a",
-   "nameJa": "白熱のアルカナ",
-   "releaseDate": "2022-09-02",
-   "era": "Sword & Shield (2019-2022)",
-   "language": "ja",
-   "cardsInSet": 94,
-   "cardsInCatalog": 94,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "S12",
-   "nameJa": "パラダイムトリガー",
-   "releaseDate": "2022-10-21",
-   "era": "Sword & Shield (2019-2022)",
-   "language": "ja",
-   "cardsInSet": 125,
-   "cardsInCatalog": 125,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "SV-P",
-   "nameJa": "スカーレット&バイオレット プロモカード",
-   "releaseDate": "2022-11-29",
-   "era": "Sword & Shield (2019-2022)",
-   "language": "ja",
-   "cardsInSet": 288,
-   "cardsInCatalog": 288,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "S12a",
-   "nameJa": "VSTARユニバース",
-   "releaseDate": "2022-12-02",
-   "era": "Sword & Shield (2019-2022)",
-   "language": "ja",
-   "cardsInSet": 258,
-   "cardsInCatalog": 258,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "SV1S",
-   "nameJa": "スカーレットex",
-   "releaseDate": "2023-01-20",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
-   "language": "ja",
-   "cardsInSet": 108,
-   "cardsInCatalog": 108,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "SV1V",
-   "nameJa": "バイオレットex",
-   "releaseDate": "2023-01-20",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
-   "language": "ja",
-   "cardsInSet": 108,
-   "cardsInCatalog": 108,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "SV1a",
-   "nameJa": "トリプレットビート",
-   "releaseDate": "2023-03-10",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
-   "language": "ja",
-   "cardsInSet": 103,
-   "cardsInCatalog": 103,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "SV2D",
-   "nameJa": "クレイバースト",
-   "releaseDate": "2023-04-14",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
-   "language": "ja",
-   "cardsInSet": 99,
-   "cardsInCatalog": 99,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "SV2P",
-   "nameJa": "スノーハザード",
-   "releaseDate": "2023-04-14",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
-   "language": "ja",
-   "cardsInSet": 99,
-   "cardsInCatalog": 99,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "SV2a",
-   "nameJa": "ポケモンカード151",
-   "releaseDate": "2023-06-16",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
-   "language": "ja",
-   "cardsInSet": 210,
-   "cardsInCatalog": 210,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "SV3",
-   "nameJa": "黒炎の支配者",
-   "releaseDate": "2023-07-28",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
-   "language": "ja",
-   "cardsInSet": 141,
-   "cardsInCatalog": 141,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "SV3a",
-   "nameJa": "レイジングサーフ",
-   "releaseDate": "2023-09-22",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
-   "language": "ja",
-   "cardsInSet": 92,
-   "cardsInCatalog": 92,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "SV4K",
-   "nameJa": "古代の咆哮",
-   "releaseDate": "2023-10-27",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
-   "language": "ja",
-   "cardsInSet": 95,
-   "cardsInCatalog": 95,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "SV4M",
-   "nameJa": "未来の一閃",
-   "releaseDate": "2023-10-27",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
-   "language": "ja",
-   "cardsInSet": 95,
-   "cardsInCatalog": 95,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "SV4a",
-   "nameJa": "レイジングサーフ",
-   "releaseDate": "2023-12-01",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
-   "language": "ja",
-   "cardsInSet": 320,
-   "cardsInCatalog": 320,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "SV5K",
-   "nameJa": "ワイルドフォース",
-   "releaseDate": "2024-01-26",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
-   "language": "ja",
-   "cardsInSet": 100,
-   "cardsInCatalog": 100,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "SV5M",
-   "nameJa": "サイバージャッジ",
-   "releaseDate": "2024-01-26",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
-   "language": "ja",
-   "cardsInSet": 100,
-   "cardsInCatalog": 100,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "SV5a",
-   "nameJa": "クリムゾンヘイズ",
-   "releaseDate": "2024-03-22",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
-   "language": "ja",
-   "cardsInSet": 96,
-   "cardsInCatalog": 96,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "CS1.5",
-   "nameJa": "トリプレットビート",
-   "releaseDate": "2024-04-26",
-   "era": "Chinese-language set (filed under Japanese by TCGdex)",
-   "language": "zh",
-   "cardsInSet": 101,
-   "cardsInCatalog": 0,
-   "percentComplete": 0.0,
-   "full": false
-  },
-  {
-   "setCode": "CS1a",
-   "nameJa": "トリプレットビート",
-   "releaseDate": "2024-04-26",
-   "era": "Chinese-language set (filed under Japanese by TCGdex)",
-   "language": "zh",
-   "cardsInSet": 101,
-   "cardsInCatalog": 0,
-   "percentComplete": 0.0,
-   "full": false
-  },
-  {
-   "setCode": "CS1b",
-   "nameJa": "トリプレットビート",
-   "releaseDate": "2024-04-26",
-   "era": "Chinese-language set (filed under Japanese by TCGdex)",
-   "language": "zh",
-   "cardsInSet": 101,
-   "cardsInCatalog": 0,
-   "percentComplete": 0.0,
-   "full": false
-  },
-  {
-   "setCode": "CS2.5",
-   "nameJa": "トリプレットビート",
-   "releaseDate": "2024-04-26",
-   "era": "Chinese-language set (filed under Japanese by TCGdex)",
-   "language": "zh",
-   "cardsInSet": 101,
-   "cardsInCatalog": 0,
-   "percentComplete": 0.0,
-   "full": false
-  },
-  {
-   "setCode": "CS2a",
-   "nameJa": "トリプレットビート",
-   "releaseDate": "2024-04-26",
-   "era": "Chinese-language set (filed under Japanese by TCGdex)",
-   "language": "zh",
-   "cardsInSet": 101,
-   "cardsInCatalog": 0,
-   "percentComplete": 0.0,
-   "full": false
-  },
-  {
-   "setCode": "CS2b",
-   "nameJa": "トリプレットビート",
-   "releaseDate": "2024-04-26",
-   "era": "Chinese-language set (filed under Japanese by TCGdex)",
-   "language": "zh",
-   "cardsInSet": 101,
-   "cardsInCatalog": 0,
-   "percentComplete": 0.0,
-   "full": false
-  },
-  {
-   "setCode": "CS3.5",
-   "nameJa": "トリプレットビート",
-   "releaseDate": "2024-04-26",
-   "era": "Chinese-language set (filed under Japanese by TCGdex)",
-   "language": "zh",
-   "cardsInSet": 101,
-   "cardsInCatalog": 0,
-   "percentComplete": 0.0,
-   "full": false
-  },
-  {
-   "setCode": "CS3D",
-   "nameJa": "トリプレットビート",
-   "releaseDate": "2024-04-26",
-   "era": "Chinese-language set (filed under Japanese by TCGdex)",
-   "language": "zh",
-   "cardsInSet": 101,
-   "cardsInCatalog": 0,
-   "percentComplete": 0.0,
-   "full": false
-  },
-  {
-   "setCode": "CS3a",
-   "nameJa": "トリプレットビート",
-   "releaseDate": "2024-04-26",
-   "era": "Chinese-language set (filed under Japanese by TCGdex)",
-   "language": "zh",
-   "cardsInSet": 101,
-   "cardsInCatalog": 0,
-   "percentComplete": 0.0,
-   "full": false
-  },
-  {
-   "setCode": "CS3b",
-   "nameJa": "トリプレットビート",
-   "releaseDate": "2024-04-26",
-   "era": "Chinese-language set (filed under Japanese by TCGdex)",
-   "language": "zh",
-   "cardsInSet": 101,
-   "cardsInCatalog": 0,
-   "percentComplete": 0.0,
-   "full": false
-  },
-  {
-   "setCode": "CS4",
-   "nameJa": "トリプレットビート",
-   "releaseDate": "2024-04-26",
-   "era": "Chinese-language set (filed under Japanese by TCGdex)",
-   "language": "zh",
-   "cardsInSet": 101,
-   "cardsInCatalog": 0,
-   "percentComplete": 0.0,
-   "full": false
-  },
-  {
-   "setCode": "CS4Da",
-   "nameJa": "トリプレットビート",
-   "releaseDate": "2024-04-26",
-   "era": "Chinese-language set (filed under Japanese by TCGdex)",
-   "language": "zh",
-   "cardsInSet": 101,
-   "cardsInCatalog": 0,
-   "percentComplete": 0.0,
-   "full": false
-  },
-  {
-   "setCode": "CS4a",
-   "nameJa": "トリプレットビート",
-   "releaseDate": "2024-04-26",
-   "era": "Chinese-language set (filed under Japanese by TCGdex)",
-   "language": "zh",
-   "cardsInSet": 101,
-   "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -1750,7 +1310,106 @@
    "language": "zh",
    "cardsInSet": 101,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "CS3a",
+   "nameJa": "トリプレットビート",
+   "releaseDate": "2024-04-26",
+   "era": "Chinese-language set (filed under Japanese by TCGdex)",
+   "language": "zh",
+   "cardsInSet": 101,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "CS3b",
+   "nameJa": "トリプレットビート",
+   "releaseDate": "2024-04-26",
+   "era": "Chinese-language set (filed under Japanese by TCGdex)",
+   "language": "zh",
+   "cardsInSet": 101,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "CS3.5",
+   "nameJa": "トリプレットビート",
+   "releaseDate": "2024-04-26",
+   "era": "Chinese-language set (filed under Japanese by TCGdex)",
+   "language": "zh",
+   "cardsInSet": 101,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "CS4a",
+   "nameJa": "トリプレットビート",
+   "releaseDate": "2024-04-26",
+   "era": "Chinese-language set (filed under Japanese by TCGdex)",
+   "language": "zh",
+   "cardsInSet": 101,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "CS2.5",
+   "nameJa": "トリプレットビート",
+   "releaseDate": "2024-04-26",
+   "era": "Chinese-language set (filed under Japanese by TCGdex)",
+   "language": "zh",
+   "cardsInSet": 101,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "CS3D",
+   "nameJa": "トリプレットビート",
+   "releaseDate": "2024-04-26",
+   "era": "Chinese-language set (filed under Japanese by TCGdex)",
+   "language": "zh",
+   "cardsInSet": 101,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "CS1a",
+   "nameJa": "トリプレットビート",
+   "releaseDate": "2024-04-26",
+   "era": "Chinese-language set (filed under Japanese by TCGdex)",
+   "language": "zh",
+   "cardsInSet": 101,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "CS4Da",
+   "nameJa": "トリプレットビート",
+   "releaseDate": "2024-04-26",
+   "era": "Chinese-language set (filed under Japanese by TCGdex)",
+   "language": "zh",
+   "cardsInSet": 101,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "CS2b",
+   "nameJa": "トリプレットビート",
+   "releaseDate": "2024-04-26",
+   "era": "Chinese-language set (filed under Japanese by TCGdex)",
+   "language": "zh",
+   "cardsInSet": 101,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
    "full": false
   },
   {
@@ -1761,161 +1420,381 @@
    "language": "zh",
    "cardsInSet": 101,
    "cardsInCatalog": 0,
-   "percentComplete": 0.0,
+   "percentComplete": 0,
    "full": false
   },
   {
-   "setCode": "SV6",
-   "nameJa": "変幻の仮面",
+   "setCode": "CS4",
+   "nameJa": "トリプレットビート",
    "releaseDate": "2024-04-26",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "era": "Chinese-language set (filed under Japanese by TCGdex)",
+   "language": "zh",
+   "cardsInSet": 101,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "CS2a",
+   "nameJa": "トリプレットビート",
+   "releaseDate": "2024-04-26",
+   "era": "Chinese-language set (filed under Japanese by TCGdex)",
+   "language": "zh",
+   "cardsInSet": 101,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "CS1b",
+   "nameJa": "トリプレットビート",
+   "releaseDate": "2024-04-26",
+   "era": "Chinese-language set (filed under Japanese by TCGdex)",
+   "language": "zh",
+   "cardsInSet": 101,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "CS1.5",
+   "nameJa": "トリプレットビート",
+   "releaseDate": "2024-04-26",
+   "era": "Chinese-language set (filed under Japanese by TCGdex)",
+   "language": "zh",
+   "cardsInSet": 101,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "SM4p",
+   "nameJa": "GXバトルブースト",
+   "releaseDate": "2017-10-20",
+   "era": "Sun & Moon (2016-2019)",
    "language": "ja",
-   "cardsInSet": 133,
-   "cardsInCatalog": 133,
-   "percentComplete": 100.0,
+   "cardsInSet": 125,
+   "cardsInCatalog": 125,
+   "percentComplete": 100,
    "full": true
   },
   {
-   "setCode": "SV6a",
-   "nameJa": "ナイトワンダラー",
-   "releaseDate": "2024-06-07",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "setCode": "SM1p",
+   "nameJa": "サン＆ムーン",
+   "releaseDate": "2017-01-27",
+   "era": "Sun & Moon (2016-2019)",
+   "language": "ja",
+   "cardsInSet": 68,
+   "cardsInCatalog": 68,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SM5p",
+   "nameJa": "ウルトラフォース",
+   "releaseDate": "2018-01-19",
+   "era": "Sun & Moon (2016-2019)",
+   "language": "ja",
+   "cardsInSet": 63,
+   "cardsInCatalog": 63,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SM3p",
+   "nameJa": "ひかる伝説",
+   "releaseDate": "2017-07-15",
+   "era": "Sun & Moon (2016-2019)",
+   "language": "ja",
+   "cardsInSet": 82,
+   "cardsInCatalog": 82,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SM2p",
+   "nameJa": "新たなる試練の向こう",
+   "releaseDate": "2017-04-21",
+   "era": "Sun & Moon (2016-2019)",
+   "language": "ja",
+   "cardsInSet": 65,
+   "cardsInCatalog": 65,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "S4",
+   "nameJa": "仰天のボルテッカー",
+   "releaseDate": "2020-09-18",
+   "era": "Sword & Shield (2019-2022)",
+   "language": "ja",
+   "cardsInSet": 100,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "S5I",
+   "nameJa": "一撃マスター",
+   "releaseDate": "2021-01-22",
+   "era": "Sword & Shield (2019-2022)",
+   "language": "ja",
+   "cardsInSet": 91,
+   "cardsInCatalog": 91,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "S10b",
+   "nameJa": "Pokémon GO",
+   "releaseDate": "2022-06-17",
+   "era": "Sword & Shield (2019-2022)",
+   "language": "ja",
+   "cardsInSet": 71,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "S11a",
+   "nameJa": "白熱のアルカナ",
+   "releaseDate": "2022-09-02",
+   "era": "Sword & Shield (2019-2022)",
    "language": "ja",
    "cardsInSet": 94,
    "cardsInCatalog": 94,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
-   "setCode": "SV7",
-   "nameJa": "ステラミラクル",
-   "releaseDate": "2024-07-19",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "setCode": "S10D",
+   "nameJa": "タイムゲイザー",
+   "releaseDate": "2022-04-08",
+   "era": "Sword & Shield (2019-2022)",
    "language": "ja",
-   "cardsInSet": 135,
-   "cardsInCatalog": 135,
-   "percentComplete": 100.0,
+   "cardsInSet": 67,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "S4a",
+   "nameJa": "シャイニースターV",
+   "releaseDate": "2020-11-20",
+   "era": "Sword & Shield (2019-2022)",
+   "language": "ja",
+   "cardsInSet": 190,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "S2a",
+   "nameJa": "爆炎ウォーカー",
+   "releaseDate": "2020-04-24",
+   "era": "Sword & Shield (2019-2022)",
+   "language": "ja",
+   "cardsInSet": 70,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "S6K",
+   "nameJa": "漆黒のガイスト",
+   "releaseDate": "2021-04-23",
+   "era": "Sword & Shield (2019-2022)",
+   "language": "ja",
+   "cardsInSet": 95,
+   "cardsInCatalog": 95,
+   "percentComplete": 100,
    "full": true
   },
   {
-   "setCode": "SVK",
-   "nameJa": "デッキビルドBOX ステラミラクル",
-   "releaseDate": "2024-07-19",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "setCode": "S9",
+   "nameJa": "スターバース",
+   "releaseDate": "2022-01-14",
+   "era": "Sword & Shield (2019-2022)",
    "language": "ja",
-   "cardsInSet": 44,
-   "cardsInCatalog": 44,
-   "percentComplete": 100.0,
+   "cardsInSet": 127,
+   "cardsInCatalog": 127,
+   "percentComplete": 100,
    "full": true
   },
   {
-   "setCode": "SVLN",
-   "nameJa": "スターターセット テラスタイプ：ステラ ニンフィアex",
-   "releaseDate": "2024-08-30",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "setCode": "S5a",
+   "nameJa": "双璧のファイター",
+   "releaseDate": "2021-03-19",
+   "era": "Sword & Shield (2019-2022)",
    "language": "ja",
-   "cardsInSet": 22,
-   "cardsInCatalog": 22,
-   "percentComplete": 100.0,
+   "cardsInSet": 70,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "S6H",
+   "nameJa": "白銀のランス",
+   "releaseDate": "2021-04-23",
+   "era": "Sword & Shield (2019-2022)",
+   "language": "ja",
+   "cardsInSet": 95,
+   "cardsInCatalog": 95,
+   "percentComplete": 100,
    "full": true
   },
   {
-   "setCode": "SVLS",
-   "nameJa": "スターターセット テラスタイプ：ステラ ソウブレイズex",
-   "releaseDate": "2024-08-30",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "setCode": "S7D",
+   "nameJa": "摩天パーフェクト",
+   "releaseDate": "2021-07-09",
+   "era": "Sword & Shield (2019-2022)",
    "language": "ja",
-   "cardsInSet": 22,
-   "cardsInCatalog": 22,
-   "percentComplete": 100.0,
+   "cardsInSet": 90,
+   "cardsInCatalog": 90,
+   "percentComplete": 100,
    "full": true
   },
   {
-   "setCode": "SV7a",
-   "nameJa": "楽園ドラゴーナ",
-   "releaseDate": "2024-09-13",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "setCode": "S10a",
+   "nameJa": "ダークファンタズマ",
+   "releaseDate": "2022-05-13",
+   "era": "Sword & Shield (2019-2022)",
    "language": "ja",
-   "cardsInSet": 94,
-   "cardsInCatalog": 94,
-   "percentComplete": 100.0,
+   "cardsInSet": 99,
+   "cardsInCatalog": 99,
+   "percentComplete": 100,
    "full": true
   },
   {
-   "setCode": "SV8",
-   "nameJa": "超電ブレイカー",
-   "releaseDate": "2024-10-18",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "setCode": "S10P",
+   "nameJa": "スペースジャグラー",
+   "releaseDate": "2022-04-08",
+   "era": "Sword & Shield (2019-2022)",
    "language": "ja",
-   "cardsInSet": 138,
-   "cardsInCatalog": 138,
-   "percentComplete": 100.0,
+   "cardsInSet": 88,
+   "cardsInCatalog": 88,
+   "percentComplete": 100,
    "full": true
   },
   {
-   "setCode": "SV8a",
-   "nameJa": "テラスタルフェスex",
-   "releaseDate": "2024-12-06",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "setCode": "S6a",
+   "nameJa": "イーブイヒーローズ",
+   "releaseDate": "2021-05-28",
+   "era": "Sword & Shield (2019-2022)",
    "language": "ja",
-   "cardsInSet": 237,
-   "cardsInCatalog": 237,
-   "percentComplete": 100.0,
+   "cardsInSet": 69,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "S12a",
+   "nameJa": "VSTARユニバース",
+   "releaseDate": "2022-12-02",
+   "era": "Sword & Shield (2019-2022)",
+   "language": "ja",
+   "cardsInSet": 258,
+   "cardsInCatalog": 258,
+   "percentComplete": 100,
    "full": true
   },
   {
-   "setCode": "SV9",
-   "nameJa": "バトルパートナーズ",
-   "releaseDate": "2025-01-24",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "setCode": "S8b",
+   "nameJa": "VMAXクライマックス",
+   "releaseDate": "2021-12-03",
+   "era": "Sword & Shield (2019-2022)",
    "language": "ja",
-   "cardsInSet": 132,
-   "cardsInCatalog": 132,
-   "percentComplete": 100.0,
+   "cardsInSet": 285,
+   "cardsInCatalog": 285,
+   "percentComplete": 100,
    "full": true
   },
   {
-   "setCode": "SV9a",
-   "nameJa": "熱風のアリーナ",
-   "releaseDate": "2025-03-14",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "setCode": "S7R",
+   "nameJa": "蒼空ストリーム",
+   "releaseDate": "2021-07-09",
+   "era": "Sword & Shield (2019-2022)",
    "language": "ja",
-   "cardsInSet": 92,
-   "cardsInCatalog": 92,
-   "percentComplete": 100.0,
+   "cardsInSet": 67,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "S5R",
+   "nameJa": "連撃マスター",
+   "releaseDate": "2021-01-22",
+   "era": "Sword & Shield (2019-2022)",
+   "language": "ja",
+   "cardsInSet": 91,
+   "cardsInCatalog": 91,
+   "percentComplete": 100,
    "full": true
   },
   {
-   "setCode": "SV10",
-   "nameJa": "ロケット団の栄光",
-   "releaseDate": "2025-04-18",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "setCode": "S12",
+   "nameJa": "パラダイムトリガー",
+   "releaseDate": "2022-10-21",
+   "era": "Sword & Shield (2019-2022)",
    "language": "ja",
-   "cardsInSet": 132,
-   "cardsInCatalog": 132,
-   "percentComplete": 100.0,
+   "cardsInSet": 125,
+   "cardsInCatalog": 125,
+   "percentComplete": 100,
    "full": true
   },
   {
-   "setCode": "SV11B",
-   "nameJa": "ブラックボルト",
-   "releaseDate": "2025-06-06",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "setCode": "S8",
+   "nameJa": "フュージョンアーツ",
+   "releaseDate": "2021-09-24",
+   "era": "Sword & Shield (2019-2022)",
    "language": "ja",
-   "cardsInSet": 174,
-   "cardsInCatalog": 174,
-   "percentComplete": 100.0,
+   "cardsInSet": 129,
+   "cardsInCatalog": 129,
+   "percentComplete": 100,
    "full": true
   },
   {
-   "setCode": "SV11W",
-   "nameJa": "ホワイトフレア",
-   "releaseDate": "2025-06-06",
+   "setCode": "S11",
+   "nameJa": "ロストアビス",
+   "releaseDate": "2022-07-15",
+   "era": "Sword & Shield (2019-2022)",
+   "language": "ja",
+   "cardsInSet": 127,
+   "cardsInCatalog": 127,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "S9a",
+   "nameJa": "バトルリージョン",
+   "releaseDate": "2022-02-25",
+   "era": "Sword & Shield (2019-2022)",
+   "language": "ja",
+   "cardsInSet": 93,
+   "cardsInCatalog": 93,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "S8a",
+   "nameJa": "25th アニバーサリーコレクション",
+   "releaseDate": "2021-10-22",
+   "era": "Sword & Shield (2019-2022)",
+   "language": "ja",
+   "cardsInSet": 28,
+   "cardsInCatalog": 0,
+   "percentComplete": 0,
+   "full": false
+  },
+  {
+   "setCode": "M6a",
+   "nameJa": "30th CELEBRATION",
+   "releaseDate": "2026-09-16",
    "era": "Scarlet & Violet & Mega (2023-2026)",
    "language": "ja",
-   "cardsInSet": 174,
-   "cardsInCatalog": 174,
-   "percentComplete": 100.0,
+   "cardsInSet": 176,
+   "cardsInCatalog": 176,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -1926,84 +1805,7 @@
    "language": "ja",
    "cardsInSet": 132,
    "cardsInCatalog": 132,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "M1L",
-   "nameJa": "メガブレイブ",
-   "releaseDate": "2025-08-01",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
-   "language": "ja",
-   "cardsInSet": 92,
-   "cardsInCatalog": 92,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "M1S",
-   "nameJa": "メガシンフォニア",
-   "releaseDate": "2025-08-01",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
-   "language": "ja",
-   "cardsInSet": 92,
-   "cardsInCatalog": 92,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "M2",
-   "nameJa": "インフェルノX",
-   "releaseDate": "2025-09-26",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
-   "language": "ja",
-   "cardsInSet": 116,
-   "cardsInCatalog": 116,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "M2a",
-   "nameJa": "MEGAドリームex",
-   "releaseDate": "2025-11-28",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
-   "language": "ja",
-   "cardsInSet": 250,
-   "cardsInCatalog": 250,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "MC",
-   "nameJa": "スタートデッキ100 バトルコレクション",
-   "releaseDate": "2025-12-19",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
-   "language": "ja",
-   "cardsInSet": 774,
-   "cardsInCatalog": 774,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "M3",
-   "nameJa": "ムニキスゼロ",
-   "releaseDate": "2026-01-23",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
-   "language": "ja",
-   "cardsInSet": 117,
-   "cardsInCatalog": 117,
-   "percentComplete": 100.0,
-   "full": true
-  },
-  {
-   "setCode": "M4",
-   "nameJa": "ニンジャスピナー",
-   "releaseDate": "2026-03-13",
-   "era": "Scarlet & Violet & Mega (2023-2026)",
-   "language": "ja",
-   "cardsInSet": 120,
-   "cardsInCatalog": 120,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -2014,7 +1816,7 @@
    "language": "ja",
    "cardsInSet": 118,
    "cardsInCatalog": 118,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
    "full": true
   },
   {
@@ -2025,7 +1827,425 @@
    "language": "ja",
    "cardsInSet": 113,
    "cardsInCatalog": 113,
-   "percentComplete": 100.0,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "M4",
+   "nameJa": "ニンジャスピナー",
+   "releaseDate": "2026-03-13",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 120,
+   "cardsInCatalog": 120,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "MC",
+   "nameJa": "スタートデッキ100 バトルコレクション",
+   "releaseDate": "2025-12-19",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 774,
+   "cardsInCatalog": 774,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "M2a",
+   "nameJa": "MEGAドリームex",
+   "releaseDate": "2025-11-28",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 250,
+   "cardsInCatalog": 250,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "M1S",
+   "nameJa": "メガシンフォニア",
+   "releaseDate": "2025-08-01",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 92,
+   "cardsInCatalog": 92,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "M3",
+   "nameJa": "ムニキスゼロ",
+   "releaseDate": "2026-01-23",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 117,
+   "cardsInCatalog": 117,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "MF",
+   "nameJa": "30th CELEBRATION プレミアムデッキセット エーフィ・ブラッキー",
+   "releaseDate": "2026-09-16",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 49,
+   "cardsInCatalog": 49,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "M1L",
+   "nameJa": "メガブレイブ",
+   "releaseDate": "2025-08-01",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 92,
+   "cardsInCatalog": 92,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "M2",
+   "nameJa": "インフェルノX",
+   "releaseDate": "2025-09-26",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 116,
+   "cardsInCatalog": 116,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SV1V",
+   "nameJa": "バイオレットex",
+   "releaseDate": "2023-01-20",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 108,
+   "cardsInCatalog": 108,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SV9a",
+   "nameJa": "熱風のアリーナ",
+   "releaseDate": "2025-03-14",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 92,
+   "cardsInCatalog": 92,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SVK",
+   "nameJa": "デッキビルドBOX ステラミラクル",
+   "releaseDate": "2024-07-19",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 44,
+   "cardsInCatalog": 44,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SV5M",
+   "nameJa": "サイバージャッジ",
+   "releaseDate": "2024-01-26",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 100,
+   "cardsInCatalog": 100,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SV7",
+   "nameJa": "ステラミラクル",
+   "releaseDate": "2024-07-19",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 135,
+   "cardsInCatalog": 135,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SV2P",
+   "nameJa": "スノーハザード",
+   "releaseDate": "2023-04-14",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 99,
+   "cardsInCatalog": 99,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SV4K",
+   "nameJa": "古代の咆哮",
+   "releaseDate": "2023-10-27",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 95,
+   "cardsInCatalog": 95,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SV6a",
+   "nameJa": "ナイトワンダラー",
+   "releaseDate": "2024-06-07",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 94,
+   "cardsInCatalog": 94,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SV8a",
+   "nameJa": "テラスタルフェスex",
+   "releaseDate": "2024-12-06",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 237,
+   "cardsInCatalog": 237,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SV5K",
+   "nameJa": "ワイルドフォース",
+   "releaseDate": "2024-01-26",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 100,
+   "cardsInCatalog": 100,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SV8",
+   "nameJa": "超電ブレイカー",
+   "releaseDate": "2024-10-18",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 138,
+   "cardsInCatalog": 138,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SV5a",
+   "nameJa": "クリムゾンヘイズ",
+   "releaseDate": "2024-03-22",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 96,
+   "cardsInCatalog": 96,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SV3",
+   "nameJa": "黒炎の支配者",
+   "releaseDate": "2023-07-28",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 141,
+   "cardsInCatalog": 141,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SV11B",
+   "nameJa": "ブラックボルト",
+   "releaseDate": "2025-06-06",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 174,
+   "cardsInCatalog": 174,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SV4a",
+   "nameJa": "シャイニートレジャーex",
+   "releaseDate": "2023-12-01",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 320,
+   "cardsInCatalog": 320,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SV1S",
+   "nameJa": "スカーレットex",
+   "releaseDate": "2023-01-20",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 108,
+   "cardsInCatalog": 108,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SVLS",
+   "nameJa": "スターターセット テラスタイプ：ステラ ソウブレイズex",
+   "releaseDate": "2024-08-30",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 22,
+   "cardsInCatalog": 22,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SV11W",
+   "nameJa": "ホワイトフレア",
+   "releaseDate": "2025-06-06",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 174,
+   "cardsInCatalog": 174,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "WCS23",
+   "nameJa": "ポケモンワールドチャンピオンシップス2023横浜 記念デッキ「ピカチュウ」",
+   "releaseDate": "2023-07-28",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 30,
+   "cardsInCatalog": 1,
+   "percentComplete": 3.3,
+   "full": false
+  },
+  {
+   "setCode": "SV1a",
+   "nameJa": "トリプレットビート",
+   "releaseDate": "2023-03-10",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 103,
+   "cardsInCatalog": 103,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SV9",
+   "nameJa": "バトルパートナーズ",
+   "releaseDate": "2025-01-24",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 132,
+   "cardsInCatalog": 132,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SV4M",
+   "nameJa": "未来の一閃",
+   "releaseDate": "2023-10-27",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 95,
+   "cardsInCatalog": 95,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SV10",
+   "nameJa": "ロケット団の栄光",
+   "releaseDate": "2025-04-18",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 132,
+   "cardsInCatalog": 132,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SV7a",
+   "nameJa": "楽園ドラゴーナ",
+   "releaseDate": "2024-09-13",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 94,
+   "cardsInCatalog": 94,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SV3a",
+   "nameJa": "レイジングサーフ",
+   "releaseDate": "2023-09-22",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 92,
+   "cardsInCatalog": 92,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SV2D",
+   "nameJa": "クレイバースト",
+   "releaseDate": "2023-04-14",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 99,
+   "cardsInCatalog": 99,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SV2a",
+   "nameJa": "ポケモンカード151",
+   "releaseDate": "2023-06-16",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 210,
+   "cardsInCatalog": 210,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SV6",
+   "nameJa": "変幻の仮面",
+   "releaseDate": "2024-04-26",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 133,
+   "cardsInCatalog": 133,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SV-P",
+   "nameJa": "スカーレット&バイオレット プロモカード",
+   "releaseDate": "2022-11-29",
+   "era": "Sword & Shield (2019-2022)",
+   "language": "ja",
+   "cardsInSet": 288,
+   "cardsInCatalog": 288,
+   "percentComplete": 100,
+   "full": true
+  },
+  {
+   "setCode": "SVLN",
+   "nameJa": "スターターセット テラスタイプ：ステラ ニンフィアex",
+   "releaseDate": "2024-08-30",
+   "era": "Scarlet & Violet & Mega (2023-2026)",
+   "language": "ja",
+   "cardsInSet": 22,
+   "cardsInCatalog": 22,
+   "percentComplete": 100,
    "full": true
   }
  ]

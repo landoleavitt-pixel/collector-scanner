@@ -1661,6 +1661,54 @@
     "kind": "language",
     "why": "version not named"
    }
+  },
+  {
+   "game": "pokemon",
+   "card": "charizard-ex",
+   "title": "Charizard ex SAR 201/165 Charmeleon Charmander AR sv2a Pokemon Card Japanese",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "charizard-ex",
+   "title": "2023 SV2a Charizard ex 201/165 SAR Holo PSA 10",
+   "expect": {
+    "kind": "language"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "pikachu",
+   "title": "Pikachu Raichu Pichu Japanese promo set",
+   "expect": {
+    "kind": "reject"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "umbreon-vmax",
+   "title": "Umbreon VMAX CSR 245/184 S8b VMAX Climax - Japanese Pokemon",
+   "expect": {
+    "kind": "language"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "blastoise",
+   "title": "Blastoise 2/102 Base Set Holo Rare",
+   "expect": {
+    "kind": "exact"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "charizard-ex",
+   "title": "Charizard ex Japanese Pokemon Venusaur & Blastoise Special Deck Set (svG) CGC 10",
+   "expect": {
+    "kind": "language"
+   }
   }
  ]
 }

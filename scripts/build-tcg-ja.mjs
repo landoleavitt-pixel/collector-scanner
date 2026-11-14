@@ -2,10 +2,16 @@
 //
 // Japanese Pokémon card list for naming Japanese versions (research/japanese-
 // pokemon-plan.md, state 1). Writes lib/tcg/catalog/pokemon-ja.json from
-// TCGdex's Japanese data (MIT licence), for the sets data/tcg/ja-coverage.json
-// marks complete ("full") only. We never fill gaps ourselves.
+// TCGdex's Japanese data (MIT licence), for the sets TCGdex has complete only.
+// We never fill gaps ourselves.
 //
-//   node scripts/build-tcg-ja.mjs
+// It first refreshes lib/tcg/catalog/ja-coverage.json: every Japanese set
+// TCGdex lists, how many cards the set has (TCGdex's own count) against how
+// many it lists, and "full" when that reaches 98%. Sets turn complete by
+// themselves as TCGdex's volunteers add cards.
+//
+//   node scripts/build-tcg-ja.mjs                  coverage, then the card list
+//   node scripts/build-tcg-ja.mjs --coverage-only  just the coverage (2 requests, plus one per new set)
 //
 // What it keeps, per Japanese card: set code, card number, rarity name, and
 // the Pokédex numbers (or, for Trainers, the Japanese name), so a listing's
@@ -68,8 +74,46 @@ async function pool(items, n, fn) {
   return results;
 }
 
-const coverage = JSON.parse(fs.readFileSync(path.join(root, 'data/tcg/ja-coverage.json'), 'utf8'));
-const full = new Map(coverage.sets.filter((s) => s.language === 'ja' && s.full).map((s) => [s.setCode, s]));
+// ── Coverage: which Japanese sets TCGdex has complete ─────────────────────────
+const coverageFile = path.join(root, 'lib/tcg/catalog/ja-coverage.json');
+const before = JSON.parse(fs.readFileSync(coverageFile, 'utf8'));
+const known = new Map(before.sets.map((s) => [s.setCode, s]));
+const threshold = before.fullThresholdPercent || 98;
+const setOf = (c) => c.id.slice(0, c.id.length - c.localId.length - 1);
+const all = await getJson(`${API}/ja/cards`);
+const listed = {};
+for (const c of all) listed[setOf(c)] = (listed[setOf(c)] || 0) + 1;
+const setList = await getJson(`${API}/ja/sets`);
+const eraOf = (date, code) => {
+  if (/^C/.test(code) && !/^CP/.test(code)) return 'Chinese-language set (filed under Japanese by TCGdex)';
+  if (/^BW/.test(code)) return 'Black & White (2010-2013)';
+  if (/^DP|^DS$/.test(code)) return 'DP (2006-2008)';
+  const y = Number(String(date || '').slice(0, 4));
+  if (!y) return 'Unknown';
+  return y <= 2002 ? 'Original, neo & e-series (1996-2002)' : y <= 2008 ? 'ADV & PCG (2003-2008)' : y <= 2012 ? 'Legend (2009-2012)'
+    : y <= 2015 ? 'XY (2013-2015)' : y <= 2019 ? 'Sun & Moon (2016-2019)' : y <= 2022 ? 'Sword & Shield (2019-2022)' : 'Scarlet & Violet & Mega (2023-2026)';
+};
+const sets = await pool(setList, 3, async (s) => {
+  const prev = known.get(s.id);
+  // A set we haven't seen: one request for its date.
+  const date = prev?.releaseDate ?? (await getJson(`${API}/ja/sets/${encodeURIComponent(s.id)}`).catch(() => ({}))).releaseDate ?? null;
+  const inSet = s.cardCount?.total || 0;
+  const have = listed[s.id] || 0;
+  const pct = inSet ? Math.round((have / inSet) * 1000) / 10 : 0;
+  const era = prev?.era || eraOf(date, s.id);
+  return {
+    setCode: s.id, nameJa: s.name, releaseDate: date, era,
+    language: prev?.language || (era.startsWith('Chinese') ? 'zh' : 'ja'),
+    cardsInSet: inSet, cardsInCatalog: have, percentComplete: pct, full: inSet > 0 && pct >= threshold,
+  };
+});
+const today = new Date().toISOString().slice(0, 10);
+fs.writeFileSync(coverageFile, `${JSON.stringify({ ...before, checked: today, sets }, null, 1)}\n`);
+const newlyFull = sets.filter((s) => s.full && !known.get(s.setCode)?.full).map((s) => s.setCode);
+console.log(`ja-coverage.json: ${sets.length} sets, ${sets.filter((s) => s.full && s.language === 'ja').length} complete Japanese sets${newlyFull.length ? `; newly complete: ${newlyFull.join(', ')}` : ''}`);
+if (process.argv.includes('--coverage-only')) process.exit(0);
+
+const full = new Map(sets.filter((s) => s.language === 'ja' && s.full).map((s) => [s.setCode, s]));
 
 // English cards → Pokédex numbers, keyed as in pokemon.json.
 const en = (await getJson(`${API}/graphql`, {
@@ -86,7 +130,6 @@ const maxDex = Math.max(...Object.values(enDex).flat());
 
 // Japanese cards: every card once (id, number, Japanese name), then rarity and
 // Pokédex number by filtered lists.
-const all = await getJson(`${API}/ja/cards`);
 const cards = {};
 for (const c of all) {
   const set = c.id.slice(0, c.id.length - c.localId.length - 1);
@@ -115,7 +158,6 @@ const rIdx = [];
 const ix = (r) => { const v = r || 'None'; let i = rIdx.indexOf(v); if (i < 0) i = rIdx.push(v) - 1; return i; };
 const out = {};
 for (const [k, c] of Object.entries(cards)) out[k] = [ix(c.r), c.n, ...(c.d || [])];
-const today = new Date().toISOString().slice(0, 10);
 const file = path.join(root, 'lib/tcg/catalog/pokemon-ja.json');
 fs.writeFileSync(file, JSON.stringify({
   v: 1,
