@@ -35,6 +35,7 @@ import VersionsView from './VersionsView';
 import useSetName from './useSetName';
 import { PopularListsRow } from './CardListTiles';
 import CardFrame from './CardFrame';
+import { StillNeedCard } from './still-need/StillNeed';
 import { VERSION_GAMES, VERSION_GAMES_TEXT, gameQuery } from './versions';
 
 const DEFAULT_FILTERS = {
@@ -796,6 +797,8 @@ function SignedIn({ query, setQuery, onSearch, recents, error, onCardClick }) {
           ))}
         </div>
       )}
+      {/* Shows once they've started a card list (marks or a need-only alert). */}
+      <StillNeedCard className="mt-5" />
       <div className="mt-9"><PopularListsRow /></div>
       <div className="mt-9"><ForSaleShelf count={5} onCardClick={onCardClick} /></div>
     </section>
