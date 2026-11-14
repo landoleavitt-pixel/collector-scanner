@@ -4,7 +4,7 @@ import { useState, useEffect, useLayoutEffect, useMemo, useRef, Suspense, create
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 
-import { ArrowRight, ArrowUpRight, Star, X, Crosshair, ArrowLeft, ImageOff, Search, Clock, Bell, TrendingDown, Hourglass, ListFilter, SlidersHorizontal, ChevronDown, List, LayoutGrid } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Star, X, Crosshair, ArrowLeft, ImageOff, Search, Clock, Bell, TrendingDown, Hourglass, ListFilter, SlidersHorizontal, ChevronDown, List, LayoutGrid, Check } from 'lucide-react';
 import SaveSearchModal from './components/SaveSearchModal';
 import SaveSearchPrompt from './components/search/SaveSearchPrompt';
 import SignupPromptCard from './components/SignupPromptCard';
@@ -884,6 +884,17 @@ function Home() {
             )}
           </div>
 
+          {/* The three big filters, one tap each: they search again at once. */}
+          <div className="flex flex-wrap gap-2 mt-4">
+            {[['autoCards', 'Autographs'], ['rookieCards', 'Rookie cards'], ['numberedCards', 'Numbered']].map(([k, l]) => (
+              <FilterChip key={k} on={!!filters[k]} onClick={() => {
+                const next = { ...filters, [k]: !filters[k] };
+                setFilters(next);
+                handleSearch(query, next);
+              }}>{l}</FilterChip>
+            ))}
+          </div>
+
           {/* One row of controls: Filters, Sort, Get alerts, Share, List / Grid.
               Sticky on phones so it stays in reach while scrolling. */}
           <ResultsToolbar
@@ -1222,21 +1233,20 @@ function Hero({ query, setQuery, onSearch, error, loading, onSuggested, onChipSe
           {/* Show, don't tell: a name, an invitation, the search. The real
               cards in RarityStrip below do the explaining. */}
           <h1
-            className="font-display text-[clamp(2.75rem,9vw,4.25rem)] leading-[1] tracking-[-0.015em] rise"
+            className="font-display text-[clamp(2.5rem,8.5vw,4rem)] leading-[1.02] tracking-[-0.015em] rise"
             style={{ animationDelay: '220ms', textWrap: 'balance' }}
           >
-            The <em className="text-[var(--accent-bright)]">Grail</em> Hunter.
-            <span className="sr-only"> Search eBay for rare numbered sports cards, rarest first.</span>
+            Find any player&rsquo;s <em className="text-[var(--accent-bright)]">rarest cards.</em>
           </h1>
           <p
-            className="mt-5 md:mt-7 font-display italic text-h3 md:text-h3 leading-none rise"
-            style={{ color: 'var(--accent-bright)', animationDelay: '300ms' }}
+            className="mt-4 md:mt-5 text-lede leading-snug rise"
+            style={{ color: 'var(--ink-200)', animationDelay: '300ms' }}
           >
-            Just try it.
+            Numbered, signed and rookie cards on eBay, rarest first.
           </p>
 
           {/* Search — a solid gold-edged field with a labelled gold button. */}
-          <div className="mt-3 rise" style={{ animationDelay: '380ms' }}>
+          <div className="mt-5 rise" style={{ animationDelay: '380ms' }}>
             <div
               ref={suggest.anchorRef}
               className="relative flex items-center rounded-xl transition-colors focus-within:border-[var(--accent)]"
@@ -1497,29 +1507,54 @@ function RotatingPlaceholder({ align = 'center', padRight = '4rem' }) {
    rows (active + sold). Step 3 shows the saved-search card. The email
    preview gets its own dedicated section below for full readable width. */
 function WhyFields({ user }) {
-  // How it works as three icons, then the plans. Show, don't tell: the card
-  // strip above already demonstrates the product.
-  const steps = [
-    [ListFilter, 'Pick how rare'],
-    [Star, 'Star cards'],
-    [Bell, 'Get alerted'],
+  // Three reasons, each with a small picture, then the rarity colours
+  // explained once (mockups/fields-floors-home-story.html).
+  const tick = (t) => (
+    <span key={t} className="flex items-center gap-1.5 text-meta" style={{ color: 'var(--ink-200)' }}>
+      <span className="w-4 h-4 rounded grid place-items-center flex-none" style={{ background: 'var(--accent-bright)', color: 'var(--ink-on-accent)' }}>
+        <Check className="w-3 h-3" strokeWidth={3} aria-hidden="true" />
+      </span>{t}
+    </span>
+  );
+  const reasons = [
+    [<span key="a" className="flex flex-wrap gap-1 w-[108px] flex-none">{[['grail', '/5'], ['ultra', '/50'], ['rare', '/150'], ['scarce', '/299']].map(([t, l]) => <span key={t} className="font-mono text-fine px-1.5 h-6 inline-flex items-center rounded" style={tierChipStyle(t)}>{l}</span>)}</span>,
+      'Rarest first.', 'Cards with the fewest copies come to the top.'],
+    [<span key="b" className="grid gap-1 w-[108px] flex-none">{['Signed', 'Rookie', 'Numbered'].map(tick)}</span>,
+      'All at once.', 'Pick signed, rookie and numbered together, in one search.'],
+    [<span key="c" className="w-[108px] flex-none grid place-items-start"><Bell className="w-7 h-7" strokeWidth={1.75} style={{ color: 'var(--accent-bright)' }} aria-hidden="true" /></span>,
+      'Told when it lists.', 'Save a search and we email you when a new one comes up.'],
   ];
+  const key = [['grail', 'Grail', '1 to 25 made'], ['ultra', 'Ultra', '26 to 99 made'], ['rare', 'Rare', '100 to 249 made'], ['scarce', 'Scarce', '250 or more made']];
   return (
     <>
       <section id="why" className="max-w-[1040px] mx-auto px-6 lg:px-10 pt-12 lg:pt-16 scroll-mt-24">
-        <h2 className="sr-only">How it works</h2>
-        <ul className="list-none m-0 p-0 grid grid-cols-1 md:grid-cols-3 border-y" style={{ borderColor: 'var(--line)' }}>
-          {steps.map(([Icon, label], i) => (
-            <li
-              key={label}
-              className={`flex items-center gap-3 py-4 md:py-5 md:px-5 text-lede font-medium ${i ? 'border-t md:border-t-0 md:border-l' : ''}`}
-              style={{ borderColor: 'var(--line-soft)', color: 'var(--ink-100)' }}
-            >
-              <Icon className="w-[22px] h-[22px] flex-none" strokeWidth={1.75} style={{ color: 'var(--accent-bright)' }} aria-hidden="true" />
-              {label}
+        <h2 className="sr-only">Why Fields &amp; Floors</h2>
+        <ul className="list-none m-0 p-0 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          {reasons.map(([art, title, line]) => (
+            <li key={title} className="flex items-center gap-4">
+              {art}
+              <span className="min-w-0">
+                <b className="block text-lede font-semibold" style={{ color: 'var(--ink-100)' }}>{title}</b>
+                <span className="text-body" style={{ color: 'var(--ink-400)' }}>{line}</span>
+              </span>
             </li>
           ))}
         </ul>
+        {/* The four rarity colours, explained once. */}
+        <div className="mt-10 rounded-xl p-5 md:p-6" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
+          <h3 className="font-display text-h3 m-0 mb-4" style={{ color: 'var(--ink-100)' }}>How rare is it? The colour tells you.</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {key.map(([t, name, made]) => (
+              <div key={t} className="flex items-center gap-3">
+                <span className="w-7 h-7 rounded-lg flex-none" style={tierChipStyle(t)} aria-hidden="true" />
+                <span className="min-w-0">
+                  <span className="block text-body font-medium" style={{ color: 'var(--ink-100)' }}>{name}</span>
+                  <span className="text-meta" style={{ color: 'var(--ink-400)' }}>{made}</span>
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
       <PlansSection user={user} />
     </>
