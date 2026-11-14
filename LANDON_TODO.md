@@ -4,6 +4,7 @@ Things only you can do, because they need your accounts, money or signature. The
 
 ## Do now
 
+- [ ] **Let the card-list robot open pull requests:** GitHub → your repo (collector-scanner) → Settings → Actions → General → scroll to "Workflow permissions" → tick **"Allow GitHub Actions to create and approve pull requests"** → Save. Leave "Read repository contents" selected. Then tell the boss, who will press Run once to test it.
 - [ ] **Download the card makers' checklists** for the sports checklist: follow [research/checklist-download-links.md](research/checklist-download-links.md), newest first, in your own browser, and save each with the name it lists into `data/checklists/`. Start with one Topps file so the boss can check it imports. If a site asks you to prove you're human, that step is yours. Not secret; nothing to enter.
 - [ ] **Buy foilsandfables.com and floorsandfables.com** (about $15–25 CAD/yr each; the .ca versions are optional) at any domain seller, e.g. the one that holds fieldsandfloors.com. **Security note:** card details go only on the seller's own site, never in chat. Say no to paid extras except free privacy protection. Then tell the boss, who walks you through connecting them in Vercel.
 - [ ] Sign in and look at your new home page once (new matches, price drops, ending soon). Tell the boss if anything looks off.
