@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Still Need and Sets</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&display=swap');
+:root{--bg:#080a12;--elev:#10131f;--elev2:#161a29;--line:#242a3d;--soft:#1a1f2f;--ink:#eef0f7;--ink2:#d5d9e8;--ink4:#9198b0;--ink6:#858cab;
+  --acc:#8fd3e8;--accb:#b9e6f2;--accd:#4b7f93;--on:#071018;--fill:linear-gradient(180deg,#c9eef8,#7fbfd4);
+  --foil:linear-gradient(100deg,#9fe3f5 0%,#b6a8f0 28%,#f0b3d0 52%,#f3d9a0 76%,#9fe3f5 100%)}
+*{box-sizing:border-box}
+html,body{margin:0;background:#030305;color:#e8e9ef;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.page{max-width:1240px;margin:0 auto;padding:40px 16px 100px}
+h1.t{font:italic 400 44px/1.05 'Instrument Serif',serif;margin:0 0 10px}
+.lede{color:#a3a8bb;font-size:16px;max-width:700px;line-height:1.55;margin:0}
+.sec{border-top:1px solid #1d2030;padding-top:18px;margin:52px 0 22px}
+.sec h2{font:400 30px/1.1 'Instrument Serif',serif;margin:0}
+.sec h2 span{color:var(--acc);font-style:italic}
+.sec p{color:#a3a8bb;font-size:15px;max-width:700px;line-height:1.5;margin:8px 0 0}
+.cap{font-size:14px;color:#9198b0;margin:12px 4px 0;max-width:360px;line-height:1.45}
+.cap b{color:#d5d9e8;font-weight:500}
+.phones{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start}
+.phone{width:375px;max-width:100%;height:812px;border-radius:42px;border:10px solid #15161b;box-shadow:0 0 0 1px #2a2b33,0 30px 80px rgba(0,0,0,.6);overflow:hidden;position:relative;color:var(--ink);
+  background:radial-gradient(500px 300px at 70% -5%,rgba(143,211,232,.07),transparent 60%),var(--bg)}
+.scroll{height:100%;overflow-y:auto;overflow-x:hidden;padding:44px 0 100px}
+.scroll::-webkit-scrollbar{display:none}
+.pad{padding:0 18px}
+.ic{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+/* header + tab bar */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 18px 12px;border-bottom:1px solid var(--soft)}
+.brand{font:400 24px 'Instrument Serif',serif;display:flex;align-items:center;gap:9px}
+.brand em{font-style:normal;color:var(--acc)}
+.mark{width:28px;height:28px;border-radius:999px;display:grid;place-items:center;font:italic 400 15px 'Instrument Serif',serif;color:var(--acc);border:1px solid var(--accd)}
+.ga{height:34px;padding:0 14px;border-radius:999px;background:var(--accb);color:var(--on);font:600 13px Geist;display:grid;place-items:center}
+.me{width:32px;height:32px;border-radius:999px;background:var(--elev2);border:1px solid var(--line);display:grid;place-items:center;font:600 13px Geist;color:var(--ink2)}
+.tabs{position:absolute;left:12px;right:12px;bottom:14px;height:64px;border-radius:12px;background:rgba(16,19,31,.94);border:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);backdrop-filter:blur(8px)}
+.tabs span{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:12px;color:var(--ink4)}
+.tabs span.on{color:var(--accb)}
+.tabs .dot{position:relative}
+.tabs .dot::after{content:'';position:absolute;top:-2px;right:-6px;width:8px;height:8px;border-radius:999px;background:var(--accb)}
+/* type */
+.back{display:flex;align-items:center;gap:6px;color:var(--ink4);font-size:15px;margin:14px 0 2px}
+.title{font:italic 400 38px/1 'Instrument Serif',serif;margin:6px 0 6px}
+.muted{font-size:15px;color:var(--ink4);margin:0 0 12px;line-height:1.45}
+.big{font-size:17px;color:var(--ink2);margin:0 0 10px}
+.big b{color:var(--ink);font-weight:600}
+.bar{height:10px;border-radius:999px;background:var(--elev2);overflow:hidden;margin-bottom:8px}
+.bar i{display:block;height:100%;border-radius:999px;background:var(--foil)}
+.lock{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink6);margin:6px 0 14px}
+.h3{font:400 22px 'Instrument Serif',serif;color:var(--ink2);margin:22px 0 10px;display:flex;justify-content:space-between;align-items:baseline}
+.h3 small{font:13px Geist;color:var(--ink4)}
+/* pills */
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.pill{height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--elev);display:inline-flex;align-items:center;gap:6px;font-size:15px;color:var(--ink2)}
+.pill.on{background:var(--accb);border-color:var(--accb);color:var(--on);font-weight:600}
+.seg{display:flex;gap:4px;padding:4px;border-radius:12px;background:var(--elev);border:1px solid var(--line)}
+.seg span{flex:1;height:40px;border-radius:8px;display:grid;place-items:center;font-size:15px;color:var(--ink4)}
+.seg span.on{background:var(--elev2);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+/* card frame: photo or our card back */
+.cf{position:relative;width:var(--w,48px);aspect-ratio:63/88;border-radius:calc(var(--w,48px)*.055);overflow:hidden;flex:none;box-shadow:0 2px 8px rgba(0,0,0,.45);container-type:inline-size}
+.cf.back{border:1px solid rgba(242,207,107,.45);background:radial-gradient(75% 50% at 50% 50%,rgba(242,207,107,.3),transparent 74%),repeating-linear-gradient(45deg,rgba(255,255,255,.035) 0 1px,transparent 1px 7px),repeating-linear-gradient(-45deg,rgba(255,255,255,.035) 0 1px,transparent 1px 7px),linear-gradient(170deg,#121626,#090b14)}
+.cf.back.mtg{border-color:rgba(215,154,94,.45);background:radial-gradient(75% 50% at 50% 50%,rgba(215,154,94,.3),transparent 74%),repeating-linear-gradient(45deg,rgba(255,255,255,.035) 0 1px,transparent 1px 7px),linear-gradient(170deg,#121626,#090b14)}
+.cf.back::after{content:'F&F';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-12deg);width:62cqw;height:44cqw;border-radius:50%;border:max(1px,1.2cqw) solid #9fe3f5;display:grid;place-items:center;font:italic 400 18cqw/44cqw 'Instrument Serif',serif;color:#eef0f7;text-align:center;background:#0d1020}
+.cf.ph{background:var(--desk,#2b2a2e)}
+.cf.ph i{position:absolute;inset:7% 9%;border-radius:4%;background:linear-gradient(170deg,var(--c1),var(--c2));box-shadow:0 0 0 2px rgba(255,255,255,.5)}
+.cf.ph i::before{content:'';position:absolute;inset:12% 9% 42%;border-radius:3%;background:rgba(0,0,0,.18)}
+/* rows */
+.row{border-radius:12px;background:var(--elev);border:1px solid var(--line);margin-bottom:10px;overflow:hidden}
+.row .top{display:flex;align-items:center;gap:14px;padding:12px 14px;min-height:72px}
+.row .tx{flex:1;min-width:0}
+.row b{display:block;font-size:17px;font-weight:500}
+.row .no{display:block;font-size:15px;color:var(--ink4)}
+.dotl{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink2);margin-top:4px}
+.dotl i{width:9px;height:9px;border-radius:999px;background:var(--r,#2e3550)}
+.ring{width:32px;height:32px;border-radius:999px;border:2.5px solid var(--ink6);flex:none}
+.ring.on{border:0;background:var(--foil);display:grid;place-items:center;color:var(--on)}
+.sale{display:flex;align-items:center;justify-content:space-between;min-height:44px;padding:0 14px;border-top:1px solid var(--soft);font-size:15px;color:var(--accb)}
+.sale.q{color:var(--ink4)}
+.find .ic{width:15px;height:15px}
+.need .find{display:inline-flex;color:var(--accb);font-size:15px}
+.find{height:36px;padding:0 14px;border-radius:999px;border:1.5px solid var(--accb);color:var(--accb);display:inline-flex;align-items:center;gap:6px;font-size:15px;font-weight:600;flex:none}
+.need{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--soft)}
+.need .tx{flex:1;min-width:0}
+.need b{display:block;font-size:16px;font-weight:500}
+.need span{display:block;font-size:13px;color:var(--ink4)}
+.need em{display:block;font-style:normal;font-size:14px;color:var(--accb);margin-top:2px}
+.fam{border-radius:12px;background:var(--elev);border:1px solid var(--line);padding:4px 14px 6px;margin-bottom:14px}
+.fam h4{font:italic 400 26px/1 'Instrument Serif',serif;margin:12px 0 2px;display:flex;justify-content:space-between;align-items:baseline}
+.fam h4 small{font:13px Geist;font-style:normal;color:var(--ink4)}
+.fam .more{display:flex;justify-content:space-between;align-items:center;min-height:44px;font-size:14px;color:var(--ink4)}
+.cta{width:100%;min-height:58px;padding:0 14px;text-align:center;border-radius:12px;background:var(--fill);color:var(--on);display:flex;align-items:center;justify-content:center;gap:10px;font-size:17px;font-weight:600;margin-top:18px}
+.ghost{width:100%;min-height:52px;border-radius:12px;border:1.5px solid var(--line);color:var(--ink);display:flex;align-items:center;justify-content:center;gap:8px;font-size:16px;font-weight:500;margin-top:10px}
+.sw{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:56px;padding:0 14px;border-radius:12px;background:var(--elev);border:1px solid var(--line);font-size:16px}
+.tog{width:46px;height:28px;border-radius:999px;background:var(--elev2);border:1px solid var(--line);position:relative;flex:none}
+.tog::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:999px;background:var(--ink4)}
+.tog.on{background:var(--accb);border-color:var(--accb)}.tog.on::after{left:21px;background:var(--on)}
+.sumcard{border-radius:12px;padding:16px;background:linear-gradient(135deg,rgba(143,211,232,.10),rgba(143,211,232,.02));border:1px solid var(--accd);display:flex;gap:14px;align-items:center}
+.sumcard .fan{display:flex;flex:none}.sumcard .fan .cf{margin-left:-18px}.sumcard .fan .cf:first-child{margin-left:0}
+.sumcard b{display:block;font:400 22px/1.1 'Instrument Serif',serif}
+.sumcard span{font-size:14px;color:var(--ink4)}
+/* sheets + toast */
+.dim{position:absolute;inset:0;background:rgba(3,4,8,.62)}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--elev);border-top:1px solid var(--line);border-radius:12px 12px 0 0;padding:10px 18px 26px}
+.grab{width:40px;height:4px;border-radius:999px;background:var(--line);margin:0 auto 14px}
+.sheet h3{font:italic 400 28px/1.1 'Instrument Serif',serif;margin:0 0 6px}
+.opt{display:flex;align-items:center;gap:12px;min-height:52px;border-bottom:1px solid var(--soft);font-size:16px;color:var(--ink2)}
+.opt i{width:22px;height:22px;border-radius:999px;border:2px solid var(--ink6);flex:none}
+.opt.on i{border:7px solid var(--accb)}
+.toast{position:absolute;left:14px;right:14px;bottom:92px;min-height:54px;border-radius:12px;background:#eef0f7;color:#0b0f1a;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 16px;font-size:15px;box-shadow:0 12px 30px rgba(0,0,0,.5)}
+.toast a{font-weight:600;color:#1e5f78}
+.wrong{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--ink4);text-decoration:underline;text-underline-offset:3px;margin-top:6px}
+.lrow{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--soft)}
+.lrow .tx{flex:1;min-width:0}
+.lrow b{display:block;font-size:15px;font-weight:500;line-height:1.35}
+.lrow .pr{font:400 24px 'Instrument Serif',serif;margin-top:4px}
+.chip{display:inline-flex;align-items:center;height:24px;padding:0 8px;border-radius:4px;font-size:12px;font-weight:600;margin:6px 6px 0 0}
+.chip.v{background:linear-gradient(180deg,#c9d3f5,#8b97c7);color:#0b0f1a}
+.chip.o{border:1px solid var(--line);color:var(--ink2);font-weight:500}
+.setrow{display:flex;align-items:center;gap:14px;min-height:64px;padding:8px 0;border-bottom:1px solid var(--soft)}
+.setrow .tx{flex:1}
+.setrow b{display:block;font-size:17px;font-weight:500}
+.setrow span{font-size:13px;color:var(--ink4)}
+.setrow .have{font-size:13px;color:var(--accb)}
+/* computer */
+.desk{width:100%;border-radius:12px;border:1px solid #2a2b33;overflow:hidden;background:radial-gradient(900px 400px at 70% -10%,rgba(143,211,232,.06),transparent 60%),var(--bg);color:var(--ink);box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.desk .wb{height:34px;background:#121318;display:flex;align-items:center;gap:7px;padding:0 14px}.desk .wb i{width:11px;height:11px;border-radius:999px;background:#2c2d33}
+.desk .hdr{padding:16px 40px}
+.desk .in{padding:24px 40px 40px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:40px}
+@media(max-width:1000px){.desk .in{grid-template-columns:minmax(0,1fr)}.dgrid{grid-template-columns:minmax(0,1fr)!important}}
+.dgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.note{margin-top:14px;font-size:14px;color:#9198b0;line-height:1.5;max-width:780px}
+.note b{color:#d5d9e8;font-weight:500}
+</style>
+</head>
+<body>
+<div class="page">
+  <h1 class="t">Still need, and set lists</h1>
+  <p class="lede">Five additions to Foils &amp; Fables, shown on a phone first, plus one computer view. The cards you're missing and what's for sale today, whole sets to collect, a quick way to report a wrong card, marking a whole list at once, and an optional shared want list. Photos are stand-ins; cards with no photo show our own card back.</p>
+
+  <div class="sec"><h2>1 · <span>Still need, for sale now</span></h2><p>Every version you're missing from the card lists you've started (you've marked at least one card, or turned on an alert), with what's for sale on eBay right now. Most for sale comes first. One alert button covers all of them.</p></div>
+  <div class="phones">
+    <div><div class="phone"><div class="scroll" id="sn1"></div><div class="tabs" id="tb1"></div></div>
+      <p class="cap"><b>The page.</b> Grouped by card. Each missing version shows a photo when one's for sale, "N for sale" and Find it. The ones not for sale fold away under "6 more not for sale right now".</p></div>
+    <div><div class="phone"><div class="scroll" id="sn2"></div><div class="tabs" id="tb2"></div></div>
+      <p class="cap"><b>By set.</b> The same list, grouped by set instead, for people who collect set by set. One tap to switch.</p></div>
+    <div><div class="phone"><div class="scroll" id="sn3"></div><div class="tabs" id="tb3"></div></div>
+      <p class="cap"><b>Where you find it.</b> On the signed-in home page, right under search, and at the top of the Lists tab (with a small dot when something new is listed). Lists, marks and this page stay free; only alerts are paid.</p></div>
+  </div>
+
+  <div class="sec"><h2>2 · <span>Set lists</span></h2><p>Collect a whole set, not just one card. Browse sets by game, open a set's checklist ("You have 40 of 102"), see what's for sale per card, and get an alert for the ones you still need from that set.</p></div>
+  <div class="phones">
+    <div><div class="phone"><div class="scroll" id="st1"></div><div class="tabs" id="tb4"></div></div>
+      <p class="cap"><b>Browse sets.</b> The card lists page gets a Cards / Sets switch. Sets are listed newest first by game, with how many you have once you've started one.</p></div>
+    <div><div class="phone"><div class="scroll" id="st2"></div><div class="tabs" id="tb5"></div></div>
+      <p class="cap"><b>A set checklist.</b> The same rows as a card list: picture, name, number, rarity, the for-sale line, and your tick. The alert covers the cards you still need from this set.</p></div>
+  </div>
+
+  <div class="sec"><h2>3 · <span>Wrong card?</span></h2><p>If we've labelled a listing as the wrong card or version, one tap tells us. The reason is optional. We only keep the listing, our label and the reason, nothing about you.</p></div>
+  <div class="phones">
+    <div><div class="phone"><div class="scroll" id="wc1"></div></div>
+      <p class="cap"><b>In Find it.</b> A small "Wrong card?" under each listing (and in the card popup), quiet enough not to get in the way.</p></div>
+    <div><div class="phone"><div class="scroll" id="wc2"></div><div class="dim"></div><div class="sheet" id="wcs"></div></div>
+      <p class="cap"><b>One tap, optional reason.</b> Pick a reason or just send. Done in two taps.</p></div>
+    <div><div class="phone"><div class="scroll" id="wc3"></div><div class="toast"><span>Thanks, we'll check it.</span></div></div>
+      <p class="cap"><b>Confirmed.</b> A short thank-you; the listing stays where it is until we've checked.</p></div>
+  </div>
+
+  <div class="sec"><h2>4 · <span>I have all of these</span></h2><p>Marking a full list one card at a time is a chore. One button marks every version on a card list or set list, with an undo in case it was a slip.</p></div>
+  <div class="phones">
+    <div><div class="phone"><div class="scroll" id="ha1"></div></div>
+      <p class="cap"><b>The button.</b> Under the progress bar on a card list or set list, beside "Only you can see this".</p></div>
+    <div><div class="phone"><div class="scroll" id="ha2"></div><div class="toast"><span>Marked 12 as yours.</span><a>Undo</a></div></div>
+      <p class="cap"><b>Done, with undo.</b> Every tick fills in, and "Undo" puts them back exactly as they were.</p></div>
+  </div>
+
+  <div class="sec"><h2>5 · <span>Share my want list</span></h2><p>Off unless you turn it on. When it's on, anyone with the link sees only the cards you still need: not your name, your email, or what you own. Turn it off and the link stops working.</p></div>
+  <div class="phones">
+    <div><div class="phone"><div class="scroll" id="sh1"></div></div>
+      <p class="cap"><b>The switch.</b> At the bottom of the Still need page. Turning it on shows your link and a Copy button.</p></div>
+    <div><div class="phone"><div class="scroll" id="sh2"></div></div>
+      <p class="cap"><b>What others see.</b> "A collector's want list": only the missing cards, with what's for sale. No owner name anywhere.</p></div>
+  </div>
+
+  <div class="sec"><h2>On a computer</h2><p>The Still need page: the list on the left, a summary with the alert and share switch on the right.</p></div>
+  <div class="desk" id="desk"></div>
+  <p class="note"><b>Privacy:</b> marks and the Still need page are private. The shared list is opt-in, shows no name or email, and its link stops working when it's turned off. "Wrong card?" keeps only the listing, our label and an optional reason. <b>Limits kept:</b> eBay only, no prices history or value, no game logos or official art.</p>
+</div>
+
+<script>
+const CARDS=[['#f6d36b','#d38a2c'],['#9ec6f0','#4a6fb5'],['#e9a3c3','#9a4f86'],['#b8e09a','#4f8a43'],['#e8e2d5','#a99f8a'],['#c3b0f2','#6a54b8']];
+const DESK=['#2b2a2e','#3a3128','#1d2230','#2f3530'];
+const R={x:'linear-gradient(100deg,#9fe3f5,#b6a8f0,#f0b3d0,#f3d9a0)',v:'linear-gradient(180deg,#c9d3f5,#8b97c7)',r:'linear-gradient(180deg,#9fe3f5,#4b98ad)',o:'#c9a86a',c:'transparent'};
+const RL={x:'Extremely rare',v:'Very rare',r:'Rare',o:'Vintage',c:'Common'};
+const ic={back:'<svg class="ic" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>',chev:'<svg class="ic" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>',search:'<svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>',bell:'<svg class="ic" viewBox="0 0 24 24"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21h4"/></svg>',lock:'<svg class="ic" style="width:15px;height:15px" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',check:'<svg class="ic" style="width:17px;height:17px" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>',home:'<svg class="ic" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3z"/></svg>',list:'<svg class="ic" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>',star:'<svg class="ic" viewBox="0 0 24 24"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>',user:'<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',flag:'<svg class="ic" style="width:14px;height:14px" viewBox="0 0 24 24"><path d="M5 21V4h11l-2 4 2 4H5"/></svg>',link:'<svg class="ic" viewBox="0 0 24 24"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>'};
+const frame=(p,w=48,g='')=>p==null?`<div class="cf back ${g}" style="--w:${w}px"></div>`:`<div class="cf ph" style="--w:${w}px;--desk:${DESK[p%4]}"><i style="--c1:${CARDS[p%6][0]};--c2:${CARDS[p%6][1]}"></i></div>`;
+const hdr=(signed=true)=>`<div class="hdr"><div class="brand"><span class="mark">F</span>Foils <em>&amp;</em> Fables</div>${signed?'<span class="me">L</span>':'<span class="ga">Get alerts</span>'}</div>`;
+const tabs=(on)=>[['home','Home'],['search','Search'],['list','Lists'],['star','Watchlist'],['user','Account']].map(([i,l])=>`<span class="${l===on?'on':''}"><span class="${l==='Lists'?'dot':''}">${ic[i]}</span>${l}</span>`).join('');
+['tb1','tb2','tb3','tb4','tb5'].forEach((id,i)=>document.getElementById(id).innerHTML=tabs(i===2?'Home':'Lists'));
+const need=(p,l,s,sale,g)=>`<div class="need">${frame(p,44,g)}<span class="tx"><b>${l}</b><span>${s}</span>${sale?`<em>${sale} for sale</em>`:''}</span>${sale?`<span class="find">${ic.search}Find it</span>`:''}</div>`;
+
+// 1a Still need, by card
+document.getElementById('sn1').innerHTML=`${hdr()}<div class="pad">
+ <div class="title" style="margin-top:20px">Still need</div>
+ <p class="big">You still need <b>37 versions</b>. <b>12</b> are for sale now.</p>
+ <div class="seg"><span class="on">By card</span><span>By set</span></div>
+ <div class="h3" style="margin-top:18px">Charizard <small>You have 8 of 14</small></div>
+ <div class="fam">
+  ${need(0,'Shiny','Base Set · No. 4','3')}
+  ${need(2,'Shiny frame','Obsidian Flames · No. 11','2')}
+  ${need(4,'Regular','151 · No. 6','1')}
+  <div class="more">6 more not for sale right now ${ic.chev}</div>
+ </div>
+ <div class="h3">Pikachu <small>You have 31 of 241</small></div>
+ <div class="fam">
+  ${need(3,'Regular','Jungle · No. 60','1')}
+  ${need(1,'Shiny','Celebrations · No. 5','4')}
+  <div class="more">203 more not for sale right now ${ic.chev}</div>
+ </div>
+ <div class="h3">Sol Ring <small>You have 2 of 9</small></div>
+ <div class="fam">${need(5,'Foil','Commander Legends · No. 334','1','mtg')}<div class="more">6 more not for sale right now ${ic.chev}</div></div>
+ <div class="cta">${ic.bell}Alert me when one is listed</div>
+ <p class="muted" style="margin-top:10px;text-align:center">Checked eBay 4 minutes ago</p>
+</div>`;
+
+// 1b by set
+document.getElementById('sn2').innerHTML=`${hdr()}<div class="pad">
+ <div class="title" style="margin-top:20px">Still need</div>
+ <p class="big">You still need <b>37 versions</b>. <b>12</b> are for sale now.</p>
+ <div class="seg"><span>By card</span><span class="on">By set</span></div>
+ <div class="h3" style="margin-top:18px">Base Set · 1999 <small>2 for sale</small></div>
+ <div class="fam">${need(0,'Charizard · Shiny','No. 4','3')}${need(null,'Pikachu · First print','No. 58',0)}</div>
+ <div class="h3">Obsidian Flames · 2023 <small>1 for sale</small></div>
+ <div class="fam">${need(2,'Charizard · Shiny frame','No. 11','2')}${need(null,'Charizard ex · Regular','No. 125',0)}</div>
+ <div class="h3">Celebrations · 2021 <small>1 for sale</small></div>
+ <div class="fam">${need(1,'Pikachu · Shiny','No. 5','4')}</div>
+</div>`;
+
+// 1c where: signed-in home + Lists tab
+document.getElementById('sn3').innerHTML=`${hdr()}<div class="pad">
+ <div class="pills" style="margin-top:18px"></div>
+ <div class="pill" style="width:100%;height:58px;border-radius:12px;justify-content:space-between;padding:0 8px 0 18px;margin-top:16px;border:1.5px solid var(--accd);color:var(--ink4)">Which card? Try Charizard<span class="ga" style="width:46px;height:44px;border-radius:8px">${ic.search}</span></div>
+ <div class="sumcard" style="margin-top:16px"><div class="fan">${frame(0,40)}${frame(2,40)}${frame(null,40)}</div><span style="flex:1"><b>Still need, for sale now</b><span>12 of your 37 missing versions are on eBay</span></span>${ic.chev}</div>
+ <div class="h3" style="margin-top:26px">Popular card lists <small>See all</small></div>
+ <div style="display:flex;gap:12px">${[0,4,1].map(p=>frame(p,104)).join('')}</div>
+ <p class="muted" style="margin-top:26px;font-size:13px;text-align:center">↓ Same card at the top of the Lists tab</p>
+ <div class="seg" style="margin-top:8px"><span class="on">Cards</span><span>Sets</span></div>
+ <div class="sumcard" style="margin-top:12px"><span style="flex:1"><b>Still need</b><span>12 for sale now · 3 new today</span></span>${ic.chev}</div>
+</div>`;
+
+// 2a Sets browse
+const setrow=(n,y,t,have,p)=>`<div class="setrow">${frame(p,40)}<span class="tx"><b>${n}</b><span>${y} · ${t} cards</span>${have?`<span class="have"> · You have ${have}</span>`:''}</span>${ic.chev}</div>`;
+document.getElementById('st1').innerHTML=`${hdr()}<div class="pad">
+ <div class="title" style="margin-top:20px">Card lists</div>
+ <div class="seg"><span>Cards</span><span class="on">Sets</span></div>
+ <div class="pills" style="margin-top:14px"><span class="pill on">Pokémon</span><span class="pill">Magic</span><span class="pill">Yu-Gi-Oh!</span><span class="pill">Lorcana</span></div>
+ <div class="pill" style="width:100%;margin-top:14px;border-radius:8px;height:48px;color:var(--ink4)">${ic.search}Find a set</div>
+ <div class="h3">Newest</div>
+ ${setrow('Ascended Heroes','2026',295,'',null)}${setrow('Phantasmal Flames','2025',130,'',null)}${setrow('Obsidian Flames','2023',230,'12 of 230',null)}${setrow('151','2023',207,'',null)}${setrow('Celebrations','2021',50,'31 of 50',null)}${setrow('Base Set','1999',102,'40 of 102',null)}${setrow('Jungle','1999',64,'',null)}
+</div>`;
+
+// 2b set checklist
+const crow=(p,n,no,r,sale,own)=>`<div class="row"><div class="top">${frame(own||sale?p:null,48)}<span class="tx"><b>${n}</b><span class="no">No. ${no}</span><span class="dotl"><i style="--r:${R[r]};${r==='c'?'border:1.5px solid var(--ink6)':''}"></i>${RL[r]}</span></span><span class="ring ${own?'on':''}">${own?ic.check:''}</span></div>${sale?`<div class="sale"><span>${sale} for sale on eBay</span>${ic.chev}</div>`:''}</div>`;
+document.getElementById('st2').innerHTML=`${hdr()}<div class="pad">
+ <div class="back">${ic.back}Sets</div>
+ <div class="title">Base Set</div>
+ <p class="muted">Pokémon · 1999 · 102 cards</p>
+ <p class="big">You have <b>40 of 102</b></p>
+ <div class="bar"><i style="width:39%"></i></div>
+ <div class="lock">${ic.lock}Only you can see this</div>
+ <div class="sw">Only show cards for sale<span class="tog"></span></div>
+ <div style="height:12px"></div>
+ ${crow(0,'Alakazam','1','o','2',true)}${crow(1,'Blastoise','2','o','5',false)}${crow(2,'Chansey','3','o','',true)}${crow(4,'Charizard','4','o','3',false)}${crow(3,'Clefairy','5','o','',false)}
+ <div class="cta">${ic.bell}Alert me when one I need from Base Set is listed</div>
+</div>`;
+
+// 3 wrong card
+const lrow=(p,t,price,chips,wrong=true)=>`<div class="lrow">${frame(p,72)}<span class="tx"><b>${t}</b><div class="pr">${price}</div>${chips}${wrong?`<div><span class="wrong">${ic.flag}Wrong card?</span></div>`:''}</span></div>`;
+const findPage=`${hdr()}<div class="pad"><div class="back">${ic.back}Back to the list</div><div class="title" style="font-size:34px">Charizard</div><p class="muted">No. 4 · Base Set · Shiny</p><p style="font-size:13px;color:var(--ink4);margin:0">3 for sale on eBay now</p>
+ ${lrow(0,'1999 Pokemon Base Set Charizard 4/102 Holo Rare PSA 7','$1,250.00','<span class="chip v">Vintage</span><span class="chip o">PSA 7</span>')}
+ ${lrow(2,'Charizard 4/102 Base Set Holo, played condition','$310.00','<span class="chip v">Vintage</span>')}
+ ${lrow(4,'Pokemon Charizard Base Set Unlimited Holo 4/102 NM','$489.99','<span class="chip v">Vintage</span>')}</div>`;
+document.getElementById('wc1').innerHTML=findPage;
+document.getElementById('wc2').innerHTML=findPage;
+document.getElementById('wc3').innerHTML=findPage;
+document.getElementById('wcs').innerHTML=`<div class="grab"></div><h3>Is this the wrong card?</h3><p class="muted">We labelled it <b style="color:var(--ink)">Charizard · Base Set No. 4 · Shiny</b>. Want to say why? (Optional)</p>
+ <div class="opt on"><i></i>It's a different card</div><div class="opt"><i></i>Right card, different version</div><div class="opt"><i></i>Not a single card (a lot, box or fake)</div><div class="opt"><i></i>Something else</div>
+ <div class="cta" style="margin-top:16px">Send</div><div class="ghost" style="border:0;margin-top:2px;color:var(--ink4)">Cancel</div>`;
+
+// 4 I have all of these
+const haPage=(all)=>`${hdr()}<div class="pad"><div class="back">${ic.back}Back</div><div class="title">Sol Ring</div>
+ <p class="big">You have <b>${all?'12':'2'} of 12</b> versions</p><div class="bar"><i style="width:${all?100:17}%"></i></div>
+ <div style="display:flex;justify-content:space-between;align-items:center"><div class="lock">${ic.lock}Only you can see this</div><span style="font-size:14px;color:var(--accb);font-weight:500;display:flex;align-items:center;gap:6px">${ic.check}I have all of these</span></div>
+ <div class="h3">Commander Legends · 2020</div>
+ ${crow(5,'Sol Ring','334','v','1',true)}${crow(1,'Sol Ring','334 · Foil','v','',all)}${crow(3,'Sol Ring','472 · Etched foil','x','2',all)}
+ <div class="h3">Commander Masters · 2023</div>${crow(0,'Sol Ring','410','r','',all)}</div>`;
+document.getElementById('ha1').innerHTML=haPage(false);
+document.getElementById('ha2').innerHTML=haPage(true);
+
+// 5 share
+document.getElementById('sh1').innerHTML=`${hdr()}<div class="pad"><div class="title" style="margin-top:20px">Still need</div><p class="big">You still need <b>37 versions</b>. <b>12</b> are for sale now.</p>
+ <div class="fam" style="margin-top:12px">${need(0,'Charizard · Shiny','Base Set · No. 4','3')}${need(2,'Charizard · Shiny frame','Obsidian Flames · No. 11','2')}<div class="more">35 more ${ic.chev}</div></div>
+ <div class="cta">${ic.bell}Alert me when one is listed</div>
+ <div class="h3" style="margin-top:30px">Share my want list</div>
+ <div class="sw">Share my want list<span class="tog on"></span></div>
+ <p class="muted" style="margin-top:10px">Anyone with the link sees only the cards you still need. Not your name, email or the cards you own. Turn it off and the link stops working.</p>
+ <div class="pill" style="width:100%;border-radius:8px;height:48px;justify-content:space-between;padding:0 6px 0 14px"><span style="color:var(--ink4);font-size:14px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">foilsandfables.com/wants/k7Qp2x</span><span class="ga" style="height:36px;border-radius:999px">${ic.link}&nbsp;Copy</span></div>
+</div>`;
+document.getElementById('sh2').innerHTML=`${hdr(false)}<div class="pad"><div class="title" style="margin-top:22px">A collector's want list</div>
+ <p class="muted">37 cards they're looking for. 12 are for sale on eBay now.</p>
+ <div class="pills" style="margin-bottom:6px"><span class="pill on">All</span><span class="pill">For sale now</span></div>
+ <div class="h3">Charizard</div><div class="fam">${need(0,'Shiny','Base Set · No. 4','3')}${need(2,'Shiny frame','Obsidian Flames · No. 11','2')}${need(null,'First print, shiny','Base Set · No. 4',0)}</div>
+ <div class="h3">Pikachu</div><div class="fam">${need(1,'Shiny','Celebrations · No. 5','4')}${need(null,'Regular','Jungle · No. 60',0)}</div>
+ <div class="ghost" style="margin-top:18px">Make your own want list, free</div>
+ <p class="muted" style="text-align:center;font-size:13px;margin-top:10px">Made with Foils &amp; Fables. Not affiliated with eBay or any game publisher.</p>
+</div>`;
+
+// computer
+document.getElementById('desk').innerHTML=`<div class="wb"><i></i><i></i><i></i></div>
+ <div class="hdr"><div class="brand"><span class="mark">F</span>Foils <em>&amp;</em> Fables <em style="font-style:italic">Collectors</em></div><span class="me">L</span></div>
+ <div class="in"><div>
+  <div class="title" style="font-size:52px">Still need</div>
+  <p class="big">You still need <b>37 versions</b>. <b>12</b> are for sale now.</p>
+  <div class="seg" style="max-width:320px"><span class="on">By card</span><span>By set</span></div>
+  <div class="dgrid" style="margin-top:20px">
+   <div><div class="h3" style="margin-top:0">Charizard <small>You have 8 of 14</small></div><div class="fam">${need(0,'Shiny','Base Set · No. 4','3')}${need(2,'Shiny frame','Obsidian Flames · No. 11','2')}${need(4,'Regular','151 · No. 6','1')}<div class="more">6 more not for sale right now ${ic.chev}</div></div></div>
+   <div><div class="h3" style="margin-top:0">Pikachu <small>You have 31 of 241</small></div><div class="fam">${need(3,'Regular','Jungle · No. 60','1')}${need(1,'Shiny','Celebrations · No. 5','4')}<div class="more">203 more not for sale right now ${ic.chev}</div></div></div>
+  </div></div>
+  <div><div class="sumcard" style="flex-direction:column;align-items:stretch"><div class="fan">${frame(0,56)}${frame(2,56)}${frame(1,56)}${frame(null,56)}</div><span><b>12 for sale now</b><span>Across Charizard, Pikachu and Sol Ring. Checked 4 minutes ago.</span></span></div>
+   <div class="cta">${ic.bell}Alert me when any is listed</div>
+   <div class="h3">Share my want list</div><div class="sw">Share my want list<span class="tog"></span></div>
+   <p class="muted" style="margin-top:10px">Off. When on, people with the link see only the cards you still need, never your name or what you own.</p></div>
+ </div>`;
+</script>
+</body>
+</html>
