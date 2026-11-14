@@ -13,6 +13,11 @@
 //     Sets newest first; numbers in card order. Show `source.note` with the
 //     list (Scryfall's terms: the data stays free to everyone and is credited).
 //
+//   ?game=…&set=<set code>
+//     → { game, set: { code, name, released, total | type }, numbers: [{ number,
+//         card, cardName, versions }], cards, versionCount, source, built }:
+//     one set as a checklist, in card-number order.
+//
 //   ?game=mtg|pokemon|yugioh|lorcana&sets=1
 //     → { sets: [{ code, name, released }], source }: every set, newest first,
 //     for the Set filter.
@@ -27,7 +32,7 @@
 //     and the list is every card holding the words. Up to 300.
 
 import { NextResponse } from 'next/server';
-import { cardVersions, findCards, cardFamily, catalogData, CATALOG_GAMES } from '../../../lib/tcg/catalog';
+import { cardVersions, findCards, cardFamily, catalogData, setVersions, CATALOG_GAMES } from '../../../lib/tcg/catalog';
 import { setList } from '../../../lib/tcg/setFilter';
 
 export async function GET(req) {
@@ -38,6 +43,11 @@ export async function GET(req) {
   }
   // The catalog only changes when it's rebuilt and redeployed.
   const cache = { 'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=86400' };
+  if (p.get('set')) {
+    const body = setVersions(game, String(p.get('set')).slice(0, 30));
+    if (!body) return NextResponse.json({ error: 'Set not found' }, { status: 404, headers: cache });
+    return NextResponse.json(body, { headers: cache });
+  }
   if (p.get('sets') === '1') {
     return NextResponse.json({ sets: setList(game), source: catalogData(game).source }, { headers: cache });
   }

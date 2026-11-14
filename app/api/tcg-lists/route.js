@@ -17,13 +17,17 @@
 //       A–Z, 200 at a time (&offset=, &limit= up to 500). letters: [{ letter, cards }].
 //   ?game=…&q=<typed name>
 //     → { game, cards, source }, up to 50.
+//   ?game=…&sets=1
+//     → { game, sets: [{ code, name, released, cards, versions }], source }:
+//       every set, newest first. Open one with /api/tcg-versions?game=…&set=<code>
+//       and search it with /api/tcg-family-search?game=…&set=<code>.
 //   ?game=…   → { game, letters, source }
 //
 // Show `source.note` with any list (the card data's credit; lists stay free).
 
 import { NextResponse } from 'next/server';
 import { CATALOG_GAMES, catalogData } from '../../../lib/tcg/catalog';
-import { popularLists, popularPhotos, POPULAR_SOURCE, lettersOf, familiesByLetter, searchLists } from '../../../lib/tcg/lists';
+import { popularLists, popularPhotos, POPULAR_SOURCE, lettersOf, familiesByLetter, searchLists, setLists } from '../../../lib/tcg/lists';
 
 export async function GET(req) {
   const p = new URL(req.url).searchParams;
@@ -34,6 +38,7 @@ export async function GET(req) {
   // The lists only change when the catalogs are rebuilt and redeployed.
   const cache = { 'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=86400' };
   const source = catalogData(game).source;
+  if (p.get('sets') === '1') return NextResponse.json({ game, sets: setLists(game), source }, { headers: cache });
   if (p.get('popular') === '1') {
     const lists = popularLists(game);
     if (p.get('photos') !== '1') return NextResponse.json({ game, cards: lists, popularSource: POPULAR_SOURCE[game], source }, { headers: cache });

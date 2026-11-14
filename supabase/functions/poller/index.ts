@@ -645,14 +645,18 @@ async function callAppSearch(query: string, filters: Record<string, unknown>): P
 const TCG_FILTER_KEYS = ["game", "set", "shiny", "rarity", "lang", "graded", "grader", "grade", "firstEd", "serialOnly", "priceMin", "priceMax", "listing", "finish", "art", "promos", "cond", "freeShip", "offers", "shipFrom", "returns"];
 // Saved searches with a `card` are card-family searches: GET
 // /api/tcg-family-search. Mirrors familySavedParams in lib/tcg/familySearch.js.
-const FAMILY_FILTER_KEYS = ["game", "card", "cards", "versions", "set", "shiny", "rarity", "lang", "graded", "priceMin", "priceMax", "listing", "freeShip", "offers", "shipFrom", "returns"];
+const FAMILY_FILTER_KEYS = ["game", "card", "cards", "versions", "set", "setAlert", "shiny", "rarity", "lang", "graded", "priceMin", "priceMax", "listing", "freeShip", "offers", "shipFrom", "returns"];
 function familyCardKeys(filters: Record<string, unknown>): string[] {
   const list = Array.isArray(filters?.cards) ? (filters.cards as unknown[]).map(String) : [];
   if (filters?.card) list.push(String(filters.card));
   return [...new Set(list.filter(Boolean))].slice(0, 100);
 }
+// A whole-set alert ({ game, set, setAlert: true }) is a family search too.
+function isFamilySearch(filters: Record<string, unknown>): boolean {
+  return familyCardKeys(filters).length > 0 || (filters?.setAlert === true && typeof filters?.set === "string");
+}
 function tcgSearchUrl(query: string, filters: Record<string, unknown>): string {
-  if (familyCardKeys(filters).length) {
+  if (isFamilySearch(filters)) {
     const params = new URLSearchParams({ sort: "newest", limit: "1000" });
     if (query) params.set("q", query);
     for (const k of FAMILY_FILTER_KEYS) {
@@ -702,15 +706,18 @@ async function callTcgSearch(query: string, filters: Record<string, unknown>): P
 async function ownedVersionsFor(search: SavedSearch): Promise<Set<string> | null> {
   const f = (search.filters ?? {}) as Record<string, unknown>;
   const cards = familyCardKeys(f);
-  if (!f.needOnly || !cards.length || !f.game) return null;
+  const set = f.setAlert === true && typeof f.set === "string" ? f.set : null;
+  if (!f.needOnly || (!cards.length && !set) || !f.game) return null;
   try {
-    const { data, error } = await supabase
+    let q = supabase
       .from("owned_cards")
       .select("version_key")
       .eq("user_id", search.user_id)
       .eq("side", "fables")
-      .eq("game", String(f.game))
-      .in("card_key", cards);
+      .eq("game", String(f.game));
+    // A set's versions all start with its code ("swsh7:…").
+    q = cards.length ? q.in("card_key", cards) : q.like("version_key", `${set!.replace(/[\\%_]/g, "\\$&")}:%`);
+    const { data, error } = await q;
     if (error || !data) return null;
     return new Set(data.map((row: { version_key: string }) => row.version_key));
   } catch {
