@@ -1,0 +1,81 @@
+# Monthly card-list refresh (DECISIONS.md, "Foils & Fables: more unique and
+# powerful", item 4). Rebuilds the four card catalogs from their public
+# sources, runs the card tests, and opens a pull request for review.
+#
+# Locked down on purpose:
+# - It can only propose a change on its own branch; it never touches main and
+#   never deploys. A person reviews and merges.
+# - It refuses to open a pull request if anything other than the four catalog
+#   files changed.
+# - No secrets are used or needed; the sources are public.
+# - Package install scripts are skipped.
+
+name: Monthly card-list refresh
+
+on:
+  schedule:
+    - cron: '0 9 1 * *' # 09:00 UTC on the 1st of each month
+  workflow_dispatch: {} # a "Run" button in GitHub, for after a big set release
+
+permissions:
+  contents: write # push its own refresh branch
+  pull-requests: write # open the pull request
+
+concurrency:
+  group: card-list-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install packages (no install scripts)
+        run: npm ci --ignore-scripts
+
+      - name: Rebuild the card catalogs
+        run: node scripts/build-tcg-catalog.mjs
+
+      - name: Card tests
+        run: |
+          node scripts/test-tcg-parser.mjs
+          node scripts/test-tcg-family.mjs
+
+      - name: Only the catalog files may change
+        id: diff
+        run: |
+          changed="$(git status --porcelain | awk '{print $2}')"
+          if [ -z "$changed" ]; then
+            echo "No changes this month."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          bad="$(printf '%s\n' "$changed" | grep -v '^lib/tcg/catalog/[a-z]*\.json$' || true)"
+          if [ -n "$bad" ]; then
+            echo "Refusing: files outside lib/tcg/catalog changed:"
+            printf '%s\n' "$bad"
+            exit 1
+          fi
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Open a pull request for review
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          branch="card-list-refresh-$(date -u +%Y-%m)"
+          git config user.name "card-list-refresh"
+          git config user.email "card-list-refresh@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add lib/tcg/catalog/*.json
+          git commit -m "Card lists rebuilt $(date -u +%Y-%m-%d) (monthly refresh)"
+          git push origin "$branch"
+          gh pr create --base main --head "$branch" \
+            --title "Card lists rebuilt $(date -u +%Y-%m-%d)" \
+            --body "Monthly refresh of the four card catalogs. Card tests passed. Review before merging; nothing deploys until a person merges."
