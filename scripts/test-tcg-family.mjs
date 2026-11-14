@@ -32,6 +32,7 @@ fs.symlinkSync(path.join(root, 'lib/tcg/catalog'), path.join(dir, 'catalog'));
 const { setVersions } = await import(pathToFileURL(path.join(dir, 'catalog.mjs')).href);
 const { matchListing, titleSetHit } = await import(pathToFileURL(path.join(dir, 'family.mjs')).href);
 const { popularLists, familiesByLetter, lettersOf, searchLists, setLists } = await import(pathToFileURL(path.join(dir, 'lists.mjs')).href);
+const { bulkMarks } = await import(pathToFileURL(path.join(dir, 'bulkOwned.mjs')).href);
 const { startedFamilies, stillNeed } = await import(pathToFileURL(path.join(dir, 'stillNeed.mjs')).href);
 const { setList, listingInSets, familyOnly } = await import(pathToFileURL(path.join(dir, 'setFilter.mjs')).href);
 const { cardVersions, findCards, familyCards, cardFamily } = await import(pathToFileURL(path.join(dir, 'catalog.mjs')).href);
@@ -165,6 +166,10 @@ const checks = [
   ['Set lists: newest first with counts', () => { const l = setLists('lorcana'); return l.length > 10 && l[0].cards > 0 && l.some((s) => s.name === 'The First Chapter' && s.cards > 150); }],
   ['A set search takes every card of the set, by the set name', () => { const c = readFamilyCriteria(new URLSearchParams({ game: 'pokemon', set: 'swsh7' })); return c.setOnly === 'swsh7' && c.cards.length > 150 && c.q === 'Evolving Skies'; }],
   ['A set alert keeps its set flag', () => familySavedParams({ game: 'pokemon', set: 'swsh7', setAlert: true, needOnly: true }, 'Evolving Skies').get('setAlert') === 'true'],
+  ['I have all of these: a card gives every version', () => { const r = bulkMarks({ game: 'mtg', card: 'black-lotus' }); return r.marks.length === allVersions('mtg', 'black-lotus').length; }],
+  ['I have all of these: a set gives every version in it', () => { const r = bulkMarks({ game: 'lorcana', set: '1' }); return r.marks.length === setVersions('lorcana', '1').versionCount; }],
+  ['I have all of these: unknown versions are refused', () => !!bulkMarks({ game: 'pokemon', marks: [{ card: 'charizard', version: 'base1:4:zz' }] }).error && !!bulkMarks({ game: 'chess', card: 'x' }).error],
+  ['I have all of these: capped at 2,000', () => !!bulkMarks({ game: 'mtg', marks: Array.from({ length: 2001 }, () => ({ card: 'black-lotus', version: 'lea:233:n' })) }).error],
   ['Old saved rarity values map to groups', () => rarityValuesToGroups(['sir'], ['pokemon'])[0] === 'extremely_rare' && rarityValuesToGroups(['pokemon:dr'], ['pokemon','mtg'])[0] === 'very_rare' && rarityValuesToGroups(['enchanted'], ['lorcana'])[0] === 'extremely_rare'],
   ['Group values pass through; junk is dropped', () => JSON.stringify(rarityValuesToGroups(['promo', 'vintage', 'nonsense'], ['pokemon'])) === '["promo","vintage"]'],
   ['Serialized One Ring is a grail', () => cardVersions('mtg', 'the-one-ring').sets.flatMap((s) => s.numbers.flatMap((n) => n.versions)).some((v) => v.rarityKey === 'serialized' && v.tier === 'grail')],
