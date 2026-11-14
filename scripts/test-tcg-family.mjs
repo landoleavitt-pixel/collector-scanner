@@ -31,6 +31,7 @@ fs.writeFileSync(path.join(dir, 'ebay-stub.mjs'), fs.readFileSync(path.join(root
 fs.symlinkSync(path.join(root, 'lib/tcg/catalog'), path.join(dir, 'catalog'));
 const { matchListing, titleSetHit } = await import(pathToFileURL(path.join(dir, 'family.mjs')).href);
 const { popularLists, familiesByLetter, lettersOf, searchLists } = await import(pathToFileURL(path.join(dir, 'lists.mjs')).href);
+const { startedFamilies, stillNeed } = await import(pathToFileURL(path.join(dir, 'stillNeed.mjs')).href);
 const { setList, listingInSets, familyOnly } = await import(pathToFileURL(path.join(dir, 'setFilter.mjs')).href);
 const { cardVersions, findCards, familyCards, cardFamily } = await import(pathToFileURL(path.join(dir, 'catalog.mjs')).href);
 const { familySavedParams, readFamilyCriteria } = await import(pathToFileURL(path.join(dir, 'familySearch.mjs')).href);
@@ -144,13 +145,28 @@ const checks = [
     return listingShiny(['exact', 'set'].includes(m.kind) ? versionsShiny(g, card, m.versions) : null, m.parsed) === want;
   }]),
   ['Saved searches keep Shiny', () => familySavedParams({ game: 'mtg', card: 'lightning-bolt', shiny: 'no' }, 'Lightning Bolt').get('shiny') === 'no'],
+  ['Still need: owned marks and need-only searches start families, newest first', () => {
+    const f = startedFamilies([{ game: 'pokemon', card_key: 'charizard-ex', version_key: 'sv03.5:199:h', updated_at: '2026-11-10' }, { game: 'mtg', card_key: 'sheoldred-the-apocalypse', version_key: 'dmu:107:n', updated_at: '2026-11-12' }], [{ filters: { needOnly: true, game: 'yugioh', card: 'dark-magician' }, created_at: '2026-11-13' }, { filters: { game: 'pokemon', card: 'pikachu' }, created_at: '2026-11-14' }]);
+    return f.map((x) => x.name).join('|') === 'Dark Magician|Sheoldred|Charizard' && f[2].owned.has('sv03.5:199:h');
+  }],
+  ['Still need: missing versions, for sale first, with photos', async () => {
+    const fake = async () => ({ counts: { 'dmu:331:f': 3 }, items: [{ image: 'x.jpg', match: { kind: 'exact', versions: ['dmu:331:f'] } }], capped: false });
+    const r = await stillNeed({ owned: [{ game: 'mtg', card_key: 'sheoldred-the-apocalypse', version_key: 'dmu:107:n', updated_at: '2026-11-12' }], searches: [], search: fake });
+    const f = r.families[0];
+    return f.name === 'Sheoldred' && f.owned === 1 && f.missing === f.versions - 1 && f.rows[0].version === 'dmu:331:f' && f.rows[0].forSale === 3 && f.rows[0].photo === 'x.jpg' && f.missingForSale === 1;
+  }],
+  ['Still need: capped families per call', async () => {
+    const owned = ['charizard', 'pikachu', 'mew', 'eevee', 'gengar', 'lugia', 'umbreon', 'mewtwo', 'snorlax', 'rayquaza'].map((k, i) => ({ game: 'pokemon', card_key: k, version_key: 'x', updated_at: `2026-11-${10 + i}` }));
+    const r = await stillNeed({ owned, searches: [], limit: 50, search: async () => ({ counts: {}, items: [] }) });
+    return r.families.length === 8 && r.total === 10 && r.more.length === 2 && r.nextOffset === 8;
+  }],
   ['Old saved rarity values map to groups', () => rarityValuesToGroups(['sir'], ['pokemon'])[0] === 'extremely_rare' && rarityValuesToGroups(['pokemon:dr'], ['pokemon','mtg'])[0] === 'very_rare' && rarityValuesToGroups(['enchanted'], ['lorcana'])[0] === 'extremely_rare'],
   ['Group values pass through; junk is dropped', () => JSON.stringify(rarityValuesToGroups(['promo', 'vintage', 'nonsense'], ['pokemon'])) === '["promo","vintage"]'],
   ['Serialized One Ring is a grail', () => cardVersions('mtg', 'the-one-ring').sets.flatMap((s) => s.numbers.flatMap((n) => n.versions)).some((v) => v.rarityKey === 'serialized' && v.tier === 'grail')],
 ];
 for (const [name, fn] of checks) {
   let ok = false;
-  try { ok = fn(); } catch (e) { ok = false; console.log('   ', name, '→', e.message); }
+  try { ok = !!(await fn()); } catch (e) { ok = false; console.log('   ', name, '→', e.message); }
   if (ok) pass++;
   else fails.push({ title: name, bad: ['catalog check failed'] });
 }
