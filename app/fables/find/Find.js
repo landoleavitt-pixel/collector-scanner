@@ -19,6 +19,7 @@ import { SIDE, withListingFlags } from '../data';
 import { versionGame } from '../versions';
 import { fablesPayload, CardBadges, hasCardBadges, rowStyleFor } from '../FablesHome';
 import { CardBack } from '../CardFrame';
+import WrongCard from '../WrongCard';
 
 const money = (v) => (v == null ? '' : `$${Number(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
 // Only paths on this site.
@@ -36,7 +37,9 @@ export default function Find() {
   const unsure = sp.get('unsure') === '1';
   const cards = sp.get('cards') || '';
   const q = sp.get('q') || '';
-  const byNumber = version.includes(','); // every version of one number, from a card list row
+  const byNumber = version.includes(',');
+  // What we called these listings, for "Wrong card?".
+  const ourLabel = [name, no && `No. ${no}`, label].filter(Boolean).join(' · '); // every version of one number, from a card list row
   const [res, setRes] = useState(null); // { items, total, nextOffset }
   const [more, setMore] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -110,6 +113,7 @@ export default function Find() {
               <div className="divide-y divide-[var(--line-soft)]">
                 {items.flatMap((item, i) => {
                   const row = (
+                    <div key={item.id}>
                     <ResultCard
                       key={item.id} item={item} formatPrice={money} index={start + i}
                       onCardClick={setSelected}
@@ -117,6 +121,9 @@ export default function Find() {
                       badges={<CardBadges item={item} />} hasBadges={hasCardBadges(item)}
                       cardFrame noImage={<CardBack game={item.game || game} />}
                     />
+                    {/* Outside the row's link, so it's its own tap. */}
+                    <div className="pl-[68px] sm:pl-[82px] -mt-2 pb-2"><WrongCard item={item} label={ourLabel} game={game} /></div>
+                    </div>
                   );
                   return prompt && i === 3 ? [row, <SignupPromptCard key="signup-prompt" />] : [row];
                 })}
@@ -149,6 +156,7 @@ export default function Find() {
 
       {selected && (
         <CardModal item={selected} printRun={null} onClose={() => setSelected(null)} side={SIDE}
+                   footer={<WrongCard item={selected} label={ourLabel} game={game} />}
                    chips={<CardBadges item={selected} meaning />} watchPayload={fablesPayload(selected)} />
       )}
       {credit && <p className="text-fine mt-8 text-center" style={{ color: 'var(--ink-600)' }}>{credit} Photos are from sellers’ eBay listings.</p>}

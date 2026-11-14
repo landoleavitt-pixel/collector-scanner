@@ -23,6 +23,7 @@
 //   side          - 'fables' for Foils & Fables: no sports set lookup or
 //                   rarity tree, its own chips, watch payload and share link
 //   chips         - badges to show instead of the /N print-run chip
+//   footer        - an extra line under the title (Foils & Fables: Wrong card?)
 //   watchPayload  - body for POST /api/watchlist (defaults to the sports shape)
 
 import { useEffect, useRef, useState, useCallback } from 'react';
@@ -61,7 +62,7 @@ export default function CardModal(props) {
   return createPortal(<CardModalInner {...props} />, document.body);
 }
 
-function CardModalInner({ item, printRun, onClose, expired = false, side = 'sports', chips = null, watchPayload = null }) {
+function CardModalInner({ item, printRun, onClose, expired = false, side = 'sports', chips = null, watchPayload = null, footer = null }) {
   const fables = side === 'fables';
   const cardRef = useRef(null);       // inner card — handles tilt (rotateX/Y)
   const flipRef = useRef(null);       // wrapper — handles flight (translate/scale)
@@ -745,6 +746,8 @@ function CardModalInner({ item, printRun, onClose, expired = false, side = 'spor
                 {item.title}
               </h2>
 
+              {/* Extra line from the side (Foils & Fables: "Wrong card?"). */}
+              {footer && <div className="-mt-1 mb-3">{footer}</div>}
               {/* Badges */}
               <div className="flex gap-1.5 mb-4 flex-wrap">
                 {chips}
