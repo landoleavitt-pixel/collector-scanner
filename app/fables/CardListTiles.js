@@ -8,6 +8,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { ChevronRight } from 'lucide-react';
 import { VERSION_GAMES, GAME_NAMES, gameQuery, sized } from './versions';
 import CardFrame from './CardFrame';
 
@@ -62,14 +63,36 @@ export function CardListTile({ card, wide = false }) {
 export function PopularListsRow({ count = 12 }) {
   const { cards } = usePopularLists();
   if (cards && !cards.length) return null;
-  const shown = (cards || Array.from({ length: 4 }, () => null)).slice(0, count);
+  // One clear lead (design review fix 3): the first popular list with a
+  // seller's photo, large, then the rest in the row.
+  const leadCard = cards ? (cards.find((c) => c.image) || cards[0]) : null;
+  const rest = cards ? cards.filter((c) => c !== leadCard) : null;
+  const shown = (rest || Array.from({ length: 4 }, () => null)).slice(0, count - 1);
   return (
     <section aria-labelledby="popular-lists">
       <div className="flex items-baseline justify-between mb-3">
         <h2 id="popular-lists" className="font-display font-normal text-h3">Popular card lists</h2>
         <Link href="/fables/lists" className="text-body min-h-[44px] inline-flex items-center" style={{ color: 'var(--accent-bright)' }}>See all</Link>
       </div>
-      <div className="flex gap-3 overflow-x-auto -mx-5 px-5 scroll-px-5 md:mx-0 md:px-0 pb-1.5 snap-x md:grid md:grid-cols-6 md:overflow-visible">
+      {leadCard ? (
+        <Link href={listHref(leadCard.game, leadCard.name)} className="flex items-center gap-4 md:gap-6 rounded-xl p-3.5 md:p-5 mb-4"
+              style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
+          <CardFrame src={leadCard.image ? sized(leadCard.image, 400) : null} game={leadCard.game} alt="" className="!w-[104px] md:!w-[132px]" />
+          <span className="flex-1 min-w-0">
+            <span className="block font-display text-price leading-tight" style={{ color: 'var(--ink-100)' }}>{leadCard.name}</span>
+            <span className="block text-body mt-0.5" style={{ color: 'var(--ink-400)' }}>{GAME_NAMES[leadCard.game]} · {leadCard.versions.toLocaleString('en-US')} versions</span>
+            <span className="hidden sm:block text-body mt-2" style={{ color: 'var(--ink-200)' }}>Every version on one list, with what’s for sale today.</span>
+            <span className="inline-flex items-center gap-1 text-body font-semibold mt-2.5" style={{ color: 'var(--accent-bright)' }}>
+              Open the card list<ChevronRight className="w-4 h-4" strokeWidth={2} aria-hidden="true" />
+            </span>
+          </span>
+        </Link>
+      ) : (
+        <div className="flex items-center gap-4 rounded-xl p-3.5 mb-4 opacity-70" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }} aria-hidden="true">
+          <CardFrame game="pokemon" className="!w-[104px]" />
+        </div>
+      )}
+      <div className="flex gap-3 overflow-x-auto -mx-5 px-5 scroll-px-5 md:mx-0 md:px-0 pb-1.5 snap-x md:grid md:grid-cols-[repeat(auto-fill,minmax(120px,1fr))] md:overflow-visible">
         {shown.map((c, i) => (c
           ? <CardListTile key={`${c.game}|${c.key}`} card={c} />
           // While loading: our card back, so nothing sits blank.
