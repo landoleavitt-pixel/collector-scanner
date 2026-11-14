@@ -1,11 +1,11 @@
 # Monthly card-list refresh (DECISIONS.md, "Foils & Fables: more unique and
 # powerful", item 4). Rebuilds the four card catalogs from their public
-# sources, runs the card tests, and opens a pull request for review.
+# sources (plus the Japanese Pokémon list), runs the card tests, and opens a pull request for review.
 #
 # Locked down on purpose:
 # - It can only propose a change on its own branch; it never touches main and
 #   never deploys. A person reviews and merges.
-# - It refuses to open a pull request if anything other than the four catalog
+# - It refuses to open a pull request if anything other than the catalog
 #   files changed.
 # - No secrets are used or needed; the sources are public.
 # - Package install scripts are skipped.
@@ -42,6 +42,9 @@ jobs:
       - name: Rebuild the card catalogs
         run: node scripts/build-tcg-catalog.mjs
 
+      - name: Rebuild the Japanese Pokémon card list
+        run: node scripts/build-tcg-ja.mjs
+
       - name: Card tests
         run: |
           node scripts/test-tcg-parser.mjs
@@ -56,7 +59,7 @@ jobs:
             echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          bad="$(printf '%s\n' "$changed" | grep -v '^lib/tcg/catalog/[a-z]*\.json$' || true)"
+          bad="$(printf '%s\n' "$changed" | grep -v '^lib/tcg/catalog/[a-z-]*\.json$' || true)"
           if [ -n "$bad" ]; then
             echo "Refusing: files outside lib/tcg/catalog changed:"
             printf '%s\n' "$bad"
