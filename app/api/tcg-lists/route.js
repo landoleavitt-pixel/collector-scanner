@@ -18,7 +18,8 @@
 //   ?game=…&q=<typed name>
 //     → { game, cards, source }, up to 50.
 //   ?game=…&sets=1
-//     → { game, sets: [{ code, name, released, cards, versions }], source }:
+//     → { game, sets: [{ code, name, released, numbers, cards, versions }], source }:
+//       numbers = card numbers in the set (rows of its checklist); cards = different card names;
 //       every set, newest first. Open one with /api/tcg-versions?game=…&set=<code>
 //       and search it with /api/tcg-family-search?game=…&set=<code>.
 //   ?game=…   → { game, letters, source }

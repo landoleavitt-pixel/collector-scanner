@@ -165,6 +165,7 @@ const checks = [
   }],
   ['A set as a checklist: Evolving Skies in number order', () => { const v = setVersions('pokemon', 'swsh7'); return v.set.name === 'Evolving Skies' && v.numbers.length > 200 && v.numbers.some((n) => n.cardName === 'Umbreon VMAX') && v.numbers[0].number <= v.numbers[1].number; }],
   ['Set lists: newest first with counts', () => { const l = setLists('lorcana'); return l.length > 10 && l[0].cards > 0 && l.some((s) => s.name === 'The First Chapter' && s.cards > 150); }],
+  ['Set lists count the same numbers the set checklist shows', () => setLists('pokemon').find((s) => s.code === 'swsh7').numbers === setVersions('pokemon', 'swsh7').numbers.length],
   ['A set search takes every card of the set, by the set name', () => { const c = readFamilyCriteria(new URLSearchParams({ game: 'pokemon', set: 'swsh7' })); return c.setOnly === 'swsh7' && c.cards.length > 150 && c.q === 'Evolving Skies'; }],
   ['A set alert keeps its set flag', () => familySavedParams({ game: 'pokemon', set: 'swsh7', setAlert: true, needOnly: true }, 'Evolving Skies').get('setAlert') === 'true'],
   ['I have all of these: a card gives every version', () => { const r = bulkMarks({ game: 'mtg', card: 'black-lotus' }); return r.marks.length === allVersions('mtg', 'black-lotus').length; }],
