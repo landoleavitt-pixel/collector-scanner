@@ -13,7 +13,11 @@ The single list of work that's finished or in progress but **not live yet**. The
 | 7 | eBay Partner Network affiliate links | CFO | ⏸ Plan approved. Waiting on Landon's sign-up + Campaign ID; code held until batch ships | SiteTour.js, guides, reading-list copy + link tagging | — |
 | L05 | Proof strip | Landing | ⏹ Skipped: no honest live number yet (no fake figures) | — | — |
 | P11 | floorsandfables.com chooser + foilsandfables.com routing; app renamed Floors & Fables | Design | 🟢 Live ea6a097, waiting on domains | middleware, chooser page | Landon buys domains + Vercel |
-| J-later | Japanese Pokémon versions (research/japanese-pokemon-plan.md): about 3–4 days of engine work; 4 questions for Landon when started | Engine | ⏸ Saved for later (Landon, 2026-11-07) | lib/tcg, checklist | — |
+| F1 | "Still need, for sale now" page | Engine + Design | 🔵 Mockup and engine design | lib/tcg, app/fables | — |
+| F2 | Set lists (browse, set checklist, for sale per card, set alert) | Engine + Design | 🔵 Mockup and engine | lib/tcg, app/fables/lists | — |
+| F3 | Japanese Pokémon versions (states 1, 2, 4) | Engine | ⚪ After F1/F2 engine parts | lib/tcg | — |
+| F4 | Wrong card? button; monthly card-list rebuild | Engine + Design | ⚪ Queued | lib/tcg, scripts, card popup | SQL for Landon (reports table) |
+| F5 | I have all of these; import from other apps (research first); opt-in want-list share | Design + Research + Engine | ⚪ Queued | app/fables, api/owned | SQL for Landon (sharing) |
 | E-later | Fables versions: "Secret Lair Prize #8001" / "Buy-A-Box" titles to catalog set names; Magic titles with a number but no set ("022/259") | Engine | ⚪ Follow-up | lib/tcg | — |
 | S-poll | Lock down the alert checker: it can be triggered by anyone holding the public key; require a private secret header from the cron jobs instead | Debugger | ⚪ Follow-up (low risk today: it only re-runs checks and never re-sends) | poller, both cron jobs | poller deploy + Landon edits 2 cron jobs |
 
