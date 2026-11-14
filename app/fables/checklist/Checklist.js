@@ -178,6 +178,35 @@ export default function Checklist({ setMode = false }) {
     }
   }
 
+  // "I have all of these": marks every version on this list in one call
+  // (POST /api/owned/bulk), with an undo that unmarks exactly the ones it marked.
+  const [bulk, setBulk] = useState(null); // { marks, n } after marking, for Undo
+  async function markAll() {
+    const marks = (rows || []).flatMap((r) => r.versions.filter((v) => !owned.has(`${r.cardKey}|${v.key}`)).map((v) => ({ card: r.cardKey, version: v.key })));
+    if (!marks.length) return;
+    const before = owned;
+    setOwned(new Set([...owned, ...marks.map((m) => `${m.card}|${m.version}`)]));
+    setOwnedError('');
+    const res = await fetch('/api/owned/bulk', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ side: SIDE, game: GAME, on: true, marks }),
+    }).catch(() => null);
+    if (!res || !res.ok) { setOwned(before); setOwnedError('That didn’t save. Try again.'); return; }
+    setBulk({ marks, n: marks.length });
+  }
+  async function undoMarkAll() {
+    if (!bulk) return;
+    const { marks } = bulk;
+    setBulk(null);
+    const keys = new Set(marks.map((m) => `${m.card}|${m.version}`));
+    setOwned((cur) => new Set([...cur].filter((k) => !keys.has(k))));
+    const res = await fetch('/api/owned/bulk', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ side: SIDE, game: GAME, on: false, marks }),
+    }).catch(() => null);
+    if (!res || !res.ok) setOwnedError('Undo didn’t save. Try again.');
+  }
+
   async function turnOnAlert() {
     setAlertState('saving');
     const result = setMode ? await saveSetAlert(GAME, setCode, title) : await saveFamilyAlert(GAME, title, rows);
@@ -253,6 +282,11 @@ export default function Checklist({ setMode = false }) {
           </div>
           <p className="flex items-center gap-1.5 text-meta mt-2.5 mb-5" style={{ color: 'var(--ink-600)' }}>
             <Lock className="w-[15px] h-[15px]" strokeWidth={2} aria-hidden="true" />Only you can see this
+            {user && have < total && (
+              <button type="button" onClick={markAll} className="ml-auto inline-flex items-center gap-1.5 text-body font-medium min-h-[36px]" style={{ color: 'var(--accent-bright)' }}>
+                <Check className="w-4 h-4" strokeWidth={2.5} aria-hidden="true" />I have all of these
+              </button>
+            )}
           </p>
           {ownedError && <p className="text-body mb-3" style={{ color: 'var(--crit)' }}>{ownedError}</p>}
 
@@ -431,6 +465,13 @@ export default function Checklist({ setMode = false }) {
           <BigButton onClick={turnOnAlert} disabled={alertState === 'saving'}>{alertState === 'saving' ? 'Saving…' : 'Yes, alert me'}</BigButton>
           <button type="button" onClick={() => setAsk(false)} className="w-full min-h-[56px] text-lede mt-1.5" style={{ color: 'var(--ink-400)' }}>Not now</button>
         </Sheet>
+      )}
+      {bulk && (
+        <div role="status" className="fixed left-3.5 right-3.5 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-[420px] bottom-[92px] md:bottom-8 z-[70] min-h-[54px] rounded-xl flex items-center justify-between gap-3 px-4 text-body"
+             style={{ background: 'var(--ink-100)', color: '#0b0f1a', boxShadow: '0 12px 30px rgba(0,0,0,.5)' }}>
+          <span>Marked {bulk.n} as yours.</span>
+          <button type="button" onClick={undoMarkAll} className="font-semibold min-h-[44px] px-2" style={{ color: '#1e5f78' }}>Undo</button>
+        </div>
       )}
       {pushAsk.node}
     </main>

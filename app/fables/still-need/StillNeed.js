@@ -25,13 +25,13 @@ async function loadStillNeed(offset = 0, limit = PAGE) {
 }
 
 const plain = (game, row) => versionLabel(game, { label: row.label, key: row.version });
-const checklistHref = (f) => `/fables/checklist?${gameQuery(f.game)}name=${encodeURIComponent(f.name)}`;
+export const checklistHref = (f) => `/fables/checklist?${gameQuery(f.game)}name=${encodeURIComponent(f.name)}`;
 const findHref = (f, row, back) => `/fables/find?${new URLSearchParams({
   ...gameParams(f.game), card: row.card, version: row.version, name: row.cardName,
   no: f.game === 'yugioh' ? `${row.set}-${row.number}` : row.number, label: plain(f.game, row), back,
 })}`;
 
-function NeedRow({ family, row, back }) {
+export function NeedRow({ family, row, back }) {
   const sale = row.forSale || 0;
   return (
     <div className="flex items-center gap-3 py-3" style={{ borderBottom: '1px solid var(--line-soft)' }}>
@@ -51,7 +51,7 @@ function NeedRow({ family, row, back }) {
   );
 }
 
-function FamilyBlock({ family, back }) {
+export function FamilyBlock({ family, back }) {
   const [open, setOpen] = useState(false);
   const forSale = family.rows.filter((r) => r.forSale > 0);
   const rest = family.rows.filter((r) => !(r.forSale > 0));
@@ -60,7 +60,7 @@ function FamilyBlock({ family, back }) {
     <section className="mb-4">
       <div className="flex items-baseline justify-between gap-3 mt-6 mb-2.5">
         <Link href={checklistHref(family)} className="font-display text-h3 leading-tight" style={{ color: 'var(--ink-200)' }}>{family.name}</Link>
-        <span className="text-meta flex-none" style={{ color: 'var(--ink-400)' }}>You have {family.owned} of {family.versions}</span>
+        <span className="text-meta flex-none" style={{ color: 'var(--ink-400)' }}>{family.owned != null ? `You have ${family.owned} of ${family.versions}` : `Needs ${family.missing} of ${family.versions}`}</span>
       </div>
       <div className="rounded-xl px-3.5 pb-1" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
         {family.searchFailed && <p className="text-meta py-3" style={{ color: 'var(--ink-400)' }}>eBay didn’t answer for this card. Try again soon.</p>}
@@ -89,7 +89,7 @@ function FamilyBlock({ family, back }) {
 }
 
 // Grouped by set: every family's for-sale rows under their set, newest set first.
-function BySet({ families, back }) {
+export function BySet({ families, back }) {
   const sets = useMemo(() => {
     const m = new Map();
     for (const f of families) {
@@ -177,6 +177,7 @@ export default function StillNeed() {
           <p className="text-lede m-0" style={{ color: 'var(--ink-100)' }}>Nothing here yet.</p>
           <p className="text-body mt-1.5 mb-4" style={{ color: 'var(--ink-400)' }}>Mark the cards you own on a card list. The versions you still need, and which are for sale, show up here.</p>
           <Link href="/fables/lists" className="inline-flex items-center gap-1.5 text-body font-semibold" style={{ color: 'var(--accent-bright)' }}>Browse card lists<ChevronRight className="w-4 h-4" aria-hidden="true" /></Link>
+          <Link href="/fables/import" className="flex items-center gap-1.5 text-body mt-3" style={{ color: 'var(--ink-200)' }}>Or import a CSV file<ChevronRight className="w-4 h-4" aria-hidden="true" /></Link>
         </div>
       )}
 
@@ -212,11 +213,64 @@ export default function StillNeed() {
               <Bell className="w-5 h-5" strokeWidth={2} aria-hidden="true" />{alertState === 'saving' ? 'Saving…' : 'Alert me when one is listed'}
             </button>
           )}
-          <p className="text-meta text-center mt-3" style={{ color: 'var(--ink-600)' }}>Only you can see this. Photos are from sellers’ eBay listings.</p>
+          <p className="text-meta text-center mt-3" style={{ color: 'var(--ink-600)' }}>Only you can see this unless you share it. Photos are from sellers’ eBay listings.</p>
+          <Link href="/fables/import" className="flex items-center justify-center gap-1.5 min-h-[48px] text-body mt-2" style={{ color: 'var(--ink-200)' }}>Import a CSV file<ChevronRight className="w-4 h-4" aria-hidden="true" /></Link>
+          <WantShare />
         </>
       )}
       {pushAsk.node}
     </main>
+  );
+}
+
+/* "Share my want list": off unless turned on (GET/POST /api/want-share).
+   On makes a new link; off kills it at once. */
+function WantShare() {
+  const [st, setSt] = useState(null); // { on, url } | { error }
+  const [busy, setBusy] = useState(false);
+  const [copied, setCopied] = useState(false);
+  useEffect(() => {
+    fetch('/api/want-share', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).catch(() => null)
+      .then((d) => setSt(d ? { on: !!d.on, url: d.url || '' } : { on: false, url: '' }));
+  }, []);
+  async function flip() {
+    setBusy(true);
+    const r = await fetch('/api/want-share', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ on: !st?.on }) }).catch(() => null);
+    setBusy(false);
+    if (r?.status === 503) { setSt((c) => ({ ...c, error: 'Sharing isn’t set up yet. Try again soon.' })); return; }
+    const d = r ? await r.json().catch(() => null) : null;
+    if (!r?.ok || !d) { setSt((c) => ({ ...c, error: 'That didn’t save. Try again.' })); return; }
+    setSt({ on: !!d.on, url: d.url || '' });
+  }
+  async function copy() {
+    try { await navigator.clipboard.writeText(st.url); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch {}
+  }
+  if (!st) return null;
+  return (
+    <section className="mt-10">
+      <h2 className="font-display text-h3 m-0 mb-3" style={{ color: 'var(--ink-200)' }}>Share my want list</h2>
+      <button type="button" role="switch" aria-checked={!!st.on} onClick={flip} disabled={busy}
+              className="w-full flex items-center justify-between gap-3 min-h-[56px] px-3.5 rounded-xl text-lede text-left disabled:opacity-60"
+              style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)', color: 'var(--ink-100)' }}>
+        Share my want list
+        <span className="relative w-[46px] h-[28px] rounded-full flex-none" aria-hidden="true"
+              style={{ background: st.on ? 'var(--accent-bright)' : 'var(--bg-elev-2)', border: st.on ? 'none' : '1px solid var(--line)' }}>
+          <span className="absolute top-[3px] w-[22px] h-[22px] rounded-full" style={{ left: st.on ? 21 : 3, background: st.on ? 'var(--ink-on-accent)' : 'var(--ink-400)' }} />
+        </span>
+      </button>
+      <p className="text-body mt-2.5" style={{ color: 'var(--ink-400)' }}>
+        Off unless you turn it on. Anyone with the link sees the cards you still need, so they can tell which ones you already have. They never see your name or email. Turn it off and the link stops working.
+      </p>
+      {st.error && <p className="text-meta mt-2" style={{ color: 'var(--crit)' }}>{st.error}</p>}
+      {st.on && st.url && (
+        <div className="flex items-center gap-2 min-h-[48px] rounded-lg pl-3.5 pr-1.5 mt-3" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
+          <span className="flex-1 min-w-0 truncate text-meta" style={{ color: 'var(--ink-400)' }}>{st.url}</span>
+          <button type="button" onClick={copy} className="flex-none h-9 px-3.5 rounded-full text-meta font-semibold" style={{ background: 'var(--accent-bright)', color: 'var(--ink-on-accent)' }}>
+            {copied ? 'Copied' : 'Copy link'}
+          </button>
+        </div>
+      )}
+    </section>
   );
 }
 
