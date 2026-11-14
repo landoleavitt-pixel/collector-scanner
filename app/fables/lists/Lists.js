@@ -24,6 +24,7 @@ export default function Lists() {
   const letter = (sp.get('letter') || 'A').slice(0, 1).toUpperCase();
   const view = sp.get('view') === 'sets' ? 'sets' : 'cards';
   const [sets, setSets] = useState(null); // [{ code, name, released, cards, versions }]
+  const [ownedBySet, setOwnedBySet] = useState({}); // set code → versions owned (signed in; missing = 0)
   const { cards: popular, source: popularSource } = usePopularLists(game);
   const [letters, setLetters] = useState([]);
   const [rows, setRows] = useState(null); // { cards, nextOffset, total }
@@ -55,6 +56,9 @@ export default function Lists() {
       setSets(d?.sets || []);
       if (d?.source?.note) setSource(d.source.note);
     });
+    // "You have 40 of 102" (signed in only; 401 otherwise, so nothing shows).
+    fetch(`/api/owned/sets?game=${game}`, { cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).catch(() => null)
+      .then((d) => { if (alive) setOwnedBySet(d?.sets || {}); });
     return () => { alive = false; };
   }, [game, view]);
 
@@ -126,6 +130,7 @@ export default function Lists() {
                 <span className="min-w-0">
                   <span className="block text-lede" style={{ color: 'var(--ink-100)' }}>{x.name}</span>
                   <span className="text-meta" style={{ color: 'var(--ink-400)' }}>{[(x.released || '').slice(0, 4), `${(x.cards || 0).toLocaleString('en-US')} cards`].filter(Boolean).join(' · ')}</span>
+                  {ownedBySet[x.code] > 0 && <span className="text-meta" style={{ color: 'var(--accent-bright)' }}> · You have {ownedBySet[x.code]} of {(x.versions || 0).toLocaleString('en-US')}</span>}
                 </span>
                 <ChevronRight className="w-4 h-4 flex-none" strokeWidth={2} style={{ color: 'var(--ink-400)' }} aria-hidden="true" />
               </Link>
