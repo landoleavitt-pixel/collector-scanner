@@ -22,7 +22,7 @@ for (const f of fs.readdirSync(path.join(root, 'lib/tcg'))) {
   const src = fs.readFileSync(path.join(root, 'lib/tcg', f), 'utf8')
     .replace(/from '\.\.\/ebay'/g, "from './ebay-stub.mjs'")
     .replace(/from '\.\/([A-Za-z]+)'/g, "from './$1.mjs'")
-    .replace(/from '(\.\/catalog\/[a-z]+\.json)'/g, "from '$1' with { type: 'json' }")
+    .replace(/from '(\.\/catalog\/[a-z-]+\.json)'/g, "from '$1' with { type: 'json' }")
     .replace(/from '\.\.\/\.\.\/(data\/tcg\/[a-z-]+\.json)'/g, (m, f) => `from '${path.join(root, f)}' with { type: 'json' }`);
   fs.writeFileSync(path.join(dir, f.replace(/\.js$/, '.mjs')), src);
 }

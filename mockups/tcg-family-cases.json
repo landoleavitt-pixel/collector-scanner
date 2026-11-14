@@ -207,7 +207,7 @@
    "title": "Rayquaza VMAX 284/184 UR Gold VMAX Climax S8b Japanese",
    "expect": {
     "kind": "language",
-    "why": "set S8b · #284/184, as listed by seller"
+    "why": "set S8b · No. 284/184 · Secret Rare"
    }
   },
   {
@@ -1615,6 +1615,51 @@
    "expect": {
     "kind": "exact",
     "why": "Ultra Rare"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "charizard-ex",
+   "title": "Charizard ex 006/165 SV2a Pokemon Card 151 Japanese RR",
+   "expect": {
+    "kind": "language",
+    "why": "No. 006/165 · Double rare"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "charizard",
+   "title": "Charizard 006/165 SV2a Pokemon Card 151 Japanese",
+   "expect": {
+    "kind": "language",
+    "why": "as listed by seller"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "rapid-strike-urshifu-vmax",
+   "title": "Rapid Strike Urshifu VMAX 095/184 S8b VMAX Climax Japanese",
+   "expect": {
+    "kind": "language",
+    "why": "No. 095/184"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "umbreon-vmax",
+   "title": "Umbreon VMAX S6a 048/069 Eevee Heroes Japanese",
+   "expect": {
+    "kind": "language",
+    "why": "as listed by seller"
+   }
+  },
+  {
+   "game": "pokemon",
+   "card": "pikachu",
+   "title": "Pikachu Japanese PSA 10",
+   "expect": {
+    "kind": "language",
+    "why": "version not named"
    }
   }
  ]
