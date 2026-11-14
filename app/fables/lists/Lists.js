@@ -173,6 +173,9 @@ export default function Lists() {
           )}
         </>
       )}
+      <Link href="/fables/import" className="flex items-center justify-between min-h-[56px] mt-8 px-1 text-body" style={{ borderTop: '1px solid var(--line-soft)', borderBottom: '1px solid var(--line-soft)', color: 'var(--ink-200)' }}>
+        Have a collection file? Import a CSV file<ChevronRight className="w-4 h-4" strokeWidth={2} aria-hidden="true" />
+      </Link>
       {source && <p className="text-fine mt-8" style={{ color: 'var(--ink-600)' }}>{source}</p>}
     </main>
   );
