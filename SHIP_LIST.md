@@ -18,7 +18,7 @@ The single list of work that's finished or in progress but **not live yet**. The
 | F3 | Japanese Pokémon versions (states 1, 2, 4) | Engine | ⚪ After F1/F2 engine parts | lib/tcg | — |
 | F4 | Wrong card? button; monthly card-list rebuild | Engine + Design | ⚪ Queued | lib/tcg, scripts, card popup | SQL for Landon (reports table) |
 | F5 | I have all of these; import from other apps (research first); opt-in want-list share | Design + Research + Engine | ⚪ Queued | app/fables, api/owned | SQL for Landon (sharing) |
-| S1 | Sports home and search redesign (mockups/fields-floors-home-story.html) | Design | ⚪ Waiting on Landon's headline pick | app/page.js | — |
+| S1 | Sports home and search redesign (mockups/fields-floors-home-story.html) | Design | ⚪ Approved, queued after the Fables mockup | app/page.js | — |
 | S2 | Featured lead card list on the Fables home | Design | ⚪ Queued | app/fables | — |
 | S3 | Faster first searches | Helper | ⚪ Queued after research finishes (max 3 agents) | api routes, lib | — |
 | S4 | Next.js 15 upgrade for the remaining advisories | Helper | ⚪ Queued after S3 | package.json | — |

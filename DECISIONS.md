@@ -139,3 +139,4 @@ Why: research/fables-why.md found the gap is the combination of versions and the
 4. **Trust:** a "Wrong card?" button storing only listing id, our label and an optional reason (SQL and privacy note for Landon first); monthly automatic card-list rebuild with tests, left for Boss review, never auto-deployed.
 5. **Less chore, plus sharing:** "I have all of these" for a card or set; import from other collection apps using official export files only (research first); an opt-in share link for a want list (marks stay private unless turned on; SQL and privacy note first).
 Limits unchanged: eBay only; no price history, sold prices or value; lists and "I own this" free, only alerts paid; no catalog art or logos; plain words; mockups first for new screens.
+- **Sports home headline: "Find any player's rarest cards."** with "Numbered, signed and rookie cards on eBay, rarest first." (mockups/fields-floors-home-story.html), replacing "The Grail Hunter." (2026-11-14, Landon)
