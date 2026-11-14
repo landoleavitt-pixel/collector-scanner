@@ -22,6 +22,8 @@ export default function Lists() {
   const sp = useSearchParams();
   const game = versionGame(sp.get('game'));
   const letter = (sp.get('letter') || 'A').slice(0, 1).toUpperCase();
+  const view = sp.get('view') === 'sets' ? 'sets' : 'cards';
+  const [sets, setSets] = useState(null); // [{ code, name, released, cards, versions }]
   const { cards: popular, source: popularSource } = usePopularLists(game);
   const [letters, setLetters] = useState([]);
   const [rows, setRows] = useState(null); // { cards, nextOffset, total }
@@ -43,10 +45,23 @@ export default function Lists() {
     return () => { alive = false; };
   }, [game, letter]);
 
+  // Sets for the game, newest first.
+  useEffect(() => {
+    if (view !== 'sets') return undefined;
+    let alive = true;
+    setSets(null);
+    fetch(`/api/tcg-lists?game=${game}&sets=1`).then((r) => (r.ok ? r.json() : null)).catch(() => null).then((d) => {
+      if (!alive) return;
+      setSets(d?.sets || []);
+      if (d?.source?.note) setSource(d.source.note);
+    });
+    return () => { alive = false; };
+  }, [game, view]);
+
   // Name search, a moment after typing stops.
   useEffect(() => {
     const q = typed.trim();
-    if (q.length < 2) { setFound(null); return undefined; }
+    if (q.length < 2 || view === 'sets') { setFound(null); return undefined; }
     let alive = true;
     const t = setTimeout(() => {
       fetch(`/api/tcg-lists?game=${game}&q=${encodeURIComponent(q)}`).then((r) => (r.ok ? r.json() : null)).catch(() => null)
@@ -76,15 +91,23 @@ export default function Lists() {
       <h1 className="font-display italic text-h1 md:text-h1 leading-none">Card lists</h1>
       <p className="text-lede mt-2 mb-4" style={{ color: 'var(--ink-400)' }}>Every card, every version. Tick the ones you have.</p>
       <StillNeedCard className="mb-4" />
+      {/* Cards or whole sets. */}
+      <div className="flex gap-1 p-1 rounded-xl mb-3" role="group" aria-label="Show" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
+        {[['cards', 'Cards'], ['sets', 'Sets']].map(([v, l]) => (
+          <button key={v} type="button" aria-pressed={view === v} onClick={() => { setTyped(''); go(v === 'sets' ? { view: 'sets' } : {}); }}
+                  className="flex-1 min-h-[40px] rounded-lg text-body"
+                  style={view === v ? { background: 'var(--bg-elev-2)', color: 'var(--ink-100)', boxShadow: 'inset 0 0 0 1px var(--line)' } : { color: 'var(--ink-400)' }}>{l}</button>
+        ))}
+      </div>
       <label className="flex items-center gap-2.5 min-h-[54px] px-4 rounded-xl" style={{ border: '1px solid var(--line)', background: 'var(--bg-elev)' }}>
         <Search className="w-5 h-5 flex-none" strokeWidth={2} style={{ color: 'var(--ink-400)' }} aria-hidden="true" />
-        <input type="search" value={typed} onChange={(e) => setTyped(e.target.value)} placeholder="Find a card list" aria-label="Find a card list"
+        <input type="search" value={typed} onChange={(e) => setTyped(e.target.value)} placeholder={view === 'sets' ? 'Find a set' : 'Find a card list'} aria-label={view === 'sets' ? 'Find a set' : 'Find a card list'}
                className="flex-1 min-w-0 bg-transparent outline-none text-lede" style={{ color: 'var(--ink-100)' }} />
       </label>
 
       <div className="flex gap-2 overflow-x-auto -mx-5 px-5 md:mx-0 md:px-0 pt-4 pb-1" role="tablist" aria-label="Game">
         {VERSION_GAMES.map((g) => (
-          <button key={g} type="button" role="tab" aria-selected={g === game} onClick={() => { setTyped(''); router.replace(`/fables/lists${g === 'pokemon' ? '' : `?game=${g}`}`, { scroll: false }); }}
+          <button key={g} type="button" role="tab" aria-selected={g === game} onClick={() => { setTyped(''); const qs = new URLSearchParams({ ...(g !== 'pokemon' ? { game: g } : {}), ...(view === 'sets' ? { view: 'sets' } : {}) }).toString(); router.replace(`/fables/lists${qs ? `?${qs}` : ''}`, { scroll: false }); }}
                   className="flex-none min-h-[44px] px-4 rounded-full text-body"
                   style={g === game ? { background: 'var(--ink-100)', color: 'var(--bg-base)', fontWeight: 600 } : { border: '1px solid var(--line)', background: 'var(--bg-elev)', color: 'var(--ink-200)' }}>
             {GAME_NAMES[g]}
@@ -92,7 +115,24 @@ export default function Lists() {
         ))}
       </div>
 
-      {found ? (
+      {view === 'sets' ? (
+        <section className="mt-6">
+          <h2 className="font-display font-normal text-h3 mb-2">{typed.trim() ? `Sets matching “${typed.trim()}”` : `${GAME_NAMES[game]} sets, newest first`}</h2>
+          {sets === null
+            ? <div className="h-[64px] rounded-xl shimmer" style={{ background: 'var(--bg-elev)' }} />
+            : sets.filter((x) => !typed.trim() || x.name.toLowerCase().includes(typed.trim().toLowerCase())).map((x) => (
+              <Link key={x.code} href={`/fables/set?${new URLSearchParams({ ...(game !== 'pokemon' ? { game } : {}), set: x.code })}`}
+                    className="flex items-center justify-between gap-3 min-h-[64px] px-1" style={{ borderBottom: '1px solid var(--line-soft)' }}>
+                <span className="min-w-0">
+                  <span className="block text-lede" style={{ color: 'var(--ink-100)' }}>{x.name}</span>
+                  <span className="text-meta" style={{ color: 'var(--ink-400)' }}>{[(x.released || '').slice(0, 4), `${(x.cards || 0).toLocaleString('en-US')} cards`].filter(Boolean).join(' · ')}</span>
+                </span>
+                <ChevronRight className="w-4 h-4 flex-none" strokeWidth={2} style={{ color: 'var(--ink-400)' }} aria-hidden="true" />
+              </Link>
+            ))}
+          {sets && sets.length === 0 && <p className="text-body" style={{ color: 'var(--ink-400)' }}>No sets for this game yet.</p>}
+        </section>
+      ) : found ? (
         <section className="mt-6">
           <h2 className="font-display font-normal text-h3 mb-2">{found.length ? `Cards named “${typed.trim()}”` : `No ${GAME_NAMES[game]} card named “${typed.trim()}”`}</h2>
           {found.map(row)}

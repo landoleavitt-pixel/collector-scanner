@@ -31,7 +31,7 @@ import { useUser } from '../../../lib/useUser';
 import { usePushAsk } from '../../components/PushAsk';
 import { SIDE } from '../data';
 import { GroupDot, groupRank } from '../rarity';
-import { VERSION_GAMES, VERSION_GAMES_TEXT, GAME_NAMES, versionGame, versionLabel, cardNumber, gameParams, gameQuery, sized, loadFamily, loadFamilyListings, saveFamilyAlert } from '../versions';
+import { VERSION_GAMES, VERSION_GAMES_TEXT, GAME_NAMES, versionGame, versionLabel, cardNumber, gameParams, gameQuery, sized, loadFamily, loadFamilyListings, saveFamilyAlert, loadSet, saveSetAlert } from '../versions';
 import { Sheet, BigButton } from '../sheet';
 import CardFrame from '../CardFrame';
 
@@ -48,10 +48,13 @@ function swatch(plain) {
   return '#8a93a8';
 }
 
-export default function Checklist() {
+export default function Checklist({ setMode = false }) {
   const router = useRouter();
   const sp = useSearchParams();
-  const name = (sp.get('name') || '').trim().slice(0, 60);
+  // Set lists reuse this page: /fables/set?game=…&set=<code>.
+  const setCode = setMode ? (sp.get('set') || '').trim().slice(0, 40) : '';
+  const [setInfo, setSetInfo] = useState(null); // { code, name, released, total }
+  const name = setMode ? setCode : (sp.get('name') || '').trim().slice(0, 60);
   const GAME = versionGame(sp.get('game'));
   const label = (v) => versionLabel(GAME, v);
   const { user } = useUser();
@@ -75,6 +78,14 @@ export default function Checklist() {
   useEffect(() => {
     if (!name) { setRows([]); return; }
     let alive = true;
+    if (setMode) {
+      loadSet(GAME, setCode).then((d) => {
+        if (!alive) return;
+        if (!d) { setRows([]); return; }
+        setSetInfo(d.set); setSource(d.source); setRows(d.rows);
+      });
+      return () => { alive = false; };
+    }
     loadFamily(GAME, name)
       .then((f) => { if (alive) { setSource(f.source); setRows(f.rows); } })
       .catch(() => { if (alive) setRows([]); });
@@ -85,7 +96,7 @@ export default function Checklist() {
   useEffect(() => {
     if (!rows?.length) return;
     let alive = true;
-    loadFamilyListings(GAME, name, rows).then((d) => {
+    loadFamilyListings(GAME, name, rows, setMode ? { set: setCode } : {}).then((d) => {
       if (!alive) return;
       setPhotos(d?.photos || {});
       setForSale(d?.counts || {});
@@ -169,7 +180,7 @@ export default function Checklist() {
 
   async function turnOnAlert() {
     setAlertState('saving');
-    const result = await saveFamilyAlert(GAME, title, rows);
+    const result = setMode ? await saveSetAlert(GAME, setCode, title) : await saveFamilyAlert(GAME, title, rows);
     setAlertState(result);
     setAsk(false);
     // In the iPhone app, the first alert is when we ask about notifications.
@@ -212,7 +223,7 @@ export default function Checklist() {
     );
   };
 
-  const title = rows?.[0] ? (rows.find((r) => norm(r.cardName) === norm(name))?.cardName || name.replace(/\b\w/g, (c) => c.toUpperCase())) : name;
+  const title = setMode ? (setInfo?.name || '') : rows?.[0] ? (rows.find((r) => norm(r.cardName) === norm(name))?.cardName || name.replace(/\b\w/g, (c) => c.toUpperCase())) : name;
   const picked = pick ? rows?.find((r) => r.id === pick) : null;
 
   return (
@@ -221,11 +232,15 @@ export default function Checklist() {
               className="inline-flex items-center gap-1.5 text-lede min-h-[44px]" style={{ color: 'var(--ink-400)' }}>
         <ChevronLeft className="w-5 h-5" strokeWidth={2} aria-hidden="true" />Back
       </button>
-      <h1 className="font-display italic text-h1 leading-none mt-1.5 mb-4">{title || 'Checklist'}</h1>
+      <h1 className={`font-display italic text-h1 leading-none mt-1.5 ${setMode ? 'mb-2' : 'mb-4'}`}>{title || (setMode ? 'Set' : 'Checklist')}</h1>
+      {setMode && setInfo && (
+        <p className="text-body mb-4" style={{ color: 'var(--ink-400)' }}>{[GAME_NAMES[GAME], (setInfo.released || '').slice(0, 4), `${(rows || []).length} cards`].filter(Boolean).join(' · ')}</p>
+      )}
 
       {rows === null && <Skeleton />}
-      {rows && rows.length === 0 && (
-        <NotFound name={name} game={GAME} />
+      {rows && rows.length === 0 && (setMode
+        ? <p className="text-lede" style={{ color: 'var(--ink-200)' }}>We can’t find this set. <Link href={`/fables/lists?${gameQuery(GAME)}view=sets`} className="underline underline-offset-2" style={{ color: 'var(--accent-bright)' }}>See every set</Link></p>
+        : <NotFound name={name} game={GAME} />
       )}
 
       {rows && rows.length > 0 && (
@@ -261,7 +276,7 @@ export default function Checklist() {
 
           {hasGroups && (
             <div className="flex gap-1.5 p-1 rounded-xl mt-1 mb-1.5" role="group" aria-label="Order" style={{ background: 'var(--bg-elev)', border: '1px solid var(--line)' }}>
-              {[[false, 'Newest sets'], [true, 'Rarest first']].map(([v, l]) => (
+              {[[false, setMode ? 'Card order' : 'Newest sets'], [true, 'Rarest first']].map(([v, l]) => (
                 <button key={l} type="button" onClick={() => { setRarestFirst(v); setShowAll(false); }} aria-pressed={rarestFirst === v}
                         className="flex-1 min-h-[40px] rounded-lg text-body text-center"
                         style={rarestFirst === v ? { background: 'var(--bg-elev-2)', color: 'var(--ink-100)', boxShadow: 'inset 0 0 0 1px var(--line)' } : { color: 'var(--ink-400)' }}>
@@ -285,7 +300,7 @@ export default function Checklist() {
             <>
               {shownSets.map((g) => (
                 <section key={g.set}>
-                  <h2 className="font-display italic text-h3 mt-6 mb-2.5" style={{ color: 'var(--ink-200)' }}>{g.name}{g.year && !g.name.includes(g.year) ? ` · ${g.year}` : ''}</h2>
+                  {!setMode && <h2 className="font-display italic text-h3 mt-6 mb-2.5" style={{ color: 'var(--ink-200)' }}>{g.name}{g.year && !g.name.includes(g.year) ? ` · ${g.year}` : ''}</h2>}
                   {g.rows.map(cardRow)}
                 </section>
               ))}
@@ -306,7 +321,7 @@ export default function Checklist() {
             <button type="button" onClick={() => (user ? setAsk(true) : window.location.assign(`/signup?src=alert&next=${encodeURIComponent(here)}`))}
                     className="w-full min-h-[60px] rounded-xl flex items-center justify-center gap-2.5 text-lede font-semibold mt-7"
                     style={{ background: 'linear-gradient(180deg,var(--accent-fill-top),var(--accent-fill-bottom))', color: 'var(--ink-on-accent)' }}>
-              <Bell className="w-5 h-5" strokeWidth={2} aria-hidden="true" />Alert me when one I need is listed
+              <Bell className="w-5 h-5" strokeWidth={2} aria-hidden="true" />{setMode ? `Alert me when one I need from ${title} is listed` : 'Alert me when one I need is listed'}
             </button>
           )}
           {alertState && alertState !== 'on' && alertState !== 'saving' && <p className="text-body mt-3" style={{ color: 'var(--ink-200)' }}>{alertState}</p>}

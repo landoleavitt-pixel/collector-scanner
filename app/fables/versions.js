@@ -100,10 +100,13 @@ export const familyKeys = (rows) => [...new Set((rows || []).map((r) => r.cardKe
  *     hidden, capped, pinned } or null if the search failed. `hidden`: listings
  * thrown out as not this card. `pinned`: listings pinned to exactly one version.
  */
-export async function loadFamilyListings(game, name, rows) {
+export async function loadFamilyListings(game, name, rows, opts = {}) {
   const cardOf = {};
   for (const r of rows) for (const v of r.versions) cardOf[v.key] = r.cardKey;
-  const params = new URLSearchParams({ game, cards: familyKeys(rows).join(','), q: name, lang: 'en', limit: '1000', unsure: 'show' });
+  // A whole set (set lists): eBay is searched by the set's name instead.
+  const params = opts.set
+    ? new URLSearchParams({ game, set: opts.set, lang: 'en', limit: '1000', unsure: 'show' })
+    : new URLSearchParams({ game, cards: familyKeys(rows).join(','), q: name, lang: 'en', limit: '1000', unsure: 'show' });
   const d = await fetch(`/api/tcg-family-search?${params}`).then((r) => (r.ok ? r.json() : null)).catch(() => null);
   if (!d) return null;
   const photos = {};
@@ -119,6 +122,35 @@ export async function loadFamilyListings(game, name, rows) {
     if (!photos[id]) photos[id] = it.image;
   }
   return { photos, counts, printing: d.printingCounts || {}, total: d.total || 0, hidden: d.kinds?.reject || 0, capped: !!d.capped, pinned };
+}
+
+/**
+ * One set as checklist rows (set lists): /api/tcg-versions?game&set=<code>.
+ * → { set: { code, name, released, total }, rows (same shape as loadFamily), source } or null.
+ */
+export async function loadSet(game, code) {
+  const d = await fetch(`/api/tcg-versions?game=${game}&set=${encodeURIComponent(code)}`).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+  if (!d?.set) return null;
+  const rows = (d.numbers || []).map((n) => ({
+    id: `${n.card}|${d.set.code}|${n.number}`, set: d.set.code, setName: d.set.name, released: d.set.released || '', total: d.set.total,
+    number: n.number, cardKey: n.card, cardName: n.cardName, versions: n.versions || [],
+  }));
+  return { set: d.set, rows, source: d.source?.note || '' };
+}
+
+/** A need-only alert for a whole set (skips versions the member has). */
+export async function saveSetAlert(game, code, setName) {
+  const r = await fetch('/api/saved-searches', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name: `${setName} set`, query: setName, notify_enabled: true, side: 'fables',
+      filters: { game, set: code, setAlert: true, needOnly: true, lang: ['en'] },
+    }),
+  }).catch(() => null);
+  const d = r ? await r.json().catch(() => ({})) : {};
+  if (r && r.ok) trackPostHogOnly('alert_saved');
+  if (r && r.ok) return d.watchLimited ? 'Saved, but your 5 alerts are in use. Pause one in Saved searches to turn this on.' : 'on';
+  return d.error || 'That didn’t work. Try again.';
 }
 
 /** One saved search for the whole family: one alert, skipping versions the member has. */
