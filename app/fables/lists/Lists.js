@@ -130,7 +130,7 @@ export default function Lists() {
                 <span className="min-w-0">
                   <span className="block text-lede" style={{ color: 'var(--ink-100)' }}>{x.name}</span>
                   <span className="text-meta" style={{ color: 'var(--ink-400)' }}>{[(x.released || '').slice(0, 4), `${(x.numbers ?? x.cards ?? 0).toLocaleString('en-US')} cards`].filter(Boolean).join(' · ')}</span>
-                  {ownedBySet[x.code] > 0 && <span className="text-meta" style={{ color: 'var(--accent-bright)' }}> · You have {ownedBySet[x.code]} of {(x.versions || 0).toLocaleString('en-US')}</span>}
+                  {ownedBySet[x.code] > 0 && <span className="text-meta" style={{ color: 'var(--accent-bright)' }}> · You have {ownedBySet[x.code]} of {(x.versions || 0).toLocaleString('en-US')} versions</span>}
                 </span>
                 <ChevronRight className="w-4 h-4 flex-none" strokeWidth={2} style={{ color: 'var(--ink-400)' }} aria-hidden="true" />
               </Link>
